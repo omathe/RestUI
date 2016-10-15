@@ -6,29 +6,27 @@ import javafx.beans.property.StringProperty;
 public class EndPoint extends Item {
 
 	private Path path;
-	private StringProperty verb;
-	private String method;
-	private String version;
+	private final StringProperty method;
 
-	public EndPoint(final String name, String verb) {
+	public EndPoint(final String name, final String method) {
 		super(name);
-		this.verb = new SimpleStringProperty(verb);
+		this.method = new SimpleStringProperty(method);
 	}
-	
+
 	public Path getPath() {
 		return path;
 	}
 
-	public String getVerb() {
-		return verb.get();
+	public String getMethod() {
+		return method.get();
 	}
 
-	public void setVerb(String verb) {
-		this.verb.set(verb);
+	public void setMethod(final String method) {
+		this.method.set(method);
 	}
 
-	public StringProperty verbProperty() {
-		return verb;
+	public StringProperty methodProperty() {
+		return method;
 	}
-	
+
 }

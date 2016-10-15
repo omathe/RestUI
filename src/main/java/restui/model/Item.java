@@ -4,6 +4,10 @@ public abstract class Item {
 
 	protected String name;
 
+	public Item() {
+		super();
+	}
+
 	public Item(final String name) {
 		super();
 		this.name = name;
