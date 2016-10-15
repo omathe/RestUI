@@ -45,7 +45,7 @@
 										<HBox>
 											<children>
 												<Label text="Method" />
-												<ComboBox fx:id="verb" prefWidth="150.0">
+												<ComboBox fx:id="method" prefWidth="150.0">
 													<items>
 														<FXCollections fx:factory="observableArrayList">
 															<String fx:value="GET" />
