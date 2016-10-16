@@ -19,6 +19,12 @@
 	<children>
 		<VBox>
 			<children>
+            <TableView fx:id="exchanges" editable="true" prefHeight="200.0" prefWidth="200.0">
+              <columns>
+                <TableColumn fx:id="exchangeNameColumn" prefWidth="75.0" text="Name" />
+                <TableColumn fx:id="exchangeDateColumn" prefWidth="75.0" text="Date" />
+              </columns>
+            </TableView>
 				<FlowPane hgap="5.0" vgap="5.0">
 					<children>
 						<Button mnemonicParsing="false" text="Button1" />

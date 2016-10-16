@@ -1,16 +1,21 @@
 package restui.model;
 
+import java.util.List;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 
 public class EndPoint extends Item {
 
 	private Path path;
 	private final StringProperty method;
+	private final List<Exchange> exchanges;
 
 	public EndPoint(final String name, final String method) {
 		super(name);
 		this.method = new SimpleStringProperty(method);
+		this.exchanges = FXCollections.observableArrayList();
 	}
 
 	public Path getPath() {
@@ -29,4 +34,12 @@ public class EndPoint extends Item {
 		return method;
 	}
 
+	public void addExchange(final Exchange exchange) {
+		
+		exchanges.add(exchange);
+	}
+	
+	public List<Exchange> getExchanges() {
+		return exchanges;
+	}
 }
