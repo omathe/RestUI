@@ -1,7 +1,5 @@
 package restui.controller.cellFactory;
 
-import java.time.Instant;
-
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -12,7 +10,6 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import restui.model.EndPoint;
-import restui.model.Exchange;
 import restui.model.Item;
 import restui.model.Path;
 import restui.model.Project;
@@ -35,7 +32,11 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		menuItemPath.setOnAction(new EventHandler() {
 			@Override
 			public void handle(final Event t) {
-				final TreeItem<Item> newItem = new TreeItem<>(new Path("path"));
+				final Item item = getTreeItem().getValue();
+				final Path path = new Path("path");
+				item.addChild(path);
+				final TreeItem<Item> newItem = new TreeItem<>(path);
+				
 				getTreeItem().getChildren().add(newItem);
 			}
 		});
@@ -43,12 +44,15 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		menuItemWs.setOnAction(new EventHandler() {
 			@Override
 			public void handle(final Event t) {
-				final EndPoint endPoint = new EndPoint("createCustomer", "POST");
+				final Item item = getTreeItem().getValue();
+				final EndPoint endPoint = new EndPoint("new endpoint", "GET");
+				item.addChild(endPoint);
+				
 				// exchanges
-				final Exchange ex1 = new Exchange("e1", Instant.now().toEpochMilli());
-				final Exchange ex2 = new Exchange("e2", Instant.now().toEpochMilli());
-				endPoint.addExchange(ex1);
-				endPoint.addExchange(ex2);
+				//final Exchange ex1 = new Exchange("e1", Instant.now().toEpochMilli());
+				//final Exchange ex2 = new Exchange("e2", Instant.now().toEpochMilli());
+				//endPoint.addExchange(ex1);
+				//endPoint.addExchange(ex2);
 				
 				final TreeItem<Item> newItem = new TreeItem<>(endPoint);
 				getTreeItem().getChildren().add(newItem);
