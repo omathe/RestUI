@@ -21,7 +21,8 @@ public class Exchange {
 	public Exchange(final String name, final Long date, final Request request, final Response response) {
 		super();
 		this.name = new SimpleStringProperty(name);
-		this.date = new SimpleLongProperty(date);;
+		this.date = new SimpleLongProperty(date);
+		;
 		this.request = request;
 		this.response = response;
 	}
@@ -37,8 +38,14 @@ public class Exchange {
 	public StringProperty nameProperty() {
 		return name;
 	}
-	
+
 	public LongProperty dateProperty() {
 		return date;
 	}
+
+	@Override
+	public String toString() {
+		return "Exchange [name=" + name + ", date=" + date + "]";
+	}
+
 }

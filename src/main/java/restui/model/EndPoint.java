@@ -8,9 +8,11 @@ import javafx.collections.FXCollections;
 
 public class EndPoint extends Item {
 
+	private static final long serialVersionUID = 1L;
+	
 	private Path path;
 	private final StringProperty method;
-	private final List<Exchange> exchanges;
+	private List<Exchange> exchanges;
 
 	public EndPoint(final String name, final String method) {
 		super(name);
@@ -20,6 +22,10 @@ public class EndPoint extends Item {
 
 	public Path getPath() {
 		return path;
+	}
+	
+	public void setPath(final Path path) {
+		this.path = path;
 	}
 
 	public String getMethod() {
@@ -39,7 +45,17 @@ public class EndPoint extends Item {
 		exchanges.add(exchange);
 	}
 	
+	public void removeExchange(final Exchange exchange) {
+		
+		exchanges.remove(exchange);
+	}
+	
 	public List<Exchange> getExchanges() {
 		return exchanges;
 	}
+	
+	public void setExchanges(final List<Exchange> exchanges) {
+		this.exchanges = exchanges;
+	}
+	
 }

@@ -22,6 +22,7 @@ import restui.controller.cellFactory.TreeCellFactory;
 import restui.model.EndPoint;
 import restui.model.Item;
 import restui.model.Project;
+import restui.service.ApplicationService;
 
 public class MainController implements Initializable {
 
@@ -41,7 +42,7 @@ public class MainController implements Initializable {
 
 		hBox.getChildren().add(new Label("coucou"));
 
-		TreeItem<Item> rootItem = new TreeItem<>(new Project("Oss", "http://192.168.5.11:8080/oss/rest"));
+		final TreeItem<Item> rootItem = new TreeItem<>(new Project("Oss", "http://192.168.5.11:8080/oss/rest"));
 
 		treeView.setRoot(rootItem);
 
@@ -56,35 +57,35 @@ public class MainController implements Initializable {
 		treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Item>>() {
 
 			@Override
-			public void changed(ObservableValue<? extends TreeItem<Item>> observable, TreeItem<Item> oldValue, TreeItem<Item> newValue) {
+			public void changed(final ObservableValue<? extends TreeItem<Item>> observable, final TreeItem<Item> oldValue, final TreeItem<Item> newValue) {
 				System.out.println(newValue);
 //				System.out.println(newValue.getValue().getClass());
 //				System.out.println(newValue.getValue());
 				
 				if (newValue.getValue() instanceof Project) {
 //					System.out.println("project instance");
-					Project project = (Project) newValue.getValue();
+					final Project project = (Project) newValue.getValue();
 					
-					FXMLLoader fxmlLoader = new FXMLLoader();
+					final FXMLLoader fxmlLoader = new FXMLLoader();
 	                try {
-	                	HBox hBox = fxmlLoader.load(MainController.class.getResource("/project.fxml").openStream());
+	                	final HBox hBox = fxmlLoader.load(MainController.class.getResource("/project.fxml").openStream());
 	                    projectController = (ProjectController) fxmlLoader.getController();
 	                    projectController.setProject(project);
 						vBox.getChildren().clear();
 						vBox.getChildren().add(hBox);
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						e.printStackTrace();
 					}
 				}
 				else if (newValue.getValue() instanceof EndPoint) {
-					FXMLLoader fxmlLoader = new FXMLLoader();
+					final FXMLLoader fxmlLoader = new FXMLLoader();
 	                try {
-	                	HBox hBox = fxmlLoader.load(MainController.class.getResource("/endpoint.fxml").openStream());
+	                	final HBox hBox = fxmlLoader.load(MainController.class.getResource("/endpoint.fxml").openStream());
 	                    endPointController = (EndPointController) fxmlLoader.getController();
 	                    endPointController.setTreeItem(newValue);
 						vBox.getChildren().clear();
 						vBox.getChildren().add(hBox);
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -97,6 +98,24 @@ public class MainController implements Initializable {
 	protected void exit(final ActionEvent event) {
 
 		Platform.exit();
+	}
+	
+	@FXML
+	protected void save(final ActionEvent event) {
+		
+		final Project project = (Project) treeView.getRoot().getValue();
+		
+		//final Project project = new Project("Oss", "http://192.168.5.11:8080/oss/rest");
+		/*final EndPoint endPoint = new EndPoint("createCustomer", "POST");
+		// exchanges
+		final Exchange ex1 = new Exchange("e1", Instant.now().toEpochMilli());
+		final Exchange ex2 = new Exchange("e2", Instant.now().toEpochMilli());
+		endPoint.addExchange(ex1);
+		endPoint.addExchange(ex2);
+		
+		project.addChild(endPoint);*/
+		ApplicationService.saveProject(project);
+		
 	}
 
 }

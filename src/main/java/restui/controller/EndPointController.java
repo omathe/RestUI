@@ -3,6 +3,7 @@ package restui.controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -82,7 +84,7 @@ public class EndPointController extends AbstractController implements Initializa
 		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
 		headerValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
-		final ObservableList<String> cbValues = FXCollections.observableArrayList("1", "2", "3");
+		final ObservableList<String> cbValues = FXCollections.observableArrayList(Header.headerNames);
 		headerNameColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), cbValues));
 
 		headers.setItems(headerData);
@@ -94,6 +96,11 @@ public class EndPointController extends AbstractController implements Initializa
 	public void initialize(final URL location, final ResourceBundle resources) {
 		System.out.println("initialize");
 
+		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			System.out.println("newSelection = " + newSelection);
+			System.out.println("uri = " + uri);
+		});
+		    
 	}
 
 	private String buildUri(final TreeItem<Item> treeItem) {
@@ -120,6 +127,24 @@ public class EndPointController extends AbstractController implements Initializa
 		System.out.println("URI ---> " + builtUri);
 
 		return builtUri;
+	}
+	
+	@FXML
+	protected void addExchange(final ActionEvent event) {
+		
+		final EndPoint endpoint = (EndPoint) this.treeItem.getValue();
+		final Exchange exchange = new Exchange("echange", Instant.now().toEpochMilli());
+		endpoint.addExchange(exchange);
+	}
+	
+	@FXML
+	protected void removeExchange(final ActionEvent event) {
+		
+		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		if (exchange != null) {
+			final EndPoint endpoint = (EndPoint) this.treeItem.getValue();
+			endpoint.removeExchange(exchange);
+		}
 	}
 
 	public static void main(final String[] args) {

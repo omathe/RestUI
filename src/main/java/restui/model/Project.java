@@ -5,13 +5,15 @@ import javafx.beans.property.StringProperty;
 
 public class Project extends Item {
 
+	private static final long serialVersionUID = 1L;
+	
 	private StringProperty baseUrl;
 
 	public Project() {
 		super();
 	}
 
-	public Project(final String name, String baseUrl) {
+	public Project(final String name, final String baseUrl) {
 		super(name);
 		this.baseUrl = new SimpleStringProperty(baseUrl);
 	}
@@ -20,7 +22,7 @@ public class Project extends Item {
 		return baseUrl.get();
 	}
 
-	public void setBaseUrl(String baseUrl) {
+	public void setBaseUrl(final String baseUrl) {
 		if (this.baseUrl == null) {
 			this.baseUrl = new SimpleStringProperty(baseUrl);
 		}
