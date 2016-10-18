@@ -1,5 +1,7 @@
 package restui.model;
 
+import java.util.List;
+
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,20 +11,20 @@ public class Exchange {
 
 	private final StringProperty name;
 	private final LongProperty date;
-	private Request request;
+	private final Request request;
 	private Response response;
 
 	public Exchange(final String name, final Long date) {
 		super();
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleLongProperty(date);
+		this.request = new Request();
 	}
 
 	public Exchange(final String name, final Long date, final Request request, final Response response) {
 		super();
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleLongProperty(date);
-		;
 		this.request = request;
 		this.response = response;
 	}
@@ -41,6 +43,10 @@ public class Exchange {
 
 	public LongProperty dateProperty() {
 		return date;
+	}
+	
+	public List<Header> getHeaders() {
+		return request.headers;
 	}
 
 	@Override

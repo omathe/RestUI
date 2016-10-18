@@ -5,13 +5,17 @@ import javafx.beans.property.StringProperty;
 
 public class Request extends Message {
 
-	private final StringProperty uri;
+	private StringProperty uri;
 	private Authentication authentication;
 	
-    public Request(final String body, final String uri) {
-		super(body);
-		this.uri = new SimpleStringProperty(uri);
+    public Request() {
+		super();
 	}
+    
+    public Request(final String body, final String uri) {
+    	super(body);
+    	this.uri = new SimpleStringProperty(uri);
+    }
     
     public String getUri() {
 		return uri.get();

@@ -102,7 +102,7 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 		    
 	}
-
+	
 	private String buildUri(final TreeItem<Item> treeItem) {
 
 		String builtUri = "";
