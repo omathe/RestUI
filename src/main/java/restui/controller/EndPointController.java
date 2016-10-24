@@ -33,12 +33,14 @@ import restui.model.Exchange;
 import restui.model.Header;
 import restui.model.Item;
 import restui.model.Project;
+import restui.model.Property;
+import restui.model.Property.Location;
 import restui.service.ApplicationService;
 
 public class EndPointController extends AbstractController implements Initializable {
 
 	@FXML
-	private TableView<Header> headers;
+	private TableView<Property> headers;
 	@FXML
 	private TableColumn headerNameColumn;
 	@FXML
@@ -63,6 +65,38 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@SuppressWarnings("unchecked")
 	@Override
+	public void initialize(final URL location, final ResourceBundle resources) {
+		System.out.println("initialize");
+
+		// headers
+		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
+		final ObservableList<String> cbValues = FXCollections.observableArrayList(Header.headerNames);
+		headerNameColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), cbValues));
+		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
+		headerValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+		// headerNameColumn.setCellFactory(t -> {
+		// final ComboBoxTableCell myComboBoxTableCell = new
+		// ComboBoxTableCell();
+		//
+		// myComboBoxTableCell.setOnKeyPressed(e -> {
+		// System.out.println("key pressed");
+		// //KeyCode code = e.getCode();
+		// //System.out.println("code "+code);
+		// });
+		// myComboBoxTableCell.setComboBoxEditable(true);
+		// return myComboBoxTableCell;
+		// });
+
+		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			refreshExchangeData(newSelection);
+			;
+		});
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
 	public void setTreeItem(final TreeItem<Item> treeItem) {
 		super.setTreeItem(treeItem);
 
@@ -77,32 +111,16 @@ public class EndPointController extends AbstractController implements Initializa
 		exchangeDateColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("date"));
 		exchanges.setItems((ObservableList<Exchange>) endPoint.getExchanges());
 
-		// headers
-		final ObservableList<Header> headerData = FXCollections.observableArrayList(
-				new Header("Content-Type", "application/xml"), new Header("Authorization", "Bearer token-value"));
-		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
-		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
-		headerValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-
-		final ObservableList<String> cbValues = FXCollections.observableArrayList(Header.headerNames);
-		headerNameColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), cbValues));
-
-		headers.setItems(headerData);
-
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public void initialize(final URL location, final ResourceBundle resources) {
-		System.out.println("initialize");
+	private void refreshExchangeData(final Exchange exchange) {
 
-		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			System.out.println("newSelection = " + newSelection);
-			System.out.println("uri = " + uri);
-		});
-		    
+		// headers
+		final ObservableList<Property> headerData = (ObservableList<Property>) exchange.getRequestHeaders();
+		headers.setItems(headerData);
 	}
-	
+
 	private String buildUri(final TreeItem<Item> treeItem) {
 
 		String builtUri = "";
@@ -128,22 +146,41 @@ public class EndPointController extends AbstractController implements Initializa
 
 		return builtUri;
 	}
-	
+
 	@FXML
 	protected void addExchange(final ActionEvent event) {
-		
+
 		final EndPoint endpoint = (EndPoint) this.treeItem.getValue();
 		final Exchange exchange = new Exchange("echange", Instant.now().toEpochMilli());
 		endpoint.addExchange(exchange);
 	}
-	
+
 	@FXML
 	protected void removeExchange(final ActionEvent event) {
-		
+
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
 			final EndPoint endpoint = (EndPoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
+		}
+	}
+
+	@FXML
+	protected void addRequestHeader(final ActionEvent event) {
+		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		if (exchange != null) {
+			final Property header = new Property(Location.HEADER, "name", "value");
+			exchange.addRequestHeader(header);
+		}
+	}
+
+	@FXML
+	protected void removeRequestHeader(final ActionEvent event) {
+
+		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		if (exchange != null) {
+			final Property header = headers.getSelectionModel().getSelectedItem();
+			exchange.removeRequestHeader(header);
 		}
 	}
 

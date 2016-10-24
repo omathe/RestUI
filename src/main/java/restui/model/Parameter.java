@@ -5,27 +5,27 @@ import javafx.beans.property.StringProperty;
 
 public class Parameter {
 
-	private final StringProperty key;
+	private final StringProperty name;
 	private final StringProperty value;
 	private final StringProperty location;
 
-	public Parameter(final String key, final String value, final String location) {
+	public Parameter(final String name, final String value, final String location) {
 		super();
-		this.key = new SimpleStringProperty(key);
+		this.name = new SimpleStringProperty(name);
 		this.value = new SimpleStringProperty(value);
 		this.location = new SimpleStringProperty(location);
 	}
 
-	public String getKey() {
-		return key.get();
+	public String getName() {
+		return name.get();
 	}
 
-	public void setKey(final String key) {
-		this.key.set(key);
+	public void setName(final String name) {
+		this.name.set(name);
 	}
 
 	public StringProperty keyProperty() {
-		return key;
+		return name;
 	}
 
 	public String getValue() {

@@ -45,10 +45,22 @@ public class Exchange {
 		return date;
 	}
 	
-	public List<Header> getHeaders() {
+	public List<Property> getRequestHeaders() {
 		return request.headers;
 	}
 
+	public void addRequestHeader(final Property header) {
+		if (header != null) {
+			request.headers.add(header);
+		}
+	}
+	
+	public void removeRequestHeader(final Property header) {
+		if (header != null) {
+			request.headers.remove(header);
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + "]";

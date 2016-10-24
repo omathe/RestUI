@@ -7,21 +7,36 @@ import java.util.stream.Stream;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Header {
+public class Property {
 
-	//public static final String ACCEPT = "Accept";
-	public static final String AUTHORIZATION = "Authorization";
-	public static final String CONTENT_TYPE = "Content-Type";
+	public enum Location {
+		PATH, QUERY, HEADER;
+	}
 
+	public static Set<String> locations = Stream.of(Location.PATH.name(), Location.QUERY.name()).collect(Collectors.toSet());
 	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type").collect(Collectors.toSet());
 
+	private final StringProperty location;
 	private final StringProperty name;
 	private final StringProperty value;
 
-	public Header(final String name, final String value) {
+	public Property(final Location location, final String name, final String value) {
 		super();
+		this.location = new SimpleStringProperty(location.name());
 		this.name = new SimpleStringProperty(name);
 		this.value = new SimpleStringProperty(value);
+	}
+	
+	public String getLocation() {
+		return location.get();
+	}
+
+	public void setLocation(final Location location) {
+		this.location.set(location.name());
+	}
+
+	public StringProperty locationProperty() {
+		return location;
 	}
 
 	public String getName() {
