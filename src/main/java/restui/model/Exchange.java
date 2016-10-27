@@ -44,7 +44,7 @@ public class Exchange {
 	public LongProperty dateProperty() {
 		return date;
 	}
-	
+
 	public List<Property> getRequestHeaders() {
 		return request.headers;
 	}
@@ -54,13 +54,26 @@ public class Exchange {
 			request.headers.add(header);
 		}
 	}
-	
+
 	public void removeRequestHeader(final Property header) {
 		if (header != null) {
 			request.headers.remove(header);
 		}
 	}
+
+	public void addRequestProperty(final Property property) {
+
+		if (property.getLocation().equals(Property.Location.HEADER)) {
+			request.headers.add(property);
+		} else {
+			request.parameters.add(property);
+		}
+	}
 	
+	public List<Property> getRequestParameters() {
+		return request.parameters;
+	}
+
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + "]";

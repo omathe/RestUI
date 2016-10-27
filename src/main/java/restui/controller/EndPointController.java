@@ -52,6 +52,15 @@ public class EndPointController extends AbstractController implements Initializa
 	private TableColumn exchangeNameColumn;
 	@FXML
 	private TableColumn exchangeDateColumn;
+	
+	@FXML
+	private TableView<Property> parameters;
+	@FXML
+	private TableColumn parameterLocationColumn;
+	@FXML
+	private TableColumn parameterNameColumn;
+	@FXML
+	private TableColumn parameterValueColumn;
 
 	@FXML
 	private ComboBox<String> method;
@@ -74,6 +83,15 @@ public class EndPointController extends AbstractController implements Initializa
 		headerNameColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), cbValues));
 		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
 		headerValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		
+		// parameters
+		parameterLocationColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("location"));
+		final ObservableList<String> locations = FXCollections.observableArrayList(Property.Location.PATH.name(), Property.Location.QUERY.name());
+		parameterLocationColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), locations));
+		parameterNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
+		parameterNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		parameterValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
+		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
 		// headerNameColumn.setCellFactory(t -> {
 		// final ComboBoxTableCell myComboBoxTableCell = new
@@ -119,6 +137,9 @@ public class EndPointController extends AbstractController implements Initializa
 		// headers
 		final ObservableList<Property> headerData = (ObservableList<Property>) exchange.getRequestHeaders();
 		headers.setItems(headerData);
+		// parameters
+		final ObservableList<Property> parameterData = (ObservableList<Property>) exchange.getRequestParameters();
+		parameters.setItems(parameterData);
 	}
 
 	private String buildUri(final TreeItem<Item> treeItem) {
@@ -182,6 +203,25 @@ public class EndPointController extends AbstractController implements Initializa
 			final Property header = headers.getSelectionModel().getSelectedItem();
 			exchange.removeRequestHeader(header);
 		}
+	}
+	
+	@FXML
+	protected void addRequestParameter(final ActionEvent event) {
+		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		if (exchange != null) {
+			final Property parameter = new Property(Location.QUERY, "name", "value");
+			exchange.addRequestProperty(parameter);
+		}
+	}
+	
+	@FXML
+	protected void removeRequestParameter(final ActionEvent event) {
+		
+//		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+//		if (exchange != null) {
+//			final Property header = headers.getSelectionModel().getSelectedItem();
+//			exchange.removeRequestHeader(header);
+//		}
 	}
 
 	public static void main(final String[] args) {
