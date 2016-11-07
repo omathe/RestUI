@@ -45,35 +45,19 @@ public class Exchange {
 		return date;
 	}
 
-	public List<Property> getRequestHeaders() {
-		return request.headers;
-	}
-
-	public void addRequestHeader(final Property header) {
-		if (header != null) {
-			request.headers.add(header);
-		}
-	}
-
-	public void removeRequestHeader(final Property header) {
-		if (header != null) {
-			request.headers.remove(header);
-		}
-	}
-
-	public void addRequestProperty(final Property property) {
-
-		if (property.getLocation().equals(Property.Location.HEADER)) {
-			request.headers.add(property);
-		} else {
-			request.parameters.add(property);
-		}
-	}
-	
-	public List<Property> getRequestParameters() {
+	public List<Parameter> getRequestParameters() {
 		return request.parameters;
 	}
 
+	public void addRequestParameter(final Parameter parameter) {
+
+		request.parameters.add(parameter);
+	}
+	
+	public void removeRequestParameter(final Parameter parameter) {
+		request.parameters.remove(parameter);
+	}
+	
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + "]";

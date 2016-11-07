@@ -13,21 +13,17 @@ public class ProjectController implements Initializable {
 	@FXML
 	private TextField baseUrl;
 	
-	//private Project project;
-	
 	public TextField getBaseUrl() {
 		return baseUrl;
 	}
 	
-	public void setProject(Project project) {
-		//this.project = project;
+	public void setProject(final Project project) {
 		baseUrl.textProperty().bindBidirectional(project.baseUrlProperty());
+		baseUrl.prefColumnCountProperty().bind(baseUrl.textProperty().length());
 	}
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-//		System.out.println("initialize");
-//		System.out.println("baseUrl = " + baseUrl);
 		
 	}
 

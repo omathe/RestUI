@@ -11,7 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
+import javafx.geometry.Pos;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -28,8 +28,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TreeView<Item> treeView;
-	@FXML
-	private HBox hBox;
+	
 	@FXML
 	private VBox vBox;
 	
@@ -39,8 +38,6 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 //		System.out.println("initialize");
-
-		hBox.getChildren().add(new Label("coucou"));
 
 		final TreeItem<Item> rootItem = new TreeItem<>(new Project("Oss", "http://192.168.5.11:8080/oss/rest"));
 
@@ -69,6 +66,7 @@ public class MainController implements Initializable {
 					final FXMLLoader fxmlLoader = new FXMLLoader();
 	                try {
 	                	final HBox hBox = fxmlLoader.load(MainController.class.getResource("/project.fxml").openStream());
+	                	hBox.setAlignment(Pos.TOP_LEFT);
 	                    projectController = (ProjectController) fxmlLoader.getController();
 	                    projectController.setProject(project);
 						vBox.getChildren().clear();

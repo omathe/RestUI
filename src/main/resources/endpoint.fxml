@@ -9,49 +9,57 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<HBox prefHeight="679.0" prefWidth="868.0" xmlns="http://javafx.com/javafx/8.0.71" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.EndPointController">
+<HBox xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.EndPointController">
 	<children>
-		<VBox>
+		<VBox HBox.hgrow="ALWAYS">
 			<children>
-            <TableView fx:id="exchanges" editable="true" prefHeight="200.0" prefWidth="200.0">
+            <TableView fx:id="exchanges" editable="true" maxHeight="200.0" minWidth="160.0">
               <columns>
-                <TableColumn fx:id="exchangeNameColumn" prefWidth="75.0" text="Name" />
-                <TableColumn fx:id="exchangeDateColumn" prefWidth="75.0" text="Date" />
+                <TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="-1.0" text="Name" />
+                <TableColumn fx:id="exchangeDateColumn" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="-1.0" text="Date" />
+                  <TableColumn prefWidth="75.0" text="Status" />
               </columns>
             </TableView>
-				<FlowPane hgap="5.0" vgap="5.0">
+				<FlowPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
 					<children>
 						<Button mnemonicParsing="false" onAction="#removeExchange" text="-" />
 						<Button mnemonicParsing="false" onAction="#addExchange" text="+" />
 					</children>
 					<padding>
-						<Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 					</padding>
 				</FlowPane>
-				<SplitPane dividerPositions="0.6204013377926422" prefHeight="647.0" prefWidth="600.0">
+				<SplitPane dividerPositions="0.4967948717948718" VBox.vgrow="ALWAYS">
 					<items>
-						<AnchorPane prefHeight="645.0" prefWidth="383.0">
+						<AnchorPane maxWidth="1.7976931348623157E308">
 							<children>
-								<VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<children>
-										<HBox prefHeight="158.0" prefWidth="116.0">
+												<Label maxWidth="1.7976931348623157E308" text="Request">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Label>
+										<HBox alignment="CENTER_LEFT" spacing="5.0">
 											<children>
-												<Label text="Request" />
+												<Label minWidth="50.0" prefWidth="50.0" text="URI" />
+												<TextField fx:id="uri" editable="false" prefHeight="26.0" prefWidth="341.0" HBox.hgrow="ALWAYS" />
 											</children>
-											<VBox.margin>
-												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-											</VBox.margin>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
 										</HBox>
-										<HBox>
+										<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
 											<children>
-												<Label text="Method" />
-												<ComboBox fx:id="method" prefWidth="150.0">
+												<Label minWidth="50.0" prefWidth="50.0" text="Method" />
+												<ComboBox fx:id="method">
 													<items>
 														<FXCollections fx:factory="observableArrayList">
 															<String fx:value="GET" />
@@ -69,60 +77,77 @@
 												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 											</VBox.margin>
 										</HBox>
-										<HBox prefHeight="100.0" prefWidth="200.0">
-											<children>
-												<Label text="URI" />
-												<TextField fx:id="uri" prefHeight="26.0" prefWidth="341.0" />
-											</children>
-										</HBox>
-										<VBox>
-											<children>
-												<Label text="Headers" />
-												<TableView fx:id="headers" editable="true" prefHeight="200.0" prefWidth="200.0">
-													<columns>
-														<TableColumn fx:id="headerNameColumn" prefWidth="75.0" text="Name" />
-														<TableColumn fx:id="headerValueColumn" prefWidth="75.0" text="Value" />
-													</columns>
-												</TableView>
-											</children>
-										</VBox>
-                              <FlowPane hgap="5.0" vgap="5.0">
+										<VBox />
+                              <VBox>
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#removeRequestHeader" text="-" />
-                                    <Button mnemonicParsing="false" onAction="#addRequestHeader" text="+" />
+                                    <Label text="Parameters" />
+                                    <TableView fx:id="parameters" editable="true" maxHeight="200.0" prefWidth="200.0">
+                                       <columns>
+                                          <TableColumn fx:id="parameterEnabledColumn" prefWidth="75.0" text="Enabled" />
+                                          <TableColumn fx:id="parameterLocationColumn" prefWidth="75.0" text="Location" />
+                                          <TableColumn fx:id="parameterNameColumn" prefWidth="75.0" text="Name" />
+                                          <TableColumn fx:id="parameterValueColumn" prefWidth="75.0" text="Value" />
+                                       </columns>
+                                    </TableView>
+                                    <FlowPane hgap="5.0" vgap="5.0">
+                                       <children>
+                                          <Button mnemonicParsing="false" onAction="#removeRequestParameter" text="-" />
+                                          <Button mnemonicParsing="false" onAction="#addRequestParameter" text="+" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                       </padding>
+                                    </FlowPane>
                                  </children>
-                                 <padding>
-                                    <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                                 </padding>
-                              </FlowPane>
-                              <Label text="Parameters" />
-                              <TableView fx:id="parameters" editable="true" prefHeight="200.0" prefWidth="200.0">
-                                 <columns>
-                                    <TableColumn fx:id="parameterLocationColumn" prefWidth="75.0" text="Location" />
-                                    <TableColumn fx:id="parameterNameColumn" prefWidth="75.0" text="Name" />
-                                    <TableColumn fx:id="parameterValueColumn" prefWidth="75.0" text="Value" />
-                                 </columns>
-                              </TableView>
-                              <FlowPane hgap="5.0" vgap="5.0">
+                              </VBox>
+                              <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#removeRequestParameter" text="-" />
-                                    <Button mnemonicParsing="false" onAction="#addRequestParameter" text="+" />
+                                    <Label text="Body" />
+                                    <TextArea fx:id="requestBody" prefWidth="200.0" promptText="Body" />
                                  </children>
-                                 <padding>
-                                    <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                                 </padding>
-                              </FlowPane>
+                              </VBox>
+                              <VBox VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Button mnemonicParsing="false" text="Execute" />
+                                 </children>
+                              </VBox>
 									</children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
 								</VBox>
 							</children>
 						</AnchorPane>
-						<AnchorPane prefHeight="645.0" prefWidth="664.0">
+						<AnchorPane>
 							<children>
-								<HBox prefHeight="158.0" prefWidth="116.0">
-									<children>
-										<Label text="Response" />
-									</children>
-								</HBox>
+                        <VBox layoutX="-110.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+										<Label text="Response">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Label>
+                              <VBox VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Headers" />
+                                    <TableView fx:id="headers1" editable="true">
+                                       <columns>
+                                          <TableColumn fx:id="headerNameColumn1" prefWidth="75.0" text="Name" />
+                                          <TableColumn fx:id="headerValueColumn1" prefWidth="75.0" text="Value" />
+                                       </columns>
+                                    </TableView>
+                                 </children>
+                              </VBox>
+                              <VBox VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Body" />
+                                    <TextArea fx:id="responseBody" />
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
 							</children>
 							<opaqueInsets>
 								<Insets />

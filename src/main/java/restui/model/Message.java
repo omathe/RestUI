@@ -9,19 +9,16 @@ import javafx.collections.FXCollections;
 public class Message {
 
 	protected StringProperty body;
-	protected List<Property> headers;
-	protected List<Property> parameters;
+	protected List<Parameter> parameters;
 
 	public Message() {
 		super();
-		this.headers = FXCollections.observableArrayList();
 		this.parameters = FXCollections.observableArrayList();
 	}
 
 	public Message(final String body) {
 		super();
 		this.body = new SimpleStringProperty(body);
-		this.headers = FXCollections.observableArrayList();
 		this.parameters = FXCollections.observableArrayList();
 	}
 
@@ -37,36 +34,18 @@ public class Message {
 		return body;
 	}
 
-	public List<Property> getHeaders() {
-		return headers;
-	}
+	public void addParameter(final Parameter parameter) {
 
-	public void addHeader(final Property header) {
-
-		if (headers == null) {
-			this.headers = FXCollections.observableArrayList();
-		}
-		headers.add(header);
-	}
-
-	public void removeHeader(final Property header) {
-
-		headers.remove(header);
-	}
-	
-	public void addParameter(final Property parameter) {
-		
 		if (parameters == null) {
 			this.parameters = FXCollections.observableArrayList();
 		}
 		parameters.add(parameter);
 	}
-	
-	public void removeParameter(final Property parameter) {
-		
-		if (parameters == null) {
-			this.parameters = FXCollections.observableArrayList();
+
+	public void removeParameter(final Parameter parameter) {
+
+		if (parameters != null && parameter != null) {
+			parameters.remove(parameter);
 		}
-		parameters.remove(parameter);
 	}
 }

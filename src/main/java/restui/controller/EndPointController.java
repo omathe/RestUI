@@ -24,6 +24,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -32,19 +33,12 @@ import restui.model.EndPoint;
 import restui.model.Exchange;
 import restui.model.Header;
 import restui.model.Item;
+import restui.model.Parameter;
+import restui.model.Parameter.Location;
 import restui.model.Project;
-import restui.model.Property;
-import restui.model.Property.Location;
 import restui.service.ApplicationService;
 
 public class EndPointController extends AbstractController implements Initializable {
-
-	@FXML
-	private TableView<Property> headers;
-	@FXML
-	private TableColumn headerNameColumn;
-	@FXML
-	private TableColumn headerValueColumn;
 
 	@FXML
 	private TableView<Exchange> exchanges;
@@ -54,7 +48,9 @@ public class EndPointController extends AbstractController implements Initializa
 	private TableColumn exchangeDateColumn;
 	
 	@FXML
-	private TableView<Property> parameters;
+	private TableView<Parameter> parameters;
+	@FXML
+	private TableColumn parameterEnabledColumn;
 	@FXML
 	private TableColumn parameterLocationColumn;
 	@FXML
@@ -77,16 +73,11 @@ public class EndPointController extends AbstractController implements Initializa
 	public void initialize(final URL location, final ResourceBundle resources) {
 		System.out.println("initialize");
 
-		// headers
-		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
-		final ObservableList<String> cbValues = FXCollections.observableArrayList(Header.headerNames);
-		headerNameColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), cbValues));
-		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
-		headerValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		
 		// parameters
+		parameterEnabledColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("enabled"));
+		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell());
 		parameterLocationColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("location"));
-		final ObservableList<String> locations = FXCollections.observableArrayList(Property.Location.PATH.name(), Property.Location.QUERY.name());
+		final ObservableList<String> locations = FXCollections.observableArrayList(Parameter.locations);
 		parameterLocationColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), locations));
 		parameterNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
 		parameterNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -134,12 +125,11 @@ public class EndPointController extends AbstractController implements Initializa
 	@SuppressWarnings("unchecked")
 	private void refreshExchangeData(final Exchange exchange) {
 
-		// headers
-		final ObservableList<Property> headerData = (ObservableList<Property>) exchange.getRequestHeaders();
-		headers.setItems(headerData);
-		// parameters
-		final ObservableList<Property> parameterData = (ObservableList<Property>) exchange.getRequestParameters();
-		parameters.setItems(parameterData);
+		if (exchange != null) {
+			// parameters
+			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
+			parameters.setItems(parameterData);
+		}
 	}
 
 	private String buildUri(final TreeItem<Item> treeItem) {
@@ -187,41 +177,22 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 	@FXML
-	protected void addRequestHeader(final ActionEvent event) {
-		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		if (exchange != null) {
-			final Property header = new Property(Location.HEADER, "name", "value");
-			exchange.addRequestHeader(header);
-		}
-	}
-
-	@FXML
-	protected void removeRequestHeader(final ActionEvent event) {
-
-		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		if (exchange != null) {
-			final Property header = headers.getSelectionModel().getSelectedItem();
-			exchange.removeRequestHeader(header);
-		}
-	}
-	
-	@FXML
 	protected void addRequestParameter(final ActionEvent event) {
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			final Property parameter = new Property(Location.QUERY, "name", "value");
-			exchange.addRequestProperty(parameter);
+			final Parameter parameter = new Parameter(true, Location.QUERY, "name", "value");
+			exchange.addRequestParameter(parameter);
 		}
 	}
 	
 	@FXML
 	protected void removeRequestParameter(final ActionEvent event) {
 		
-//		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-//		if (exchange != null) {
-//			final Property header = headers.getSelectionModel().getSelectedItem();
-//			exchange.removeRequestHeader(header);
-//		}
+		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		if (exchange != null) {
+			final Parameter parameter = parameters.getSelectionModel().getSelectedItem();
+			exchange.removeRequestParameter(parameter);
+		}
 	}
 
 	public static void main(final String[] args) {
