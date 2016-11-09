@@ -1,18 +1,14 @@
 package restui.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +32,6 @@ import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Location;
 import restui.model.Project;
-import restui.service.ApplicationService;
 
 public class EndPointController extends AbstractController implements Initializable {
 
@@ -46,7 +41,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private TableColumn exchangeNameColumn;
 	@FXML
 	private TableColumn exchangeDateColumn;
-	
+
 	@FXML
 	private TableView<Parameter> parameters;
 	@FXML
@@ -78,7 +73,8 @@ public class EndPointController extends AbstractController implements Initializa
 		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell());
 		parameterLocationColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("location"));
 		final ObservableList<String> locations = FXCollections.observableArrayList(Parameter.locations);
-		parameterLocationColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), locations));
+		parameterLocationColumn
+				.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), locations));
 		parameterNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
 		parameterNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		parameterValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
@@ -129,6 +125,7 @@ public class EndPointController extends AbstractController implements Initializa
 			// parameters
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
 			parameters.setItems(parameterData);
+			buildParameters();
 		}
 	}
 
@@ -158,6 +155,19 @@ public class EndPointController extends AbstractController implements Initializa
 		return builtUri;
 	}
 
+	private void buildParameters() {
+
+		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		if (exchange != null) {
+			final String endpointUri = uri.getText();
+			final Set<String> tokens = extractTokens(endpointUri, "{", "}");
+			tokens.stream().forEach(token -> {
+				final Parameter parameter = new Parameter(true, Location.PATH, token, "");
+				exchange.addRequestParameter(parameter);
+			});
+		}
+	}
+
 	@FXML
 	protected void addExchange(final ActionEvent event) {
 
@@ -184,10 +194,10 @@ public class EndPointController extends AbstractController implements Initializa
 			exchange.addRequestParameter(parameter);
 		}
 	}
-	
+
 	@FXML
 	protected void removeRequestParameter(final ActionEvent event) {
-		
+
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
 			final Parameter parameter = parameters.getSelectionModel().getSelectedItem();
@@ -195,31 +205,24 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
-	public static void main(final String[] args) {
+	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {
 
-		ApplicationService.createApplication();
+		final Set<String> tokens = new HashSet<>();
+		int start = 0;
+		int end = 0;
 
-		final ObjectMapper mapper = new ObjectMapper();
-
-		try {
-			final Project project = new Project("oss", "http://www.lemonde.fr");
-			mapper.writeValue(new File("/home/olivier/tmp/project.json"), project);
-
-			final Project iot = mapper.readValue(new File("/home/olivier/tmp/iot.json"), Project.class);
-			System.out.println(iot.getName());
-			System.out.println(iot.getBaseUrl());
-
-		} catch (final JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (final JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		while (start >= 0) {
+			start = data.indexOf(prefix, start);
+			end = data.indexOf(suffix, end);
+			if (start > 0) {
+				final String token = data.substring(start + 1, end);
+				System.out.println("token : " + token);
+				tokens.add(token);
+				start += 1;
+				end += 1;
+			}
 		}
-
+		return tokens;
 	}
 
 }

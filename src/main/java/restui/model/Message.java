@@ -34,18 +34,4 @@ public class Message {
 		return body;
 	}
 
-	public void addParameter(final Parameter parameter) {
-
-		if (parameters == null) {
-			this.parameters = FXCollections.observableArrayList();
-		}
-		parameters.add(parameter);
-	}
-
-	public void removeParameter(final Parameter parameter) {
-
-		if (parameters != null && parameter != null) {
-			parameters.remove(parameter);
-		}
-	}
 }

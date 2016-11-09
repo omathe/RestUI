@@ -16,8 +16,10 @@ public class Parameter {
 		PATH, QUERY, HEADER;
 	}
 
-	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name()).collect(Collectors.toSet());
-	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type").collect(Collectors.toSet());
+	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name())
+			.collect(Collectors.toSet());
+	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type")
+			.collect(Collectors.toSet());
 
 	private final BooleanProperty enabled;
 	private final StringProperty location;
@@ -31,19 +33,19 @@ public class Parameter {
 		this.name = new SimpleStringProperty(name);
 		this.value = new SimpleStringProperty(value);
 	}
-	
+
 	public Boolean getEnabled() {
 		return enabled.get();
 	}
-	
+
 	public void setEnabled(final Boolean enabled) {
 		this.enabled.set(enabled);
 	}
-	
+
 	public BooleanProperty enabledProperty() {
 		return enabled;
 	}
-	
+
 	public String getLocation() {
 		return location.get();
 	}
@@ -78,6 +80,37 @@ public class Parameter {
 
 	public StringProperty valueProperty() {
 		return value;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((location == null) ? 0 : location.get().hashCode());
+		result = prime * result + ((name == null) ? 0 : name.get().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Parameter other = (Parameter) obj;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.get().equals(other.location.get()))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.get().equals(other.name.get()))
+			return false;
+		return true;
 	}
 
 }

@@ -51,13 +51,16 @@ public class Exchange {
 
 	public void addRequestParameter(final Parameter parameter) {
 
-		request.parameters.add(parameter);
+		System.out.println("contains ? " + request.parameters.contains(parameter));
+		if (!request.parameters.contains(parameter)) {
+			request.parameters.add(parameter);
+		}
 	}
-	
+
 	public void removeRequestParameter(final Parameter parameter) {
 		request.parameters.remove(parameter);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + "]";
