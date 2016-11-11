@@ -56,6 +56,8 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	private ComboBox<String> method;
 	@FXML
+	private TextField endpoint;
+	@FXML
 	private TextField uri;
 
 	public EndPointController() {
@@ -105,7 +107,7 @@ public class EndPointController extends AbstractController implements Initializa
 	public void setTreeItem(final TreeItem<Item> treeItem) {
 		super.setTreeItem(treeItem);
 
-		buildUri(this.treeItem);
+		buildEndpoint(this.treeItem);
 		final EndPoint endPoint = (EndPoint) this.treeItem.getValue();
 		method.valueProperty().bindBidirectional(endPoint.methodProperty());
 		System.out.println("construct AbstractController ");
@@ -129,7 +131,7 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
-	private String buildUri(final TreeItem<Item> treeItem) {
+	private String buildEndpoint(final TreeItem<Item> treeItem) {
 
 		String builtUri = "";
 		final List<String> names = new ArrayList<>();
@@ -149,7 +151,7 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 		Collections.reverse(names);
 		builtUri = names.stream().collect(Collectors.joining("/")).toString();
-		uri.setText(builtUri);
+		endpoint.setText(builtUri);
 		System.out.println("URI ---> " + builtUri);
 
 		return builtUri;
@@ -159,7 +161,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			final String endpointUri = uri.getText();
+			final String endpointUri = endpoint.getText();
 			final Set<String> tokens = extractTokens(endpointUri, "{", "}");
 			tokens.stream().forEach(token -> {
 				final Parameter parameter = new Parameter(true, Location.PATH, token, "");
@@ -205,6 +207,20 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
+	@FXML
+	protected void execute(final ActionEvent event) {
+
+		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		if (exchange != null) {
+			System.out.println("execute request ...");
+			System.out.println("uri : ");
+			final String builtUri = buildUri(endpoint.getText(), exchange.getRequestParameters());
+			uri.setText(builtUri);
+			exchange.getRequestParameters().forEach(p -> System.out.println(p));
+		}
+
+	}
+
 	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {
 
 		final Set<String> tokens = new HashSet<>();
@@ -223,6 +239,37 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 		}
 		return tokens;
+	}
+
+	private String buildUri(final String endpoint, final List<Parameter> parameters) {
+
+		// path parameters
+		parameters.stream().filter(p -> p.isPathParameter())
+				.forEach(p -> endpoint.replace("{" + p.getName() + "}", p.getValue()));
+
+		String uri = endpoint;
+		// query parameters
+		final Set<String> queryParams = parameters.stream().filter(p -> p.isPathParameter())
+				.map(p -> p.getName() + "=" + p.getValue()).collect(Collectors.toSet());
+		if (!queryParams.isEmpty()) {
+			uri += endpoint + "?" + String.join("&", queryParams);
+		}
+
+		// parameters.stream().filter(p -> p.isQueryParameter())
+		// .forEach(p -> uri += replace("{" + p.getName() + "}", p.getValue()));
+
+		// String builtPath = path;
+		// for (int i = 0; i < idValues.length; i += 2) {
+		// builtPath = builtPath.replace(OB + idValues[i] + CB, idValues[i +
+		// 1]);
+		// }
+		return uri;
+	}
+
+	public static void main(final String[] args) {
+
+		final String s = "";
+
 	}
 
 }

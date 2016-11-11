@@ -21,6 +21,7 @@ import javafx.util.Callback;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.model.EndPoint;
 import restui.model.Item;
+import restui.model.Path;
 import restui.model.Project;
 import restui.service.ApplicationService;
 
@@ -39,9 +40,28 @@ public class MainController implements Initializable {
 	public void initialize(final URL location, final ResourceBundle resources) {
 //		System.out.println("initialize");
 
-		final TreeItem<Item> rootItem = new TreeItem<>(new Project("Oss", "http://192.168.5.11:8080/oss/rest"));
+		final Project project = new Project("Oss", "http://192.168.5.11:8080/oss/rest");
+		final Path application = new Path("application");
+		final Path customers = new Path("customers");
+		final Path customerId = new Path("{customerId}");
+		final EndPoint getCustomer = new EndPoint("getCustomer", "GET");
+		customers.addChild(customerId);
+		application.addChild(customers);
+		project.addChild(application);
+		customerId.addChild(getCustomer);
+		
+		
+		final TreeItem<Item> projectItem = new TreeItem<>(project);
+		final TreeItem<Item> applicationItem = new TreeItem<>(application);
+		final TreeItem<Item> customersItem = new TreeItem<>(customers);
+		final TreeItem<Item> customerIdItem = new TreeItem<>(customerId);
+		final TreeItem<Item> getCustomerItem = new TreeItem<>(getCustomer);
+		projectItem.getChildren().add(applicationItem);
+		applicationItem.getChildren().add(customersItem);
+		customersItem.getChildren().add(customerIdItem);
+		customerIdItem.getChildren().add(getCustomerItem);
 
-		treeView.setRoot(rootItem);
+		treeView.setRoot(projectItem);
 
 		treeView.setEditable(true);
 		treeView.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {

@@ -81,6 +81,18 @@ public class Parameter {
 	public StringProperty valueProperty() {
 		return value;
 	}
+	
+	public boolean isPathParameter() {
+		return location.get().equals(Location.PATH);
+	}
+	
+	public boolean isQueryParameter() {
+		return location.get().equals(Location.QUERY);
+	}
+	
+	public boolean isHeaderParameter() {
+		return location.get().equals(Location.HEADER);
+	}
 
 	@Override
 	public int hashCode() {
@@ -111,6 +123,12 @@ public class Parameter {
 		} else if (!name.get().equals(other.name.get()))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Parameter [enabled=" + enabled.get() + ", location=" + location.get() + ", name=" + name.get()
+				+ ", value=" + value.get() + "]";
 	}
 
 }

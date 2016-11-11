@@ -49,8 +49,8 @@
                                  </font></Label>
 										<HBox alignment="CENTER_LEFT" spacing="5.0">
 											<children>
-												<Label minWidth="50.0" prefWidth="50.0" text="URI" />
-												<TextField fx:id="uri" editable="false" prefHeight="26.0" prefWidth="341.0" HBox.hgrow="ALWAYS" />
+												<Label minWidth="70.0" text="Endpoint" HBox.hgrow="ALWAYS" />
+												<TextField fx:id="endpoint" editable="false" prefHeight="26.0" prefWidth="341.0" HBox.hgrow="ALWAYS" />
 											</children>
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -108,7 +108,8 @@
                               </VBox>
                               <VBox VBox.vgrow="ALWAYS">
                                  <children>
-                                    <Button mnemonicParsing="false" text="Execute" />
+                                    <TextField fx:id="uri" />
+                                    <Button mnemonicParsing="false" onAction="#execute" text="Execute" />
                                  </children>
                               </VBox>
 									</children>
@@ -126,28 +127,40 @@
                                  <font>
                                     <Font size="16.0" />
                                  </font></Label>
-                              <VBox VBox.vgrow="ALWAYS">
-                                 <children>
-                                    <Label text="Headers" />
-                                    <TableView fx:id="headers1" editable="true">
-                                       <columns>
-                                          <TableColumn fx:id="headerNameColumn1" prefWidth="75.0" text="Name" />
-                                          <TableColumn fx:id="headerValueColumn1" prefWidth="75.0" text="Value" />
-                                       </columns>
-                                    </TableView>
-                                 </children>
-                              </VBox>
-                              <VBox VBox.vgrow="ALWAYS">
-                                 <children>
-                                    <Label text="Body" />
-                                    <TextArea fx:id="responseBody" />
-                                 </children>
-                              </VBox>
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                         </VBox>
+                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="606.0" prefWidth="291.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                 <children>
+                                    <VBox prefHeight="298.0" prefWidth="354.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Label text="Headers" />
+                                          <TableView fx:id="headers1" editable="true" VBox.vgrow="ALWAYS">
+                                             <columns>
+                                                <TableColumn fx:id="headerNameColumn1" prefWidth="75.0" text="Name" />
+                                                <TableColumn fx:id="headerValueColumn1" prefWidth="75.0" text="Value" />
+                                             </columns>
+                                          </TableView>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                 <children>
+                                    <VBox prefHeight="298.0" prefWidth="354.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Label text="Body" />
+                                          <TextArea fx:id="responseBody" promptText="Body content" VBox.vgrow="ALWAYS" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                          </items>
+                        </SplitPane>
 							</children>
 							<opaqueInsets>
 								<Insets />
