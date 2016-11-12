@@ -83,15 +83,15 @@ public class Parameter {
 	}
 	
 	public boolean isPathParameter() {
-		return location.get().equals(Location.PATH);
+		return location.get().equals(Location.PATH.name());
 	}
 	
 	public boolean isQueryParameter() {
-		return location.get().equals(Location.QUERY);
+		return location.get().equals(Location.QUERY.name());
 	}
 	
 	public boolean isHeaderParameter() {
-		return location.get().equals(Location.HEADER);
+		return location.get().equals(Location.HEADER.name());
 	}
 
 	@Override

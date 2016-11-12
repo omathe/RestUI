@@ -10,6 +10,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.sun.jersey.api.client.ClientResponse;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,6 +34,7 @@ import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Location;
 import restui.model.Project;
+import restui.service.RestClient;
 
 public class EndPointController extends AbstractController implements Initializable {
 
@@ -133,28 +136,24 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private String buildEndpoint(final TreeItem<Item> treeItem) {
 
-		String builtUri = "";
 		final List<String> names = new ArrayList<>();
 		TreeItem<Item> parent = treeItem.getParent();
-		// System.out.println("---> " + treeItem.getValue());
 		while (parent != null) {
 			final Item item = parent.getValue();
 			if (item instanceof Project) {
 				final Project project = (Project) item;
-				// System.out.println("---> " + project.getBaseUrl());
 				names.add(project.getBaseUrl());
 			} else {
-				System.out.println("---> " + item);
 				names.add(item.getName());
 			}
 			parent = parent.getParent();
 		}
 		Collections.reverse(names);
-		builtUri = names.stream().collect(Collectors.joining("/")).toString();
-		endpoint.setText(builtUri);
-		System.out.println("URI ---> " + builtUri);
+		final String builtEndpoint = names.stream().collect(Collectors.joining("/")).toString();
+		endpoint.setText(builtEndpoint);
+		System.out.println("builtEndpoint = " + builtEndpoint);
 
-		return builtUri;
+		return builtEndpoint;
 	}
 
 	private void buildParameters() {
@@ -192,7 +191,7 @@ public class EndPointController extends AbstractController implements Initializa
 	protected void addRequestParameter(final ActionEvent event) {
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			final Parameter parameter = new Parameter(true, Location.QUERY, "name", "value");
+			final Parameter parameter = new Parameter(false, Location.QUERY, "", "");
 			exchange.addRequestParameter(parameter);
 		}
 	}
@@ -212,11 +211,15 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			System.out.println("execute request ...");
-			System.out.println("uri : ");
 			final String builtUri = buildUri(endpoint.getText(), exchange.getRequestParameters());
 			uri.setText(builtUri);
-			exchange.getRequestParameters().forEach(p -> System.out.println(p));
+
+			final ClientResponse response = RestClient.get(builtUri, exchange.getRequestParameters());
+			final String output = response.getEntity(String.class);
+			System.out.println("status : " + response.getStatus());
+			System.out.println("hedaers : " + response.getHeaders());
+			System.out.println("output : " + output);
+			response.close();
 		}
 
 	}
@@ -243,33 +246,22 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private String buildUri(final String endpoint, final List<Parameter> parameters) {
 
-		// path parameters
-		parameters.stream().filter(p -> p.isPathParameter())
-				.forEach(p -> endpoint.replace("{" + p.getName() + "}", p.getValue()));
+		String builtUri = endpoint;
 
-		String uri = endpoint;
+		// path parameters
+		for (final Parameter parameter : parameters) {
+			if (parameter.isPathParameter() && parameter.getEnabled()) {
+				builtUri = builtUri.replace("{" + parameter.getName() + "}", parameter.getValue());
+			}
+		}
 		// query parameters
-		final Set<String> queryParams = parameters.stream().filter(p -> p.isPathParameter())
+		final Set<String> queryParams = parameters.stream().filter(p -> p.isQueryParameter() && p.getEnabled())
 				.map(p -> p.getName() + "=" + p.getValue()).collect(Collectors.toSet());
 		if (!queryParams.isEmpty()) {
-			uri += endpoint + "?" + String.join("&", queryParams);
+			builtUri += "?" + String.join("&", queryParams);
 		}
-
-		// parameters.stream().filter(p -> p.isQueryParameter())
-		// .forEach(p -> uri += replace("{" + p.getName() + "}", p.getValue()));
-
-		// String builtPath = path;
-		// for (int i = 0; i < idValues.length; i += 2) {
-		// builtPath = builtPath.replace(OB + idValues[i] + CB, idValues[i +
-		// 1]);
-		// }
-		return uri;
-	}
-
-	public static void main(final String[] args) {
-
-		final String s = "";
-
+		System.out.println("uri = " + uri);
+		return builtUri;
 	}
 
 }

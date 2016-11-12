@@ -39,12 +39,4 @@ public class RestClient {
 		return webResource;
 	}
 
-	// static void main(final String[] args) {
-	//
-	// final RestClient restClient = new RestClient();
-	// final ClientResponse response = restClient.get();
-	// response.close();
-	//
-	// }
-
 }
