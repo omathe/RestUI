@@ -18,8 +18,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -37,7 +39,7 @@ import restui.model.Project;
 import restui.service.RestClient;
 
 public class EndPointController extends AbstractController implements Initializable {
-
+	
 	@FXML
 	private TableView<Exchange> exchanges;
 	@FXML
@@ -62,6 +64,20 @@ public class EndPointController extends AbstractController implements Initializa
 	private TextField endpoint;
 	@FXML
 	private TextField uri;
+	
+	// Response
+	@FXML
+	private TableView<Parameter> responseHeaders;
+	@FXML
+	private TableColumn headerNameColumn;
+	@FXML
+	private TableColumn headerValueColumn;
+	@FXML
+	private TextArea responseBody;
+	@FXML
+	private Label responseStatus;
+	@FXML
+	private Label exchangeDuration;
 
 	public EndPointController() {
 		super();
@@ -85,19 +101,10 @@ public class EndPointController extends AbstractController implements Initializa
 		parameterValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
 		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
-		// headerNameColumn.setCellFactory(t -> {
-		// final ComboBoxTableCell myComboBoxTableCell = new
-		// ComboBoxTableCell();
-		//
-		// myComboBoxTableCell.setOnKeyPressed(e -> {
-		// System.out.println("key pressed");
-		// //KeyCode code = e.getCode();
-		// //System.out.println("code "+code);
-		// });
-		// myComboBoxTableCell.setComboBoxEditable(true);
-		// return myComboBoxTableCell;
-		// });
-
+		// response headers
+		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
+		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
+		
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			refreshExchangeData(newSelection);
 			;
@@ -131,6 +138,11 @@ public class EndPointController extends AbstractController implements Initializa
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
 			parameters.setItems(parameterData);
 			buildParameters();
+			// response headers
+			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
+			responseHeaders.setItems(responseHeadersData);
+			// response status
+			responseStatus.setText(exchange.getResponseStatus() == null ? "" : exchange.getResponseStatus().toString());
 		}
 	}
 
@@ -213,15 +225,26 @@ public class EndPointController extends AbstractController implements Initializa
 		if (exchange != null) {
 			final String builtUri = buildUri(endpoint.getText(), exchange.getRequestParameters());
 			uri.setText(builtUri);
-
+			final long t0 = System.currentTimeMillis();
 			final ClientResponse response = RestClient.get(builtUri, exchange.getRequestParameters());
+			exchange.clearResponseHeaders();
+			response.getHeaders().entrySet().stream().forEach(e -> {
+				System.out.println(e.getKey());
+				System.out.println(e.getValue());
+				for (final String value : e.getValue()) {
+					final Parameter header = new Parameter(true, Location.HEADER, e.getKey(), value);
+					exchange.addResponseHeader(header);
+				}
+			});
+			// response status
+			responseStatus.setText(String.valueOf(response.getStatus()));
+			exchange.setResponseStatus(response.getStatus());
+			
+			exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
 			final String output = response.getEntity(String.class);
-			System.out.println("status : " + response.getStatus());
-			System.out.println("hedaers : " + response.getHeaders());
-			System.out.println("output : " + output);
+			responseBody.setText(output);
 			response.close();
 		}
-
 	}
 
 	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {

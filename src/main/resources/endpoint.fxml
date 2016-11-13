@@ -135,40 +135,63 @@
                                  <font>
                                     <Font size="16.0" />
                                  </font></Label>
+                              <HBox alignment="BOTTOM_RIGHT" spacing="5.0">
+                                 <children>
+                                    <VBox spacing="5.0">
+                                       <children>
+                                          <HBox>
+                                             <children>
+                                                <Label text="Status :" />
+                                                <Label fx:id="responseStatus" />
+                                             </children>
+                                          </HBox>
+                                          <HBox>
+                                             <children>
+                                                <Label text="Duration :" />
+                                                <Label fx:id="exchangeDuration" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <SplitPane dividerPositions="0.5" orientation="VERTICAL">
+                                <items>
+                                  <AnchorPane>
+                                       <children>
+                                          <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <Label text="Headers" />
+                                                <TableView fx:id="responseHeaders" editable="true">
+                                                   <columns>
+                                                      <TableColumn fx:id="headerNameColumn" prefWidth="75.0" text="Name" />
+                                                      <TableColumn fx:id="headerValueColumn" prefWidth="75.0" text="Value" />
+                                                   </columns>
+                                                </TableView>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                       <children>
+                                          <VBox prefHeight="298.0" prefWidth="354.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <Label text="Body" />
+                                                <TextArea fx:id="responseBody" promptText="Body content" VBox.vgrow="ALWAYS" />
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                </items>
+                              </SplitPane>
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                         </VBox>
-                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <items>
-                            <AnchorPane>
-                                 <children>
-                                    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <children>
-                                          <Label text="Headers" />
-                                          <TableView fx:id="headers1" editable="true">
-                                             <columns>
-                                                <TableColumn fx:id="headerNameColumn1" prefWidth="75.0" text="Name" />
-                                                <TableColumn fx:id="headerValueColumn1" prefWidth="75.0" text="Value" />
-                                             </columns>
-                                          </TableView>
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </AnchorPane>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                 <children>
-                                    <VBox prefHeight="298.0" prefWidth="354.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <children>
-                                          <Label text="Body" />
-                                          <TextArea fx:id="responseBody" promptText="Body content" VBox.vgrow="ALWAYS" />
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </AnchorPane>
-                          </items>
-                        </SplitPane>
 							</children>
 							<opaqueInsets>
 								<Insets />
