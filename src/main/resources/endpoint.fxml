@@ -25,7 +25,7 @@
               <columns>
                 <TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="-1.0" text="Name" />
                 <TableColumn fx:id="exchangeDateColumn" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="-1.0" text="Date" />
-                  <TableColumn prefWidth="75.0" text="Status" />
+                  <TableColumn fx:id="exchangeStatusColumn" prefWidth="75.0" text="Status" />
               </columns>
             </TableView>
 				<FlowPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">

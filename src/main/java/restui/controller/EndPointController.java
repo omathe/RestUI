@@ -46,6 +46,8 @@ public class EndPointController extends AbstractController implements Initializa
 	private TableColumn exchangeNameColumn;
 	@FXML
 	private TableColumn exchangeDateColumn;
+	@FXML
+	private TableColumn exchangeStatusColumn;
 
 	@FXML
 	private TableView<Parameter> parameters;
@@ -64,6 +66,8 @@ public class EndPointController extends AbstractController implements Initializa
 	private TextField endpoint;
 	@FXML
 	private TextField uri;
+	@FXML
+	private TextArea requestBody;
 	
 	// Response
 	@FXML
@@ -109,7 +113,6 @@ public class EndPointController extends AbstractController implements Initializa
 			refreshExchangeData(newSelection);
 			;
 		});
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -126,6 +129,7 @@ public class EndPointController extends AbstractController implements Initializa
 		exchangeNameColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("name"));
 		exchangeNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		exchangeDateColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("date"));
+		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("status"));
 		exchanges.setItems((ObservableList<Exchange>) endPoint.getExchanges());
 
 	}
@@ -243,6 +247,7 @@ public class EndPointController extends AbstractController implements Initializa
 			exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
 			final String output = response.getEntity(String.class);
 			responseBody.setText(output);
+			
 			response.close();
 		}
 	}

@@ -2,7 +2,9 @@ package restui.model;
 
 import java.util.List;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -13,11 +15,13 @@ public class Exchange {
 	private final LongProperty date;
 	private final Request request;
 	private final Response response;
+	private final IntegerProperty status;
 
 	public Exchange(final String name, final Long date) {
 		super();
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleLongProperty(date);
+		this.status = new SimpleIntegerProperty();
 		this.request = new Request();
 		this.response = new Response();
 	}
@@ -40,6 +44,18 @@ public class Exchange {
 
 	public StringProperty nameProperty() {
 		return name;
+	}
+	
+	public Integer getStatus() {
+		return status.get();
+	}
+
+	public void setName(final Integer status) {
+		this.status.set(status);
+	}
+
+	public IntegerProperty statusProperty() {
+		return status;
 	}
 
 	public LongProperty dateProperty() {
