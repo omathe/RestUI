@@ -241,9 +241,14 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 			});
 			// response status
-			responseStatus.setText(String.valueOf(response.getStatus()));
 			exchange.setResponseStatus(response.getStatus());
+			exchange.setDate(Instant.now().toEpochMilli());
 			
+			// refresh tableView (workaround)
+			exchanges.getColumns().get(0).setVisible(false);
+			exchanges.getColumns().get(0).setVisible(true);
+			
+			responseStatus.setText(String.valueOf(response.getStatus()));
 			exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
 			final String output = response.getEntity(String.class);
 			responseBody.setText(output);

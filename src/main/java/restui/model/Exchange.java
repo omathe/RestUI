@@ -15,24 +15,15 @@ public class Exchange {
 	private final LongProperty date;
 	private final Request request;
 	private final Response response;
-	private final IntegerProperty status;
+	private IntegerProperty status;
 
 	public Exchange(final String name, final Long date) {
 		super();
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleLongProperty(date);
-		this.status = new SimpleIntegerProperty();
 		this.request = new Request();
 		this.response = new Response();
 	}
-
-//	public Exchange(final String name, final Long date, final Request request, final Response response) {
-//		super();
-//		this.name = new SimpleStringProperty(name);
-//		this.date = new SimpleLongProperty(date);
-//		this.request = request;
-//		this.response = response;
-//	}
 
 	public String getName() {
 		return name.get();
@@ -45,12 +36,12 @@ public class Exchange {
 	public StringProperty nameProperty() {
 		return name;
 	}
-	
+
 	public Integer getStatus() {
 		return status.get();
 	}
-
-	public void setName(final Integer status) {
+	
+	public void setStatus(final Integer status) {
 		this.status.set(status);
 	}
 
@@ -58,6 +49,14 @@ public class Exchange {
 		return status;
 	}
 
+	public Long getDate() {
+		return date.get();
+	}
+	
+	public void setDate(final Long date) {
+		this.date.set(date);
+	}
+	
 	public LongProperty dateProperty() {
 		return date;
 	}
@@ -76,7 +75,7 @@ public class Exchange {
 	public void removeRequestParameter(final Parameter parameter) {
 		request.parameters.remove(parameter);
 	}
-	
+
 	public List<Parameter> getResponseHeaders() {
 		return response.parameters;
 	}
@@ -87,19 +86,23 @@ public class Exchange {
 			response.parameters.add(parameter);
 		}
 	}
-	
+
 	public void clearResponseHeaders() {
 		response.parameters.clear();
 	}
-	
+
 	public Integer getResponseStatus() {
 		return response.getStatus();
 	}
-	
+
 	public void setResponseStatus(final Integer status) {
+		if (this.status == null) {
+			this.status = new SimpleIntegerProperty();
+			this.status.set(status);
+		}
 		response.setStatus(status);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + "]";
