@@ -15,15 +15,16 @@ public class ApplicationService {
 	public static final String APPLICATION_HOME = ".restui";
 
 	public static void saveProject(final Project project) {
-		
+
 		createApplication();
 		final String userHome = System.getProperty("user.home");
-		final File projectFile = new File(userHome + File.separator + APPLICATION_HOME + File.separator + project.getName() + ".json");
+		final File projectFile = new File(
+				userHome + File.separator + APPLICATION_HOME + File.separator + project.getName() + ".json");
 		System.out.println("projectFile = " + projectFile.getAbsolutePath());
-		
+
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		
+
 		try {
 			mapper.writeValue(projectFile, project);
 
@@ -40,16 +41,14 @@ public class ApplicationService {
 		}
 
 	}
-	
-	public static Project openProject() {
-		
+
+	public static Project openProject(final File file) {
+
 		Project project = null;
 		final ObjectMapper mapper = new ObjectMapper();
 
-		final String userHome = System.getProperty("user.home");
 		try {
-			project = mapper.readValue(new File(userHome + File.separator + APPLICATION_HOME + File.separator + "Oss" + ".json"), Project.class);
-			System.out.println(project);
+			project = mapper.readValue(file, Project.class);
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
@@ -64,10 +63,11 @@ public class ApplicationService {
 			applicationDirectory.mkdir();
 		}
 	}
-	
-	public static void main(final String[] args) {
-		
-		final Project project = ApplicationService.openProject();
+
+	public static String getHomeDirectory() {
+
+		final String userHome = System.getProperty("user.home");
+		return userHome + File.separator + APPLICATION_HOME;
 	}
 
 }
