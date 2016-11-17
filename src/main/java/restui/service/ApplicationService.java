@@ -40,6 +40,21 @@ public class ApplicationService {
 		}
 
 	}
+	
+	public static Project openProject() {
+		
+		Project project = null;
+		final ObjectMapper mapper = new ObjectMapper();
+
+		final String userHome = System.getProperty("user.home");
+		try {
+			project = mapper.readValue(new File(userHome + File.separator + APPLICATION_HOME + File.separator + "Oss" + ".json"), Project.class);
+			System.out.println(project);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		return project;
+	}
 
 	public static void createApplication() {
 
@@ -48,6 +63,11 @@ public class ApplicationService {
 		if (!applicationDirectory.exists()) {
 			applicationDirectory.mkdir();
 		}
+	}
+	
+	public static void main(final String[] args) {
+		
+		final Project project = ApplicationService.openProject();
 	}
 
 }

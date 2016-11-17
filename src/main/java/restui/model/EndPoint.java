@@ -14,6 +14,12 @@ public class EndPoint extends Item {
 	private final StringProperty method;
 	private List<Exchange> exchanges;
 
+	public EndPoint() {
+		super();
+		this.method = new SimpleStringProperty();
+		this.exchanges = FXCollections.observableArrayList();
+	}
+	
 	public EndPoint(final String name, final String method) {
 		super(name);
 		this.method = new SimpleStringProperty(method);
