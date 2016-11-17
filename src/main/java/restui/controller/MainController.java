@@ -1,5 +1,6 @@
 package restui.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,6 +18,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.model.EndPoint;
@@ -137,18 +139,20 @@ public class MainController implements Initializable {
 	protected void save(final ActionEvent event) {
 		
 		final Project project = (Project) treeView.getRoot().getValue();
-		
-		//final Project project = new Project("Oss", "http://192.168.5.11:8080/oss/rest");
-		/*final EndPoint endPoint = new EndPoint("createCustomer", "POST");
-		// exchanges
-		final Exchange ex1 = new Exchange("e1", Instant.now().toEpochMilli());
-		final Exchange ex2 = new Exchange("e2", Instant.now().toEpochMilli());
-		endPoint.addExchange(ex1);
-		endPoint.addExchange(ex2);
-		
-		project.addChild(endPoint);*/
 		ApplicationService.saveProject(project);
+	}
+	
+	@FXML
+	protected void open(final ActionEvent event) {
 		
+		final FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Select the project file");
+		fileChooser.setInitialDirectory(new File(ApplicationService.getHomeDirectory()));
+		final File file = fileChooser.showOpenDialog(null);
+		if (file != null) {
+			final Project project = ApplicationService.openProject(file);
+			System.out.println(project);
+		}
 	}
 
 }
