@@ -9,7 +9,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import restui.model.EndPoint;
+import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Path;
 import restui.model.Project;
@@ -45,7 +45,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			@Override
 			public void handle(final Event t) {
 				final Item item = getTreeItem().getValue();
-				final EndPoint endPoint = new EndPoint("new endpoint", "GET");
+				final Endpoint endPoint = new Endpoint("new endpoint", "GET");
 				item.addChild(endPoint);
 				
 				// exchanges

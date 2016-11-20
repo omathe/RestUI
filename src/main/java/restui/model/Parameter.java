@@ -39,7 +39,11 @@ public class Parameter {
 	}
 
 	public void setEnabled(final Boolean enabled) {
-		this.enabled.set(enabled);
+		if (!isPathParameter()) {
+			this.enabled.set(enabled);
+		} else {
+			this.enabled.set(true);
+		}
 	}
 
 	public BooleanProperty enabledProperty() {

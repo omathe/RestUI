@@ -37,7 +37,7 @@
 						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 					</padding>
 				</FlowPane>
-				<SplitPane dividerPositions="0.4967948717948718" VBox.vgrow="ALWAYS">
+				<SplitPane fx:id="requestResponseSplitPane" dividerPositions="0.4967948717948718" VBox.vgrow="ALWAYS">
 					<items>
 						<AnchorPane maxWidth="1.7976931348623157E308">
 							<children>
@@ -110,14 +110,13 @@
                                  <children>
                                     <HBox alignment="CENTER_LEFT" spacing="5.0">
                                        <children>
-                                          <Label text="URI" />
-                                          <TextField fx:id="uri" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="execute" mnemonicParsing="false" onAction="#execute" text="Execute" />
+                                          <TextField fx:id="uri" editable="false" HBox.hgrow="ALWAYS" />
                                        </children>
                                        <VBox.margin>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </VBox.margin>
                                     </HBox>
-                                    <Button mnemonicParsing="false" onAction="#execute" text="Execute" />
                                  </children>
                               </VBox>
 									</children>

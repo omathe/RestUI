@@ -11,17 +11,21 @@ import javafx.beans.property.StringProperty;
 
 public class Exchange {
 
-	private final StringProperty name;
-	private final LongProperty date;
-	private final Request request;
-	private final Response response;
+	private StringProperty name;
+	private LongProperty date;
+	private Request request;
+	private Response response;
 	private IntegerProperty status;
 
+	public Exchange() {
+		super();
+	}
+	
 	public Exchange(final String name, final Long date) {
 		super();
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleLongProperty(date);
-		this.request = new Request();
+		this.request = new Request("", "");
 		this.response = new Response();
 	}
 
@@ -38,7 +42,7 @@ public class Exchange {
 	}
 
 	public Integer getStatus() {
-		return status.get();
+		return status == null ? null : status.get();
 	}
 	
 	public void setStatus(final Integer status) {
@@ -61,6 +65,10 @@ public class Exchange {
 		return date;
 	}
 
+	public Request getRequest() {
+		return request;
+	}
+	
 	public List<Parameter> getRequestParameters() {
 		return request.parameters;
 	}
@@ -102,7 +110,15 @@ public class Exchange {
 		}
 		response.setStatus(status);
 	}
+	
+	public StringProperty getRequestBodyProperty() {
+		return request.bodyProperty();
+	}
 
+	public void setRequestBody(final String body) {
+		request.bodyProperty().set(body);
+	}
+	
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + "]";

@@ -68,6 +68,10 @@ public class Item implements Serializable {
 		children.add(child);
 		child.setParent(this);
 	}
+	
+	public boolean hasChildren() {
+		return children != null && !children.isEmpty();
+	}
 
 	@Override
 	public String toString() {

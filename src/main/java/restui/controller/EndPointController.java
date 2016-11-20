@@ -17,8 +17,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -29,7 +31,7 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DefaultStringConverter;
-import restui.model.EndPoint;
+import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Header;
 import restui.model.Item;
@@ -39,26 +41,28 @@ import restui.model.Project;
 import restui.service.RestClient;
 
 public class EndPointController extends AbstractController implements Initializable {
-	
+
+	@FXML
+	private SplitPane requestResponseSplitPane;
 	@FXML
 	private TableView<Exchange> exchanges;
 	@FXML
-	private TableColumn exchangeNameColumn;
+	private TableColumn<Exchange, String> exchangeNameColumn;
 	@FXML
-	private TableColumn exchangeDateColumn;
+	private TableColumn<Exchange, Long> exchangeDateColumn;
 	@FXML
-	private TableColumn exchangeStatusColumn;
+	private TableColumn<Exchange, Integer> exchangeStatusColumn;
 
 	@FXML
 	private TableView<Parameter> parameters;
 	@FXML
-	private TableColumn parameterEnabledColumn;
+	private TableColumn<Parameter, Boolean> parameterEnabledColumn;
 	@FXML
-	private TableColumn parameterLocationColumn;
+	private TableColumn<Parameter, String> parameterLocationColumn;
 	@FXML
-	private TableColumn parameterNameColumn;
+	private TableColumn<Parameter, String> parameterNameColumn;
 	@FXML
-	private TableColumn parameterValueColumn;
+	private TableColumn<Parameter, String> parameterValueColumn;
 
 	@FXML
 	private ComboBox<String> method;
@@ -68,51 +72,73 @@ public class EndPointController extends AbstractController implements Initializa
 	private TextField uri;
 	@FXML
 	private TextArea requestBody;
-	
+
 	// Response
 	@FXML
 	private TableView<Parameter> responseHeaders;
 	@FXML
-	private TableColumn headerNameColumn;
+	private TableColumn<Header, String> headerNameColumn;
 	@FXML
-	private TableColumn headerValueColumn;
+	private TableColumn<Header, String> headerValueColumn;
 	@FXML
 	private TextArea responseBody;
 	@FXML
 	private Label responseStatus;
 	@FXML
 	private Label exchangeDuration;
+	@FXML
+	private Button execute;
 
 	public EndPointController() {
 		super();
 		System.out.println("construct EndPointController ");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		System.out.println("initialize");
 
-		// parameters
-		parameterEnabledColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("enabled"));
-		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell());
-		parameterLocationColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("location"));
+		// request parameters
+		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell<>());
+		parameterEnabledColumn.setCellValueFactory(parameter -> {
+			buildUri();
+			return parameter.getValue().enabledProperty();
+		});
 		final ObservableList<String> locations = FXCollections.observableArrayList(Parameter.locations);
-		parameterLocationColumn
-				.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), locations));
-		parameterNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
+		parameterLocationColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), locations));
+		parameterLocationColumn.setCellValueFactory(parameter -> {
+			buildUri();
+			return parameter.getValue().locationProperty();
+		});
 		parameterNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		parameterValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
+		parameterNameColumn.setCellValueFactory(parameter -> {
+			buildUri();
+			return parameter.getValue().nameProperty();
+		});		
 		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-
+		parameterValueColumn.setCellValueFactory(parameter -> {
+			buildUri();
+			return parameter.getValue().valueProperty();
+		});
+		
 		// response headers
 		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
 		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
-		
+
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			refreshExchangeData(newSelection);
 			;
 		});
+		
+		// disable request/response area if no exchange selected
+		requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
+		
+		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
+			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+			exchange.setRequestBody(newValue);
+		});
+		
+		execute.textProperty().bind(method.valueProperty());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,27 +147,29 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		buildEndpoint(this.treeItem);
-		final EndPoint endPoint = (EndPoint) this.treeItem.getValue();
+		final Endpoint endPoint = (Endpoint) this.treeItem.getValue();
 		method.valueProperty().bindBidirectional(endPoint.methodProperty());
 		System.out.println("construct AbstractController ");
 
 		// exchanges
 		exchangeNameColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("name"));
 		exchangeNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		exchangeDateColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("date"));
-		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("status"));
+		exchangeDateColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Long>("date"));
+		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
+		System.out.println(">>" + endPoint.getExchanges().getClass().getName());
 		exchanges.setItems((ObservableList<Exchange>) endPoint.getExchanges());
-
 	}
 
-	@SuppressWarnings("unchecked")
 	private void refreshExchangeData(final Exchange exchange) {
 
 		if (exchange != null) {
 			// parameters
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
 			parameters.setItems(parameterData);
+			
 			buildParameters();
+			requestBody.setText(exchange.getRequestBodyProperty().get());
+
 			// response headers
 			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
 			responseHeaders.setItems(responseHeadersData);
@@ -188,7 +216,7 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void addExchange(final ActionEvent event) {
 
-		final EndPoint endpoint = (EndPoint) this.treeItem.getValue();
+		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 		final Exchange exchange = new Exchange("echange", Instant.now().toEpochMilli());
 		endpoint.addExchange(exchange);
 	}
@@ -198,7 +226,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			final EndPoint endpoint = (EndPoint) this.treeItem.getValue();
+			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
 		}
 	}
@@ -227,33 +255,36 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			final String builtUri = buildUri(endpoint.getText(), exchange.getRequestParameters());
+			final String builtUri = buildUriOLD(endpoint.getText(), exchange.getRequestParameters());
 			uri.setText(builtUri);
 			final long t0 = System.currentTimeMillis();
 			final ClientResponse response = RestClient.get(builtUri, exchange.getRequestParameters());
 			exchange.clearResponseHeaders();
-			response.getHeaders().entrySet().stream().forEach(e -> {
-				System.out.println(e.getKey());
-				System.out.println(e.getValue());
-				for (final String value : e.getValue()) {
-					final Parameter header = new Parameter(true, Location.HEADER, e.getKey(), value);
-					exchange.addResponseHeader(header);
-				}
-			});
-			// response status
-			exchange.setResponseStatus(response.getStatus());
-			exchange.setDate(Instant.now().toEpochMilli());
-			
-			// refresh tableView (workaround)
-			exchanges.getColumns().get(0).setVisible(false);
-			exchanges.getColumns().get(0).setVisible(true);
-			
-			responseStatus.setText(String.valueOf(response.getStatus()));
-			exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
-			final String output = response.getEntity(String.class);
-			responseBody.setText(output);
-			
-			response.close();
+			if (response != null) {
+				response.getHeaders().entrySet().stream().forEach(e -> {
+					System.out.println(e.getKey());
+					System.out.println(e.getValue());
+					for (final String value : e.getValue()) {
+						final Parameter header = new Parameter(true, Location.HEADER, e.getKey(), value);
+						exchange.addResponseHeader(header);
+					}
+				});
+
+				// response status
+				exchange.setResponseStatus(response.getStatus());
+				exchange.setDate(Instant.now().toEpochMilli());
+
+				// refresh tableView (workaround)
+				exchanges.getColumns().get(0).setVisible(false);
+				exchanges.getColumns().get(0).setVisible(true);
+
+				responseStatus.setText(String.valueOf(response.getStatus()));
+				exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
+				final String output = response.getEntity(String.class);
+				responseBody.setText(output);
+
+				response.close();
+			}
 		}
 	}
 
@@ -277,7 +308,7 @@ public class EndPointController extends AbstractController implements Initializa
 		return tokens;
 	}
 
-	private String buildUri(final String endpoint, final List<Parameter> parameters) {
+	private String buildUriOLD(final String endpoint, final List<Parameter> parameters) {
 
 		String builtUri = endpoint;
 
@@ -295,6 +326,33 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 		System.out.println("uri = " + uri);
 		return builtUri;
+	}
+	
+	private void buildUri() {
+		
+		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		boolean disable = false;
+		String builtUri = endpoint.getText();
+		
+		// path parameters
+		for (final Parameter parameter : exchange.getRequestParameters()) {
+			if (parameter.isPathParameter() && parameter.getEnabled() && !parameter.getValue().isEmpty()) {
+				builtUri = builtUri.replace("{" + parameter.getName() + "}", parameter.getValue());
+			}
+			if (parameter.getValue().isEmpty() || parameter.getName().isEmpty()) {
+				disable = true;
+			}
+		}
+		// query parameters
+		final Set<String> queryParams = exchange.getRequestParameters().stream().filter(p -> p.isQueryParameter() && p.getEnabled())
+				.map(p -> p.getName() + "=" + p.getValue()).collect(Collectors.toSet());
+		if (!queryParams.isEmpty()) {
+			builtUri += "?" + String.join("&", queryParams);
+		}
+		System.out.println("uri = " + uri);
+		uri.setText(builtUri);
+		
+		execute.setDisable(disable);
 	}
 
 }

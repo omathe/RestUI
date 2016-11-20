@@ -6,32 +6,27 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
-public class EndPoint extends Item {
+/**
+ * An endpoint is a web service item.
+ * @author Olivier MATHE
+ */
+public class Endpoint extends Item {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Path path;
 	private final StringProperty method;
 	private List<Exchange> exchanges;
 
-	public EndPoint() {
+	public Endpoint() {
 		super();
 		this.method = new SimpleStringProperty();
 		this.exchanges = FXCollections.observableArrayList();
 	}
 	
-	public EndPoint(final String name, final String method) {
+	public Endpoint(final String name, final String method) {
 		super(name);
 		this.method = new SimpleStringProperty(method);
 		this.exchanges = FXCollections.observableArrayList();
-	}
-
-	public Path getPath() {
-		return path;
-	}
-	
-	public void setPath(final Path path) {
-		this.path = path;
 	}
 
 	public String getMethod() {
@@ -64,4 +59,7 @@ public class EndPoint extends Item {
 		this.exchanges = exchanges;
 	}
 	
+	public boolean hasExchanges() {
+		return exchanges != null && !exchanges.isEmpty();
+	}
 }

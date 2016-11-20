@@ -21,7 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import restui.controller.cellFactory.TreeCellFactory;
-import restui.model.EndPoint;
+import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Path;
 import restui.model.Project;
@@ -45,7 +45,7 @@ public class MainController implements Initializable {
 		final Path application = new Path("application");
 		final Path customers = new Path("customers");
 		final Path customerId = new Path("{customerId}");
-		final EndPoint getCustomer = new EndPoint("getCustomer", "GET");
+		final Endpoint getCustomer = new Endpoint("getCustomer", "GET");
 		customers.addChild(customerId);
 		application.addChild(customers);
 		project.addChild(application);
@@ -112,7 +112,7 @@ public class MainController implements Initializable {
 						e.printStackTrace();
 					}
 				}
-				else if (newValue.getValue() instanceof EndPoint) {
+				else if (newValue.getValue() instanceof Endpoint) {
 					final FXMLLoader fxmlLoader = new FXMLLoader();
 	                try {
 	                	final HBox hBox = fxmlLoader.load(MainController.class.getResource("/endpoint.fxml").openStream());
@@ -139,7 +139,7 @@ public class MainController implements Initializable {
 	protected void save(final ActionEvent event) {
 		
 		final Project project = (Project) treeView.getRoot().getValue();
-		ApplicationService.saveProject(project);
+		ApplicationService.saveProjectXml(project);
 	}
 	
 	@FXML
@@ -151,8 +151,47 @@ public class MainController implements Initializable {
 		final File file = fileChooser.showOpenDialog(null);
 		if (file != null) {
 			final Project project = ApplicationService.openProject(file);
-			System.out.println(project);
+			final TreeItem<Item> projectTreeItem = new TreeItem<>(project);
+			
+			Item currentItem = project;
+			TreeItem<Item> currentTreeItem = projectTreeItem;
+			while(!currentItem.getChildren().isEmpty()) {
+				for (final Item childItem : currentItem.getChildren()) {
+					final TreeItem<Item> childTreeItem = new TreeItem<>(childItem);
+					currentTreeItem.getChildren().add(childTreeItem);
+					currentItem = childItem;
+					currentTreeItem = childTreeItem;
+				}
+			}
+			treeView.setRoot(projectTreeItem);
+			
+			/*
+			 
+			 final Project project = new Project("Oss", "http://localhost:8080/oss/rest");
+		final Path application = new Path("application");
+		final Path customers = new Path("customers");
+		final Path customerId = new Path("{customerId}");
+		final EndPoint getCustomer = new EndPoint("getCustomer", "GET");
+		customers.addChild(customerId);
+		application.addChild(customers);
+		project.addChild(application);
+		customerId.addChild(getCustomer);
+		
+		final TreeItem<Item> projectItem = new TreeItem<>(project);
+		final TreeItem<Item> applicationItem = new TreeItem<>(application);
+		final TreeItem<Item> customersItem = new TreeItem<>(customers);
+		final TreeItem<Item> customerIdItem = new TreeItem<>(customerId);
+		final TreeItem<Item> getCustomerItem = new TreeItem<>(getCustomer);
+		projectItem.getChildren().add(applicationItem);
+		applicationItem.getChildren().add(customersItem);
+		customersItem.getChildren().add(customerIdItem);
+		customerIdItem.getChildren().add(getCustomerItem);
+
+		treeView.setRoot(projectItem);
+			 
+			 */
 		}
+		
 	}
 
 }
