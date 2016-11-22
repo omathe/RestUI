@@ -18,9 +18,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
+import restui.model.Parameter;
 import restui.model.Path;
 import restui.model.Project;
 import restui.model.Request;
+import restui.model.Response;
 
 public class ApplicationService {
 
@@ -64,10 +66,8 @@ public class ApplicationService {
 						for (final Exchange exchange : endpoint.getExchanges()) {
 							final Element elementExchange = new Element("exchange");
 							final Attribute attributeExchangeName = new Attribute("name", exchange.getName());
-							final Attribute attributeExchangeDate = new Attribute("date",
-									exchange.getDate().toString());
-							final Attribute attributeExchangeStatus = new Attribute("status",
-									exchange.getStatus() == null ? "" : exchange.getStatus().toString());
+							final Attribute attributeExchangeDate = new Attribute("date", exchange.getDate().toString());
+							final Attribute attributeExchangeStatus = new Attribute("status", exchange.getStatus() == null ? "" : exchange.getStatus().toString());
 							elementExchange.setAttribute(attributeExchangeName);
 							elementExchange.setAttribute(attributeExchangeDate);
 							elementExchange.setAttribute(attributeExchangeStatus);
@@ -81,7 +81,25 @@ public class ApplicationService {
 							final Element elementRequestBody = new Element("body");
 							elementRequestBody.addContent(request.getBody());
 							elementRequest.addContent(elementRequestBody);
+							final Element elementRequestParameters = new Element("parameters");
+							elementRequest.addContent(elementRequestParameters);
+							for (final Parameter parameter : request.getParameters()) {
+								final Element elementRequestParameter = new Element("parameter");
+								final Attribute attributeRequestParameterEnabled = new Attribute("enabled", parameter.getEnabled().toString());
+								final Attribute attributeRequestParameterLocation = new Attribute("location", parameter.getLocation());
+								final Attribute attributeRequestParameterName = new Attribute("name", parameter.getName());
+								final Attribute attributeRequestParameterValue = new Attribute("value", parameter.getValue());
+								elementRequestParameter.setAttribute(attributeRequestParameterEnabled);
+								elementRequestParameter.setAttribute(attributeRequestParameterLocation);
+								elementRequestParameter.setAttribute(attributeRequestParameterName);
+								elementRequestParameter.setAttribute(attributeRequestParameterValue);
+								elementRequestParameters.addContent(elementRequestParameter);
+							}
 							
+							// response
+							final Response response = exchange.getResponse();
+							final Element elementResponse = new Element("response");
+							elementExchange.addContent(elementResponse);
 						}
 						elementEndpoint.addContent(elementExchanges);
 					}

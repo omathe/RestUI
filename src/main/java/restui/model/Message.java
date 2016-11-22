@@ -33,5 +33,9 @@ public class Message {
 	public StringProperty bodyProperty() {
 		return body;
 	}
+	
+	public List<Parameter> getParameters() {
+		return parameters;
+	}
 
 }

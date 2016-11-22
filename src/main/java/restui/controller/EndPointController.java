@@ -289,6 +289,7 @@ public class EndPointController extends AbstractController implements Initializa
 				exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
 				final String output = response.getEntity(String.class);
 				responseBody.setText(output);
+				exchange.setResponseBody(output);
 
 				response.close();
 			}

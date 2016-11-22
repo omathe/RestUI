@@ -84,6 +84,10 @@ public class Exchange {
 		request.parameters.remove(parameter);
 	}
 
+	public Response getResponse() {
+		return response;
+	}
+	
 	public List<Parameter> getResponseHeaders() {
 		return response.parameters;
 	}
@@ -117,6 +121,10 @@ public class Exchange {
 
 	public void setRequestBody(final String body) {
 		request.bodyProperty().set(body);
+	}
+	
+	public void setResponseBody(final String body) {
+		response.bodyProperty().set(body);
 	}
 	
 	@Override
