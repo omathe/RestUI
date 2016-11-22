@@ -42,6 +42,8 @@ import restui.service.RestClient;
 
 public class EndPointController extends AbstractController implements Initializable {
 
+	private String baseUrl;
+	
 	@FXML
 	private SplitPane requestResponseSplitPane;
 	@FXML
@@ -105,7 +107,8 @@ public class EndPointController extends AbstractController implements Initializa
 			return parameter.getValue().enabledProperty();
 		});
 		final ObservableList<String> locations = FXCollections.observableArrayList(Parameter.locations);
-		parameterLocationColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), locations));
+		parameterLocationColumn
+				.setCellFactory(ComboBoxTableCell.forTableColumn(new DefaultStringConverter(), locations));
 		parameterLocationColumn.setCellValueFactory(parameter -> {
 			buildUri();
 			return parameter.getValue().locationProperty();
@@ -114,13 +117,13 @@ public class EndPointController extends AbstractController implements Initializa
 		parameterNameColumn.setCellValueFactory(parameter -> {
 			buildUri();
 			return parameter.getValue().nameProperty();
-		});		
+		});
 		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		parameterValueColumn.setCellValueFactory(parameter -> {
 			buildUri();
 			return parameter.getValue().valueProperty();
 		});
-		
+
 		// response headers
 		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
 		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
@@ -129,15 +132,16 @@ public class EndPointController extends AbstractController implements Initializa
 			refreshExchangeData(newSelection);
 			;
 		});
-		
+
 		// disable request/response area if no exchange selected
-		requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
-		
+		requestResponseSplitPane.disableProperty()
+				.bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
+
 		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
 			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 			exchange.setRequestBody(newValue);
 		});
-		
+
 		execute.textProperty().bind(method.valueProperty());
 	}
 
@@ -146,8 +150,9 @@ public class EndPointController extends AbstractController implements Initializa
 	public void setTreeItem(final TreeItem<Item> treeItem) {
 		super.setTreeItem(treeItem);
 
-		buildEndpoint(this.treeItem);
 		final Endpoint endPoint = (Endpoint) this.treeItem.getValue();
+		final String builtPath = buildEndpointPath(this.treeItem);
+		endPoint.setPath(builtPath);
 		method.valueProperty().bindBidirectional(endPoint.methodProperty());
 		System.out.println("construct AbstractController ");
 
@@ -166,34 +171,36 @@ public class EndPointController extends AbstractController implements Initializa
 			// parameters
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
 			parameters.setItems(parameterData);
-			
+
 			buildParameters();
 			requestBody.setText(exchange.getRequestBodyProperty().get());
 
 			// response headers
-			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
+			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange
+					.getResponseHeaders();
 			responseHeaders.setItems(responseHeadersData);
 			// response status
 			responseStatus.setText(exchange.getResponseStatus() == null ? "" : exchange.getResponseStatus().toString());
 		}
 	}
 
-	private String buildEndpoint(final TreeItem<Item> treeItem) {
+	private String buildEndpointPath(final TreeItem<Item> treeItem) {
 
 		final List<String> names = new ArrayList<>();
 		TreeItem<Item> parent = treeItem.getParent();
+		
 		while (parent != null) {
 			final Item item = parent.getValue();
 			if (item instanceof Project) {
 				final Project project = (Project) item;
-				names.add(project.getBaseUrl());
+				baseUrl = project.getBaseUrl();
 			} else {
 				names.add(item.getName());
 			}
 			parent = parent.getParent();
 		}
 		Collections.reverse(names);
-		final String builtEndpoint = names.stream().collect(Collectors.joining("/")).toString();
+		final String builtEndpoint = "/" + names.stream().collect(Collectors.joining("/")).toString();
 		endpoint.setText(builtEndpoint);
 		System.out.println("builtEndpoint = " + builtEndpoint);
 
@@ -256,7 +263,7 @@ public class EndPointController extends AbstractController implements Initializa
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
 			final String builtUri = buildUriOLD(endpoint.getText(), exchange.getRequestParameters());
-			uri.setText(builtUri);
+			// uri.setText(builtUri);
 			final long t0 = System.currentTimeMillis();
 			final ClientResponse response = RestClient.get(builtUri, exchange.getRequestParameters());
 			exchange.clearResponseHeaders();
@@ -327,15 +334,20 @@ public class EndPointController extends AbstractController implements Initializa
 		System.out.println("uri = " + uri);
 		return builtUri;
 	}
-	
+
 	private void buildUri() {
-		
+
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		boolean disable = false;
 		String builtUri = endpoint.getText();
-		
+
 		// path parameters
 		for (final Parameter parameter : exchange.getRequestParameters()) {
+			if (parameter.isPathParameter() && !parameter.getEnabled()) {
+				disable = true;
+				uri.setText("");
+				break;
+			}
 			if (parameter.isPathParameter() && parameter.getEnabled() && !parameter.getValue().isEmpty()) {
 				builtUri = builtUri.replace("{" + parameter.getName() + "}", parameter.getValue());
 			}
@@ -344,15 +356,24 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 		}
 		// query parameters
-		final Set<String> queryParams = exchange.getRequestParameters().stream().filter(p -> p.isQueryParameter() && p.getEnabled())
-				.map(p -> p.getName() + "=" + p.getValue()).collect(Collectors.toSet());
+		final Set<String> queryParams = exchange.getRequestParameters().stream()
+				.filter(p -> p.isQueryParameter() && p.getEnabled()).map(p -> p.getName() + "=" + p.getValue())
+				.collect(Collectors.toSet());
 		if (!queryParams.isEmpty()) {
 			builtUri += "?" + String.join("&", queryParams);
 		}
 		System.out.println("uri = " + uri);
-		uri.setText(builtUri);
-		
+		if (!disable) {
+			builtUri = baseUrl + builtUri;
+			uri.setText(builtUri);
+			exchange.getRequest().setUri(builtUri);
+		}
 		execute.setDisable(disable);
+	}
+	
+	private String getBaseUrl(final Endpoint endPoint) {
+		
+		return "";
 	}
 
 }

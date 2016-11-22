@@ -15,17 +15,20 @@ public class Endpoint extends Item {
 	private static final long serialVersionUID = 1L;
 	
 	private final StringProperty method;
+	private final StringProperty path;
 	private List<Exchange> exchanges;
 
 	public Endpoint() {
 		super();
 		this.method = new SimpleStringProperty();
+		this.path = new SimpleStringProperty();
 		this.exchanges = FXCollections.observableArrayList();
 	}
 	
 	public Endpoint(final String name, final String method) {
 		super(name);
 		this.method = new SimpleStringProperty(method);
+		this.path = new SimpleStringProperty();
 		this.exchanges = FXCollections.observableArrayList();
 	}
 
@@ -39,6 +42,18 @@ public class Endpoint extends Item {
 
 	public StringProperty methodProperty() {
 		return method;
+	}
+	
+	public String getPath() {
+		return path.get();
+	}
+	
+	public void setPath(final String path) {
+		this.path.set(path);
+	}
+	
+	public StringProperty pathProperty() {
+		return path;
 	}
 
 	public void addExchange(final Exchange exchange) {

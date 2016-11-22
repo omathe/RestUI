@@ -52,7 +52,9 @@ public class ApplicationService {
 					final Endpoint endpoint = (Endpoint) child;
 					final Element elementEndpoint = new Element("endpoint");
 					final Attribute attributeEndpointName = new Attribute("name", endpoint.getName());
+					final Attribute attributeEndpointPath = new Attribute("path", endpoint.getPath());
 					elementEndpoint.setAttribute(attributeEndpointName);
+					elementEndpoint.setAttribute(attributeEndpointPath);
 					currentElement.addContent(elementEndpoint);
 					currentItem = endpoint;
 					currentElement = elementEndpoint;
@@ -73,6 +75,8 @@ public class ApplicationService {
 							// request
 							final Request request = exchange.getRequest();
 							final Element elementRequest = new Element("request");
+							final Attribute attributeRequestUri = new Attribute("uri", request.getUri());
+							elementRequest.setAttribute(attributeRequestUri);
 							elementExchange.addContent(elementRequest);
 							final Element elementRequestBody = new Element("body");
 							elementRequestBody.addContent(request.getBody());
