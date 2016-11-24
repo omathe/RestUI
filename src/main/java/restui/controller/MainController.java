@@ -23,7 +23,6 @@ import javafx.util.Callback;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.model.Endpoint;
 import restui.model.Item;
-import restui.model.Path;
 import restui.model.Project;
 import restui.service.ApplicationService;
 
@@ -41,6 +40,7 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
+		/*
 		final Project project = new Project("Oss", "http://localhost:8080/oss/rest");
 		final Path application = new Path("application");
 		final Path customers = new Path("customers");
@@ -62,24 +62,8 @@ public class MainController implements Initializable {
 		customerIdItem.getChildren().add(getCustomerItem);
 
 		treeView.setRoot(projectItem);
+		*/
 		
-		/*final Project project = new Project("jsonplaceholder", "https://jsonplaceholder.typicode.com");
-		final Path posts = new Path("posts");
-		final Path postId = new Path("{postId}");
-		final EndPoint getPost = new EndPoint("getPost", "GET");
-		project.addChild(posts);
-		posts.addChild(postId);
-		postId.addChild(getPost);
-		final TreeItem<Item> projectItem = new TreeItem<>(project);
-		final TreeItem<Item> postsItem = new TreeItem<>(posts);
-		final TreeItem<Item> postItem = new TreeItem<>(postId);
-		final TreeItem<Item> getPostItem = new TreeItem<>(getPost);
-		projectItem.getChildren().add(postsItem);
-		postsItem.getChildren().add(postItem);
-		postItem.getChildren().add(getPostItem);
-		treeView.setRoot(projectItem);*/
-		
-
 		treeView.setEditable(true);
 		treeView.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {
 			@Override
@@ -139,7 +123,7 @@ public class MainController implements Initializable {
 	protected void save(final ActionEvent event) {
 		
 		final Project project = (Project) treeView.getRoot().getValue();
-		ApplicationService.saveProjectXml(project);
+		ApplicationService.saveProject(project);
 	}
 	
 	@FXML
@@ -150,8 +134,10 @@ public class MainController implements Initializable {
 		fileChooser.setInitialDirectory(new File(ApplicationService.getHomeDirectory()));
 		final File file = fileChooser.showOpenDialog(null);
 		if (file != null) {
-			final Project project = ApplicationService.openProject(file);
-			final TreeItem<Item> projectTreeItem = new TreeItem<>(project);
+			final TreeItem<Item> projectItem = ApplicationService.openProject(file);
+			treeView.setRoot(projectItem);
+			
+			/*final TreeItem<Item> projectTreeItem = new TreeItem<>(project);
 			
 			Item currentItem = project;
 			TreeItem<Item> currentTreeItem = projectTreeItem;
@@ -164,6 +150,7 @@ public class MainController implements Initializable {
 				}
 			}
 			treeView.setRoot(projectTreeItem);
+			*/
 			
 			/*
 			 

@@ -11,9 +11,8 @@ public class Response extends Message {
 		super();
 	}
 	
-	public Response(final Integer status) {
-		super();
-		this.status = new SimpleIntegerProperty(status);
+	public Response(final String body) {
+		super(body);
 	}
 	
 	public Response(final String body, final Integer status) {

@@ -7,14 +7,11 @@ import java.io.IOException;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import javafx.scene.control.TreeItem;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
@@ -28,7 +25,7 @@ public class ApplicationService {
 
 	public static final String APPLICATION_HOME = ".restui";
 
-	public static void saveProjectXml(final Project project) {
+	public static void saveProject(final Project project) {
 
 		// project
 		final Element elementProject = new Element("project");
@@ -66,8 +63,10 @@ public class ApplicationService {
 						for (final Exchange exchange : endpoint.getExchanges()) {
 							final Element elementExchange = new Element("exchange");
 							final Attribute attributeExchangeName = new Attribute("name", exchange.getName());
-							final Attribute attributeExchangeDate = new Attribute("date", exchange.getDate().toString());
-							final Attribute attributeExchangeStatus = new Attribute("status", exchange.getStatus() == null ? "" : exchange.getStatus().toString());
+							final Attribute attributeExchangeDate = new Attribute("date",
+									exchange.getDate().toString());
+							final Attribute attributeExchangeStatus = new Attribute("status",
+									exchange.getStatus() == null ? "" : exchange.getStatus().toString());
 							elementExchange.setAttribute(attributeExchangeName);
 							elementExchange.setAttribute(attributeExchangeDate);
 							elementExchange.setAttribute(attributeExchangeStatus);
@@ -85,20 +84,42 @@ public class ApplicationService {
 							elementRequest.addContent(elementRequestParameters);
 							for (final Parameter parameter : request.getParameters()) {
 								final Element elementRequestParameter = new Element("parameter");
-								final Attribute attributeRequestParameterEnabled = new Attribute("enabled", parameter.getEnabled().toString());
-								final Attribute attributeRequestParameterLocation = new Attribute("location", parameter.getLocation());
-								final Attribute attributeRequestParameterName = new Attribute("name", parameter.getName());
-								final Attribute attributeRequestParameterValue = new Attribute("value", parameter.getValue());
+								final Attribute attributeRequestParameterEnabled = new Attribute("enabled",
+										parameter.getEnabled().toString());
+								final Attribute attributeRequestParameterLocation = new Attribute("location",
+										parameter.getLocation());
+								final Attribute attributeRequestParameterName = new Attribute("name",
+										parameter.getName());
+								final Attribute attributeRequestParameterValue = new Attribute("value",
+										parameter.getValue());
 								elementRequestParameter.setAttribute(attributeRequestParameterEnabled);
 								elementRequestParameter.setAttribute(attributeRequestParameterLocation);
 								elementRequestParameter.setAttribute(attributeRequestParameterName);
 								elementRequestParameter.setAttribute(attributeRequestParameterValue);
 								elementRequestParameters.addContent(elementRequestParameter);
 							}
-							
+
 							// response
 							final Response response = exchange.getResponse();
 							final Element elementResponse = new Element("response");
+							final Attribute attributeResponseStatus = new Attribute("status",
+									response.getStatus() == null ? "" : response.getStatus().toString());
+							final Element elementResponseBody = new Element("body");
+							elementResponseBody.addContent(response.getBody());
+							elementResponse.addContent(elementResponseBody);
+							elementResponse.setAttribute(attributeResponseStatus);
+							final Element elementResponseHeaders = new Element("headers");
+							elementResponse.addContent(elementResponseHeaders);
+							for (final Parameter parameter : response.getParameters()) {
+								final Element elementResponseHeader = new Element("header");
+								final Attribute attributeResponsetHeaderName = new Attribute("name",
+										parameter.getName());
+								final Attribute attributeResponseHeaderValue = new Attribute("value",
+										parameter.getValue());
+								elementResponseHeader.setAttribute(attributeResponsetHeaderName);
+								elementResponseHeader.setAttribute(attributeResponseHeaderValue);
+								elementResponseHeaders.addContent(elementResponseHeader);
+							}
 							elementExchange.addContent(elementResponse);
 						}
 						elementEndpoint.addContent(elementExchanges);
@@ -120,45 +141,50 @@ public class ApplicationService {
 		}
 	}
 
-	public static void saveProject(final Project project) {
+	public static TreeItem<Item> openProject(final File file) {
 
-		createApplication();
-		final String userHome = System.getProperty("user.home");
-		final File projectFile = new File(
-				userHome + File.separator + APPLICATION_HOME + File.separator + project.getName() + ".json");
-		System.out.println("projectFile = " + projectFile.getAbsolutePath());
+		final Project project = new Project();
+		final TreeItem<Item> projectItem = new TreeItem<>(project);
 
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
+		final SAXBuilder sxb = new SAXBuilder();
 		try {
-			mapper.writeValue(projectFile, project);
-
-			final Project iot = mapper.readValue(projectFile, Project.class);
-			System.out.println(iot.getName());
-			System.out.println(iot.getBaseUrl());
-
-		} catch (final JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (final JsonMappingException e) {
-			e.printStackTrace();
-		} catch (final IOException e) {
+			final Document document = sxb.build(file);
+			// project
+			final Element elementProject = document.getRootElement();
+			project.setName(elementProject.getAttributeValue("name"));
+			project.setBaseUrl(elementProject.getAttributeValue("baseUrl"));
+			
+			Element currentElement = elementProject;
+			TreeItem<Item> currentItem = projectItem;
+			
+			while (!currentElement.getChildren().isEmpty()) {
+				for (final Element elementChild : currentElement.getChildren()) {
+					// Path
+					if (elementChild.getName().equalsIgnoreCase(Path.class.getSimpleName())) {
+						final Path path = new Path(elementChild.getAttributeValue("name"));
+						final TreeItem<Item> childItem = new TreeItem<>(path);
+						currentElement = elementChild;
+						currentItem.getChildren().add(childItem);
+						currentItem = childItem;
+					}
+					// Endpoint
+					else if (elementChild.getName().equalsIgnoreCase(Endpoint.class.getSimpleName())) {
+						final Endpoint endpoint = new Endpoint();
+						final TreeItem<Item> childItem = new TreeItem<>(endpoint);
+						currentElement = elementChild;
+						currentItem.getChildren().add(childItem);
+						currentItem = childItem;
+					}
+				}
+				
+			}
+			
+			
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
-	}
-
-	public static Project openProject(final File file) {
-
-		Project project = null;
-		final ObjectMapper mapper = new ObjectMapper();
-
-		try {
-			project = mapper.readValue(file, Project.class);
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-		return project;
+		return projectItem;
 	}
 
 	public static void createApplication() {

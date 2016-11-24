@@ -26,7 +26,7 @@ public class Exchange {
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleLongProperty(date);
 		this.request = new Request("", "");
-		this.response = new Response();
+		this.response = new Response("");
 	}
 
 	public String getName() {
@@ -46,6 +46,9 @@ public class Exchange {
 	}
 	
 	public void setStatus(final Integer status) {
+		if (status == null) {
+			this.status = new SimpleIntegerProperty(status);
+		}
 		this.status.set(status);
 	}
 

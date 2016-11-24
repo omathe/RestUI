@@ -262,7 +262,8 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			final String builtUri = buildUriOLD(endpoint.getText(), exchange.getRequestParameters());
+			buildUri();
+			final String builtUri = uri.getText();
 			// uri.setText(builtUri);
 			final long t0 = System.currentTimeMillis();
 			final ClientResponse response = RestClient.get(builtUri, exchange.getRequestParameters());
@@ -370,11 +371,6 @@ public class EndPointController extends AbstractController implements Initializa
 			exchange.getRequest().setUri(builtUri);
 		}
 		execute.setDisable(disable);
-	}
-	
-	private String getBaseUrl(final Endpoint endPoint) {
-		
-		return "";
 	}
 
 }
