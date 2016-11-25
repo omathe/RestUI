@@ -52,8 +52,10 @@ public class ApplicationService {
 					final Element elementEndpoint = new Element("endpoint");
 					final Attribute attributeEndpointName = new Attribute("name", endpoint.getName());
 					final Attribute attributeEndpointPath = new Attribute("path", endpoint.getPath());
+					final Attribute attributeEndpointMethod = new Attribute("method", endpoint.getMethod());
 					elementEndpoint.setAttribute(attributeEndpointName);
 					elementEndpoint.setAttribute(attributeEndpointPath);
+					elementEndpoint.setAttribute(attributeEndpointMethod);
 					currentElement.addContent(elementEndpoint);
 					currentItem = endpoint;
 					currentElement = elementEndpoint;
@@ -153,33 +155,45 @@ public class ApplicationService {
 			final Element elementProject = document.getRootElement();
 			project.setName(elementProject.getAttributeValue("name"));
 			project.setBaseUrl(elementProject.getAttributeValue("baseUrl"));
-			
+
 			Element currentElement = elementProject;
 			TreeItem<Item> currentItem = projectItem;
-			
+
 			while (!currentElement.getChildren().isEmpty()) {
+				System.out.println("current element : " + currentElement.getName());
 				for (final Element elementChild : currentElement.getChildren()) {
-					// Path
 					if (elementChild.getName().equalsIgnoreCase(Path.class.getSimpleName())) {
+						// Path
 						final Path path = new Path(elementChild.getAttributeValue("name"));
 						final TreeItem<Item> childItem = new TreeItem<>(path);
 						currentElement = elementChild;
 						currentItem.getChildren().add(childItem);
 						currentItem = childItem;
-					}
-					// Endpoint
-					else if (elementChild.getName().equalsIgnoreCase(Endpoint.class.getSimpleName())) {
-						final Endpoint endpoint = new Endpoint();
+					} else if (elementChild.getName().equalsIgnoreCase(Endpoint.class.getSimpleName())) {
+						// Endpoint
+						final Endpoint endpoint = new Endpoint(elementChild.getAttributeValue("name"), elementChild.getAttributeValue("method"));
 						final TreeItem<Item> childItem = new TreeItem<>(endpoint);
-						currentElement = elementChild;
 						currentItem.getChildren().add(childItem);
+						currentElement = elementChild;
 						currentItem = childItem;
+						final Element elementExchanges = elementChild.getChild("exchanges");
+						if (elementExchanges != null) {
+							for (final Element elementExchange : elementExchanges.getChildren()) {
+								final Exchange exchange = new Exchange(elementExchange.getAttributeValue("name"),
+										Long.valueOf(elementExchange.getAttributeValue("date")), Integer.valueOf(elementExchange.getAttributeValue("status")));
+								endpoint.addExchange(exchange);
+							}
+							System.out.println("exchanges");
+						}
+					} else {
+						System.out.println("other");
+						currentElement = elementChild;
+						continue;
 					}
 				}
-				
+
 			}
-			
-			
+
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

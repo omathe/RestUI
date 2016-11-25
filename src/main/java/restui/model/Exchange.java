@@ -28,6 +28,15 @@ public class Exchange {
 		this.request = new Request("", "");
 		this.response = new Response("");
 	}
+	
+	public Exchange(final String name, final Long date, final Integer status) {
+		super();
+		this.name = new SimpleStringProperty(name);
+		this.date = new SimpleLongProperty(date);
+		this.status = new SimpleIntegerProperty(status);
+		this.request = new Request("", "");
+		this.response = new Response("");
+	}
 
 	public String getName() {
 		return name.get();
@@ -46,7 +55,7 @@ public class Exchange {
 	}
 	
 	public void setStatus(final Integer status) {
-		if (status == null) {
+		if (this.status == null) {
 			this.status = new SimpleIntegerProperty(status);
 		}
 		this.status.set(status);
