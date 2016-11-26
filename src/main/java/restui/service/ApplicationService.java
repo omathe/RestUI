@@ -16,6 +16,7 @@ import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
 import restui.model.Parameter;
+import restui.model.Parameter.Location;
 import restui.model.Path;
 import restui.model.Project;
 import restui.model.Request;
@@ -160,7 +161,7 @@ public class ApplicationService {
 			TreeItem<Item> currentItem = projectItem;
 
 			while (!currentElement.getChildren().isEmpty()) {
-				System.out.println("current element : " + currentElement.getName());
+				
 				for (final Element elementChild : currentElement.getChildren()) {
 					if (elementChild.getName().equalsIgnoreCase(Path.class.getSimpleName())) {
 						// Path
@@ -179,19 +180,49 @@ public class ApplicationService {
 						final Element elementExchanges = elementChild.getChild("exchanges");
 						if (elementExchanges != null) {
 							for (final Element elementExchange : elementExchanges.getChildren()) {
+								// Exchange
 								final Exchange exchange = new Exchange(elementExchange.getAttributeValue("name"),
 										Long.valueOf(elementExchange.getAttributeValue("date")), Integer.valueOf(elementExchange.getAttributeValue("status")));
 								endpoint.addExchange(exchange);
+								// Request
+								final Element elementRequest = elementExchange.getChild("request");
+								final Element elementRequestBody = elementRequest.getChild("body");
+								final Request request = new Request(elementRequestBody.getValue(), elementRequest.getAttributeValue("uri"));
+								exchange.setRequest(request);
+								// Request parameters
+								final Element elementRequestParameters = elementRequest.getChild("parameters");
+								for (final Element elementRequestParameter : elementRequestParameters.getChildren()) {
+									if (elementRequestParameter != null) {
+										final Boolean enabled = Boolean.valueOf(elementRequestParameter.getAttributeValue("enabled"));
+										final Location location = Location.valueOf(elementRequestParameter.getAttributeValue("location"));
+										final String name = elementRequestParameter.getAttributeValue("name");
+										final String value = elementRequestParameter.getAttributeValue("value");
+										final Parameter parameter = new Parameter(enabled, location, name, value);
+										request.addParameter(parameter);
+									}
+								}
+								// Response
+								final Element elementResponse = elementExchange.getChild("response");
+								final Element elementResponseBody = elementResponse.getChild("body");
+								final Response response = new Response(elementResponseBody.getValue(), Integer.valueOf(elementResponse.getAttributeValue("status")));
+								exchange.setResponse(response);
+								// headers
+								final Element elementResponseHeaders = elementResponse.getChild("headers");
+								for (final Element elementResponseHeader : elementResponseHeaders.getChildren()) {
+									if (elementResponseHeader != null) {
+										final String name = elementResponseHeader.getAttributeValue("name");
+										final String value = elementResponseHeader.getAttributeValue("value");
+										final Parameter header = new Parameter(true, Location.HEADER, name, value);
+										response.addParameter(header);
+									}
+								}
 							}
-							System.out.println("exchanges");
 						}
 					} else {
-						System.out.println("other");
 						currentElement = elementChild;
 						continue;
 					}
 				}
-
 			}
 
 		} catch (final Exception e) {

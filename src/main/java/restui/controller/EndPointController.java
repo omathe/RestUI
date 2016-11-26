@@ -134,8 +134,7 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		// disable request/response area if no exchange selected
-		requestResponseSplitPane.disableProperty()
-				.bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
+		requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
 		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
 			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
@@ -168,16 +167,17 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshExchangeData(final Exchange exchange) {
 
 		if (exchange != null) {
-			// parameters
+			// request
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
 			parameters.setItems(parameterData);
 
 			buildParameters();
+			uri.setText(exchange.getRequest().getUri());
 			requestBody.setText(exchange.getRequestBodyProperty().get());
 
-			// response headers
-			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange
-					.getResponseHeaders();
+			// response
+			responseBody.setText(exchange.getResponseBody());
+			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
 			responseHeaders.setItems(responseHeadersData);
 			// response status
 			responseStatus.setText(exchange.getResponseStatus() == null ? "" : exchange.getResponseStatus().toString());
@@ -270,8 +270,6 @@ public class EndPointController extends AbstractController implements Initializa
 			exchange.clearResponseHeaders();
 			if (response != null) {
 				response.getHeaders().entrySet().stream().forEach(e -> {
-					System.out.println(e.getKey());
-					System.out.println(e.getValue());
 					for (final String value : e.getValue()) {
 						final Parameter header = new Parameter(true, Location.HEADER, e.getKey(), value);
 						exchange.addResponseHeader(header);
@@ -283,17 +281,24 @@ public class EndPointController extends AbstractController implements Initializa
 				exchange.setDate(Instant.now().toEpochMilli());
 
 				// refresh tableView (workaround)
-				exchanges.getColumns().get(0).setVisible(false);
-				exchanges.getColumns().get(0).setVisible(true);
+				//exchanges.getColumns().get(0).setVisible(false);
+				//exchanges.getColumns().get(0).setVisible(true);
 
 				responseStatus.setText(String.valueOf(response.getStatus()));
-				exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
 				final String output = response.getEntity(String.class);
 				responseBody.setText(output);
 				exchange.setResponseBody(output);
 
 				response.close();
+			} else {
+				responseStatus.setText("0");
+				exchange.setResponseStatus(0);
 			}
+			exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
+			// refresh tableView (workaround)
+			exchanges.getColumns().get(0).setVisible(false);
+			exchanges.getColumns().get(0).setVisible(true);
+
 		}
 	}
 

@@ -27,4 +27,5 @@ public class Request extends Message {
 	public StringProperty uriProperty() {
 		return uri;
 	}
+	
 }

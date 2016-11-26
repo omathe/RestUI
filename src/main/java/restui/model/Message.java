@@ -38,4 +38,13 @@ public class Message {
 		return parameters;
 	}
 
+	public void addParameter(final Parameter parameter) {
+		
+		if (parameters == null) {
+			parameters = FXCollections.observableArrayList();
+		}
+		if (!parameters.contains(parameter)) {
+			parameters.add(parameter);
+		}
+	}
 }

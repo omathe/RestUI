@@ -20,7 +20,7 @@ public class Exchange {
 	public Exchange() {
 		super();
 	}
-	
+
 	public Exchange(final String name, final Long date) {
 		super();
 		this.name = new SimpleStringProperty(name);
@@ -28,7 +28,7 @@ public class Exchange {
 		this.request = new Request("", "");
 		this.response = new Response("");
 	}
-	
+
 	public Exchange(final String name, final Long date, final Integer status) {
 		super();
 		this.name = new SimpleStringProperty(name);
@@ -53,7 +53,7 @@ public class Exchange {
 	public Integer getStatus() {
 		return status == null ? null : status.get();
 	}
-	
+
 	public void setStatus(final Integer status) {
 		if (this.status == null) {
 			this.status = new SimpleIntegerProperty(status);
@@ -68,11 +68,11 @@ public class Exchange {
 	public Long getDate() {
 		return date.get();
 	}
-	
+
 	public void setDate(final Long date) {
 		this.date.set(date);
 	}
-	
+
 	public LongProperty dateProperty() {
 		return date;
 	}
@@ -80,7 +80,11 @@ public class Exchange {
 	public Request getRequest() {
 		return request;
 	}
-	
+
+	public void setRequest(final Request request) {
+		this.request = request;
+	}
+
 	public List<Parameter> getRequestParameters() {
 		return request.parameters;
 	}
@@ -99,7 +103,11 @@ public class Exchange {
 	public Response getResponse() {
 		return response;
 	}
-	
+
+	public void setResponse(final Response response) {
+		this.response = response;
+	}
+
 	public List<Parameter> getResponseHeaders() {
 		return response.parameters;
 	}
@@ -122,11 +130,11 @@ public class Exchange {
 	public void setResponseStatus(final Integer status) {
 		if (this.status == null) {
 			this.status = new SimpleIntegerProperty();
-			this.status.set(status);
 		}
+		this.status.set(status);
 		response.setStatus(status);
 	}
-	
+
 	public StringProperty getRequestBodyProperty() {
 		return request.bodyProperty();
 	}
@@ -134,11 +142,18 @@ public class Exchange {
 	public void setRequestBody(final String body) {
 		request.bodyProperty().set(body);
 	}
-	
+
+	public String getResponseBody() {
+		return response.getBody();
+	}
+
 	public void setResponseBody(final String body) {
 		response.bodyProperty().set(body);
 	}
-	
+
+	public StringProperty getResponseBodyProperty() {
+		return response.bodyProperty();
+	}
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + "]";
