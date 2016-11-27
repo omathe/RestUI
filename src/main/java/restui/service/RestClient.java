@@ -26,6 +26,23 @@ public class RestClient {
 		}
 		return response;
 	}
+	
+	public static ClientResponse post(final String uri, final String body, final List<Parameter> parameters) {
+		
+		ClientResponse response = null;
+		final Client client = Client.create();
+		
+		try {
+			final WebResource webResource = client.resource(uri);
+			addParameters(webResource, parameters);
+			response = webResource.type("application/json").post(ClientResponse.class, body);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
 
 	private static WebResource addParameters(final WebResource webResource, final List<Parameter> parameters) {
 

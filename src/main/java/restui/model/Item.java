@@ -4,35 +4,30 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.EXTERNAL_PROPERTY, property="type")
 public class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	protected String name;
-	
-	@JsonIgnore
 	protected Item parent;
+	protected String name;
 	
 	protected Set<Item> children;
 
 	public Item() {
 		super();
-	}
-
-	public Item(final String name) {
-		super();
-		this.name = name;
 		this.children = new HashSet<>();
 	}
 
-	public Item(final String name, final Item parent) {
+//	public Item(final String name) {
+//		super();
+//		this.name = name;
+//		this.children = new HashSet<>();
+//	}
+
+	public Item(final Item parent, final String name) {
 		super();
-		this.name = name;
 		this.parent = parent;
+		this.name = name;
 		this.children = new HashSet<>();
 	}
 

@@ -11,7 +11,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import javafx.scene.control.TreeItem;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
@@ -135,8 +134,7 @@ public class ApplicationService {
 		final Document document = new Document(elementProject);
 
 		final String userHome = System.getProperty("user.home");
-		final File projectFile = new File(
-				userHome + File.separator + APPLICATION_HOME + File.separator + project.getName() + ".xml");
+		final File projectFile = new File(userHome + File.separator + APPLICATION_HOME + File.separator + project.getName() + ".xml");
 		try {
 			output.output(document, new FileOutputStream(projectFile));
 		} catch (final IOException e) {
@@ -144,10 +142,9 @@ public class ApplicationService {
 		}
 	}
 
-	public static TreeItem<Item> openProject(final File file) {
+	public static Project openProject(final File file) {
 
 		final Project project = new Project();
-		final TreeItem<Item> projectItem = new TreeItem<>(project);
 
 		final SAXBuilder sxb = new SAXBuilder();
 		try {
@@ -158,25 +155,23 @@ public class ApplicationService {
 			project.setBaseUrl(elementProject.getAttributeValue("baseUrl"));
 
 			Element currentElement = elementProject;
-			TreeItem<Item> currentItem = projectItem;
+			Item currentItem = project;
 
 			while (!currentElement.getChildren().isEmpty()) {
 				
 				for (final Element elementChild : currentElement.getChildren()) {
 					if (elementChild.getName().equalsIgnoreCase(Path.class.getSimpleName())) {
 						// Path
-						final Path path = new Path(elementChild.getAttributeValue("name"));
-						final TreeItem<Item> childItem = new TreeItem<>(path);
+						final Path path = new Path(currentItem, elementChild.getAttributeValue("name"));
 						currentElement = elementChild;
-						currentItem.getChildren().add(childItem);
-						currentItem = childItem;
+						currentItem.getChildren().add(path);
+						currentItem = path;
 					} else if (elementChild.getName().equalsIgnoreCase(Endpoint.class.getSimpleName())) {
 						// Endpoint
-						final Endpoint endpoint = new Endpoint(elementChild.getAttributeValue("name"), elementChild.getAttributeValue("method"));
-						final TreeItem<Item> childItem = new TreeItem<>(endpoint);
-						currentItem.getChildren().add(childItem);
+						final Endpoint endpoint = new Endpoint(currentItem, elementChild.getAttributeValue("name"), elementChild.getAttributeValue("method"));
+						currentItem.getChildren().add(endpoint);
 						currentElement = elementChild;
-						currentItem = childItem;
+						currentItem = endpoint;
 						final Element elementExchanges = elementChild.getChild("exchanges");
 						if (elementExchanges != null) {
 							for (final Element elementExchange : elementExchanges.getChildren()) {
@@ -229,7 +224,7 @@ public class ApplicationService {
 			e.printStackTrace();
 		}
 
-		return projectItem;
+		return project;
 	}
 
 	public static void createApplication() {

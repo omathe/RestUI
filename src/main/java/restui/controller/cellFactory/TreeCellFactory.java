@@ -33,7 +33,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			@Override
 			public void handle(final Event t) {
 				final Item item = getTreeItem().getValue();
-				final Path path = new Path("path");
+				final Path path = new Path(item, "path");
 				item.addChild(path);
 				final TreeItem<Item> newItem = new TreeItem<>(path);
 				
@@ -45,7 +45,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			@Override
 			public void handle(final Event t) {
 				final Item item = getTreeItem().getValue();
-				final Endpoint endPoint = new Endpoint("new endpoint", "GET");
+				final Endpoint endPoint = new Endpoint(item, "new endpoint", "GET");
 				item.addChild(endPoint);
 				
 				// exchanges
@@ -114,6 +114,19 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				if (e.getCode() == KeyCode.ENTER) {
 					getItem().setName(textField.getText());
 					commitEdit(getItem());
+					
+					if (getItem() instanceof Path) { // renaming all the endpoints path
+						Item currentItem = getItem();
+						while (currentItem.hasChildren()) {
+							for (final Item child : currentItem.getChildren()) {
+								if (child instanceof Endpoint) {
+									final Endpoint endpoint = (Endpoint) child;
+									endpoint.buildPath();
+								}
+								currentItem = child;
+							}
+						}
+					}
 				} else if (e.getCode() == KeyCode.ESCAPE) {
 					cancelEdit();
 				}

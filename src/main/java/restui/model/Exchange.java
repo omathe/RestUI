@@ -27,6 +27,7 @@ public class Exchange {
 		this.date = new SimpleLongProperty(date);
 		this.request = new Request("", "");
 		this.response = new Response("");
+		this.status = new SimpleIntegerProperty();
 	}
 
 	public Exchange(final String name, final Long date, final Integer status) {
@@ -55,10 +56,9 @@ public class Exchange {
 	}
 
 	public void setStatus(final Integer status) {
-		if (this.status == null) {
-			this.status = new SimpleIntegerProperty(status);
-		}
+
 		this.status.set(status);
+		response.setStatus(status);
 	}
 
 	public IntegerProperty statusProperty() {
@@ -123,18 +123,6 @@ public class Exchange {
 		response.parameters.clear();
 	}
 
-	public Integer getResponseStatus() {
-		return response.getStatus();
-	}
-
-	public void setResponseStatus(final Integer status) {
-		if (this.status == null) {
-			this.status = new SimpleIntegerProperty();
-		}
-		this.status.set(status);
-		response.setStatus(status);
-	}
-
 	public StringProperty getRequestBodyProperty() {
 		return request.bodyProperty();
 	}
@@ -154,9 +142,10 @@ public class Exchange {
 	public StringProperty getResponseBodyProperty() {
 		return response.bodyProperty();
 	}
+
 	@Override
 	public String toString() {
-		return "Exchange [name=" + name + ", date=" + date + "]";
+		return "Exchange [name=" + name + ", date=" + date + ", status=" + status.get() + "]";
 	}
 
 }

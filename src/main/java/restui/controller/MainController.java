@@ -40,29 +40,23 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		/*
-		final Project project = new Project("Oss", "http://localhost:8080/oss/rest");
-		final Path application = new Path("application");
-		final Path customers = new Path("customers");
-		final Path customerId = new Path("{customerId}");
-		final Endpoint getCustomer = new Endpoint("getCustomer", "GET");
-		customers.addChild(customerId);
-		application.addChild(customers);
-		project.addChild(application);
-		customerId.addChild(getCustomer);
-		
+		// start manual open
+		final Project project = ApplicationService.openProject(new File("/home/olivier/.restui/Oss.xml"));
 		final TreeItem<Item> projectItem = new TreeItem<>(project);
-		final TreeItem<Item> applicationItem = new TreeItem<>(application);
-		final TreeItem<Item> customersItem = new TreeItem<>(customers);
-		final TreeItem<Item> customerIdItem = new TreeItem<>(customerId);
-		final TreeItem<Item> getCustomerItem = new TreeItem<>(getCustomer);
-		projectItem.getChildren().add(applicationItem);
-		applicationItem.getChildren().add(customersItem);
-		customersItem.getChildren().add(customerIdItem);
-		customerIdItem.getChildren().add(getCustomerItem);
-
+		Item currentItem = project;
+		TreeItem<Item> currentTreeItem = projectItem;
+		while(!currentItem.getChildren().isEmpty()) {
+			currentTreeItem.setExpanded(true);
+			for (final Item childItem : currentItem.getChildren()) {
+				final TreeItem<Item> childTreeItem = new TreeItem<>(childItem);
+				currentTreeItem.getChildren().add(childTreeItem);
+				currentItem = childItem;
+				currentTreeItem = childTreeItem;
+			}
+		}
 		treeView.setRoot(projectItem);
-		*/
+		projectItem.setExpanded(true);
+		// end manual open
 		
 		treeView.setEditable(true);
 		treeView.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {
@@ -77,11 +71,8 @@ public class MainController implements Initializable {
 			@Override
 			public void changed(final ObservableValue<? extends TreeItem<Item>> observable, final TreeItem<Item> oldValue, final TreeItem<Item> newValue) {
 				System.out.println(newValue);
-//				System.out.println(newValue.getValue().getClass());
-//				System.out.println(newValue.getValue());
 				
 				if (newValue.getValue() instanceof Project) {
-//					System.out.println("project instance");
 					final Project project = (Project) newValue.getValue();
 					
 					final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -134,13 +125,10 @@ public class MainController implements Initializable {
 		fileChooser.setInitialDirectory(new File(ApplicationService.getHomeDirectory()));
 		final File file = fileChooser.showOpenDialog(null);
 		if (file != null) {
-			final TreeItem<Item> projectItem = ApplicationService.openProject(file);
-			treeView.setRoot(projectItem);
-			
-			/*final TreeItem<Item> projectTreeItem = new TreeItem<>(project);
-			
+			final Project project = ApplicationService.openProject(file);
+			final TreeItem<Item> projectItem = new TreeItem<>(project);
 			Item currentItem = project;
-			TreeItem<Item> currentTreeItem = projectTreeItem;
+			TreeItem<Item> currentTreeItem = projectItem;
 			while(!currentItem.getChildren().isEmpty()) {
 				for (final Item childItem : currentItem.getChildren()) {
 					final TreeItem<Item> childTreeItem = new TreeItem<>(childItem);
@@ -149,36 +137,8 @@ public class MainController implements Initializable {
 					currentTreeItem = childTreeItem;
 				}
 			}
-			treeView.setRoot(projectTreeItem);
-			*/
-			
-			/*
-			 
-			 final Project project = new Project("Oss", "http://localhost:8080/oss/rest");
-		final Path application = new Path("application");
-		final Path customers = new Path("customers");
-		final Path customerId = new Path("{customerId}");
-		final EndPoint getCustomer = new EndPoint("getCustomer", "GET");
-		customers.addChild(customerId);
-		application.addChild(customers);
-		project.addChild(application);
-		customerId.addChild(getCustomer);
-		
-		final TreeItem<Item> projectItem = new TreeItem<>(project);
-		final TreeItem<Item> applicationItem = new TreeItem<>(application);
-		final TreeItem<Item> customersItem = new TreeItem<>(customers);
-		final TreeItem<Item> customerIdItem = new TreeItem<>(customerId);
-		final TreeItem<Item> getCustomerItem = new TreeItem<>(getCustomer);
-		projectItem.getChildren().add(applicationItem);
-		applicationItem.getChildren().add(customersItem);
-		customersItem.getChildren().add(customerIdItem);
-		customerIdItem.getChildren().add(getCustomerItem);
-
-		treeView.setRoot(projectItem);
-			 
-			 */
+			treeView.setRoot(projectItem);
 		}
-		
 	}
 
 }

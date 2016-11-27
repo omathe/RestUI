@@ -8,8 +8,8 @@ public class Path extends Item {
 		super();
 	}
 	
-	public Path(final String name) {
-		super(name);
+	public Path(final Item parent, final String name) {
+		super(parent, name);
 	}
 
 }

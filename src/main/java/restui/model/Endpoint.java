@@ -1,6 +1,9 @@
 package restui.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -18,17 +21,11 @@ public class Endpoint extends Item {
 	private final StringProperty path;
 	private List<Exchange> exchanges;
 
-	public Endpoint() {
-		super();
-		this.method = new SimpleStringProperty();
-		this.path = new SimpleStringProperty();
-		this.exchanges = FXCollections.observableArrayList();
-	}
-	
-	public Endpoint(final String name, final String method) {
-		super(name);
+	public Endpoint(final Item parent, final String name, final String method) {
+		super(parent, name);
 		this.method = new SimpleStringProperty(method);
 		this.path = new SimpleStringProperty();
+		buildPath();
 		this.exchanges = FXCollections.observableArrayList();
 	}
 
@@ -76,5 +73,38 @@ public class Endpoint extends Item {
 	
 	public boolean hasExchanges() {
 		return exchanges != null && !exchanges.isEmpty();
+	}
+	
+	public void buildPath() {
+
+		final List<String> names = new ArrayList<>();
+		Item currentItem = this;
+		
+		while (currentItem != null) {
+			if (currentItem.getClass().getSimpleName().equals(Path.class.getSimpleName())) {
+				names.add(currentItem.getName());
+			}
+			currentItem = currentItem.getParent();
+		}
+		Collections.reverse(names);
+		final String builtPath = "/" + names.stream().collect(Collectors.joining("/")).toString();
+		path.set(builtPath);
+		System.out.println("builtPath = " + builtPath);
+	}
+	
+	public String getBaseUrl() {
+		
+		String baseUrl = null;
+		Item currentItem = this;
+		
+		while (currentItem != null) {
+			if (currentItem.getClass().getSimpleName().equals(Project.class.getSimpleName())) {
+				final Project project = (Project) currentItem;
+				baseUrl = project.getBaseUrl();
+				break;
+			}
+			currentItem = currentItem.getParent();
+		}
+		return baseUrl;
 	}
 }

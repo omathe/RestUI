@@ -14,8 +14,8 @@ public class Project extends Item {
 		this.baseUrl = new SimpleStringProperty();
 	}
 
-	public Project(final String name, final String baseUrl) {
-		super(name);
+	public Project(final Item parent, final String name, final String baseUrl) {
+		super(parent, name);
 		this.baseUrl = new SimpleStringProperty(baseUrl);
 	}
 

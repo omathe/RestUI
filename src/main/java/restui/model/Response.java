@@ -13,6 +13,7 @@ public class Response extends Message {
 	
 	public Response(final String body) {
 		super(body);
+		this.status = new SimpleIntegerProperty();
 	}
 	
 	public Response(final String body, final Integer status) {
@@ -21,15 +22,12 @@ public class Response extends Message {
 	}
 
 	public Integer getStatus() {
-		return status == null ? null : status.get();
+		return status.get();
 	}
 	
 	public void setStatus(final Integer status) {
-		if (this.status == null) {
-			this.status = new SimpleIntegerProperty(status);
-		}else {
-			this.status.set(status);
-		}
+		
+		this.status.set(status);
 	}
 
 	public void setBody(final Integer status) {

@@ -14,12 +14,13 @@ public class Message {
 	public Message() {
 		super();
 		this.parameters = FXCollections.observableArrayList();
+		this.body = new SimpleStringProperty();
 	}
 
 	public Message(final String body) {
 		super();
-		this.body = new SimpleStringProperty(body);
 		this.parameters = FXCollections.observableArrayList();
+		this.body = new SimpleStringProperty(body);
 	}
 
 	public String getBody() {
@@ -33,16 +34,13 @@ public class Message {
 	public StringProperty bodyProperty() {
 		return body;
 	}
-	
+
 	public List<Parameter> getParameters() {
 		return parameters;
 	}
 
 	public void addParameter(final Parameter parameter) {
-		
-		if (parameters == null) {
-			parameters = FXCollections.observableArrayList();
-		}
+
 		if (!parameters.contains(parameter)) {
 			parameters.add(parameter);
 		}
