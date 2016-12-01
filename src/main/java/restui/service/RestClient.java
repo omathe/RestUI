@@ -5,6 +5,7 @@ import java.util.List;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import restui.model.Parameter;
 
@@ -16,7 +17,10 @@ public class RestClient {
 		final Client client = Client.create();
 
 		try {
-			final WebResource webResource = client.resource(uri);
+			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri);
+
+			final WebResource.Builder builder = webResource.getRequestBuilder();
+			addHeaders(builder, parameters);
 			addParameters(webResource, parameters);
 			response = webResource.get(ClientResponse.class);
 		} catch (final Exception e) {
@@ -26,12 +30,12 @@ public class RestClient {
 		}
 		return response;
 	}
-	
+
 	public static ClientResponse post(final String uri, final String body, final List<Parameter> parameters) {
-		
+
 		ClientResponse response = null;
 		final Client client = Client.create();
-		
+
 		try {
 			final WebResource webResource = client.resource(uri);
 			addParameters(webResource, parameters);
@@ -44,11 +48,14 @@ public class RestClient {
 		return response;
 	}
 
-	private static WebResource addParameters(final WebResource webResource, final List<Parameter> parameters) {
+	private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {
 
-		// add headers
-		parameters.stream().filter(p -> p.isHeaderParameter())
-				.forEach(p -> webResource.header(p.getName(), p.getValue()));
+		parameters.stream().filter(p -> p.isHeaderParameter()).forEach(p -> builder.header(p.getName(), p.getValue()));
+
+		return builder;
+	}
+
+	private static WebResource addParameters(final WebResource webResource, final List<Parameter> parameters) {
 
 		// add query parameters
 		parameters.stream().filter(p -> p.isQueryParameter())
