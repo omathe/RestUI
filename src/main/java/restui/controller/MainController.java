@@ -30,10 +30,10 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TreeView<Item> treeView;
-	
+
 	@FXML
 	private VBox vBox;
-	
+
 	private ProjectController projectController;
 	private EndPointController endPointController;
 
@@ -41,65 +41,63 @@ public class MainController implements Initializable {
 	public void initialize(final URL location, final ResourceBundle resources) {
 
 		// start manual open
-		final Project project = ApplicationService.openProject(new File("/home/olivier/.restui/Oss.xml"));
-		final TreeItem<Item> projectItem = new TreeItem<>(project);
-		Item currentItem = project;
-		TreeItem<Item> currentTreeItem = projectItem;
-		while(!currentItem.getChildren().isEmpty()) {
-			currentTreeItem.setExpanded(true);
-			for (final Item childItem : currentItem.getChildren()) {
-				final TreeItem<Item> childTreeItem = new TreeItem<>(childItem);
-				currentTreeItem.getChildren().add(childTreeItem);
-				currentItem = childItem;
-				currentTreeItem = childTreeItem;
-			}
-		}
-		treeView.setRoot(projectItem);
-		projectItem.setExpanded(true);
-		// end manual open
 		
+		 final Project project = ApplicationService.openProject(new
+		 File("/home/olivier/.restui/Oss.xml")); final TreeItem<Item>
+		 projectItem = new TreeItem<>(project); Item currentItem = project;
+		 TreeItem<Item> currentTreeItem = projectItem;
+		 while(!currentItem.getChildren().isEmpty()) {
+		 currentTreeItem.setExpanded(true); for (final Item childItem :
+		 currentItem.getChildren()) { final TreeItem<Item> childTreeItem = new
+		 TreeItem<>(childItem);
+		 currentTreeItem.getChildren().add(childTreeItem); currentItem =
+		 childItem; currentTreeItem = childTreeItem; } }
+		 treeView.setRoot(projectItem); projectItem.setExpanded(true);
+		 
+		// end manual open
+
 		treeView.setEditable(true);
 		treeView.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {
 			@Override
 			public TreeCell<Item> call(final TreeView<Item> param) {
-				return new TreeCellFactory();
+				return new TreeCellFactory(treeView);
 			}
 		});
 
 		treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Item>>() {
 
 			@Override
-			public void changed(final ObservableValue<? extends TreeItem<Item>> observable, final TreeItem<Item> oldValue, final TreeItem<Item> newValue) {
-				System.out.println(newValue);
-				
-				if (newValue.getValue() instanceof Project) {
-					final Project project = (Project) newValue.getValue();
-					
-					final FXMLLoader fxmlLoader = new FXMLLoader();
-	                try {
-	                	final HBox hBox = fxmlLoader.load(MainController.class.getResource("/project.fxml").openStream());
-	                	hBox.setAlignment(Pos.TOP_LEFT);
-	                    projectController = (ProjectController) fxmlLoader.getController();
-	                    projectController.setProject(project);
-						vBox.getChildren().clear();
-						vBox.getChildren().add(hBox);
-					} catch (final IOException e) {
-						e.printStackTrace();
+			public void changed(final ObservableValue<? extends TreeItem<Item>> observable,
+					final TreeItem<Item> oldValue, final TreeItem<Item> newValue) {
+
+				if (newValue != null) {
+					if (newValue.getValue() instanceof Project) {
+						final Project project = (Project) newValue.getValue();
+
+						final FXMLLoader fxmlLoader = new FXMLLoader();
+						try {
+							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/project.fxml").openStream());
+							hBox.setAlignment(Pos.TOP_LEFT);
+							projectController = (ProjectController) fxmlLoader.getController();
+							projectController.setProject(project);
+							vBox.getChildren().clear();
+							vBox.getChildren().add(hBox);
+						} catch (final IOException e) {
+							e.printStackTrace();
+						}
+					} else if (newValue.getValue() instanceof Endpoint) {
+						final FXMLLoader fxmlLoader = new FXMLLoader();
+						try {
+							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/endpoint.fxml").openStream());
+							endPointController = (EndPointController) fxmlLoader.getController();
+							endPointController.setTreeItem(newValue);
+							vBox.getChildren().clear();
+							vBox.getChildren().add(hBox);
+						} catch (final IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
-				else if (newValue.getValue() instanceof Endpoint) {
-					final FXMLLoader fxmlLoader = new FXMLLoader();
-	                try {
-	                	final HBox hBox = fxmlLoader.load(MainController.class.getResource("/endpoint.fxml").openStream());
-	                    endPointController = (EndPointController) fxmlLoader.getController();
-	                    endPointController.setTreeItem(newValue);
-						vBox.getChildren().clear();
-						vBox.getChildren().add(hBox);
-					} catch (final IOException e) {
-						e.printStackTrace();
-					}
-				}
-				
 			}
 		});
 	}
@@ -109,17 +107,25 @@ public class MainController implements Initializable {
 
 		Platform.exit();
 	}
-	
+
+	@FXML
+	protected void newProject(final ActionEvent event) {
+
+		final Project project = new Project(null, "Project 1", "");
+		final TreeItem<Item> projectItem = new TreeItem<>(project);
+		treeView.setRoot(projectItem);
+	}
+
 	@FXML
 	protected void save(final ActionEvent event) {
-		
+
 		final Project project = (Project) treeView.getRoot().getValue();
 		ApplicationService.saveProject(project);
 	}
-	
+
 	@FXML
 	protected void open(final ActionEvent event) {
-		
+
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select the project file");
 		fileChooser.setInitialDirectory(new File(ApplicationService.getHomeDirectory()));
@@ -129,7 +135,7 @@ public class MainController implements Initializable {
 			final TreeItem<Item> projectItem = new TreeItem<>(project);
 			Item currentItem = project;
 			TreeItem<Item> currentTreeItem = projectItem;
-			while(!currentItem.getChildren().isEmpty()) {
+			while (!currentItem.getChildren().isEmpty()) {
 				for (final Item childItem : currentItem.getChildren()) {
 					final TreeItem<Item> childTreeItem = new TreeItem<>(childItem);
 					currentTreeItem.getChildren().add(childTreeItem);
