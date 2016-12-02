@@ -18,11 +18,10 @@ public class RestClient {
 
 		try {
 			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri);
-
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 			addHeaders(builder, parameters);
 			addParameters(webResource, parameters);
-			response = webResource.get(ClientResponse.class);
+			response = builder.get(ClientResponse.class);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -37,9 +36,11 @@ public class RestClient {
 		final Client client = Client.create();
 
 		try {
-			final WebResource webResource = client.resource(uri);
+			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri);
+			final WebResource.Builder builder = webResource.getRequestBuilder();
+			addHeaders(builder, parameters);
 			addParameters(webResource, parameters);
-			response = webResource.type("application/json").post(ClientResponse.class, body);
+			response = builder.post(ClientResponse.class, body);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -50,7 +51,9 @@ public class RestClient {
 
 	private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {
 
-		parameters.stream().filter(p -> p.isHeaderParameter()).forEach(p -> builder.header(p.getName(), p.getValue()));
+		// add query parameters
+		parameters.stream().filter(p -> p.getEnabled() && p.isHeaderParameter())
+				.forEach(p -> builder.header(p.getName(), p.getValue()));
 
 		return builder;
 	}
@@ -58,7 +61,7 @@ public class RestClient {
 	private static WebResource addParameters(final WebResource webResource, final List<Parameter> parameters) {
 
 		// add query parameters
-		parameters.stream().filter(p -> p.isQueryParameter())
+		parameters.stream().filter(p -> p.getEnabled() && p.isQueryParameter())
 				.forEach(p -> webResource.queryParam(p.getName(), p.getValue()));
 		return webResource;
 	}
