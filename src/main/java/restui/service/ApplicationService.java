@@ -23,7 +23,8 @@ import restui.model.Response;
 
 public class ApplicationService {
 
-	public static final String APPLICATION_HOME = ".restui";
+	public static final String APPLICATION_HOME = "restui";
+	// System.getProperty("os.name").toLowerCase()
 
 	public static void saveProject(final Project project) {
 
@@ -226,11 +227,12 @@ public class ApplicationService {
 
 		return project;
 	}
-
+	
 	public static void createApplication() {
 
 		final String userHome = System.getProperty("user.home");
-		final File applicationDirectory = new File(userHome + File.separator + APPLICATION_HOME);
+		
+		final File applicationDirectory = new File(userHome + File.separator + getPrefix() + APPLICATION_HOME);
 		if (!applicationDirectory.exists()) {
 			applicationDirectory.mkdir();
 		}
@@ -239,7 +241,17 @@ public class ApplicationService {
 	public static String getHomeDirectory() {
 
 		final String userHome = System.getProperty("user.home");
-		return userHome + File.separator + APPLICATION_HOME;
+		return userHome + File.separator + getPrefix() + APPLICATION_HOME;
+	}
+	
+	private static String getPrefix() {
+		
+		String prefix = "";
+		final String os = System.getProperty("os.name").toLowerCase();
+		if (os.equalsIgnoreCase("linux")) {
+			prefix = ".";
+		}
+		return prefix;
 	}
 
 }
