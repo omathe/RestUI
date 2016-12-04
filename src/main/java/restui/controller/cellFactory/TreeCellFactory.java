@@ -2,12 +2,14 @@ package restui.controller.cellFactory;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -182,7 +184,15 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	@Override
 	public void updateItem(final Item item, final boolean empty) {
 		super.updateItem(item, empty);
+		
+		/*
+Node imageView = new ImageView();
+                        String imageId = resource.isSource() ? "imageViewSource" : "imageViewDestination";
+                        imageView.setId(imageId);
+                        setGraphic(imageView);
 
+		*/
+		
 		if (empty) {
 			setText(null);
 			setGraphic(null);
@@ -202,11 +212,17 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 					addMenu.getItems().add(menuItemPath);
 					addMenu.getItems().add(menuItemEndpoint);
 					addMenu.getItems().add(menuDeleteItem);
+					final Node imageView = new ImageView();
+                    imageView.setId("imageViewProject");
+                    setGraphic(imageView);
 				}
 				else if (item instanceof Endpoint) {
 					if (!addMenu.getItems().contains(menuDeleteItem)) {
 						addMenu.getItems().add(menuDeleteItem);
 					}
+					final Node imageView = new ImageView();
+                    imageView.setId("imageViewEndpoint");
+                    setGraphic(imageView);
 				}
 
 				// if (!getTreeItem().isLeaf() && getTreeItem().getParent() !=

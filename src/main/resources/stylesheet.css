@@ -1,0 +1,81 @@
+.button:hover {
+    -fx-background-color: blue;
+}
+
+// treeView source node
+
+#checkBoxProfile {
+    -fx-text-fill: black;
+}
+
+#checkBoxArchiver {
+    -fx-text-fill: black;
+}
+
+#checkBoxCondition {
+    -fx-text-fill: black;
+}
+
+#checkBoxResourceExist {
+    -fx-text-fill: blue;
+}
+
+#checkBoxResourceDoesNotExist {
+    -fx-text-fill: red;
+}
+
+#resourceSame {
+    -fx-text-fill: black;
+}
+
+#resourceIdle {
+    -fx-text-fill: blue;
+}
+
+#resourceMoreRecent {
+    -fx-text-fill: black;
+    -fx-font-weight: bold
+}
+
+#resourceOlder {
+    -fx-text-fill: red;
+    -fx-font-weight: bold
+}
+
+#checkBoxAnalysedSourceError {
+    -fx-text-fill: red;
+}
+
+#imageViewArchiver {
+    -fx-image: url("images/archive.png");
+}
+
+#imageViewSource {
+    -fx-image: url("images/source.png");
+}
+
+#imageViewDestination {
+    -fx-image: url("images/destination.png");
+}
+
+#imageViewCondition {
+    -fx-image: url("images/condition.png");
+}
+
+#sourceGrid {
+    -fx-grid-lines-visible: true;
+}
+#destinationGrid {
+    -fx-grid-lines-visible: true;
+}
+
+
+
+#imageViewProject {
+    -fx-image: url("images/project.png");
+}
+
+#imageViewEndpoint {
+    -fx-image: url("images/endpoint.png");
+}
+
