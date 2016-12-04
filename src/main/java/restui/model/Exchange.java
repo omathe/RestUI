@@ -1,18 +1,20 @@
 package restui.model;
 
 import java.util.List;
+import java.util.Optional;
 
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import restui.model.Parameter.Location;
 
 public class Exchange {
 
 	private StringProperty name;
-	private LongProperty date;
+	private ObjectProperty<Long> date;
 	private Request request;
 	private Response response;
 	private IntegerProperty status;
@@ -24,7 +26,7 @@ public class Exchange {
 	public Exchange(final String name, final Long date) {
 		super();
 		this.name = new SimpleStringProperty(name);
-		this.date = new SimpleLongProperty(date);
+		this.date = new SimpleObjectProperty<>(date);
 		this.request = new Request("", "");
 		this.response = new Response("");
 		this.status = new SimpleIntegerProperty();
@@ -33,7 +35,7 @@ public class Exchange {
 	public Exchange(final String name, final Long date, final Integer status) {
 		super();
 		this.name = new SimpleStringProperty(name);
-		this.date = new SimpleLongProperty(date);
+		this.date = new SimpleObjectProperty<>(date);
 		this.status = new SimpleIntegerProperty(status);
 		this.request = new Request("", "");
 		this.response = new Response("");
@@ -73,7 +75,7 @@ public class Exchange {
 		this.date.set(date);
 	}
 
-	public LongProperty dateProperty() {
+	public ObjectProperty<Long> dateProperty() {
 		return date;
 	}
 
@@ -141,6 +143,10 @@ public class Exchange {
 
 	public StringProperty getResponseBodyProperty() {
 		return response.bodyProperty();
+	}
+	
+	public Optional<Parameter> findResponseHeader(final String name) {
+		return response.findParameter(Location.HEADER, name);
 	}
 
 	@Override

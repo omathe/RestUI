@@ -1,12 +1,16 @@
 package restui.controller;
 
+import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 
 import javafx.collections.FXCollections;
@@ -18,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -39,7 +44,7 @@ import restui.service.RestClient;
 public class EndPointController extends AbstractController implements Initializable {
 
 	private String baseUrl;
-	
+
 	@FXML
 	private SplitPane requestResponseSplitPane;
 	@FXML
@@ -151,7 +156,25 @@ public class EndPointController extends AbstractController implements Initializa
 		// exchanges
 		exchangeNameColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("name"));
 		exchangeNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		exchangeDateColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Long>("date"));
+
+		exchangeDateColumn.setCellFactory(column -> {
+			return new TableCell<Exchange, Long>() {
+				@Override
+				protected void updateItem(final Long item, final boolean empty) {
+					super.updateItem(item, empty);
+
+					if (item == null || empty) {
+						setText(null);
+						setStyle("");
+					} else {
+						final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+						setText(formater.format(new Date()));
+					}
+				}
+			};
+		});
+		exchangeDateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
+
 		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
 		exchanges.setItems((ObservableList<Exchange>) endPoint.getExchanges());
 	}
@@ -169,7 +192,9 @@ public class EndPointController extends AbstractController implements Initializa
 			requestBody.setText(exchange.getRequestBodyProperty().get());
 
 			// response
-			responseBody.setText(exchange.getResponseBody());
+			//responseBody.setText(exchange.getResponseBody());
+			displayResponseBody(exchange);
+			
 			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
 			responseHeaders.setItems(responseHeadersData);
 			// response status
@@ -232,19 +257,21 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-//			buildUri();
+
+			responseBody.setText("");
+			exchange.clearResponseHeaders();
+
 			final String builtUri = uri.getText();
-			// uri.setText(builtUri);
 			final long t0 = System.currentTimeMillis();
-			
+
 			ClientResponse response = null;
 			if (method.getValue().equals("POST")) {
 				response = RestClient.post(builtUri, requestBody.getText(), exchange.getRequestParameters());
-				
-			} else if (method.getValue().equals("GET"))  {
+			} else if (method.getValue().equals("PATCH")) {
+				response = RestClient.patch(builtUri, requestBody.getText(), exchange.getRequestParameters());
+			} else if (method.getValue().equals("GET")) {
 				response = RestClient.get(builtUri, exchange.getRequestParameters());
 			}
-			exchange.clearResponseHeaders();
 			if (response != null) {
 				response.getHeaders().entrySet().stream().forEach(e -> {
 					for (final String value : e.getValue()) {
@@ -252,16 +279,20 @@ public class EndPointController extends AbstractController implements Initializa
 						exchange.addResponseHeader(header);
 					}
 				});
-
 				// response status
 				exchange.setStatus(response.getStatus());
 				exchange.setDate(Instant.now().toEpochMilli());
 
 				responseStatus.setText(String.valueOf(response.getStatus()));
-				final String output = response.getEntity(String.class);
-				responseBody.setText(output);
-				exchange.setResponseBody(output);
 
+				if (response.getStatus() != 204) {
+
+					final String output = response.getEntity(String.class);
+					if (output != null && !output.isEmpty()) {
+						displayResponseBody(exchange);
+						exchange.setResponseBody(output);
+					}
+				}
 				response.close();
 			} else {
 				responseBody.setText("");
@@ -319,8 +350,7 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 			}
 			// query parameters
-			final Set<String> queryParams = exchange.getRequestParameters().stream()
-					.filter(p -> p.isQueryParameter() && p.getEnabled()).map(p -> p.getName() + "=" + p.getValue())
+			final Set<String> queryParams = exchange.getRequestParameters().stream().filter(p -> p.isQueryParameter() && p.getEnabled()).map(p -> p.getName() + "=" + p.getValue())
 					.collect(Collectors.toSet());
 			if (!queryParams.isEmpty()) {
 				builtUri += "?" + String.join("&", queryParams);
@@ -334,4 +364,20 @@ public class EndPointController extends AbstractController implements Initializa
 		execute.setDisable(disable);
 	}
 
+	private void displayResponseBody(final Exchange exchange) {
+		
+		exchange.findResponseHeader("Content-Type").ifPresent(p -> {
+			if (p.getValue().contains("json")) {
+				final ObjectMapper mapper = new ObjectMapper();
+				try {
+					final String body = exchange.getResponseBody();
+					final Object json = mapper.readValue(body, Object.class);
+					responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
+				} catch (final IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+			
+		});
+	}
 }

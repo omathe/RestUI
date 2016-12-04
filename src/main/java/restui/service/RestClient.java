@@ -6,6 +6,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 
 import restui.model.Parameter;
 
@@ -41,6 +42,27 @@ public class RestClient {
 			addHeaders(builder, parameters);
 			addParameters(webResource, parameters);
 			response = builder.post(ClientResponse.class, body);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
+
+	public static ClientResponse patch(final String uri, final String body, final List<Parameter> parameters) {
+
+		ClientResponse response = null;
+		final Client client = Client.create();
+		try {
+			final DefaultClientConfig config = new DefaultClientConfig();
+			config.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND,
+					true);
+			final WebResource webResource = Client.create(config).resource(uri);
+			final WebResource.Builder builder = webResource.getRequestBuilder();
+			addHeaders(builder, parameters);
+			addParameters(webResource, parameters);
+			response = builder.method("PATCH", ClientResponse.class, body);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {

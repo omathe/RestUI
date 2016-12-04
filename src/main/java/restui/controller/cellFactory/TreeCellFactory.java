@@ -40,7 +40,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			@Override
 			public void handle(final Event t) {
 				final Item item = getTreeItem().getValue();
-				final Path path = new Path(item, "path");
+				final Path path = new Path(item, "New path");
 				item.addChild(path);
 				final TreeItem<Item> newItem = new TreeItem<>(path);
 
@@ -52,7 +52,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			@Override
 			public void handle(final Event t) {
 				final Item item = getTreeItem().getValue();
-				final Endpoint endPoint = new Endpoint(item, "new endpoint", "GET");
+				final Endpoint endPoint = new Endpoint(item, "New endpoint", "GET");
 				item.addChild(endPoint);
 				final TreeItem<Item> newItem = new TreeItem<>(endPoint);
 				getTreeItem().getChildren().add(newItem);
@@ -62,9 +62,12 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		menuDeleteItem.setOnAction(new EventHandler() {
 			@Override
 			public void handle(final Event t) {
-				final TreeItem<Item> itemToDelete = getTreeItem();
-				if (itemToDelete.getParent() != null) {
+				final TreeItem<Item> treeItemToDelete = getTreeItem();
+				final Item itemToDelete = getTreeItem().getValue();
+				if (treeItemToDelete.getParent() != null) {
 					getTreeItem().getParent().getChildren().remove(getTreeItem());
+					itemToDelete.getParent().getChildren().remove(itemToDelete);
+					
 				} else {
 					treeView.setRoot(null);
 				}

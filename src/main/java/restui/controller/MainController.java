@@ -40,20 +40,18 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
+		ApplicationService.createApplicationDirectory();
+
 		// start manual open
+
+		final Project project = ApplicationService.openProject(new File("/home/olivier/.restui/Oss.xml"));
+		final TreeItem<Item> projectItem = new TreeItem<>(project);
 		
-		 final Project project = ApplicationService.openProject(new
-		 File("/home/olivier/.restui/Oss.xml")); final TreeItem<Item>
-		 projectItem = new TreeItem<>(project); Item currentItem = project;
-		 TreeItem<Item> currentTreeItem = projectItem;
-		 while(!currentItem.getChildren().isEmpty()) {
-		 currentTreeItem.setExpanded(true); for (final Item childItem :
-		 currentItem.getChildren()) { final TreeItem<Item> childTreeItem = new
-		 TreeItem<>(childItem);
-		 currentTreeItem.getChildren().add(childTreeItem); currentItem =
-		 childItem; currentTreeItem = childTreeItem; } }
-		 treeView.setRoot(projectItem); projectItem.setExpanded(true);
-		 
+		builTree(projectItem);
+		treeView.setRoot(projectItem);
+	
+		projectItem.setExpanded(true);
+
 		// end manual open
 
 		treeView.setEditable(true);
@@ -76,7 +74,8 @@ public class MainController implements Initializable {
 
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
-							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/project.fxml").openStream());
+							final HBox hBox = fxmlLoader
+									.load(MainController.class.getResource("/project.fxml").openStream());
 							hBox.setAlignment(Pos.TOP_LEFT);
 							projectController = (ProjectController) fxmlLoader.getController();
 							projectController.setProject(project);
@@ -88,7 +87,8 @@ public class MainController implements Initializable {
 					} else if (newValue.getValue() instanceof Endpoint) {
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
-							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/endpoint.fxml").openStream());
+							final HBox hBox = fxmlLoader
+									.load(MainController.class.getResource("/endpoint.fxml").openStream());
 							endPointController = (EndPointController) fxmlLoader.getController();
 							endPointController.setTreeItem(newValue);
 							vBox.getChildren().clear();
@@ -119,8 +119,10 @@ public class MainController implements Initializable {
 	@FXML
 	protected void save(final ActionEvent event) {
 
-		final Project project = (Project) treeView.getRoot().getValue();
-		ApplicationService.saveProject(project);
+		if (treeView.getRoot() != null) {
+			final Project project = (Project) treeView.getRoot().getValue();
+			ApplicationService.saveProject(project);
+		}
 	}
 
 	@FXML
@@ -133,18 +135,22 @@ public class MainController implements Initializable {
 		if (file != null) {
 			final Project project = ApplicationService.openProject(file);
 			final TreeItem<Item> projectItem = new TreeItem<>(project);
-			Item currentItem = project;
-			TreeItem<Item> currentTreeItem = projectItem;
-			while (!currentItem.getChildren().isEmpty()) {
-				for (final Item childItem : currentItem.getChildren()) {
-					final TreeItem<Item> childTreeItem = new TreeItem<>(childItem);
-					currentTreeItem.getChildren().add(childTreeItem);
-					currentItem = childItem;
-					currentTreeItem = childTreeItem;
-				}
-			}
+			
+			builTree(projectItem);
 			treeView.setRoot(projectItem);
 		}
+	}
+
+	private void builTree(final TreeItem<Item> parent) {
+
+		final Item currentItem = parent.getValue();
+		for (final Item childItem : currentItem.getChildren()) {
+			final TreeItem<Item> childTreeItem = new TreeItem<>(childItem);
+			childTreeItem.setExpanded(true);
+			parent.getChildren().add(childTreeItem);
+			builTree(childTreeItem);
+		}
+
 	}
 
 }

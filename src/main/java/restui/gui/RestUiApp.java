@@ -11,7 +11,7 @@ public class RestUiApp extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		BorderPane root = FXMLLoader.load(getClass().getResource("/restui.fxml"));
+		final BorderPane root = FXMLLoader.load(getClass().getResource("/restui.fxml"));
 
 		primaryStage.setTitle("RestUI");
 		primaryStage.setScene(new Scene(root));

@@ -21,11 +21,11 @@
 	<children>
 		<VBox HBox.hgrow="ALWAYS">
 			<children>
-            <TableView fx:id="exchanges" editable="true" maxHeight="200.0" minWidth="160.0">
+            <TableView fx:id="exchanges" editable="true" maxHeight="200.0">
               <columns>
-                <TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="-1.0" text="Name" />
-                <TableColumn fx:id="exchangeDateColumn" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="-1.0" text="Date" />
-                  <TableColumn fx:id="exchangeStatusColumn" prefWidth="75.0" text="Status" />
+                <TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="170.0" text="Name" />
+                <TableColumn fx:id="exchangeDateColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="232.0" text="Date" />
+                  <TableColumn fx:id="exchangeStatusColumn" prefWidth="140.0" text="Status" />
               </columns>
             </TableView>
 				<FlowPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">

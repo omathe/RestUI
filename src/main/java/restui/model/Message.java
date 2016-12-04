@@ -1,10 +1,12 @@
 package restui.model;
 
 import java.util.List;
+import java.util.Optional;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import restui.model.Parameter.Location;
 
 public class Message {
 
@@ -44,5 +46,12 @@ public class Message {
 		if (!parameters.contains(parameter)) {
 			parameters.add(parameter);
 		}
+	}
+
+	public Optional<Parameter> findParameter(final Location location, final String name) {
+
+		return parameters.stream()
+				.filter(p -> p.isHeaderParameter() && p.getName().equalsIgnoreCase(name))
+				.findFirst();
 	}
 }
