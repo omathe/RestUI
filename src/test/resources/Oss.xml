@@ -1,46 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Oss" baseUrl="http://192.168.4.25:8080">
+<project name="Oss" baseUrl="http://localhost:8080/oss/rest">
   <path name="application">
     <path name="customers">
       <endpoint name="createCustomer" path="/application/customers" method="POST">
         <exchanges>
-          <exchange name="echange" date="1480255322820" status="0">
-            <request uri="http://192.168.4.25:8080/application/customers">
-              <body />
-              <parameters />
+          <exchange name="echange" date="1480858754072" status="200">
+            <request uri="http://localhost:8080/oss/rest/application/customers">
+              <body>{
+"name":"toto"
+}</body>
+              <parameters>
+                <parameter enabled="true" location="HEADER" name="Content-Type" value="application/json" />
+              </parameters>
             </request>
-            <response status="0">
+            <response status="200">
               <body />
-              <headers />
+              <headers>
+                <header name="Content-Length" value="0" />
+                <header name="Date" value="Sun, 04 Dec 2016 13:39:14 GMT" />
+                <header name="Location" value="http://localhost:8080/oss/rest/oss/rest/application/customers/1" />
+              </headers>
             </response>
           </exchange>
         </exchanges>
-        <path name="{customerId}">
-          <endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
-            <exchanges>
-              <exchange name="echange1" date="1479937623788" status="200">
-                <request uri="http://192.168.4.25:8080/application/customers/15?pageSize=50&amp;page=2">
-                  <body />
-                  <parameters>
-                    <parameter enabled="true" location="PATH" name="customerId" value="15" />
-                    <parameter enabled="true" location="QUERY" name="page" value="2" />
-                    <parameter enabled="true" location="QUERY" name="pageSize" value="50" />
-                    <parameter enabled="true" location="HEADER" name="Accept" value="application/json" />
-                  </parameters>
-                </request>
-                <response status="200">
-                  <body>{"id":10,"name":"toto"}</body>
-                  <headers>
-                    <header name="Transfer-Encoding" value="chunked" />
-                    <header name="Date" value="Wed, 23 Nov 2016 21:47:03 GMT" />
-                    <header name="Content-Type" value="application/json;charset=UTF-8" />
-                  </headers>
-                </response>
-              </exchange>
-            </exchanges>
-          </endpoint>
-        </path>
       </endpoint>
+      <path name="{customerId}">
+        <endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
+          <exchanges>
+            <exchange name="echange1" date="1479937623788" status="200">
+              <request uri="http://localhost:8080/oss/rest/application/customers/10?pageSize=50&amp;page=2">
+                <body />
+                <parameters>
+                  <parameter enabled="true" location="PATH" name="customerId" value="10" />
+                  <parameter enabled="true" location="QUERY" name="page" value="2" />
+                  <parameter enabled="true" location="QUERY" name="pageSize" value="50" />
+                  <parameter enabled="true" location="HEADER" name="Accept" value="application/json" />
+                </parameters>
+              </request>
+              <response status="200">
+                <body>{"id":10,"name":"toto"}</body>
+                <headers>
+                  <header name="Transfer-Encoding" value="chunked" />
+                  <header name="Date" value="Wed, 23 Nov 2016 21:47:03 GMT" />
+                  <header name="Content-Type" value="application/json;charset=UTF-8" />
+                </headers>
+              </response>
+            </exchange>
+          </exchanges>
+        </endpoint>
+      </path>
     </path>
   </path>
 </project>

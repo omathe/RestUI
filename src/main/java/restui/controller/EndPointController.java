@@ -75,7 +75,9 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	private ComboBox<String> method;
 	@FXML
-	private TextField endpoint;
+	private Label endpoint;
+	@FXML
+	private TextField path;
 	@FXML
 	private TextField uri;
 	@FXML
@@ -154,7 +156,8 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		final Endpoint endPoint = (Endpoint) this.treeItem.getValue();
-		endpoint.setText(endPoint.getPath());
+		endpoint.setText(endPoint.getName());
+		path.setText(endPoint.getPath());
 		baseUrl = endPoint.getBaseUrl();
 		method.valueProperty().bindBidirectional(endPoint.methodProperty());
 
@@ -211,7 +214,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			final String endpointUri = endpoint.getText();
+			final String endpointUri = path.getText();
 			final Set<String> tokens = extractTokens(endpointUri, "{", "}");
 			tokens.stream().forEach(token -> {
 				final Parameter parameter = new Parameter(true, Location.PATH, token, "");
@@ -341,7 +344,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		boolean disable = false;
-		String builtUri = endpoint.getText();
+		String builtUri = path.getText();
 
 		// path parameters
 		if (exchange.getRequestParameters().isEmpty()) {
