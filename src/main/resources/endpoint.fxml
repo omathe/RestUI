@@ -141,7 +141,10 @@
                                           <HBox>
                                              <children>
                                                 <Label text="Status :" />
-                                                <Label fx:id="responseStatus" />
+                                                <Label fx:id="responseStatus">
+                                                   <font>
+                                                      <Font size="15.0" />
+                                                   </font></Label>
                                              </children>
                                           </HBox>
                                           <HBox>

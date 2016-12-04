@@ -18,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -32,6 +33,10 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import javafx.util.converter.DefaultStringConverter;
 import restui.model.Endpoint;
 import restui.model.Exchange;
@@ -283,7 +288,13 @@ public class EndPointController extends AbstractController implements Initializa
 				exchange.setStatus(response.getStatus());
 				exchange.setDate(Instant.now().toEpochMilli());
 
-				responseStatus.setText(String.valueOf(response.getStatus()));
+				if (response.getStatus() == 200) {
+					responseStatus.setTextFill(Color.WHITE);
+					responseStatus.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+
+				} else {
+					responseStatus.setText(String.valueOf(response.getStatus()));
+				}
 
 				if (response.getStatus() != 204) {
 
