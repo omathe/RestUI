@@ -75,6 +75,10 @@
     -fx-image: url("images/project.png");
 }
 
+#imageViewPath {
+    -fx-image: url("images/path.png");
+}
+
 #imageViewEndpoint {
     -fx-image: url("images/endpoint.png");
 }

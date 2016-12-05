@@ -213,7 +213,7 @@ Node imageView = new ImageView();
 					addMenu.getItems().add(menuItemEndpoint);
 					addMenu.getItems().add(menuDeleteItem);
 					final Node imageView = new ImageView();
-                    imageView.setId("imageViewProject");
+                    imageView.setId(item instanceof Project ? "imageViewProject" : "imageViewPath");
                     setGraphic(imageView);
 				}
 				else if (item instanceof Endpoint) {
