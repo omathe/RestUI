@@ -185,14 +185,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	public void updateItem(final Item item, final boolean empty) {
 		super.updateItem(item, empty);
 		
-		/*
-Node imageView = new ImageView();
-                        String imageId = resource.isSource() ? "imageViewSource" : "imageViewDestination";
-                        imageView.setId(imageId);
-                        setGraphic(imageView);
-
-		*/
-		
 		if (empty) {
 			setText(null);
 			setGraphic(null);
@@ -204,6 +196,9 @@ Node imageView = new ImageView();
 				setText(null);
 				setGraphic(textField);
 			} else {
+				if (textField != null) {
+					textField.setText(getString());
+				}
 				setText(getString());
 				setGraphic(getTreeItem().getGraphic());
 				setContextMenu(addMenu);
@@ -224,11 +219,6 @@ Node imageView = new ImageView();
                     imageView.setId("imageViewEndpoint");
                     setGraphic(imageView);
 				}
-
-				// if (!getTreeItem().isLeaf() && getTreeItem().getParent() !=
-				// null) {
-				// setContextMenu(addMenu);
-				// }
 			}
 		}
 	}
@@ -256,8 +246,7 @@ Node imageView = new ImageView();
 					getItem().setName(textField.getText());
 					commitEdit(getItem());
 
-					if (getItem() instanceof Path) { // renaming all the
-														// endpoints path
+					if (getItem() instanceof Path) { // renaming all the endpoints path
 						Item currentItem = getItem();
 						while (currentItem.hasChildren()) {
 							for (final Item child : currentItem.getChildren()) {
