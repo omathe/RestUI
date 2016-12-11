@@ -197,7 +197,7 @@
                                           <VBox prefHeight="298.0" prefWidth="354.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
                                                 <Label text="Body" />
-                                                <TextArea fx:id="responseBody" promptText="Body content" VBox.vgrow="ALWAYS" />
+                                                <TextArea fx:id="responseBody" editable="false" promptText="Body content" VBox.vgrow="ALWAYS" />
                                              </children>
                                           </VBox>
                                        </children>

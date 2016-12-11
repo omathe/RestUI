@@ -74,8 +74,7 @@ public class MainController implements Initializable {
 
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
-							final HBox hBox = fxmlLoader
-									.load(MainController.class.getResource("/project.fxml").openStream());
+							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/project.fxml").openStream());
 							hBox.setAlignment(Pos.TOP_LEFT);
 							projectController = (ProjectController) fxmlLoader.getController();
 							projectController.setProject(project);

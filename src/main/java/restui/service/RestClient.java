@@ -70,6 +70,23 @@ public class RestClient {
 		}
 		return response;
 	}
+	
+	public static ClientResponse delete(final String uri) {
+		
+		ClientResponse response = null;
+		final Client client = Client.create();
+
+		try {
+			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri);
+			final WebResource.Builder builder = webResource.getRequestBuilder();
+			response = builder.delete(ClientResponse.class);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
 
 	private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {
 

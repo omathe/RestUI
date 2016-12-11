@@ -1,6 +1,8 @@
 package restui.controller;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -10,15 +12,22 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -33,10 +42,6 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 import javafx.util.converter.DefaultStringConverter;
 import restui.model.Endpoint;
 import restui.model.Exchange;
@@ -200,9 +205,9 @@ public class EndPointController extends AbstractController implements Initializa
 			requestBody.setText(exchange.getRequestBodyProperty().get());
 
 			// response
-			//responseBody.setText(exchange.getResponseBody());
+			// responseBody.setText(exchange.getResponseBody());
 			displayResponseBody(exchange);
-			
+
 			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
 			responseHeaders.setItems(responseHeadersData);
 			// response status
@@ -264,8 +269,8 @@ public class EndPointController extends AbstractController implements Initializa
 	protected void execute(final ActionEvent event) {
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		if (exchange != null) {
 
+		if (exchange != null) {
 			responseBody.setText("");
 			exchange.clearResponseHeaders();
 
@@ -279,8 +284,16 @@ public class EndPointController extends AbstractController implements Initializa
 				response = RestClient.patch(builtUri, requestBody.getText(), exchange.getRequestParameters());
 			} else if (method.getValue().equals("GET")) {
 				response = RestClient.get(builtUri, exchange.getRequestParameters());
+			} else if (method.getValue().equals("DELETE")) {
+				response = RestClient.delete(builtUri);
 			}
-			if (response != null) {
+
+			if (response == null) {
+				responseBody.setText("");
+				responseStatus.setText("0");
+				exchange.setStatus(0);
+			} else {
+				// build response headers
 				response.getHeaders().entrySet().stream().forEach(e -> {
 					for (final String value : e.getValue()) {
 						final Parameter header = new Parameter(true, Location.HEADER, e.getKey(), value);
@@ -290,34 +303,24 @@ public class EndPointController extends AbstractController implements Initializa
 				// response status
 				exchange.setStatus(response.getStatus());
 				exchange.setDate(Instant.now().toEpochMilli());
-
-				if (response.getStatus() == 200) {
-					responseStatus.setTextFill(Color.WHITE);
-					responseStatus.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-
-				} else {
-					responseStatus.setText(String.valueOf(response.getStatus()));
-				}
+				responseStatus.setText(String.valueOf(response.getStatus()));
 
 				if (response.getStatus() != 204) {
 
 					final String output = response.getEntity(String.class);
 					if (output != null && !output.isEmpty()) {
-						displayResponseBody(exchange);
 						exchange.setResponseBody(output);
+						displayResponseBody(exchange);
 					}
 				}
 				response.close();
-			} else {
-				responseBody.setText("");
-				responseStatus.setText("0");
-				exchange.setStatus(0);
 			}
 			exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
 			// refresh tableView (workaround)
 			exchanges.getColumns().get(0).setVisible(false);
 			exchanges.getColumns().get(0).setVisible(true);
 		}
+
 	}
 
 	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {
@@ -379,7 +382,7 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 	private void displayResponseBody(final Exchange exchange) {
-		
+
 		exchange.findResponseHeader("Content-Type").ifPresent(p -> {
 			if (p.getValue().contains("json")) {
 				final ObjectMapper mapper = new ObjectMapper();
@@ -390,8 +393,32 @@ public class EndPointController extends AbstractController implements Initializa
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
+			} else if (p.getValue().contains("xml")) {
+				final StringWriter stringWriter = new StringWriter();
+				try {
+			        final Source xmlInput = new StreamSource(new StringReader(exchange.getResponseBody()));
+			        final StreamResult xmlOutput = new StreamResult(stringWriter);
+			        final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			        final Transformer transformer = transformerFactory.newTransformer(); 
+			        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			        transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
+			        transformer.transform(xmlInput, xmlOutput);
+			        responseBody.setText(xmlOutput.getWriter().toString());
+			    } catch (final Exception e) {
+			    	e.printStackTrace();
+			    }
+				finally {
+					try {
+						stringWriter.close();
+					} catch (final IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
-			
+			else {
+				responseBody.setText(exchange.getResponseBody());
+			}
+
 		});
 	}
 }
