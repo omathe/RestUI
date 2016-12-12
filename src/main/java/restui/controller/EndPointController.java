@@ -280,12 +280,14 @@ public class EndPointController extends AbstractController implements Initializa
 			ClientResponse response = null;
 			if (method.getValue().equals("POST")) {
 				response = RestClient.post(builtUri, requestBody.getText(), exchange.getRequestParameters());
+			} else if (method.getValue().equals("PUT")) {
+				response = RestClient.put(builtUri, requestBody.getText(), exchange.getRequestParameters());
 			} else if (method.getValue().equals("PATCH")) {
 				response = RestClient.patch(builtUri, requestBody.getText(), exchange.getRequestParameters());
 			} else if (method.getValue().equals("GET")) {
 				response = RestClient.get(builtUri, exchange.getRequestParameters());
 			} else if (method.getValue().equals("DELETE")) {
-				response = RestClient.delete(builtUri);
+				response = RestClient.delete(builtUri, exchange.getRequestParameters());
 			}
 
 			if (response == null) {

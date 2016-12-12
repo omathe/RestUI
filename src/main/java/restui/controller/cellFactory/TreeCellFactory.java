@@ -31,6 +31,9 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	private final MenuItem menuItemEndpoint;
 	private final MenuItem menuDeleteItem;
 	private TreeItem<Item> treeItemToMove;
+	private final Node projectImageView;
+	private final Node pathImageView;
+	private final Node endpointImageView;
 
 	@SuppressWarnings("unchecked")
 	public TreeCellFactory(final TreeView<Item> treeView) {
@@ -38,6 +41,12 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		menuItemPath = new MenuItem("New path");
 		menuItemEndpoint = new MenuItem("New endpoint");
 		menuDeleteItem = new MenuItem("Delete");
+		projectImageView = new ImageView();
+		pathImageView = new ImageView();
+		endpointImageView = new ImageView();
+		projectImageView.setId("imageViewProject");
+		endpointImageView.setId("imageViewEndpoint");
+		pathImageView.setId("imageViewPath");
 
 		menuItemPath.setOnAction(new EventHandler() {
 			@Override
@@ -49,7 +58,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				getTreeItem().getChildren().add(newItem);
 				treeView.getSelectionModel().select(newItem);
 				getTreeItem().setExpanded(true);
-				startEdit();
 			}
 		});
 
@@ -206,22 +214,18 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				}
 				setText(getString());
 				setGraphic(getTreeItem().getGraphic());
+				
+				// contextual menu
 				setContextMenu(addMenu);
-
+				addMenu.getItems().clear();
 				if (item instanceof Project || item instanceof Path) {
 					addMenu.getItems().add(menuItemPath);
 					addMenu.getItems().add(menuItemEndpoint);
 					addMenu.getItems().add(menuDeleteItem);
-					final Node imageView = new ImageView();
-					imageView.setId(item instanceof Project ? "imageViewProject" : "imageViewPath");
-					setGraphic(imageView);
+					setGraphic(item instanceof Project ? projectImageView : pathImageView);
 				} else if (item instanceof Endpoint) {
-					if (!addMenu.getItems().contains(menuDeleteItem)) {
-						addMenu.getItems().add(menuDeleteItem);
-					}
-					final Node imageView = new ImageView();
-					imageView.setId("imageViewEndpoint");
-					setGraphic(imageView);
+					addMenu.getItems().add(menuDeleteItem);
+					setGraphic(endpointImageView);
 				}
 			}
 		}
