@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Wanesy" baseUrl="http://192.168.4.25:8082">
+  <path name="wanesyversion">
+    <endpoint name="getWanesyVersion" path="/wanesyversion" method="GET">
+      <exchanges>
+        <exchange name="echange" date="1481554061159" status="200">
+          <request uri="http://192.168.4.25:8082/wanesyversion">
+            <body />
+            <parameters />
+          </request>
+          <response status="200">
+            <body>1.0.0</body>
+            <headers>
+              <header name="Content-Length" value="5" />
+              <header name="Date" value="Mon, 12 Dec 2016 14:47:38 GMT" />
+              <header name="Content-Type" value="text/html;charset=ISO-8859-1" />
+            </headers>
+          </response>
+        </exchange>
+      </exchanges>
+    </endpoint>
+  </path>
+  <path name="lorastations">
+    <path name="{serialNumber}">
+      <path name="configurations">
+        <endpoint name="getConfigurationsHistoric" path="/lorastations/{serialNumber}/configurations" method="GET">
+          <exchanges>
+            <exchange name="OK" date="1481554807093" status="200">
+              <request uri="http://192.168.4.25:8082/lorastations/080E0F9F/configurations?startDate=1478959595987&amp;endDate=1481551699741">
+                <body />
+                <parameters>
+                  <parameter enabled="true" location="PATH" name="serialNumber" value="080E0F9F" />
+                  <parameter enabled="true" location="QUERY" name="startDate" value="1478959595987" />
+                  <parameter enabled="true" location="QUERY" name="endDate" value="1481551699741" />
+                </parameters>
+              </request>
+              <response status="200">
+                <body>{"count":2,"pageSize":2,"page":1,"dtos":[{"lastSuccessQueryDate":null,"serialNumber":null,"hash":"a8:8c:bb:45:5b:18:a2:07:23:de:46:7f:82:c9:f5:0e","rollBackTmoMn":null,"statsPeriod":1,"whitelist":"","configRadio":null,"powerThreshold":-100,"durationThreshold":10,"sourceAux":"NTP","periodResolution":"PR1HOUR","ntp1":"0.fr.pool.ntp.org","ntp2":"1.fr.pool.ntp.org","ptpMaster":"FALSE","configVpn":null,"queryReportsWsyDtos":[{"providedFields":[],"visibleFields":["startInstant","queryTime","endInstant","comparisonDone"],"startInstant":20161208,"endInstant":20161212,"comparisonDone":true}],"apn":"m2minternet","pinCode":"0000","login":"","password":"","dhcp":"TRUE","defaultIp":"127.0.0.1","defaultBroadcast":"255.255.255.255","defaultGateway":"127.0.0.1","ssid":"my-wifi-klk","mode":"UNKNOWN","passwordWlan":"abcdef12345678"},{"lastSuccessQueryDate":null,"serialNumber":null,"hash":"6b:08:72:05:d3:d4:3e:95:8b:54:16:cc:38:da:7f:84","rollBackTmoMn":null,"statsPeriod":1,"whitelist":"","configRadio":null,"powerThreshold":-100,"durationThreshold":10,"sourceAux":"NTP","periodResolution":"PR1HOUR","ntp1":"0.fr.pool.ntp.org","ntp2":"1.fr.pool.ntp.org","ptpMaster":"FALSE","configVpn":null,"queryReportsWsyDtos":[{"providedFields":[],"visibleFields":["startInstant","queryTime","endInstant","comparisonDone"],"startInstant":20161012,"endInstant":20161208,"comparisonDone":true}],"apn":"m2minternet","pinCode":"0000","login":"","password":"","dhcp":"TRUE","defaultIp":"127.0.0.1","defaultBroadcast":"255.255.255.255","defaultGateway":"127.0.0.1","ssid":"my-wifi-klk","mode":"UNKNOWN","passwordWlan":"abcdef12345678"}],"totalCount":2,"nbPages":1}</body>
+                <headers>
+                  <header name="Transfer-Encoding" value="chunked" />
+                  <header name="Date" value="Mon, 12 Dec 2016 15:00:05 GMT" />
+                  <header name="Content-Type" value="application/json;charset=UTF-8" />
+                </headers>
+              </response>
+            </exchange>
+            <exchange name="KO" date="1481554906245" status="400">
+              <request uri="http://192.168.4.25:8082/lorastations/080E08F1/configurations?startDate=1478959595987&amp;endDate=1481551699741">
+                <body />
+                <parameters>
+                  <parameter enabled="true" location="PATH" name="serialNumber" value="080E08F1" />
+                  <parameter enabled="true" location="QUERY" name="startDate" value="1478959595987" />
+                  <parameter enabled="true" location="QUERY" name="endDate" value="1481551699741" />
+                </parameters>
+              </request>
+              <response status="400">
+                <body>{"errorCode":"BAD_PARAMETER","details":"unknown SourceAux null"}</body>
+                <headers>
+                  <header name="Transfer-Encoding" value="chunked" />
+                  <header name="Connection" value="close" />
+                  <header name="Date" value="Mon, 12 Dec 2016 15:01:45 GMT" />
+                  <header name="Content-Type" value="application/json;charset=UTF-8" />
+                </headers>
+              </response>
+            </exchange>
+          </exchanges>
+        </endpoint>
+      </path>
+    </path>
+  </path>
+</project>
