@@ -49,6 +49,25 @@ public class RestClient {
 		}
 		return response;
 	}
+	
+	public static ClientResponse put(final String uri, final String body, final List<Parameter> parameters) {
+		
+		ClientResponse response = null;
+		final Client client = Client.create();
+		
+		try {
+			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri);
+			final WebResource.Builder builder = webResource.getRequestBuilder();
+			addHeaders(builder, parameters);
+			addParameters(webResource, parameters);
+			response = builder.put(ClientResponse.class, body);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
 
 	public static ClientResponse patch(final String uri, final String body, final List<Parameter> parameters) {
 
@@ -56,8 +75,7 @@ public class RestClient {
 		final Client client = Client.create();
 		try {
 			final DefaultClientConfig config = new DefaultClientConfig();
-			config.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND,
-					true);
+			config.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
 			final WebResource webResource = Client.create(config).resource(uri);
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 			addHeaders(builder, parameters);
@@ -71,7 +89,7 @@ public class RestClient {
 		return response;
 	}
 	
-	public static ClientResponse delete(final String uri) {
+	public static ClientResponse delete(final String uri, final List<Parameter> parameters) {
 		
 		ClientResponse response = null;
 		final Client client = Client.create();
@@ -79,6 +97,7 @@ public class RestClient {
 		try {
 			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri);
 			final WebResource.Builder builder = webResource.getRequestBuilder();
+			addHeaders(builder, parameters);
 			response = builder.delete(ClientResponse.class);
 		} catch (final Exception e) {
 			e.printStackTrace();
