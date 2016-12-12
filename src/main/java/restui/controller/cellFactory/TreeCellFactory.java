@@ -50,7 +50,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				treeView.getSelectionModel().select(newItem);
 				getTreeItem().setExpanded(true);
 				startEdit();
-
 			}
 		});
 
