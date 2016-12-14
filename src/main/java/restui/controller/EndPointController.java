@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +31,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -112,6 +116,51 @@ public class EndPointController extends AbstractController implements Initializa
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		System.out.println("initialize");
+
+		// start
+		final ContextMenu contextMenu = new ContextMenu();
+		final MenuItem menuItemCopy = new MenuItem("Copy");
+		final MenuItem menuItemPaste = new MenuItem("Paste");
+		contextMenu.getItems().addAll(menuItemCopy, menuItemPaste);
+		parameters.setContextMenu(contextMenu);
+
+		parameters.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		menuItemCopy.setOnAction(e -> {
+			final List<Parameter> selectedParameters = parameters.getSelectionModel().getSelectedItems();
+			ObjectClipboard.getInstance().setParameters(selectedParameters);
+		});
+		menuItemPaste.setOnAction(e -> {
+			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+			if (exchange != null) {
+				final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
+				for (final Parameter p : parameters) {
+					exchange.addRequestParameter(p);
+				}
+			}
+		});
+		
+//		menuItemCopy.setOnAction(new EventHandler() {
+//			@Override
+//			public void handle(final Event t) {
+//				final Parameter parameter = parameters.getSelectionModel().getSelectedItem();
+//				final List<Parameter> selectedParameters = parameters.getSelectionModel().getSelectedItems();
+//				ObjectClipboard.getInstance().setParameters(selectedParameters);
+//			}
+//		});
+//		menuItemPaste.setOnAction(new EventHandler() {
+//			@Override
+//			public void handle(final Event t) {
+//				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+//				if (exchange != null) {
+//					final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
+//					for (final Parameter p : parameters) {
+//						exchange.addRequestParameter(p);
+//					}
+//				}
+//			}
+//		});
+		// end
 
 		// request parameters
 		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell<>());
@@ -398,26 +447,24 @@ public class EndPointController extends AbstractController implements Initializa
 			} else if (p.getValue().contains("xml")) {
 				final StringWriter stringWriter = new StringWriter();
 				try {
-			        final Source xmlInput = new StreamSource(new StringReader(exchange.getResponseBody()));
-			        final StreamResult xmlOutput = new StreamResult(stringWriter);
-			        final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			        final Transformer transformer = transformerFactory.newTransformer(); 
-			        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			        transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
-			        transformer.transform(xmlInput, xmlOutput);
-			        responseBody.setText(xmlOutput.getWriter().toString());
-			    } catch (final Exception e) {
-			    	e.printStackTrace();
-			    }
-				finally {
+					final Source xmlInput = new StreamSource(new StringReader(exchange.getResponseBody()));
+					final StreamResult xmlOutput = new StreamResult(stringWriter);
+					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+					final Transformer transformer = transformerFactory.newTransformer();
+					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+					transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
+					transformer.transform(xmlInput, xmlOutput);
+					responseBody.setText(xmlOutput.getWriter().toString());
+				} catch (final Exception e) {
+					e.printStackTrace();
+				} finally {
 					try {
 						stringWriter.close();
 					} catch (final IOException e) {
 						e.printStackTrace();
 					}
 				}
-			}
-			else {
+			} else {
 				responseBody.setText(exchange.getResponseBody());
 			}
 

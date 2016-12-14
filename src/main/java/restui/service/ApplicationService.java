@@ -56,10 +56,10 @@ public class ApplicationService {
 		if (project != null) {
 			final Element projectElement = buildElement(null, project);
 			browseTree(project, projectElement);
-			
+
 			final XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
 			final Document document = new Document(projectElement);
-			
+
 			final File projectFile = new File(getHomeDirectory() + File.separator + project.getName() + ".xml");
 			try {
 				output.output(document, new FileOutputStream(projectFile));
