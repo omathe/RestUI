@@ -1,16 +1,29 @@
+group 'no.tornado'
+version '1.0'
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'no.tornado.fxlauncher'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.14'
+    }
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '1.0'
+/*version = '1.0'
 jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle Quickstart',
                    'Implementation-Version': version
     }
-}
+}*/
 
 repositories {
     mavenCentral()
@@ -24,6 +37,7 @@ dependencies {
     compile group: 'com.sun.jersey', name: 'jersey-client', version: '1.9.1'
     compile group: 'org.jdom', name: 'jdom', version: '2.0.2'
     
+    compile 'no.tornado:fxlauncher:1.0.8'
 }
 
 test {
@@ -45,3 +59,17 @@ eclipse {
 		containers 'org.eclipse.jdt.launching.JRE_CONTAINER'
 	}
 }
+
+fxlauncher {
+    applicationVendor 'omathe'
+    applicationUrl 'http://omathe.free.fr/restui'
+    applicationMainClass 'restui.gui.RestUiApp'
+    acceptDowngrade false
+    deployTarget 'w48839@fxldemo.tornado.no:fxldemo'
+}
+
+task hello << {
+	println project.property('org.gradle.java.home')
+}
+
+

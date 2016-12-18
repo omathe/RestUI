@@ -81,6 +81,7 @@
 															<String fx:value="POST" />
 															<String fx:value="PUT" />
 															<String fx:value="DELETE" />
+															<String fx:value="PATCH" />
 														</FXCollections>
 													</items>
 													<value>

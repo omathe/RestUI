@@ -1,6 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="OSS" baseUrl="http://192.168.5.11:8080/oss/rest">
   <path name="application">
+    <endpoint name="getApplication" path="/application" method="GET">
+      <exchanges>
+        <exchange name="echange" date="1481562704849" status="200">
+          <request uri="http://192.168.5.11:8080/oss/rest/application">
+            <body />
+            <parameters />
+          </request>
+          <response status="200">
+            <body>{"wanesyBuildDate":null,"vendor":"Kerlink","name":"oss","description":"REST web services API","links":[{"rel":"repo","href":"/application/repo"},{"rel":"roles","href":"/application/roles"},{"rel":"fleets","href":"/application/fleets"},{"rel":"tasks","href":"/application/tasks"},{"rel":"login","href":"/application/login"},{"rel":"clusters","href":"/application/clusters"},{"rel":"self","href":"/application"},{"rel":"customers","href":"/application/customers"},{"rel":"authenticatedUser","href":"/application/authenticatedUser"}],"buildDate":null,"wanesyStatus":"OK","maxStationVersion":"2","lnsStatus":"OK","version":null,"wanesyVersion":"1.0.0","lnsVersion":"0.9.5-43-g84f7890"}</body>
+            <headers>
+              <header name="Transfer-Encoding" value="chunked" />
+              <header name="X-Frame-Options" value="DENY" />
+              <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+              <header name="X-Content-Type-Options" value="nosniff" />
+              <header name="Expires" value="0" />
+              <header name="Pragma" value="no-cache" />
+              <header name="X-XSS-Protection" value="1; mode=block" />
+              <header name="X-Application-Context" value="application:loc:8080" />
+              <header name="Date" value="Mon, 12 Dec 2016 17:11:44 GMT" />
+              <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+            </headers>
+          </response>
+        </exchange>
+      </exchanges>
+    </endpoint>
+    <path name="tasks">
+      <endpoint name="getTasks" path="/application/tasks" method="GET">
+        <exchanges>
+          <exchange name="echange" date="1481105789587" status="200">
+            <request uri="http://192.168.5.11:8080/oss/rest/application/tasks">
+              <body />
+              <parameters>
+                <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxMTM0NDE5fQ.PTsWUuDhI59u_Yojutv30Jfv9agq4Gsmvw1fWKeI16k" />
+              </parameters>
+            </request>
+            <response status="200">
+              <body>{"count":21,"pageSize":50,"page":1,"totalCount":21,"list":[{"id":659,"creationDate":1481102521758,"action":"FILE_EXCHANGE_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/get/taskId?filePath=/mnt/fsuser-1/fw_version.txt","serialNumber":"080E0F9F","sendParameters":{"fileDestination":"/application/repo?location=exchange&amp;fileName=a4fa482e-2aec-466b-92cc-a97c69543590","fileSource":"/mnt/fsuser-1/fw_version.txt","direction":"upload"},"criteria":{"fileExchangeName":"a4fa482e-2aec-466b-92cc-a97c69543590","customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"Error (3)","links":[{"rel":"messages","href":"/application/tasks/659/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.659"},{"rel":"self","href":"/application/tasks/659"}]},{"id":657,"creationDate":1481102387116,"action":"FILE_EXCHANGE_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/get/taskId?filePath=/mnt/fsuser-1/fw_version.txt","serialNumber":"080E0F9F","sendParameters":{"fileDestination":"/application/repo?location=exchange&amp;fileName=51a45d28-08dc-43f0-b71f-9e2b95a40d1e","fileSource":"/mnt/fsuser-1/fw_version.txt","direction":"upload"},"criteria":{"fileExchangeName":"51a45d28-08dc-43f0-b71f-9e2b95a40d1e","customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"Error (3)","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.657"},{"rel":"self","href":"/application/tasks/657"},{"rel":"messages","href":"/application/tasks/657/messages"}]},{"id":655,"creationDate":1481101540945,"action":"FILE_EXCHANGE_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/get/taskId?filePath=/mnt/fsuser-1","serialNumber":"080E0F9F","sendParameters":{"fileDestination":"/application/repo?location=exchange&amp;fileName=e9af7d99-3261-4517-92d3-64b65867c01d","fileSource":"/mnt/fsuser-1","direction":"upload"},"criteria":{"fileExchangeName":"e9af7d99-3261-4517-92d3-64b65867c01d","customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"Error (3)","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.655"},{"rel":"messages","href":"/application/tasks/655/messages"},{"rel":"self","href":"/application/tasks/655"}]},{"id":645,"creationDate":1481017698112,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.645"},{"rel":"self","href":"/application/tasks/645"},{"rel":"messages","href":"/application/tasks/645/messages"}]},{"id":643,"creationDate":1481017654417,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"messages","href":"/application/tasks/643/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.643"},{"rel":"self","href":"/application/tasks/643"}]},{"id":641,"creationDate":1481017401992,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"self","href":"/application/tasks/641"},{"rel":"messages","href":"/application/tasks/641/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.641"}]},{"id":639,"creationDate":1481017298481,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"messages","href":"/application/tasks/639/messages"},{"rel":"self","href":"/application/tasks/639"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.639"}]},{"id":637,"creationDate":1481017247822,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"messages","href":"/application/tasks/637/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.637"},{"rel":"self","href":"/application/tasks/637"}]},{"id":635,"creationDate":1481017193311,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.635"},{"rel":"self","href":"/application/tasks/635"},{"rel":"messages","href":"/application/tasks/635/messages"}]},{"id":633,"creationDate":1481017056770,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.633"},{"rel":"messages","href":"/application/tasks/633/messages"},{"rel":"self","href":"/application/tasks/633"}]},{"id":631,"creationDate":1481016814467,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"self","href":"/application/tasks/631"},{"rel":"messages","href":"/application/tasks/631/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.631"}]},{"id":629,"creationDate":1481016751659,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"self","href":"/application/tasks/629"},{"rel":"messages","href":"/application/tasks/629/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.629"}]},{"id":625,"creationDate":1480959492880,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.625"},{"rel":"self","href":"/application/tasks/625"},{"rel":"messages","href":"/application/tasks/625/messages"}]},{"id":622,"creationDate":1480959382928,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.622"},{"rel":"self","href":"/application/tasks/622"},{"rel":"messages","href":"/application/tasks/622/messages"}]},{"id":620,"creationDate":1480958883910,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"self","href":"/application/tasks/620"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.620"},{"rel":"messages","href":"/application/tasks/620/messages"}]},{"id":618,"creationDate":1480958730444,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"self","href":"/application/tasks/618"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.618"},{"rel":"messages","href":"/application/tasks/618/messages"}]},{"id":616,"creationDate":1480958445315,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"messages","href":"/application/tasks/616/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.616"},{"rel":"self","href":"/application/tasks/616"}]},{"id":612,"creationDate":1480929397034,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.612"},{"rel":"self","href":"/application/tasks/612"},{"rel":"messages","href":"/application/tasks/612/messages"}]},{"id":611,"creationDate":1480929277692,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"PENDING","message":"The task is currently being processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.611"},{"rel":"messages","href":"/application/tasks/611/messages"},{"rel":"self","href":"/application/tasks/611"}]},{"id":610,"creationDate":1480929198363,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/oss/rest/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"messages","href":"/application/tasks/610/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.610"},{"rel":"self","href":"/application/tasks/610"}]},{"id":609,"creationDate":1480928241640,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"PENDING","message":"The task is currently being processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"messages","href":"/application/tasks/609/messages"},{"rel":"self","href":"/application/tasks/609"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.609"}]}],"nbPages":1}</body>
+              <headers>
+                <header name="Transfer-Encoding" value="chunked" />
+                <header name="X-Frame-Options" value="DENY" />
+                <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                <header name="X-Content-Type-Options" value="nosniff" />
+                <header name="Expires" value="0" />
+                <header name="Pragma" value="no-cache" />
+                <header name="X-XSS-Protection" value="1; mode=block" />
+                <header name="X-Application-Context" value="application:loc:8080" />
+                <header name="Date" value="Wed, 07 Dec 2016 10:16:29 GMT" />
+                <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+              </headers>
+            </response>
+          </exchange>
+        </exchanges>
+      </endpoint>
+      <path name="{taskId}">
+        <endpoint name="getTask" path="/application/tasks/{taskId}" method="GET">
+          <exchanges>
+            <exchange name="echange" date="1481532257306" status="200">
+              <request uri="http://192.168.5.11:8080/oss/rest/application/tasks/657">
+                <body />
+                <parameters>
+                  <parameter enabled="true" location="PATH" name="taskId" value="657" />
+                  <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                </parameters>
+              </request>
+              <response status="200">
+                <body>{"serialNumber":"080E0F9F","sendParameters":{"fileDestination":"/application/repo?location=exchange&amp;fileName=51a45d28-08dc-43f0-b71f-9e2b95a40d1e","fileSource":"/mnt/fsuser-1/fw_version.txt","direction":"upload"},"criteria":{"fileExchangeName":"51a45d28-08dc-43f0-b71f-9e2b95a40d1e","customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"errorMessage":"Error (3)","action":"FILE_EXCHANGE_EXECUTE","errorCode":null,"callerPath":"/application/customers/1/fleets/1/equipments/1/commands/get/taskId?filePath=/mnt/fsuser-1/fw_version.txt","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.657"},{"rel":"self","href":"/application/tasks/657"},{"rel":"messages","href":"/application/tasks/657/messages"}],"id":657,"creationDate":1481102387116,"message":"The task has failed, see erroMessage for more details.","status":"KO"}</body>
+                <headers>
+                  <header name="Transfer-Encoding" value="chunked" />
+                  <header name="X-Frame-Options" value="DENY" />
+                  <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                  <header name="X-Content-Type-Options" value="nosniff" />
+                  <header name="Expires" value="0" />
+                  <header name="Pragma" value="no-cache" />
+                  <header name="X-XSS-Protection" value="1; mode=block" />
+                  <header name="X-Application-Context" value="application:loc:8080" />
+                  <header name="Date" value="Mon, 12 Dec 2016 08:44:17 GMT" />
+                  <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                </headers>
+              </response>
+            </exchange>
+          </exchanges>
+        </endpoint>
+      </path>
+    </path>
     <path name="login">
       <endpoint name="login" path="/application/login" method="POST">
         <exchanges>
@@ -33,136 +117,21 @@
         </exchanges>
       </endpoint>
     </path>
-    <path name="fleets">
-      <path name="{fleetId}">
-        <endpoint name="updateFleet" path="/application/fleets/{fleetId}" method="PUT">
-          <exchanges>
-            <exchange name="OK" date="1481561946962" status="204">
-              <request uri="http://192.168.5.11:8080/oss/rest/application/fleets/699">
-                <body>{
-"name":"fleet 3 updated"
-}</body>
-                <parameters>
-                  <parameter enabled="true" location="PATH" name="fleetId" value="699" />
-                  <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
-                  <parameter enabled="true" location="HEADER" name="Content-Type" value="application/vnd.kerlink.iot-v1+json" />
-                </parameters>
-              </request>
-              <response status="204">
-                <body>&lt;html&gt;&lt;body&gt;&lt;h1&gt;Whitelabel Error Page&lt;/h1&gt;&lt;p&gt;This application has no explicit mapping for /error, so you are seeing this as a fallback.&lt;/p&gt;&lt;div id='created'&gt;Mon Dec 12 17:58:36 CET 2016&lt;/div&gt;&lt;div&gt;There was an unexpected error (type=Unsupported Media Type, status=415).&lt;/div&gt;&lt;div&gt;Content type &amp;#39;text/plain&amp;#39; not supported&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</body>
-                <headers>
-                  <header name="X-Frame-Options" value="DENY" />
-                  <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
-                  <header name="X-Content-Type-Options" value="nosniff" />
-                  <header name="Expires" value="0" />
-                  <header name="Pragma" value="no-cache" />
-                  <header name="X-XSS-Protection" value="1; mode=block" />
-                  <header name="X-Application-Context" value="application:loc:8080" />
-                  <header name="Date" value="Mon, 12 Dec 2016 16:59:06 GMT" />
-                </headers>
-              </response>
-            </exchange>
-          </exchanges>
-        </endpoint>
-      </path>
-      <endpoint name="createFleet" path="/application/fleets" method="POST">
+    <path name="customers">
+      <endpoint name="getCustomers" path="/application/customers" method="GET">
         <exchanges>
-          <exchange name="echange" date="1481561844003" status="201">
-            <request uri="http://192.168.5.11:8080/oss/rest/application/fleets">
-              <body>{
-"name":"fleet 3"
-}</body>
-              <parameters>
-                <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
-                <parameter enabled="true" location="HEADER" name="Content-Type" value="application/vnd.kerlink.iot-v1+json" />
-              </parameters>
-            </request>
-            <response status="201">
-              <body>&lt;html&gt;&lt;body&gt;&lt;h1&gt;Whitelabel Error Page&lt;/h1&gt;&lt;p&gt;This application has no explicit mapping for /error, so you are seeing this as a fallback.&lt;/p&gt;&lt;div id='created'&gt;Mon Dec 12 17:56:55 CET 2016&lt;/div&gt;&lt;div&gt;There was an unexpected error (type=Unsupported Media Type, status=415).&lt;/div&gt;&lt;div&gt;Content type &amp;#39;text/plain&amp;#39; not supported&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</body>
-              <headers>
-                <header name="X-Frame-Options" value="DENY" />
-                <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
-                <header name="X-Content-Type-Options" value="nosniff" />
-                <header name="Expires" value="0" />
-                <header name="Pragma" value="no-cache" />
-                <header name="Content-Length" value="0" />
-                <header name="X-XSS-Protection" value="1; mode=block" />
-                <header name="X-Application-Context" value="application:loc:8080" />
-                <header name="Date" value="Mon, 12 Dec 2016 16:57:24 GMT" />
-                <header name="Location" value="/application/fleets/699" />
-              </headers>
-            </response>
-          </exchange>
-        </exchanges>
-      </endpoint>
-    </path>
-    <endpoint name="getApplication" path="/application" method="GET">
-      <exchanges>
-        <exchange name="echange" date="1481560611908" status="200">
-          <request uri="http://192.168.5.11:8080/oss/rest/application">
-            <body />
-            <parameters />
-          </request>
-          <response status="200">
-            <body>{"wanesyBuildDate":null,"vendor":"Kerlink","name":"oss","description":"REST web services API","links":[{"rel":"repo","href":"/application/repo"},{"rel":"roles","href":"/application/roles"},{"rel":"fleets","href":"/application/fleets"},{"rel":"tasks","href":"/application/tasks"},{"rel":"login","href":"/application/login"},{"rel":"clusters","href":"/application/clusters"},{"rel":"self","href":"/application"},{"rel":"customers","href":"/application/customers"},{"rel":"authenticatedUser","href":"/application/authenticatedUser"}],"buildDate":"1475765843374","wanesyStatus":"OK","maxStationVersion":"2","lnsStatus":"OK","version":"1.4.6","wanesyVersion":"1.0.0","lnsVersion":"0.9.5-43-g84f7890"}</body>
-            <headers>
-              <header name="Transfer-Encoding" value="chunked" />
-              <header name="X-Frame-Options" value="DENY" />
-              <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
-              <header name="X-Content-Type-Options" value="nosniff" />
-              <header name="Expires" value="0" />
-              <header name="Pragma" value="no-cache" />
-              <header name="X-XSS-Protection" value="1; mode=block" />
-              <header name="X-Application-Context" value="application:loc:8080" />
-              <header name="Date" value="Mon, 12 Dec 2016 16:36:51 GMT" />
-              <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
-            </headers>
-          </response>
-        </exchange>
-      </exchanges>
-    </endpoint>
-    <path name="tasks">
-      <path name="{taskId}">
-        <endpoint name="getTask" path="/application/tasks/{taskId}" method="GET">
-          <exchanges>
-            <exchange name="echange" date="1481532257306" status="200">
-              <request uri="http://192.168.5.11:8080/oss/rest/application/tasks/657">
-                <body />
-                <parameters>
-                  <parameter enabled="true" location="PATH" name="taskId" value="657" />
-                  <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
-                </parameters>
-              </request>
-              <response status="200">
-                <body>{"serialNumber":"080E0F9F","sendParameters":{"fileDestination":"/application/repo?location=exchange&amp;fileName=51a45d28-08dc-43f0-b71f-9e2b95a40d1e","fileSource":"/mnt/fsuser-1/fw_version.txt","direction":"upload"},"criteria":{"fileExchangeName":"51a45d28-08dc-43f0-b71f-9e2b95a40d1e","customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"errorMessage":"Error (3)","action":"FILE_EXCHANGE_EXECUTE","errorCode":null,"callerPath":"/application/customers/1/fleets/1/equipments/1/commands/get/taskId?filePath=/mnt/fsuser-1/fw_version.txt","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.657"},{"rel":"self","href":"/application/tasks/657"},{"rel":"messages","href":"/application/tasks/657/messages"}],"id":657,"creationDate":1481102387116,"message":"The task has failed, see erroMessage for more details.","status":"KO"}</body>
-                <headers>
-                  <header name="Transfer-Encoding" value="chunked" />
-                  <header name="X-Frame-Options" value="DENY" />
-                  <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
-                  <header name="X-Content-Type-Options" value="nosniff" />
-                  <header name="Expires" value="0" />
-                  <header name="Pragma" value="no-cache" />
-                  <header name="X-XSS-Protection" value="1; mode=block" />
-                  <header name="X-Application-Context" value="application:loc:8080" />
-                  <header name="Date" value="Mon, 12 Dec 2016 08:44:17 GMT" />
-                  <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
-                </headers>
-              </response>
-            </exchange>
-          </exchanges>
-        </endpoint>
-      </path>
-      <endpoint name="getTasks" path="/application/tasks" method="GET">
-        <exchanges>
-          <exchange name="echange" date="1481105789587" status="200">
-            <request uri="http://192.168.5.11:8080/oss/rest/application/tasks">
+          <exchange name="echange" date="1481798835220" status="200">
+            <request uri="http://192.168.5.11:8080/oss/rest/application/customers?pageSize=50&amp;page=1">
               <body />
               <parameters>
-                <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxMTM0NDE5fQ.PTsWUuDhI59u_Yojutv30Jfv9agq4Gsmvw1fWKeI16k" />
+                <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxODI1NjQwfQ.jNWT4gKq1Ve9Ab8KB1ueP_OSCUadFXG6bMGK8j62oDQ" />
+                <parameter enabled="true" location="QUERY" name="page" value="1" />
+                <parameter enabled="true" location="QUERY" name="pageSize" value="50" />
+                <parameter enabled="false" location="QUERY" name="fields" value="name" />
               </parameters>
             </request>
             <response status="200">
-              <body>{"count":21,"pageSize":50,"page":1,"totalCount":21,"list":[{"id":659,"creationDate":1481102521758,"action":"FILE_EXCHANGE_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/get/taskId?filePath=/mnt/fsuser-1/fw_version.txt","serialNumber":"080E0F9F","sendParameters":{"fileDestination":"/application/repo?location=exchange&amp;fileName=a4fa482e-2aec-466b-92cc-a97c69543590","fileSource":"/mnt/fsuser-1/fw_version.txt","direction":"upload"},"criteria":{"fileExchangeName":"a4fa482e-2aec-466b-92cc-a97c69543590","customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"Error (3)","links":[{"rel":"messages","href":"/application/tasks/659/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.659"},{"rel":"self","href":"/application/tasks/659"}]},{"id":657,"creationDate":1481102387116,"action":"FILE_EXCHANGE_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/get/taskId?filePath=/mnt/fsuser-1/fw_version.txt","serialNumber":"080E0F9F","sendParameters":{"fileDestination":"/application/repo?location=exchange&amp;fileName=51a45d28-08dc-43f0-b71f-9e2b95a40d1e","fileSource":"/mnt/fsuser-1/fw_version.txt","direction":"upload"},"criteria":{"fileExchangeName":"51a45d28-08dc-43f0-b71f-9e2b95a40d1e","customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"Error (3)","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.657"},{"rel":"self","href":"/application/tasks/657"},{"rel":"messages","href":"/application/tasks/657/messages"}]},{"id":655,"creationDate":1481101540945,"action":"FILE_EXCHANGE_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/get/taskId?filePath=/mnt/fsuser-1","serialNumber":"080E0F9F","sendParameters":{"fileDestination":"/application/repo?location=exchange&amp;fileName=e9af7d99-3261-4517-92d3-64b65867c01d","fileSource":"/mnt/fsuser-1","direction":"upload"},"criteria":{"fileExchangeName":"e9af7d99-3261-4517-92d3-64b65867c01d","customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"Error (3)","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.655"},{"rel":"messages","href":"/application/tasks/655/messages"},{"rel":"self","href":"/application/tasks/655"}]},{"id":645,"creationDate":1481017698112,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.645"},{"rel":"self","href":"/application/tasks/645"},{"rel":"messages","href":"/application/tasks/645/messages"}]},{"id":643,"creationDate":1481017654417,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"messages","href":"/application/tasks/643/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.643"},{"rel":"self","href":"/application/tasks/643"}]},{"id":641,"creationDate":1481017401992,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"self","href":"/application/tasks/641"},{"rel":"messages","href":"/application/tasks/641/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.641"}]},{"id":639,"creationDate":1481017298481,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"messages","href":"/application/tasks/639/messages"},{"rel":"self","href":"/application/tasks/639"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.639"}]},{"id":637,"creationDate":1481017247822,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"messages","href":"/application/tasks/637/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.637"},{"rel":"self","href":"/application/tasks/637"}]},{"id":635,"creationDate":1481017193311,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.635"},{"rel":"self","href":"/application/tasks/635"},{"rel":"messages","href":"/application/tasks/635/messages"}]},{"id":633,"creationDate":1481017056770,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.633"},{"rel":"messages","href":"/application/tasks/633/messages"},{"rel":"self","href":"/application/tasks/633"}]},{"id":631,"creationDate":1481016814467,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"self","href":"/application/tasks/631"},{"rel":"messages","href":"/application/tasks/631/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.631"}]},{"id":629,"creationDate":1481016751659,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"self","href":"/application/tasks/629"},{"rel":"messages","href":"/application/tasks/629/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.629"}]},{"id":625,"creationDate":1480959492880,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"OK","message":"The task has successfully been processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.625"},{"rel":"self","href":"/application/tasks/625"},{"rel":"messages","href":"/application/tasks/625/messages"}]},{"id":622,"creationDate":1480959382928,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.622"},{"rel":"self","href":"/application/tasks/622"},{"rel":"messages","href":"/application/tasks/622/messages"}]},{"id":620,"creationDate":1480958883910,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"self","href":"/application/tasks/620"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.620"},{"rel":"messages","href":"/application/tasks/620/messages"}]},{"id":618,"creationDate":1480958730444,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"self","href":"/application/tasks/618"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.618"},{"rel":"messages","href":"/application/tasks/618/messages"}]},{"id":616,"creationDate":1480958445315,"action":"GET_CONTROLS","callerPath":"/application/customers/1/fleets/1/equipments/1/control/taskId","serialNumber":"080E0F9F","sendParameters":{"nodes":"[\"door\",\"rssi\",\"diskUser\",\"temperature\",\"diskSystem\",\"cpu\",\"gps\",\"ram\"]"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"messages","href":"/application/tasks/616/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.616"},{"rel":"self","href":"/application/tasks/616"}]},{"id":612,"creationDate":1480929397034,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.612"},{"rel":"self","href":"/application/tasks/612"},{"rel":"messages","href":"/application/tasks/612/messages"}]},{"id":611,"creationDate":1480929277692,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"PENDING","message":"The task is currently being processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.611"},{"rel":"messages","href":"/application/tasks/611/messages"},{"rel":"self","href":"/application/tasks/611"}]},{"id":610,"creationDate":1480929198363,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"/oss/rest/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"KO","message":"The task has failed, see erroMessage for more details.","errorCode":null,"errorMessage":"It seems that the equipment is unreachable","links":[{"rel":"messages","href":"/application/tasks/610/messages"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.610"},{"rel":"self","href":"/application/tasks/610"}]},{"id":609,"creationDate":1480928241640,"action":"SPECIFIC_COMMAND_EXECUTE","callerPath":"http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/commands/ls/taskId?directory=/opt","serialNumber":"080E0F9F","sendParameters":{"specificCommand":"date +%z ; ls -le /opt"},"criteria":{"customerId":"1","fleetId":"1","userId":"9","equipmentId":"1"},"status":"PENDING","message":"The task is currently being processed.","errorCode":null,"errorMessage":null,"links":[{"rel":"messages","href":"/application/tasks/609/messages"},{"rel":"self","href":"/application/tasks/609"},{"rel":"snmpLogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=olivierAPP.609"}]}],"nbPages":1}</body>
+              <body>{"count":7,"pageSize":50,"page":1,"totalCount":7,"list":[{"id":2,"name":"customer2","logo":"logo2","lastEventCounters":[],"links":[{"rel":"users","href":"/application/customers/2/users"},{"rel":"self","href":"/application/customers/2"},{"rel":"fleets","href":"/application/customers/2/fleets"},{"rel":"clusters","href":"/application/customers/2/clusters"},{"rel":"lnsEquipments","href":"/application/customers/2/lnsEquipments"}]},{"id":3,"name":"customer3","logo":"logo3","lastEventCounters":[],"links":[{"rel":"users","href":"/application/customers/3/users"},{"rel":"clusters","href":"/application/customers/3/clusters"},{"rel":"self","href":"/application/customers/3"},{"rel":"fleets","href":"/application/customers/3/fleets"},{"rel":"lnsEquipments","href":"/application/customers/3/lnsEquipments"}]},{"id":4,"name":"customer4","logo":"logo4","lastEventCounters":[],"links":[{"rel":"users","href":"/application/customers/4/users"},{"rel":"clusters","href":"/application/customers/4/clusters"},{"rel":"self","href":"/application/customers/4"},{"rel":"lnsEquipments","href":"/application/customers/4/lnsEquipments"},{"rel":"fleets","href":"/application/customers/4/fleets"}]},{"id":6,"name":"KERLINK","logo":null,"lastEventCounters":[],"links":[{"rel":"lnsEquipments","href":"/application/customers/6/lnsEquipments"},{"rel":"clusters","href":"/application/customers/6/clusters"},{"rel":"fleets","href":"/application/customers/6/fleets"},{"rel":"self","href":"/application/customers/6"},{"rel":"users","href":"/application/customers/6/users"}]},{"id":1,"name":"customer1","logo":"logo1","lastEventCounters":[{"lastEvent":{"domain":"BSC","name":"DOOR","type":"ALARM"},"counter":1},{"lastEvent":{"domain":"BSC","name":"DOOR","type":"NOTIFICATION"},"counter":1},{"lastEvent":{"domain":"BSC","name":"RAM","type":"ALARM"},"counter":2},{"lastEvent":{"domain":"BSC","name":"GPS","type":"ALARM"},"counter":1},{"lastEvent":{"domain":"BSC","name":"CPU","type":"ALARM"},"counter":2}],"links":[{"rel":"self","href":"/application/customers/1"},{"rel":"lnsEquipments","href":"/application/customers/1/lnsEquipments"},{"rel":"users","href":"/application/customers/1/users"},{"rel":"clusters","href":"/application/customers/1/clusters"},{"rel":"fleets","href":"/application/customers/1/fleets"}]},{"id":591,"name":"customer5","logo":null,"lastEventCounters":[],"links":[{"rel":"lnsEquipments","href":"/application/customers/591/lnsEquipments"},{"rel":"fleets","href":"/application/customers/591/fleets"},{"rel":"clusters","href":"/application/customers/591/clusters"},{"rel":"self","href":"/application/customers/591"},{"rel":"users","href":"/application/customers/591/users"}]},{"id":592,"name":"customer6","logo":"logo6","lastEventCounters":[],"links":[{"rel":"lnsEquipments","href":"/application/customers/592/lnsEquipments"},{"rel":"self","href":"/application/customers/592"},{"rel":"users","href":"/application/customers/592/users"},{"rel":"clusters","href":"/application/customers/592/clusters"},{"rel":"fleets","href":"/application/customers/592/fleets"}]}],"nbPages":1}</body>
               <headers>
                 <header name="Transfer-Encoding" value="chunked" />
                 <header name="X-Frame-Options" value="DENY" />
@@ -172,44 +141,14 @@
                 <header name="Pragma" value="no-cache" />
                 <header name="X-XSS-Protection" value="1; mode=block" />
                 <header name="X-Application-Context" value="application:loc:8080" />
-                <header name="Date" value="Wed, 07 Dec 2016 10:16:29 GMT" />
+                <header name="Date" value="Thu, 15 Dec 2016 10:47:15 GMT" />
                 <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
               </headers>
             </response>
           </exchange>
         </exchanges>
       </endpoint>
-    </path>
-    <path name="customers">
       <path name="{customerId}">
-        <endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
-          <exchanges>
-            <exchange name="echange" date="1481560654029" status="200">
-              <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1">
-                <body />
-                <parameters>
-                  <parameter enabled="true" location="PATH" name="customerId" value="1" />
-                  <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
-                </parameters>
-              </request>
-              <response status="200">
-                <body>{"equipmentsNotificationsCount":1,"equipmentsAlarmsCount":4,"name":"customer1","logo":"logo1","links":[{"rel":"self","href":"/application/customers/1"},{"rel":"lnsEquipments","href":"/application/customers/1/lnsEquipments"},{"rel":"users","href":"/application/customers/1/users"},{"rel":"clusters","href":"/application/customers/1/clusters"},{"rel":"fleets","href":"/application/customers/1/fleets"}],"id":1}</body>
-                <headers>
-                  <header name="Transfer-Encoding" value="chunked" />
-                  <header name="X-Frame-Options" value="DENY" />
-                  <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
-                  <header name="X-Content-Type-Options" value="nosniff" />
-                  <header name="Expires" value="0" />
-                  <header name="Pragma" value="no-cache" />
-                  <header name="X-XSS-Protection" value="1; mode=block" />
-                  <header name="X-Application-Context" value="application:loc:8080" />
-                  <header name="Date" value="Mon, 12 Dec 2016 16:37:34 GMT" />
-                  <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
-                </headers>
-              </response>
-            </exchange>
-          </exchanges>
-        </endpoint>
         <path name="clusters">
           <path name="{clusterId}">
             <path name="endpoints">
@@ -217,33 +156,33 @@
                 <path name="lnsEquipments">
                   <endpoint name="getEndPointLnsEquipments" path="/application/customers/{customerId}/clusters/{clusterId}/endpoints/{endpointId}/lnsEquipments" method="GET">
                     <exchanges>
-                      <exchange name="echange" date="1481560785575" status="500">
-                        <request uri="http://192.168.5.11:8080/oss/rest/application/customers/6/clusters/8/endpoints/00-00-00-00-00-00-0E-EE/lnsEquipments?pageSize=200&amp;startDate=1480935511914&amp;page=1&amp;endDate=456789">
+                      <exchange name="OK" date="1481625206039" status="200">
+                        <request uri="http://192.168.5.11:8080/oss/rest/application/customers/6/clusters/8/endpoints/12-00-00-00-00-00-00-01/lnsEquipments?pageSize=50&amp;startDate=123456&amp;page=1">
                           <body />
                           <parameters>
-                            <parameter enabled="true" location="PATH" name="endpointId" value="00-00-00-00-00-00-0E-EE" />
+                            <parameter enabled="true" location="PATH" name="endpointId" value="12-00-00-00-00-00-00-01" />
                             <parameter enabled="true" location="PATH" name="customerId" value="6" />
                             <parameter enabled="true" location="PATH" name="clusterId" value="8" />
-                            <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
+                            <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
                             <parameter enabled="true" location="QUERY" name="page" value="1" />
-                            <parameter enabled="true" location="QUERY" name="pageSize" value="200" />
-                            <parameter enabled="true" location="QUERY" name="startDate" value="1480935511914" />
-                            <parameter enabled="true" location="QUERY" name="endDate" value="456789" />
+                            <parameter enabled="true" location="QUERY" name="pageSize" value="50" />
+                            <parameter enabled="true" location="QUERY" name="startDate" value="123456" />
+                            <parameter enabled="false" location="QUERY" name="endDate" value="456789" />
+                            <parameter enabled="false" location="QUERY" name="sort" value="blabla" />
                           </parameters>
                         </request>
-                        <response status="500">
-                          <body>{"code":"SERVER_ERROR","message":"Server error, details : BAD_REQUEST:Failed to convert value of type [java.lang.String] to required type [java.lang.Integer]; nested exception is java.lang.NumberFormatException: For input string: \"1480935511914\"","params":["BAD_REQUEST:Failed to convert value of type [java.lang.String] to required type [java.lang.Integer]; nested exception is java.lang.NumberFormatException: For input string: \"1480935511914\""]}</body>
+                        <response status="200">
+                          <body>{"count":10,"pageSize":50,"page":1,"totalCount":10,"list":[{"lastDate":1481590702000,"station":{"altitude":39,"latitude":48.11198,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-00"}],"stationId":"00-00-00-00-00-12-40-00","longitude":-1.67429}},{"lastDate":1481504293000,"station":{"altitude":39,"latitude":51.98465,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-07"}],"stationId":"00-00-00-00-00-12-40-07","longitude":2.19838}},{"lastDate":1481504293000,"station":{"altitude":39,"latitude":48.98205,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-01"}],"stationId":"00-00-00-00-00-12-40-01","longitude":-0.80422}},{"lastDate":1481504293000,"station":{"altitude":39,"latitude":50.50873,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-04"}],"stationId":"00-00-00-00-00-12-40-04","longitude":0.72246}},{"lastDate":1481504293000,"station":{"altitude":39,"latitude":52.45698,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-08"}],"stationId":"00-00-00-00-00-12-40-08","longitude":2.67071}},{"lastDate":1481504293000,"station":{"altitude":39,"latitude":49.76707,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-03"}],"stationId":"00-00-00-00-00-12-40-03","longitude":-0.0192}},{"lastDate":1481504293000,"station":{"altitude":39,"latitude":52.76927,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-09"}],"stationId":"00-00-00-00-00-12-40-09","longitude":2.983}},{"lastDate":1481331505000,"station":{"altitude":39,"latitude":51.11786,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-05"}],"stationId":"00-00-00-00-00-12-40-05","longitude":1.33159}},{"lastDate":1481331505000,"station":{"altitude":39,"latitude":51.27862,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-06"}],"stationId":"00-00-00-00-00-12-40-06","longitude":1.49235}},{"lastDate":1481245094000,"station":{"altitude":39,"latitude":49.64541,"links":[{"rel":"self","href":"/application/customers/6/lnsEquipments/00-00-00-00-00-12-40-02"}],"stationId":"00-00-00-00-00-12-40-02","longitude":-0.14086}}],"nbPages":1}</body>
                           <headers>
                             <header name="Transfer-Encoding" value="chunked" />
                             <header name="X-Frame-Options" value="DENY" />
                             <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
                             <header name="X-Content-Type-Options" value="nosniff" />
-                            <header name="Connection" value="close" />
                             <header name="Expires" value="0" />
                             <header name="Pragma" value="no-cache" />
                             <header name="X-XSS-Protection" value="1; mode=block" />
                             <header name="X-Application-Context" value="application:loc:8080" />
-                            <header name="Date" value="Mon, 12 Dec 2016 16:39:45 GMT" />
+                            <header name="Date" value="Tue, 13 Dec 2016 10:33:26 GMT" />
                             <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
                           </headers>
                         </response>
@@ -255,10 +194,447 @@
             </path>
           </path>
         </path>
+        <path name="lnsEquipments">
+          <endpoint name="getLnsEquipments" path="/application/customers/{customerId}/lnsEquipments" method="GET">
+            <exchanges>
+              <exchange name="echange" date="1481812525345" status="200">
+                <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/lnsEquipments?pageSize=200&amp;page=1">
+                  <body />
+                  <parameters>
+                    <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                    <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                    <parameter enabled="true" location="QUERY" name="page" value="1" />
+                    <parameter enabled="true" location="QUERY" name="pageSize" value="200" />
+                  </parameters>
+                </request>
+                <response status="200">
+                  <body>{"count":129,"pageSize":200,"page":1,"totalCount":129,"list":[{"stationId":"00-00-00-00-00-12-40-00","longitude":-1.67429,"latitude":48.11198,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-01","longitude":-0.80422,"latitude":48.98205,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-01"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-01/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-01/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-01/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-02","longitude":-0.14086,"latitude":49.64541,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-02"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-02/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-02/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-02/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-03","longitude":-0.0192,"latitude":49.76707,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-03/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-03/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-03"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-03/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-04","longitude":0.72246,"latitude":50.50873,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-04/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-04/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-04/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-04"}]},{"stationId":"00-00-00-00-00-12-40-05","longitude":1.33159,"latitude":51.11786,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-05/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-05/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-05"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-05/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-06","longitude":1.49235,"latitude":51.27862,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-06/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-06"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-06/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-06/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-07","longitude":2.19838,"latitude":51.98465,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-07"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-07/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-07/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-07/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-08","longitude":2.67071,"latitude":52.45698,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-08/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-08/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-08"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-08/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-09","longitude":2.983,"latitude":52.76927,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-09/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-09/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-09"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-09/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-0A","longitude":3.34916,"latitude":53.13543,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0A"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0A/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0A/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0A/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-0B","longitude":3.81714,"latitude":53.60341,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0B"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0B/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0B/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0B/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-0C","longitude":4.58833,"latitude":54.3746,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0C/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0C/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0C"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0C/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-0D","longitude":4.83546,"latitude":54.62173,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0D/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0D/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0D/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0D"}]},{"stationId":"00-00-00-00-00-12-40-0E","longitude":5.21795,"latitude":55.00422,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0E/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0E/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0E/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0E"}]},{"stationId":"00-00-00-00-00-12-40-0F","longitude":5.68158,"latitude":55.46785,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0F/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0F/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0F"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-0F/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-10","longitude":5.69001,"latitude":55.47628,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-10"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-10/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-10/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-10/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-11","longitude":5.84261,"latitude":55.62888,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-11"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-11/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-11/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-11/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-12","longitude":6.64351,"latitude":56.42978,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-12"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-12/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-12/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-12/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-13","longitude":6.83365,"latitude":56.61992,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-13"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-13/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-13/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-13/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-14","longitude":7.73784,"latitude":57.52411,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-14/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-14/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-14/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-14"}]},{"stationId":"00-00-00-00-00-12-40-15","longitude":8.36238,"latitude":58.14865,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-15/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-15/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-15/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-15"}]},{"stationId":"00-00-00-00-00-12-40-16","longitude":8.63313,"latitude":58.4194,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-16/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-16/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-16/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-16"}]},{"stationId":"00-00-00-00-00-12-40-17","longitude":9.32846,"latitude":59.11473,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-17/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-17/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-17"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-17/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-18","longitude":10.10556,"latitude":59.89183,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-18/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-18/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-18"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-18/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-19","longitude":10.12372,"latitude":59.90999,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-19/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-19/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-19"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-19/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-1A","longitude":10.92018,"latitude":60.70645,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1A"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1A/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1A/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1A/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-1B","longitude":11.77842,"latitude":61.56469,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1B/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1B"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1B/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1B/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-1C","longitude":12.40323,"latitude":62.1895,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1C"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1C/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1C/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1C/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-1D","longitude":12.88216,"latitude":62.66843,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1D/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1D/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1D/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1D"}]},{"stationId":"00-00-00-00-00-12-40-1E","longitude":13.81922,"latitude":63.60549,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1E/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1E/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1E/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1E"}]},{"stationId":"00-00-00-00-00-12-40-1F","longitude":13.84097,"latitude":63.62724,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1F/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1F/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1F"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-1F/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-20","longitude":14.24257,"latitude":64.02884,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-20"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-20/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-20/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-20/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-21","longitude":15.12862,"latitude":64.91489,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-21"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-21/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-21/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-21/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-22","longitude":15.81084,"latitude":65.59711,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-22"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-22/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-22/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-22/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-23","longitude":16.78342,"latitude":66.56969,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-23/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-23"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-23/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-23/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-24","longitude":16.92194,"latitude":66.70821,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-24"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-24/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-24/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-24/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-25","longitude":16.99218,"latitude":66.77845,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-25/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-25/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-25/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-25"}]},{"stationId":"00-00-00-00-00-12-40-26","longitude":17.04487,"latitude":66.83114,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-26/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-26/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-26/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-26"}]},{"stationId":"00-00-00-00-00-12-40-27","longitude":17.888,"latitude":67.67427,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-27/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-27/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-27/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-27"}]},{"stationId":"00-00-00-00-00-12-40-28","longitude":18.84738,"latitude":68.63365,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-28/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-28/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-28"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-28/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-29","longitude":19.36947,"latitude":69.15574,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-29/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-29/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-29/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-29"}]},{"stationId":"00-00-00-00-00-12-40-2A","longitude":19.93042,"latitude":69.71669,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2A"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2A/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2A/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2A/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-2B","longitude":20.37024,"latitude":70.15651,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2B"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2B/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2B/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2B/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-2C","longitude":20.66567,"latitude":70.45194,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2C/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2C"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2C/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2C/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-2D","longitude":21.11511,"latitude":70.90138,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2D"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2D/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2D/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2D/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-2E","longitude":21.65137,"latitude":71.43764,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2E/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2E/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2E/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2E"}]},{"stationId":"00-00-00-00-00-12-40-2F","longitude":22.03542,"latitude":71.82169,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2F/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2F/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2F/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-2F"}]},{"stationId":"00-00-00-00-00-12-40-30","longitude":22.043,"latitude":71.82927,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-30"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-30/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-30/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-30/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-31","longitude":22.55111,"latitude":72.33738,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-31"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-31/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-31/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-31/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-32","longitude":23.03542,"latitude":72.82169,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-32"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-32/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-32/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-32/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-33","longitude":23.21843,"latitude":73.0047,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-33/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-33/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-33"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-33/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-34","longitude":23.42825,"latitude":73.21452,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-34"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-34/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-34/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-34/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-35","longitude":23.44809,"latitude":73.23436,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-35"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-35/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-35/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-35/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-36","longitude":23.58749,"latitude":73.37376,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-36/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-36/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-36/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-36"}]},{"stationId":"00-00-00-00-00-12-40-37","longitude":24.10464,"latitude":73.89091,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-37/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-37/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-37/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-37"}]},{"stationId":"00-00-00-00-00-12-40-38","longitude":24.64716,"latitude":74.43343,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-38/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-38/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-38"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-38/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-39","longitude":24.72111,"latitude":74.50738,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-39/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-39/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-39"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-39/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-3A","longitude":24.80107,"latitude":74.58734,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3A"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3A/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3A/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3A/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-3B","longitude":25.1838,"latitude":74.97007,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3B"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3B/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3B/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3B/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-3C","longitude":26.00034,"latitude":75.78661,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3C/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3C"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3C/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3C/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-3D","longitude":26.65407,"latitude":76.44034,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3D"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3D/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3D/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3D/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-3E","longitude":27.34099,"latitude":77.12726,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3E"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3E/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3E/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3E/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-3F","longitude":27.90037,"latitude":77.68664,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3F/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3F/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3F/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-3F"}]},{"stationId":"00-00-00-00-00-12-40-40","longitude":28.8356,"latitude":78.62187,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-40/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-40"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-40/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-40/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-41","longitude":29.55536,"latitude":79.34163,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-41"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-41/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-41/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-41/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-42","longitude":29.68068,"latitude":79.46695,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-42/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-42"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-42/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-42/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-43","longitude":30.49757,"latitude":80.28384,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-43"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-43/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-43/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-43/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-44","longitude":31.22115,"latitude":81.00742,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-44/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-44"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-44/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-44/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-45","longitude":31.83665,"latitude":81.62292,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-45"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-45/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-45/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-45/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-46","longitude":32.39081,"latitude":82.17708,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-46"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-46/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-46/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-46/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-47","longitude":33.19953,"latitude":82.9858,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-47/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-47/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-47/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-47"}]},{"stationId":"00-00-00-00-00-12-40-48","longitude":33.23404,"latitude":83.02031,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-48/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-48/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-48/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-48"}]},{"stationId":"00-00-00-00-00-12-40-49","longitude":33.29108,"latitude":83.07735,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-49/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-49/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-49"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-49/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-4A","longitude":33.7111,"latitude":83.49737,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4A"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4A/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4A/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4A/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-4B","longitude":34.29116,"latitude":84.07743,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4B"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4B/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4B/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4B/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-4C","longitude":35.17668,"latitude":84.96295,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4C"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4C/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4C/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4C/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-4D","longitude":35.51972,"latitude":85.30599,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4D/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4D/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4D"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4D/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-4E","longitude":36.27649,"latitude":86.06276,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4E"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4E/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4E/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4E/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-4F","longitude":36.55872,"latitude":86.34499,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4F"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4F/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4F/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-4F/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-50","longitude":37.04356,"latitude":86.82983,"altitude":39,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-50/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-50/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-50"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-50/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-51","longitude":38.02396,"latitude":87.81023,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-51"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-51/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-51/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-51/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-52","longitude":38.32183,"latitude":88.1081,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-52/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-52"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-52/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-52/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-53","longitude":38.78512,"latitude":88.57139,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-53"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-53/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-53/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-53/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-54","longitude":39.48792,"latitude":89.27419,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-54"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-54/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-54/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-54/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-55","longitude":40.3248,"latitude":90.11107,"altitude":39,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-55/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-55"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-55/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-55/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-56","longitude":40.36967,"latitude":90.15594,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-56"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-56/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-56/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-56/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-57","longitude":40.75025,"latitude":90.53652,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-57"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-57/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-57/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-57/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-58","longitude":41.53673,"latitude":91.323,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-58/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-58/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-58/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-58"}]},{"stationId":"00-00-00-00-00-12-40-59","longitude":41.75628,"latitude":91.54255,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-59/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-59/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-59/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-59"}]},{"stationId":"00-00-00-00-00-12-40-5A","longitude":42.12122,"latitude":91.90749,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5A"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5A/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5A/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5A/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-5B","longitude":42.67528,"latitude":92.46155,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5B"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5B/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5B/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5B/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-5C","longitude":43.15264,"latitude":92.93891,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5C/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5C/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5C"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5C/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-5D","longitude":43.34434,"latitude":93.13061,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5D/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5D"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5D/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5D/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-5E","longitude":44.30806,"latitude":94.09433,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5E"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5E/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5E/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5E/endpoints"}]},{"stationId":"00-00-00-00-00-12-40-5F","longitude":45.30253,"latitude":95.0888,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5F"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5F/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5F/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-5F/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-60","longitude":45.48519,"latitude":95.27146,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-60/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-60"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-60/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-60/txMessages"}]},{"stationId":"00-00-00-00-00-12-40-61","longitude":45.62806,"latitude":95.41433,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-61/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-61/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-61"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-61/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-62","longitude":45.91029,"latitude":95.69656,"altitude":39,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-62/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-62"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-62/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-62/rxMessages"}]},{"stationId":"00-00-00-00-00-12-40-63","longitude":46.56298,"latitude":96.34925,"altitude":39,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-63"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-63/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-63/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-63/rxMessages"}]},{"stationId":"00-7F-FF-FF-FE-01-02-03","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-7F-FF-FF-FE-01-02-03/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-7F-FF-FF-FE-01-02-03"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-7F-FF-FF-FE-01-02-03/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-7F-FF-FF-FE-01-02-03/txMessages"}]},{"stationId":"00-00-00-00-00-00-0A-AA","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-0A-AA/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-0A-AA/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-0A-AA"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-0A-AA/rxMessages"}]},{"stationId":"00-00-00-00-00-00-0B-BB","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-0B-BB/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-0B-BB"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-0B-BB/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-0B-BB/endpoints"}]},{"stationId":"00-00-00-00-00-00-AA-01","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-AA-01/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-AA-01/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-AA-01"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-AA-01/rxMessages"}]},{"stationId":"00-00-00-00-00-00-AA-02","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-AA-02/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-AA-02"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-AA-02/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-AA-02/txMessages"}]},{"stationId":"00-00-00-AA-BB-CC-DD-EE","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-AA-BB-CC-DD-EE/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-AA-BB-CC-DD-EE/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-AA-BB-CC-DD-EE"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-AA-BB-CC-DD-EE/rxMessages"}]},{"stationId":"00-00-00-00-08-06-05-05","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-08-06-05-05"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-08-06-05-05/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-08-06-05-05/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-08-06-05-05/txMessages"}]},{"stationId":"00-00-00-00-0B-03-00-4D","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-0B-03-00-4D"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-0B-03-00-4D/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-0B-03-00-4D/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-0B-03-00-4D/rxMessages"}]},{"stationId":"72-76-FF-00-08-06-05-05","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-05/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-05"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-05/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-05/txMessages"}]},{"stationId":"72-76-FF-00-08-06-05-07","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-07"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-07/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-07/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-07/endpoints"}]},{"stationId":"72-76-FF-00-08-06-05-09","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-09"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-09/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-09/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-00-08-06-05-09/txMessages"}]},{"stationId":"00-00-00-00-00-00-00-0F","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-0F/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-0F/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-0F/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-0F"}]},{"stationId":"00-00-00-00-00-00-00-F2","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-F2/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-F2/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-F2/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-F2"}]},{"stationId":"00-00-00-00-00-00-00-01","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-01"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-01/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-01/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-01/endpoints"}]},{"stationId":"00-00-00-00-00-00-00-02","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-02"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-02/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-02/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-02/endpoints"}]},{"stationId":"00-00-00-00-00-00-00-00","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-00/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-00"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-00/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-00/endpoints"}]},{"stationId":"00-00-00-00-00-00-00-91","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-91/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-91"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-91/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-00-91/endpoints"}]},{"stationId":"72-76-FF-FF-FE-01-06-48","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/72-76-FF-FF-FE-01-06-48"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-FF-FE-01-06-48/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/72-76-FF-FF-FE-01-06-48/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-FF-FE-01-06-48/txMessages"}]},{"stationId":"AA-55-5A-00-00-00-00-00","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/AA-55-5A-00-00-00-00-00"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/AA-55-5A-00-00-00-00-00/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/AA-55-5A-00-00-00-00-00/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/AA-55-5A-00-00-00-00-00/txMessages"}]},{"stationId":"72-76-FF-FF-FE-01-06-4B","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-FF-FE-01-06-4B/rxMessages"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/72-76-FF-FF-FE-01-06-4B/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/72-76-FF-FF-FE-01-06-4B/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/72-76-FF-FF-FE-01-06-4B"}]},{"stationId":"00-00-00-00-00-00-45-45","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-45-45"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-45-45/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-45-45/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-00-45-45/endpoints"}]},{"stationId":"00-00-00-00-AA-BB-CC-01","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-AA-BB-CC-01"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-AA-BB-CC-01/txMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-AA-BB-CC-01/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-AA-BB-CC-01/rxMessages"}]},{"stationId":"00-00-00-00-AA-BB-CC-DD","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-AA-BB-CC-DD/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-AA-BB-CC-DD"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-AA-BB-CC-DD/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-AA-BB-CC-DD/rxMessages"}]},{"stationId":"00-00-00-0A-AA-AA-AA-AA","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-0A-AA-AA-AA-AA/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-0A-AA-AA-AA-AA"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-0A-AA-AA-AA-AA/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-0A-AA-AA-AA-AA/endpoints"}]},{"stationId":"00-00-00-00-00-AA-11-BB","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-11-BB/endpoints"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-11-BB/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-11-BB/rxMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-11-BB"}]},{"stationId":"00-00-00-00-00-AA-22-BB","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-22-BB/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-22-BB/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-22-BB/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-22-BB"}]},{"stationId":"00-00-00-00-00-AA-33-BB","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-33-BB/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-33-BB/rxMessages"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-33-BB/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-33-BB"}]},{"stationId":"00-00-00-00-00-AA-55-BB","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-55-BB/endpoints"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-55-BB"},{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-55-BB/txMessages"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-AA-55-BB/rxMessages"}]},{"stationId":"00-00-00-00-08-02-00-AE","longitude":null,"latitude":null,"altitude":null,"links":[{"rel":"txmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-08-02-00-AE/txMessages"},{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-08-02-00-AE"},{"rel":"endpoints","href":"/application/customers/1/lnsEquipments/00-00-00-00-08-02-00-AE/endpoints"},{"rel":"rxmessages","href":"/application/customers/1/lnsEquipments/00-00-00-00-08-02-00-AE/rxMessages"}]}],"nbPages":1}</body>
+                  <headers>
+                    <header name="Transfer-Encoding" value="chunked" />
+                    <header name="X-Frame-Options" value="DENY" />
+                    <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                    <header name="X-Content-Type-Options" value="nosniff" />
+                    <header name="Expires" value="0" />
+                    <header name="Pragma" value="no-cache" />
+                    <header name="X-XSS-Protection" value="1; mode=block" />
+                    <header name="X-Application-Context" value="application:loc:8080" />
+                    <header name="Date" value="Thu, 15 Dec 2016 14:35:25 GMT" />
+                    <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                  </headers>
+                </response>
+              </exchange>
+            </exchanges>
+          </endpoint>
+          <path name="{lnsEquipmentId}">
+            <path name="aesKeys">
+              <endpoint name="createLnsEquipmentAesKey" path="/application/customers/{customerId}/lnsEquipments/{lnsEquipmentId}/aesKeys" method="POST">
+                <exchanges>
+                  <exchange name="echange" date="1481815615253" status="201">
+                    <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00/aesKeys">
+                      <body>{
+	"aesKey":"a-e-s-2",
+	"rfch":"rfch",
+	"startValidityDate":123456,
+	"endValidityDate":789546123
+}</body>
+                      <parameters>
+                        <parameter enabled="true" location="PATH" name="lnsEquipmentId" value="00-00-00-00-00-12-40-00" />
+                        <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                        <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                        <parameter enabled="true" location="HEADER" name="Content-Type" value="application/vnd.kerlink.iot-v1+json" />
+                      </parameters>
+                    </request>
+                    <response status="201">
+                      <body>&lt;html&gt;&lt;body&gt;&lt;h1&gt;Whitelabel Error Page&lt;/h1&gt;&lt;p&gt;This application has no explicit mapping for /error, so you are seeing this as a fallback.&lt;/p&gt;&lt;div id='created'&gt;Thu Dec 15 15:57:58 CET 2016&lt;/div&gt;&lt;div&gt;There was an unexpected error (type=Internal Server Error, status=500).&lt;/div&gt;&lt;div&gt;Missing URI template variable &amp;#39;serialNumber&amp;#39; for method parameter of type String&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</body>
+                      <headers>
+                        <header name="X-Frame-Options" value="DENY" />
+                        <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                        <header name="X-Content-Type-Options" value="nosniff" />
+                        <header name="Expires" value="0" />
+                        <header name="Pragma" value="no-cache" />
+                        <header name="Content-Length" value="0" />
+                        <header name="X-XSS-Protection" value="1; mode=block" />
+                        <header name="X-Application-Context" value="application:loc:8080" />
+                        <header name="Date" value="Thu, 15 Dec 2016 15:26:55 GMT" />
+                        <header name="Location" value="/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00/aesKeys/31" />
+                      </headers>
+                    </response>
+                  </exchange>
+                </exchanges>
+              </endpoint>
+              <path name="{aesKeyId}">
+                <endpoint name="deleteLnsEquipmentAesKey" path="/application/customers/{customerId}/lnsEquipments/{lnsEquipmentId}/aesKeys/{aesKeyId}" method="DELETE">
+                  <exchanges>
+                    <exchange name="echange" date="1481815437720" status="204">
+                      <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00/aesKeys/30">
+                        <body />
+                        <parameters>
+                          <parameter enabled="true" location="PATH" name="lnsEquipmentId" value="00-00-00-00-00-12-40-00" />
+                          <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                          <parameter enabled="true" location="PATH" name="aesKeyId" value="30" />
+                          <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                        </parameters>
+                      </request>
+                      <response status="204">
+                        <body>{"code":"SERVER_ERROR","message":"Server error, details : BAD_REQUEST:StationKeyDto entity with id 29 not found","params":["BAD_REQUEST:StationKeyDto entity with id 29 not found"]}</body>
+                        <headers>
+                          <header name="X-Frame-Options" value="DENY" />
+                          <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                          <header name="X-Content-Type-Options" value="nosniff" />
+                          <header name="Expires" value="0" />
+                          <header name="Pragma" value="no-cache" />
+                          <header name="X-XSS-Protection" value="1; mode=block" />
+                          <header name="X-Application-Context" value="application:loc:8080" />
+                          <header name="Date" value="Thu, 15 Dec 2016 15:23:57 GMT" />
+                        </headers>
+                      </response>
+                    </exchange>
+                  </exchanges>
+                </endpoint>
+              </path>
+              <endpoint name="getLnsEquipmentAesKeys" path="/application/customers/{customerId}/lnsEquipments/{lnsEquipmentId}/aesKeys" method="GET">
+                <exchanges>
+                  <exchange name="echange" date="1481816209951" status="200">
+                    <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00/aesKeys?pageSize=200&amp;page=1">
+                      <body />
+                      <parameters>
+                        <parameter enabled="true" location="PATH" name="lnsEquipmentId" value="00-00-00-00-00-12-40-00" />
+                        <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                        <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                        <parameter enabled="true" location="QUERY" name="page" value="1" />
+                        <parameter enabled="true" location="QUERY" name="pageSize" value="200" />
+                      </parameters>
+                    </request>
+                    <response status="200">
+                      <body>{"count":1,"pageSize":200,"page":1,"totalCount":1,"list":[{"aesKey":"a-e-s-2","rfch":"rfch","startValidityDate":123456,"endValidityDate":789546123,"links":[{"rel":"self","href":"/application/customers/1/lnsEquipments/00-00-00-00-00-12-40-00/aesKeys/31"}]}],"nbPages":1}</body>
+                      <headers>
+                        <header name="Transfer-Encoding" value="chunked" />
+                        <header name="X-Frame-Options" value="DENY" />
+                        <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                        <header name="X-Content-Type-Options" value="nosniff" />
+                        <header name="Expires" value="0" />
+                        <header name="Pragma" value="no-cache" />
+                        <header name="X-XSS-Protection" value="1; mode=block" />
+                        <header name="X-Application-Context" value="application:loc:8080" />
+                        <header name="Date" value="Thu, 15 Dec 2016 15:36:49 GMT" />
+                        <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                      </headers>
+                    </response>
+                  </exchange>
+                </exchanges>
+              </endpoint>
+            </path>
+          </path>
+        </path>
+        <endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
+          <exchanges>
+            <exchange name="echange" date="1481798829663" status="200">
+              <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1">
+                <body />
+                <parameters>
+                  <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                  <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                </parameters>
+              </request>
+              <response status="200">
+                <body>{"lastEventCounters":[{"lastEvent":{"domain":"BSC","name":"CPU","type":"ALARM"},"counter":2},{"lastEvent":{"domain":"BSC","name":"DOOR","type":"ALARM"},"counter":1},{"lastEvent":{"domain":"BSC","name":"RAM","type":"ALARM"},"counter":2},{"lastEvent":{"domain":"BSC","name":"DOOR","type":"NOTIFICATION"},"counter":1},{"lastEvent":{"domain":"BSC","name":"GPS","type":"ALARM"},"counter":1}],"name":"customer1","logo":"logo1","links":[{"rel":"self","href":"/application/customers/1"},{"rel":"lnsEquipments","href":"/application/customers/1/lnsEquipments"},{"rel":"users","href":"/application/customers/1/users"},{"rel":"clusters","href":"/application/customers/1/clusters"},{"rel":"fleets","href":"/application/customers/1/fleets"}],"id":1}</body>
+                <headers>
+                  <header name="Transfer-Encoding" value="chunked" />
+                  <header name="X-Frame-Options" value="DENY" />
+                  <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                  <header name="X-Content-Type-Options" value="nosniff" />
+                  <header name="Expires" value="0" />
+                  <header name="Pragma" value="no-cache" />
+                  <header name="X-XSS-Protection" value="1; mode=block" />
+                  <header name="X-Application-Context" value="application:loc:8080" />
+                  <header name="Date" value="Thu, 15 Dec 2016 10:47:09 GMT" />
+                  <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                </headers>
+              </response>
+            </exchange>
+          </exchanges>
+        </endpoint>
         <path name="fleets">
+          <endpoint name="getCustomerFleets" path="/application/customers/{customerId}/fleets" method="GET">
+            <exchanges>
+              <exchange name="echange" date="1481791289235" status="200">
+                <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets">
+                  <body />
+                  <parameters>
+                    <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                    <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                  </parameters>
+                </request>
+                <response status="200">
+                  <body>{"count":2,"pageSize":50,"page":1,"totalCount":2,"list":[{"id":1,"name":"fleet1","lastEventCounters":[{"lastEvent":{"domain":"BSC","name":"DOOR","type":"NOTIFICATION"},"counter":1},{"lastEvent":{"domain":"BSC","name":"CPU","type":"ALARM"},"counter":2},{"lastEvent":{"domain":"BSC","name":"GPS","type":"ALARM"},"counter":1},{"lastEvent":{"domain":"BSC","name":"DOOR","type":"ALARM"},"counter":1},{"lastEvent":{"domain":"BSC","name":"RAM","type":"ALARM"},"counter":2}],"links":[{"rel":"equipments","href":"/application/customers/1/fleets/1/equipments"},{"rel":"alarms","href":"/application/customers/1/fleets/1/alarms"},{"rel":"self","href":"/application/customers/1/fleets/1"},{"rel":"loraStations","href":"/application/customers/1/fleets/1/loraStations"},{"rel":"operations","href":"/application/customers/1/fleets/1/lastOperations"},{"rel":"statistics","href":"/application/customers/1/fleets/1/statistics/equipments"}]},{"id":2,"name":"fleet2","lastEventCounters":[],"links":[{"rel":"loraStations","href":"/application/customers/1/fleets/2/loraStations"},{"rel":"self","href":"/application/customers/1/fleets/2"},{"rel":"statistics","href":"/application/customers/1/fleets/2/statistics/equipments"},{"rel":"operations","href":"/application/customers/1/fleets/2/lastOperations"},{"rel":"alarms","href":"/application/customers/1/fleets/2/alarms"},{"rel":"equipments","href":"/application/customers/1/fleets/2/equipments"}]}],"nbPages":1}</body>
+                  <headers>
+                    <header name="Transfer-Encoding" value="chunked" />
+                    <header name="X-Frame-Options" value="DENY" />
+                    <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                    <header name="X-Content-Type-Options" value="nosniff" />
+                    <header name="Expires" value="0" />
+                    <header name="Pragma" value="no-cache" />
+                    <header name="X-XSS-Protection" value="1; mode=block" />
+                    <header name="X-Application-Context" value="application:loc:8080" />
+                    <header name="Date" value="Thu, 15 Dec 2016 08:41:29 GMT" />
+                    <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                  </headers>
+                </response>
+              </exchange>
+            </exchanges>
+          </endpoint>
           <path name="{fleetId}">
+            <path name="events">
+              <path name="last">
+                <endpoint name="getFleetLastEvents" path="/application/customers/{customerId}/fleets/{fleetId}/events/last" method="GET">
+                  <exchanges>
+                    <exchange name="echange" date="1481822812877" status="200">
+                      <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/events/last">
+                        <body />
+                        <parameters>
+                          <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                          <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                          <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                        </parameters>
+                      </request>
+                      <response status="200">
+                        <body>{"count":7,"pageSize":50,"page":1,"totalCount":7,"list":[{"id":5,"equipment":{"serialNumber":"AAA-BBB","name":"TOTO","id":2},"domain":"BSC","type":"ALARM","name":"CPU","date":555555555,"value":"87","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/2/events/last/5"}]},{"id":6,"equipment":{"serialNumber":"AAA-BBB","name":"TOTO","id":2},"domain":"BSC","type":"ALARM","name":"RAM","date":666666666,"value":"82","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/2/events/last/6"}]},{"id":7,"equipment":{"serialNumber":"AAA-BBB","name":"TOTO","id":2},"domain":"BSC","type":"ALARM","name":"GPS","date":777777777,"value":"UNLOCKED","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/2/events/last/7"}]},{"id":1,"equipment":{"serialNumber":"080E0F9F","name":"Lora station 080E0F9F","id":1},"domain":"BSC","type":"ALARM","name":"CPU","date":1481807002425,"value":"100","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/1"}]},{"id":3,"equipment":{"serialNumber":"080E0F9F","name":"Lora station 080E0F9F","id":1},"domain":"BSC","type":"ALARM","name":"DOOR","date":1481785893640,"value":"OPEN","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/3"}]},{"id":2,"equipment":{"serialNumber":"080E0F9F","name":"Lora station 080E0F9F","id":1},"domain":"BSC","type":"ALARM","name":"RAM","date":222222222,"value":"90","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/2"}]},{"id":4,"equipment":{"serialNumber":"080E0F9F","name":"Lora station 080E0F9F","id":1},"domain":"BSC","type":"NOTIFICATION","name":"DOOR","date":1481743204571,"value":"CLOSED","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/4"}]}],"nbPages":1}</body>
+                        <headers>
+                          <header name="Transfer-Encoding" value="chunked" />
+                          <header name="X-Frame-Options" value="DENY" />
+                          <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                          <header name="X-Content-Type-Options" value="nosniff" />
+                          <header name="Expires" value="0" />
+                          <header name="Pragma" value="no-cache" />
+                          <header name="X-XSS-Protection" value="1; mode=block" />
+                          <header name="X-Application-Context" value="application:loc:8080" />
+                          <header name="Date" value="Thu, 15 Dec 2016 17:26:52 GMT" />
+                          <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                        </headers>
+                      </response>
+                    </exchange>
+                  </exchanges>
+                </endpoint>
+              </path>
+            </path>
+            <path name="equipments">
+              <path name="{equipmentId}">
+                <path name="lastStatistics">
+                  <endpoint name="getEquipmentLastStatistics" path="/application/customers/{customerId}/fleets/{fleetId}/equipments/{equipmentId}/lastStatistics" method="GET">
+                    <exchanges>
+                      <exchange name="echange" date="1481896609629" status="200">
+                        <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/lastStatistics">
+                          <body />
+                          <parameters>
+                            <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                            <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                            <parameter enabled="true" location="PATH" name="equipmentId" value="1" />
+                            <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                          </parameters>
+                        </request>
+                        <response status="200">
+                          <body>{"count":4,"pageSize":50,"page":1,"totalCount":4,"list":[{"id":3,"date":4561327896,"name":"USER_DISK","min":50,"max":90,"average":80,"links":[{"rel":"equipment","href":"/application/customers/1/fleets/1/equipments/1"}]},{"id":1,"date":123456789,"name":"CPU","min":10,"max":20,"average":15,"links":[{"rel":"equipment","href":"/application/customers/1/fleets/1/equipments/1"}]},{"id":4,"date":6547955124,"name":"LATITUDE","min":120,"max":400,"average":123,"links":[{"rel":"equipment","href":"/application/customers/1/fleets/1/equipments/1"}]},{"id":2,"date":78945333,"name":"RAM","min":10,"max":14,"average":12,"links":[{"rel":"equipment","href":"/application/customers/1/fleets/1/equipments/1"}]}],"nbPages":1}</body>
+                          <headers>
+                            <header name="Transfer-Encoding" value="chunked" />
+                            <header name="X-Frame-Options" value="DENY" />
+                            <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                            <header name="X-Content-Type-Options" value="nosniff" />
+                            <header name="Expires" value="0" />
+                            <header name="Pragma" value="no-cache" />
+                            <header name="X-XSS-Protection" value="1; mode=block" />
+                            <header name="X-Application-Context" value="application:loc:8080" />
+                            <header name="Date" value="Fri, 16 Dec 2016 13:56:49 GMT" />
+                            <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                          </headers>
+                        </response>
+                      </exchange>
+                    </exchanges>
+                  </endpoint>
+                </path>
+                <path name="events">
+                  <path name="last">
+                    <path name="{lastEventId}">
+                      <endpoint name="patchEquipmentLastEvent" path="/application/customers/{customerId}/fleets/{fleetId}/equipments/{equipmentId}/events/last/{lastEventId}" method="PATCH">
+                        <exchanges>
+                          <exchange name="echange" date="1481905490446" status="204">
+                            <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/events/last/2">
+                              <body>{
+"markedAsRead":true
+}</body>
+                              <parameters>
+                                <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                                <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                                <parameter enabled="true" location="PATH" name="equipmentId" value="1" />
+                                <parameter enabled="true" location="PATH" name="lastEventId" value="2" />
+                                <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                                <parameter enabled="true" location="HEADER" name="Content-Type" value="application/vnd.kerlink.iot-v1+json" />
+                              </parameters>
+                            </request>
+                            <response status="204">
+                              <body>{"code":"SERVER_ERROR","message":"Server error, details : No value present","params":["No value present"]}</body>
+                              <headers>
+                                <header name="X-Frame-Options" value="DENY" />
+                                <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                                <header name="X-Content-Type-Options" value="nosniff" />
+                                <header name="Expires" value="0" />
+                                <header name="Pragma" value="no-cache" />
+                                <header name="X-XSS-Protection" value="1; mode=block" />
+                                <header name="X-Application-Context" value="application:loc:8080" />
+                                <header name="Date" value="Fri, 16 Dec 2016 16:24:50 GMT" />
+                              </headers>
+                            </response>
+                          </exchange>
+                        </exchanges>
+                      </endpoint>
+                    </path>
+                    <endpoint name="getEquipmentLastEvents" path="/application/customers/{customerId}/fleets/{fleetId}/equipments/{equipmentId}/events/last" method="GET">
+                      <exchanges>
+                        <exchange name="echange" date="1481904637948" status="200">
+                          <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/events/last">
+                            <body />
+                            <parameters>
+                              <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                              <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                              <parameter enabled="true" location="PATH" name="equipmentId" value="1" />
+                              <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                            </parameters>
+                          </request>
+                          <response status="200">
+                            <body>{"count":4,"pageSize":50,"page":1,"totalCount":4,"list":[{"id":2,"domain":"BSC","type":"ALARM","name":"RAM","date":222222222,"value":"90","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/2"}]},{"id":4,"domain":"BSC","type":"NOTIFICATION","name":"DOOR","date":1481829158501,"value":"CLOSED","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/4"}]},{"id":3,"domain":"BSC","type":"ALARM","name":"DOOR","date":1481872370025,"value":"OPEN","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/3"}]},{"id":1,"domain":"BSC","type":"ALARM","name":"CPU","date":1481807002425,"value":"100","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/1"}]}],"nbPages":1}</body>
+                            <headers>
+                              <header name="Transfer-Encoding" value="chunked" />
+                              <header name="X-Frame-Options" value="DENY" />
+                              <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                              <header name="X-Content-Type-Options" value="nosniff" />
+                              <header name="Expires" value="0" />
+                              <header name="Pragma" value="no-cache" />
+                              <header name="X-XSS-Protection" value="1; mode=block" />
+                              <header name="X-Application-Context" value="application:loc:8080" />
+                              <header name="Date" value="Fri, 16 Dec 2016 16:10:37 GMT" />
+                              <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                            </headers>
+                          </response>
+                        </exchange>
+                        <exchange name="search" date="1481906230761" status="0">
+                          <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/events/last?search={&quot;operator&quot;:&quot;AND&quot;,&quot;conditions&quot;:[{&quot;operation&quot;:&quot;eq&quot;,&quot;values&quot;:[&quot;BSC&quot;],&quot;operand&quot;:&quot;domain&quot;},{&quot;operation&quot;:&quot;eq&quot;,&quot;values&quot;:[&quot;false&quot;],&quot;operand&quot;:&quot;markedAsRead&quot;}]}">
+                            <body />
+                            <parameters>
+                              <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                              <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                              <parameter enabled="true" location="PATH" name="equipmentId" value="1" />
+                              <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                              <parameter enabled="true" location="QUERY" name="search" value="{&quot;operator&quot;:&quot;AND&quot;,&quot;conditions&quot;:[{&quot;operation&quot;:&quot;eq&quot;,&quot;values&quot;:[&quot;BSC&quot;],&quot;operand&quot;:&quot;domain&quot;},{&quot;operation&quot;:&quot;eq&quot;,&quot;values&quot;:[&quot;false&quot;],&quot;operand&quot;:&quot;markedAsRead&quot;}]}" />
+                            </parameters>
+                          </request>
+                          <response status="0">
+                            <body>{"count":4,"pageSize":50,"page":1,"totalCount":4,"list":[{"id":4,"domain":"BSC","type":"NOTIFICATION","name":"DOOR","date":1481829158501,"value":"CLOSED","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/4"}]},{"id":3,"domain":"BSC","type":"ALARM","name":"DOOR","date":1481872370025,"value":"OPEN","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/3"}]},{"id":1,"domain":"BSC","type":"ALARM","name":"CPU","date":1481807002425,"value":"100","markedAsRead":false,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/1"}]},{"id":2,"domain":"BSC","type":"ALARM","name":"RAM","date":222222222,"value":"90","markedAsRead":true,"links":[{"rel":"self","href":"/application/customers/1/fleets/1/equipments/1/events/last/2"}]}],"nbPages":1}</body>
+                            <headers />
+                          </response>
+                        </exchange>
+                      </exchanges>
+                    </endpoint>
+                  </path>
+                </path>
+                <path name="lastOperations">
+                  <endpoint name="getEquipmentLastOperations" path="/application/customers/{customerId}/fleets/{fleetId}/equipments/{equipmentId}/lastOperations" method="GET">
+                    <exchanges>
+                      <exchange name="OK" date="1481722338355" status="200">
+                        <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/equipments/1/lastOperations">
+                          <body />
+                          <parameters>
+                            <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                            <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                            <parameter enabled="true" location="PATH" name="equipmentId" value="1" />
+                            <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                          </parameters>
+                        </request>
+                        <response status="200">
+                          <body>{"count":2,"pageSize":50,"page":1,"totalCount":2,"list":[{"id":1,"type":"GET_MANAGEMENT","date":12345689,"status":"OK","transactionId":"app.10","links":[{"rel":"snmplogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=app.10"}]},{"id":2,"type":"GET_VERSIONS","date":789456456,"status":"OK","transactionId":"app.11","links":[{"rel":"snmplogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=app.11"}]}],"nbPages":1}</body>
+                          <headers>
+                            <header name="Transfer-Encoding" value="chunked" />
+                            <header name="X-Frame-Options" value="DENY" />
+                            <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                            <header name="X-Content-Type-Options" value="nosniff" />
+                            <header name="Expires" value="0" />
+                            <header name="Pragma" value="no-cache" />
+                            <header name="X-XSS-Protection" value="1; mode=block" />
+                            <header name="X-Application-Context" value="application:loc:8080" />
+                            <header name="Date" value="Wed, 14 Dec 2016 13:32:18 GMT" />
+                            <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                          </headers>
+                        </response>
+                      </exchange>
+                    </exchanges>
+                  </endpoint>
+                </path>
+              </path>
+            </path>
+            <endpoint name="getCustomerFleet" path="/application/customers/{customerId}/fleets/{fleetId}" method="GET">
+              <exchanges>
+                <exchange name="echange" date="1481791088558" status="200">
+                  <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1">
+                    <body />
+                    <parameters>
+                      <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                      <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                      <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                      <parameter enabled="false" location="QUERY" name="fields" value="id,name" />
+                    </parameters>
+                  </request>
+                  <response status="200">
+                    <body>{"name":"fleet1","links":[{"rel":"equipments","href":"/application/customers/1/fleets/1/equipments"},{"rel":"alarms","href":"/application/customers/1/fleets/1/alarms"},{"rel":"self","href":"/application/customers/1/fleets/1"},{"rel":"loraStations","href":"/application/customers/1/fleets/1/loraStations"},{"rel":"operations","href":"/application/customers/1/fleets/1/lastOperations"},{"rel":"statistics","href":"/application/customers/1/fleets/1/statistics/equipments"}],"id":1}</body>
+                    <headers>
+                      <header name="Transfer-Encoding" value="chunked" />
+                      <header name="X-Frame-Options" value="DENY" />
+                      <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                      <header name="X-Content-Type-Options" value="nosniff" />
+                      <header name="Expires" value="0" />
+                      <header name="Pragma" value="no-cache" />
+                      <header name="X-XSS-Protection" value="1; mode=block" />
+                      <header name="X-Application-Context" value="application:loc:8080" />
+                      <header name="Date" value="Thu, 15 Dec 2016 08:38:08 GMT" />
+                      <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                    </headers>
+                  </response>
+                </exchange>
+              </exchanges>
+            </endpoint>
             <path name="loraStations">
               <path name="{loraStationId}">
+                <endpoint name="getLoraStationConfigurations" path="/application/customers/{customerId}/fleets/{fleetId}/loraStations/{loraStationId}" method="GET">
+                  <exchanges>
+                    <exchange name="echange" date="1481553680485" status="400">
+                      <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/loraStations/1?startDate=1478959595987&amp;endDate=1481551699741&amp;fields=@time">
+                        <body />
+                        <parameters>
+                          <parameter enabled="true" location="PATH" name="loraStationId" value="1" />
+                          <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                          <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                          <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                          <parameter enabled="true" location="QUERY" name="startDate" value="1478959595987" />
+                          <parameter enabled="true" location="QUERY" name="endDate" value="1481551699741" />
+                          <parameter enabled="true" location="QUERY" name="fields" value="@time" />
+                        </parameters>
+                      </request>
+                      <response status="400">
+                        <body>{"code":"PARAMETER_INCORRECT","message":"The parameter 'fields' is incorrect. Specification is : string ∈ []","params":["fields","string ∈ []"]}</body>
+                        <headers>
+                          <header name="Transfer-Encoding" value="chunked" />
+                          <header name="X-Frame-Options" value="DENY" />
+                          <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                          <header name="X-Content-Type-Options" value="nosniff" />
+                          <header name="Connection" value="close" />
+                          <header name="Expires" value="0" />
+                          <header name="Pragma" value="no-cache" />
+                          <header name="X-XSS-Protection" value="1; mode=block" />
+                          <header name="X-Application-Context" value="application:loc:8080" />
+                          <header name="Date" value="Mon, 12 Dec 2016 14:41:20 GMT" />
+                          <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                        </headers>
+                      </response>
+                    </exchange>
+                  </exchanges>
+                </endpoint>
                 <endpoint name="getLoraStation" path="/application/customers/{customerId}/fleets/{fleetId}/loraStations/{loraStationId}" method="GET">
                   <exchanges>
                     <exchange name="echange" date="1481559571100" status="200">
@@ -268,7 +644,7 @@
                           <parameter enabled="true" location="PATH" name="loraStationId" value="7" />
                           <parameter enabled="true" location="PATH" name="customerId" value="1" />
                           <parameter enabled="true" location="PATH" name="fleetId" value="1" />
-                          <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
+                          <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
                         </parameters>
                       </request>
                       <response status="200">
@@ -298,7 +674,7 @@
                           <parameter enabled="true" location="PATH" name="loraStationId" value="8" />
                           <parameter enabled="true" location="PATH" name="customerId" value="1" />
                           <parameter enabled="true" location="PATH" name="fleetId" value="1" />
-                          <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
+                          <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
                         </parameters>
                       </request>
                       <response status="204">
@@ -317,40 +693,6 @@
                     </exchange>
                   </exchanges>
                 </endpoint>
-                <endpoint name="getLoraStationConfigurations" path="/application/customers/{customerId}/fleets/{fleetId}/loraStations/{loraStationId}" method="GET">
-                  <exchanges>
-                    <exchange name="echange" date="1481553680485" status="400">
-                      <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/loraStations/1?startDate=1478959595987&amp;endDate=1481551699741&amp;fields=@time">
-                        <body />
-                        <parameters>
-                          <parameter enabled="true" location="PATH" name="loraStationId" value="1" />
-                          <parameter enabled="true" location="PATH" name="customerId" value="1" />
-                          <parameter enabled="true" location="PATH" name="fleetId" value="1" />
-                          <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
-                          <parameter enabled="true" location="QUERY" name="startDate" value="1478959595987" />
-                          <parameter enabled="true" location="QUERY" name="endDate" value="1481551699741" />
-                          <parameter enabled="true" location="QUERY" name="fields" value="@time" />
-                        </parameters>
-                      </request>
-                      <response status="400">
-                        <body>{"code":"PARAMETER_INCORRECT","message":"The parameter 'fields' is incorrect. Specification is : string ∈ []","params":["fields","string ∈ []"]}</body>
-                        <headers>
-                          <header name="Transfer-Encoding" value="chunked" />
-                          <header name="X-Frame-Options" value="DENY" />
-                          <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
-                          <header name="X-Content-Type-Options" value="nosniff" />
-                          <header name="Connection" value="close" />
-                          <header name="Expires" value="0" />
-                          <header name="Pragma" value="no-cache" />
-                          <header name="X-XSS-Protection" value="1; mode=block" />
-                          <header name="X-Application-Context" value="application:loc:8080" />
-                          <header name="Date" value="Mon, 12 Dec 2016 14:41:20 GMT" />
-                          <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
-                        </headers>
-                      </response>
-                    </exchange>
-                  </exchanges>
-                </endpoint>
               </path>
               <endpoint name="createLoraStation" path="/application/customers/{customerId}/fleets/{fleetId}/loraStations" method="POST">
                 <exchanges>
@@ -363,7 +705,7 @@
                       <parameters>
                         <parameter enabled="true" location="PATH" name="customerId" value="1" />
                         <parameter enabled="true" location="PATH" name="fleetId" value="1" />
-                        <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
+                        <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
                         <parameter enabled="true" location="HEADER" name="Content-Type" value="application/vnd.kerlink.iot-v1+json" />
                       </parameters>
                     </request>
@@ -386,51 +728,146 @@
                 </exchanges>
               </endpoint>
             </path>
-            <endpoint name="getCustomerFleet" path="/application/customers/{customerId}/fleets/{fleetId}" method="GET">
-              <exchanges>
-                <exchange name="echange" date="1481532213475" status="200">
-                  <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1">
-                    <body />
-                    <parameters>
-                      <parameter enabled="true" location="PATH" name="customerId" value="1" />
-                      <parameter enabled="true" location="PATH" name="fleetId" value="1" />
-                      <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
-                    </parameters>
-                  </request>
-                  <response status="200">
-                    <body>{"equipmentsAlarmsDisconnectedCount":1,"equipmentsAlarmsSytemDiskCount":0,"equipmentsAlarmsTemperatureCount":0,"equipmentsAlarmsRssiCount":0,"equipmentsAlarmsUserDiskCount":1,"equipmentsAlarmsCpuCount":1,"equipmentsAlarmsDoorOpenCount":1,"equipmentsNotificationsCount":2,"equipmentsAlarmsCount":5,"equipmentsAlarmsRamCount":0,"name":"fleet1","links":[{"rel":"operations","href":"/application/customers/1/fleets/1/operations"},{"rel":"equipments","href":"/application/customers/1/fleets/1/equipments"},{"rel":"alarms","href":"/application/customers/1/fleets/1/alarms"},{"rel":"self","href":"/application/customers/1/fleets/1"},{"rel":"loraStations","href":"/application/customers/1/fleets/1/loraStations"},{"rel":"statistics","href":"/application/customers/1/fleets/1/statistics/equipments"}],"id":1,"equipmentsAlarmsGpsUnlockedCount":1}</body>
-                    <headers>
-                      <header name="Transfer-Encoding" value="chunked" />
-                      <header name="X-Frame-Options" value="DENY" />
-                      <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
-                      <header name="X-Content-Type-Options" value="nosniff" />
-                      <header name="Expires" value="0" />
-                      <header name="Pragma" value="no-cache" />
-                      <header name="X-XSS-Protection" value="1; mode=block" />
-                      <header name="X-Application-Context" value="application:loc:8080" />
-                      <header name="Date" value="Mon, 12 Dec 2016 08:43:33 GMT" />
-                      <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
-                    </headers>
-                  </response>
-                </exchange>
-              </exchanges>
-            </endpoint>
+            <path name="lastOperations">
+              <endpoint name="getFleetLastOperations" path="/application/customers/{customerId}/fleets/{fleetId}/lastOperations" method="GET">
+                <exchanges>
+                  <exchange name="echange" date="1481813566642" status="200">
+                    <request uri="http://192.168.5.11:8080/oss/rest/application/customers/1/fleets/1/lastOperations?sort=-date">
+                      <body />
+                      <parameters>
+                        <parameter enabled="true" location="PATH" name="customerId" value="1" />
+                        <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                        <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                        <parameter enabled="false" location="QUERY" name="pageSize" value="1" />
+                        <parameter enabled="true" location="QUERY" name="sort" value="-date" />
+                      </parameters>
+                    </request>
+                    <response status="200">
+                      <body>{"count":2,"pageSize":50,"page":1,"totalCount":2,"list":[{"id":2,"equipment":{"serialNumber":"080E0F9F","name":"Lora station 080E0F9F","id":1},"type":"GET_VERSIONS","date":789456456,"status":"OK","transactionId":"app.11","links":[{"rel":"snmplogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=app.11"}]},{"id":1,"equipment":{"serialNumber":"080E0F9F","name":"Lora station 080E0F9F","id":1},"type":"GET_MANAGEMENT","date":12345689,"status":"OK","transactionId":"app.10","links":[{"rel":"snmplogs","href":"/application/customers/1/fleets/1/equipments/snmpLogs?transactionId=app.10"}]}],"nbPages":1}</body>
+                      <headers>
+                        <header name="Transfer-Encoding" value="chunked" />
+                        <header name="X-Frame-Options" value="DENY" />
+                        <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                        <header name="X-Content-Type-Options" value="nosniff" />
+                        <header name="Expires" value="0" />
+                        <header name="Pragma" value="no-cache" />
+                        <header name="X-XSS-Protection" value="1; mode=block" />
+                        <header name="X-Application-Context" value="application:loc:8080" />
+                        <header name="Date" value="Thu, 15 Dec 2016 14:52:46 GMT" />
+                        <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                      </headers>
+                    </response>
+                  </exchange>
+                </exchanges>
+              </endpoint>
+            </path>
           </path>
         </path>
       </path>
-      <endpoint name="getCustomers" path="/application/customers" method="GET">
+    </path>
+    <path name="fleets">
+      <path name="{fleetId}">
+        <endpoint name="getFleet" path="/application/fleets/{fleetId}" method="GET">
+          <exchanges>
+            <exchange name="OK" date="1481895942168" status="200">
+              <request uri="http://192.168.5.11:8080/oss/rest/application/fleets/1">
+                <body />
+                <parameters>
+                  <parameter enabled="true" location="PATH" name="fleetId" value="1" />
+                  <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                  <parameter enabled="false" location="QUERY" name="fields" value="id,name" />
+                </parameters>
+              </request>
+              <response status="200">
+                <body>{"lastEventCounters":[{"lastEvent":{"domain":"BSC","name":"RAM","type":"ALARM"},"counter":2},{"lastEvent":{"domain":"BSC","name":"GPS","type":"ALARM"},"counter":1},{"lastEvent":{"domain":"BSC","name":"DOOR","type":"ALARM"},"counter":1},{"lastEvent":{"domain":"BSC","name":"DOOR","type":"NOTIFICATION"},"counter":1},{"lastEvent":{"domain":"BSC","name":"CPU","type":"ALARM"},"counter":2}],"name":"fleet1","links":[{"rel":"self","href":"/application/fleets/1"}],"id":1}</body>
+                <headers>
+                  <header name="Transfer-Encoding" value="chunked" />
+                  <header name="X-Frame-Options" value="DENY" />
+                  <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                  <header name="X-Content-Type-Options" value="nosniff" />
+                  <header name="Expires" value="0" />
+                  <header name="Pragma" value="no-cache" />
+                  <header name="X-XSS-Protection" value="1; mode=block" />
+                  <header name="X-Application-Context" value="application:loc:8080" />
+                  <header name="Date" value="Fri, 16 Dec 2016 13:45:42 GMT" />
+                  <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
+                </headers>
+              </response>
+            </exchange>
+          </exchanges>
+        </endpoint>
+        <endpoint name="updateFleet" path="/application/fleets/{fleetId}" method="PUT">
+          <exchanges>
+            <exchange name="OK" date="1481561946962" status="204">
+              <request uri="http://192.168.5.11:8080/oss/rest/application/fleets/699">
+                <body>{
+"name":"fleet 3 updated"
+}</body>
+                <parameters>
+                  <parameter enabled="true" location="PATH" name="fleetId" value="699" />
+                  <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                  <parameter enabled="true" location="HEADER" name="Content-Type" value="application/vnd.kerlink.iot-v1+json" />
+                </parameters>
+              </request>
+              <response status="204">
+                <body>&lt;html&gt;&lt;body&gt;&lt;h1&gt;Whitelabel Error Page&lt;/h1&gt;&lt;p&gt;This application has no explicit mapping for /error, so you are seeing this as a fallback.&lt;/p&gt;&lt;div id='created'&gt;Mon Dec 12 17:58:36 CET 2016&lt;/div&gt;&lt;div&gt;There was an unexpected error (type=Unsupported Media Type, status=415).&lt;/div&gt;&lt;div&gt;Content type &amp;#39;text/plain&amp;#39; not supported&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</body>
+                <headers>
+                  <header name="X-Frame-Options" value="DENY" />
+                  <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                  <header name="X-Content-Type-Options" value="nosniff" />
+                  <header name="Expires" value="0" />
+                  <header name="Pragma" value="no-cache" />
+                  <header name="X-XSS-Protection" value="1; mode=block" />
+                  <header name="X-Application-Context" value="application:loc:8080" />
+                  <header name="Date" value="Mon, 12 Dec 2016 16:59:06 GMT" />
+                </headers>
+              </response>
+            </exchange>
+          </exchanges>
+        </endpoint>
+      </path>
+      <endpoint name="createFleet" path="/application/fleets" method="POST">
         <exchanges>
-          <exchange name="echange" date="1481539766808" status="200">
-            <request uri="http://192.168.4.25:8080/application/customers?pageSize=50&amp;page=1">
+          <exchange name="echange" date="1481561844003" status="201">
+            <request uri="http://192.168.5.11:8080/oss/rest/application/fleets">
+              <body>{
+"name":"fleet 3"
+}</body>
+              <parameters>
+                <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                <parameter enabled="true" location="HEADER" name="Content-Type" value="application/vnd.kerlink.iot-v1+json" />
+              </parameters>
+            </request>
+            <response status="201">
+              <body>&lt;html&gt;&lt;body&gt;&lt;h1&gt;Whitelabel Error Page&lt;/h1&gt;&lt;p&gt;This application has no explicit mapping for /error, so you are seeing this as a fallback.&lt;/p&gt;&lt;div id='created'&gt;Mon Dec 12 17:56:55 CET 2016&lt;/div&gt;&lt;div&gt;There was an unexpected error (type=Unsupported Media Type, status=415).&lt;/div&gt;&lt;div&gt;Content type &amp;#39;text/plain&amp;#39; not supported&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</body>
+              <headers>
+                <header name="X-Frame-Options" value="DENY" />
+                <header name="Cache-Control" value="no-cache, no-store, max-age=0, must-revalidate" />
+                <header name="X-Content-Type-Options" value="nosniff" />
+                <header name="Expires" value="0" />
+                <header name="Pragma" value="no-cache" />
+                <header name="Content-Length" value="0" />
+                <header name="X-XSS-Protection" value="1; mode=block" />
+                <header name="X-Application-Context" value="application:loc:8080" />
+                <header name="Date" value="Mon, 12 Dec 2016 16:57:24 GMT" />
+                <header name="Location" value="/application/fleets/699" />
+              </headers>
+            </response>
+          </exchange>
+        </exchanges>
+      </endpoint>
+      <endpoint name="getFleets" path="/application/fleets" method="GET">
+        <exchanges>
+          <exchange name="OK" date="1481798820739" status="200">
+            <request uri="http://192.168.5.11:8080/oss/rest/application/fleets">
               <body />
               <parameters>
-                <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxNTY2NzE1fQ.6XLBeTTI1B1p0lbELNdtd7o0l11BznyTGMK1WiOB0v8" />
-                <parameter enabled="true" location="QUERY" name="page" value="1" />
-                <parameter enabled="true" location="QUERY" name="pageSize" value="50" />
+                <parameter enabled="true" location="HEADER" name="Authorization" value="Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdXBlcm9zcyIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImdyb3VwSWQiOiI2IiwiaXNzIjoib3NzQ2xpZW50IiwiZXhwIjoxNDgxOTMxODEyfQ.eYFXVujPhohsBrVXh5hr8kBkTKFViyYVtOKGnsCgHi8" />
+                <parameter enabled="false" location="QUERY" name="fields" value="id,name" />
               </parameters>
             </request>
             <response status="200">
-              <body>{"count":2,"pageSize":50,"page":1,"totalCount":2,"list":[{"id":6,"name":"KERLINK","logo":"http://www.youbuyfrance.com/medias/company/logo/logo-kerlink-couleur-large_20_8_2015_30_26.png","equipmentsAlarmsCount":22,"equipmentsNotificationsCount":7,"links":[{"rel":"lnsEquipments","href":"/application/customers/6/lnsEquipments"},{"rel":"clusters","href":"/application/customers/6/clusters"},{"rel":"fleets","href":"/application/customers/6/fleets"},{"rel":"self","href":"/application/customers/6"},{"rel":"users","href":"/application/customers/6/users"}]},{"id":1,"name":"ALKANTE","logo":"","equipmentsAlarmsCount":0,"equipmentsNotificationsCount":0,"links":[{"rel":"self","href":"/application/customers/1"},{"rel":"lnsEquipments","href":"/application/customers/1/lnsEquipments"},{"rel":"users","href":"/application/customers/1/users"},{"rel":"clusters","href":"/application/customers/1/clusters"},{"rel":"fleets","href":"/application/customers/1/fleets"}]}],"nbPages":1}</body>
+              <body>{"count":3,"pageSize":50,"page":1,"totalCount":3,"list":[{"id":1,"name":"fleet1","lastEventCounters":[{"lastEvent":{"domain":"BSC","name":"DOOR","type":"NOTIFICATION"},"counter":1},{"lastEvent":{"domain":"BSC","name":"DOOR","type":"ALARM"},"counter":1},{"lastEvent":{"domain":"BSC","name":"RAM","type":"ALARM"},"counter":2},{"lastEvent":{"domain":"BSC","name":"CPU","type":"ALARM"},"counter":2},{"lastEvent":{"domain":"BSC","name":"GPS","type":"ALARM"},"counter":1}],"links":[{"rel":"self","href":"/application/fleets/1"}]},{"id":2,"name":"fleet2","lastEventCounters":[],"links":[{"rel":"self","href":"/application/fleets/2"}]},{"id":699,"name":"fleet 3 updated","lastEventCounters":[],"links":[{"rel":"self","href":"/application/fleets/699"}]}],"nbPages":1}</body>
               <headers>
                 <header name="Transfer-Encoding" value="chunked" />
                 <header name="X-Frame-Options" value="DENY" />
@@ -439,8 +876,8 @@
                 <header name="Expires" value="0" />
                 <header name="Pragma" value="no-cache" />
                 <header name="X-XSS-Protection" value="1; mode=block" />
-                <header name="X-Application-Context" value="application:dev:8080" />
-                <header name="Date" value="Mon, 12 Dec 2016 10:49:25 GMT" />
+                <header name="X-Application-Context" value="application:loc:8080" />
+                <header name="Date" value="Thu, 15 Dec 2016 10:47:00 GMT" />
                 <header name="Content-Type" value="application/vnd.kerlink.iot-v1+json;charset=UTF-8" />
               </headers>
             </response>

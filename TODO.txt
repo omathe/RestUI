@@ -1,0 +1,26 @@
+Action: Feature, Fix, Refactor, Test, Configuration, Build, Format
+Scope : application, parameter, endpoint
+
+
+------------------------------------- TODO ------------------------------------
+Fix(endpoint) : encode URI (example: sort=+date)
+Fix(parameter) : copy and paste within 2 exchanges
+Feat(application) : add webView
+Feat(exchange) : duplicate exchange
+-------------------------------------------------------------------------------
+
+
+
+---------------------------------- IN PROGRESS --------------------------------
+
+-------------------------------------------------------------------------------
+
+
+
+------------------------------------- DONE ------------------------------------
+
+-------------------------------------------------------------------------------
+
+
+
+

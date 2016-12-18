@@ -2,6 +2,7 @@ package restui.model;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -102,6 +103,11 @@ public class Exchange {
 		request.parameters.remove(parameter);
 	}
 
+	public List<Parameter> findParameters(final String location, final String name) {
+		return request.parameters.stream().filter(parameter -> parameter.getLocation().equals(location)
+				&& parameter.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+	}
+
 	public Response getResponse() {
 		return response;
 	}
@@ -144,7 +150,7 @@ public class Exchange {
 	public StringProperty getResponseBodyProperty() {
 		return response.bodyProperty();
 	}
-	
+
 	public Optional<Parameter> findResponseHeader(final String name) {
 		return response.findParameter(Location.HEADER, name);
 	}
