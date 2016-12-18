@@ -33,7 +33,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -122,8 +121,7 @@ public class EndPointController extends AbstractController implements Initializa
 		final ContextMenu contextMenu = new ContextMenu();
 		final MenuItem menuItemCopy = new MenuItem("Copy");
 		final MenuItem menuItemPaste = new MenuItem("Paste");
-		final Menu menuCopyToEndpoints = new Menu("Copy to other endpoints");
-		contextMenu.getItems().addAll(menuItemCopy, menuItemPaste, menuCopyToEndpoints);
+		contextMenu.getItems().addAll(menuItemCopy, menuItemPaste);
 		parameters.setContextMenu(contextMenu);
 
 		parameters.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
