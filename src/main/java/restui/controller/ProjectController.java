@@ -49,7 +49,6 @@ public class ProjectController extends AbstractController implements Initializab
 	protected void updateParametersValue(final ActionEvent event) {
 		
 		final Parameter parameter = new Parameter(true, Location.valueOf(parameterLocation.getValue()), parameterName.getText(), parameterValue.getText());
-		System.err.println(parameter);
 		final Project project = (Project) treeItem.getValue();
 		browseTree(project, parameter);
 	}
