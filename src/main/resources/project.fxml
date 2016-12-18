@@ -16,7 +16,7 @@
 			<children>
 				<HBox alignment="CENTER_LEFT" spacing="5.0">
 					<children>
-						<Label text="URL" />
+						<Label minWidth="-Infinity" prefWidth="30.0" text="URL" />
 						<TextField fx:id="baseUrl" promptText="http://host:8080/rest" />
 					</children>
                <VBox.margin>
@@ -28,7 +28,7 @@
 						<Label text="Global parameters" />
 						<HBox spacing="5.0">
 							<children>
-								<ComboBox fx:id="parameterLocation" prefWidth="150.0">
+								<ComboBox fx:id="parameterLocation" minWidth="-Infinity" prefWidth="110.0">
 									<items>
 										<FXCollections fx:factory="observableArrayList">
 											<String fx:value="HEADER" />
