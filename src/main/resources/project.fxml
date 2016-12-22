@@ -8,25 +8,25 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
 
 <HBox alignment="CENTER" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.ProjectController">
 	<children>
-		<VBox>
+		<VBox HBox.hgrow="ALWAYS">
 			<children>
-				<HBox alignment="CENTER_LEFT" spacing="5.0">
+				<HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
 					<children>
 						<Label minWidth="-Infinity" prefWidth="30.0" text="URL" />
-						<TextField fx:id="baseUrl" promptText="http://host:8080/rest" />
+						<TextField fx:id="baseUrl" promptText="http://host:8080/rest" HBox.hgrow="ALWAYS" />
 					</children>
                <VBox.margin>
                   <Insets bottom="20.0" left="5.0" right="5.0" top="5.0" />
                </VBox.margin>
 				</HBox>
-				<VBox spacing="5.0">
+				<VBox spacing="5.0" VBox.vgrow="NEVER">
 					<children>
-						<HBox spacing="5.0">
+						<HBox spacing="5.0" VBox.vgrow="NEVER">
 							<children>
 								<ComboBox fx:id="parameterLocation" minWidth="-Infinity" prefWidth="110.0">
 									<items>
@@ -51,13 +51,29 @@
 							</padding>
 						</HBox>
 						<Label text="Global parameters" />
-                  <Region prefHeight="200.0" prefWidth="200.0" />
-                  <HBox>
+                  <HBox spacing="5.0" VBox.vgrow="NEVER">
                      <children>
                         <Label text="Number of endpoints :" />
                         <Label fx:id="nbEndpoints" text="Label" />
                      </children>
                   </HBox>
+                  <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <WebView fx:id="webView" minHeight="400.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="597.0" VBox.vgrow="ALWAYS" />
+                        <HBox spacing="5.0" VBox.vgrow="NEVER">
+                           <children>
+                              <TextField fx:id="url" prefHeight="26.0" prefWidth="500.0" HBox.hgrow="ALWAYS" />
+                              <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#load" prefWidth="50.0" text="Load" />
+                           </children>
+                           <padding>
+                              <Insets top="5.0" />
+                           </padding>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                  </VBox>
 					</children>
                <VBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

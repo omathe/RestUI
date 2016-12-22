@@ -11,6 +11,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Parameter;
@@ -29,6 +31,10 @@ public class ProjectController extends AbstractController implements Initializab
 	private TextField parameterValue;
 	@FXML
 	private Label nbEndpoints;
+	@FXML
+	private TextField url;
+	@FXML
+	private WebView webView;
 	
 	public TextField getBaseUrl() {
 		return baseUrl;
@@ -75,4 +81,10 @@ public class ProjectController extends AbstractController implements Initializab
 		}
 	}
 
+	@FXML
+	protected void load(final ActionEvent event) {
+		
+		final WebEngine webEngine = webView.getEngine();
+		webEngine.load(url.getText());
+	}
 }
