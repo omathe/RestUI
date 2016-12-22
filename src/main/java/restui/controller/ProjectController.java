@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import restui.model.Endpoint;
@@ -26,7 +27,8 @@ public class ProjectController extends AbstractController implements Initializab
 	private TextField parameterName;
 	@FXML
 	private TextField parameterValue;
-	
+	@FXML
+	private Label nbEndpoints;
 	
 	public TextField getBaseUrl() {
 		return baseUrl;
@@ -38,6 +40,8 @@ public class ProjectController extends AbstractController implements Initializab
 		final Project project = (Project) treeItem.getValue();
 		baseUrl.textProperty().bindBidirectional(project.baseUrlProperty());
 		baseUrl.prefColumnCountProperty().bind(baseUrl.textProperty().length());
+		final Long endpointsCount = project.flattened().filter(item -> item instanceof Endpoint).count();
+		nbEndpoints.setText(endpointsCount.toString());
 	}
 	
 	@Override

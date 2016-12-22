@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -21,14 +22,14 @@
 	<children>
 		<VBox HBox.hgrow="ALWAYS">
 			<children>
-            <TableView fx:id="exchanges" editable="true" maxHeight="200.0">
+            <TableView fx:id="exchanges" editable="true" minHeight="80.0" prefHeight="130.0">
               <columns>
                 <TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="170.0" text="Name" />
                 <TableColumn fx:id="exchangeDateColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="232.0" text="Date" />
                   <TableColumn fx:id="exchangeStatusColumn" prefWidth="140.0" text="Status" />
               </columns>
             </TableView>
-				<FlowPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
+				<FlowPane hgap="5.0" vgap="5.0">
 					<children>
 						<Button mnemonicParsing="false" onAction="#removeExchange" text="-" />
 						<Button mnemonicParsing="false" onAction="#addExchange" text="+" />
@@ -46,7 +47,7 @@
                   </Label>
                </children>
                <VBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  <Insets />
                </VBox.margin>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -56,44 +57,45 @@
 					<items>
 						<AnchorPane maxWidth="1.7976931348623157E308">
 							<children>
-								<VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-									<children>
-												<Label maxWidth="1.7976931348623157E308" text="Request">
+      								<VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      									<children>
+      												<Label maxWidth="1.7976931348623157E308" text="Request">
                                  <font>
                                     <Font size="16.0" />
-                                 </font></Label>
-										<HBox alignment="CENTER_LEFT" spacing="5.0">
-											<children>
-												<Label minWidth="70.0" text="Path" HBox.hgrow="ALWAYS" />
-												<TextField fx:id="path" editable="false" prefHeight="26.0" prefWidth="341.0" HBox.hgrow="ALWAYS" />
-											</children>
+                                 </font>
+                              </Label>
+      										<HBox alignment="CENTER_LEFT" spacing="5.0">
+      											<children>
+      												<Label minWidth="70.0" text="Path" HBox.hgrow="ALWAYS" />
+      												<TextField fx:id="path" editable="false" prefHeight="26.0" prefWidth="341.0" HBox.hgrow="ALWAYS" />
+      											</children>
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
-										</HBox>
-										<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
-											<children>
-												<Label minWidth="50.0" prefWidth="50.0" text="Method" />
-												<ComboBox fx:id="method">
-													<items>
-														<FXCollections fx:factory="observableArrayList">
-															<String fx:value="GET" />
-															<String fx:value="POST" />
-															<String fx:value="PUT" />
-															<String fx:value="DELETE" />
-															<String fx:value="PATCH" />
-														</FXCollections>
-													</items>
-													<value>
-														<String fx:value="GET" />
-													</value>
-												</ComboBox>
-											</children>
-											<VBox.margin>
-												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-											</VBox.margin>
-										</HBox>
-										<VBox />
+      										</HBox>
+      										<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0" VBox.vgrow="ALWAYS">
+      											<children>
+      												<Label minWidth="50.0" prefWidth="50.0" text="Method" />
+      												<ComboBox fx:id="method">
+      													<items>
+      														<FXCollections fx:factory="observableArrayList">
+      															<String fx:value="GET" />
+      															<String fx:value="POST" />
+      															<String fx:value="PUT" />
+      															<String fx:value="DELETE" />
+      															<String fx:value="PATCH" />
+      														</FXCollections>
+      													</items>
+      													<value>
+      														<String fx:value="GET" />
+      													</value>
+      												</ComboBox>
+      											</children>
+      											<VBox.margin>
+      												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      											</VBox.margin>
+      										</HBox>
+      										<VBox />
                               <VBox>
                                  <children>
                                     <Label text="Parameters" />
@@ -105,7 +107,7 @@
                                           <TableColumn fx:id="parameterValueColumn" prefWidth="75.0" text="Value" />
                                        </columns>
                                     </TableView>
-                                    <FlowPane hgap="5.0" vgap="5.0">
+                                    <FlowPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
                                        <children>
                                           <Button mnemonicParsing="false" onAction="#removeRequestParameter" text="-" />
                                           <Button mnemonicParsing="false" onAction="#addRequestParameter" text="+" />
@@ -116,10 +118,10 @@
                                     </FlowPane>
                                  </children>
                               </VBox>
-                              <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                              <VBox prefWidth="100.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <Label text="Body" />
-                                    <TextArea fx:id="requestBody" prefWidth="200.0" promptText="Body" />
+                                    <TextArea fx:id="requestBody" promptText="Body" VBox.vgrow="ALWAYS" />
                                  </children>
                               </VBox>
                               <VBox VBox.vgrow="ALWAYS">
@@ -135,42 +137,38 @@
                                     </HBox>
                                  </children>
                               </VBox>
-									</children>
+      									</children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
-								</VBox>
+      								</VBox>
 							</children>
 						</AnchorPane>
 						<AnchorPane>
 							<children>
-                        <VBox layoutX="-110.0" prefHeight="642.0" prefWidth="366.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox layoutX="-110.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-										<Label text="Response">
-                                 <font>
-                                    <Font size="16.0" />
-                                 </font></Label>
+                              <HBox>
+                                 <children>
+      										<Label text="Response">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
                               <HBox alignment="BOTTOM_RIGHT" spacing="5.0">
                                  <children>
-                                    <VBox spacing="5.0">
-                                       <children>
-                                          <HBox>
-                                             <children>
-                                                <Label text="Status :" />
-                                                <Label fx:id="responseStatus">
-                                                   <font>
-                                                      <Font size="15.0" />
-                                                   </font></Label>
-                                             </children>
-                                          </HBox>
-                                          <HBox>
-                                             <children>
-                                                <Label text="Duration :" />
-                                                <Label fx:id="exchangeDuration" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
+                                    <Label text="Status :" />
+                                    <VBox spacing="5.0" />
+                                    <Label fx:id="responseStatus">
+                                       <font>
+                                          <Font size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Label text="Duration :" />
+                                    <Label fx:id="exchangeDuration" />
                                  </children>
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -193,9 +191,9 @@
                                           </VBox>
                                        </children>
                                     </AnchorPane>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                  <AnchorPane>
                                        <children>
-                                          <VBox prefHeight="298.0" prefWidth="354.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <VBox prefWidth="354.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
                                                 <Label text="Body" />
                                                 <TextArea fx:id="responseBody" editable="false" promptText="Body content" VBox.vgrow="ALWAYS" />
@@ -220,4 +218,7 @@
 			</children>
 		</VBox>
 	</children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
 </HBox>

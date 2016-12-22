@@ -3,26 +3,21 @@ package restui.model;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	protected Item parent;
 	protected String name;
-	
+
 	protected Set<Item> children;
 
 	public Item() {
 		super();
 		this.children = new HashSet<>();
 	}
-
-//	public Item(final String name) {
-//		super();
-//		this.name = name;
-//		this.children = new HashSet<>();
-//	}
 
 	public Item(final Item parent, final String name) {
 		super();
@@ -63,7 +58,7 @@ public class Item implements Serializable {
 		children.add(child);
 		child.setParent(this);
 	}
-	
+
 	public boolean hasChildren() {
 		return children != null && !children.isEmpty();
 	}
@@ -71,6 +66,12 @@ public class Item implements Serializable {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public Stream<Item> flattened() {
+		return Stream.concat(
+				Stream.of(this),
+				children.stream().flatMap(Item::flattened));
 	}
 
 }
