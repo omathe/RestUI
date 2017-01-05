@@ -1,5 +1,6 @@
 package restui.service;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 import com.sun.jersey.api.client.Client;
@@ -18,8 +19,10 @@ public class RestClient {
 		final Client client = Client.create();
 
 		try {
-			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri);
+			final String encodedQuery = URLEncoder.encode("?search={\"operator\":\"AND\"}", "UTF-8");
+			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri + "%3Fsearch%3D%7B%22operator%22%3A%22AND%22%7D");
 			final WebResource.Builder builder = webResource.getRequestBuilder();
+			
 			addHeaders(builder, parameters);
 			addParameters(webResource, parameters);
 			response = builder.get(ClientResponse.class);

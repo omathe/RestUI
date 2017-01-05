@@ -6,81 +6,108 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.web.WebView?>
 
 <HBox alignment="CENTER" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.ProjectController">
 	<children>
-		<VBox HBox.hgrow="ALWAYS">
-			<children>
-				<HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
-					<children>
-						<Label minWidth="-Infinity" prefWidth="30.0" text="URL" />
-						<TextField fx:id="baseUrl" promptText="http://host:8080/rest" HBox.hgrow="ALWAYS" />
-					</children>
-               <VBox.margin>
-                  <Insets bottom="20.0" left="5.0" right="5.0" top="5.0" />
-               </VBox.margin>
-				</HBox>
-				<VBox spacing="5.0" VBox.vgrow="NEVER">
-					<children>
-						<HBox spacing="5.0" VBox.vgrow="NEVER">
-							<children>
-								<ComboBox fx:id="parameterLocation" minWidth="-Infinity" prefWidth="110.0">
-									<items>
-										<FXCollections fx:factory="observableArrayList">
-											<String fx:value="HEADER" />
-											<String fx:value="QUERY" />
-										</FXCollections>
-									</items>
-									<value>
-										<String fx:value="HEADER" />
-									</value>
-								</ComboBox>
-								<TextField fx:id="parameterName" promptText="Name" />
-								<TextField fx:id="parameterValue" promptText="Value" />
-                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#updateParametersValue" prefWidth="120.0" text="Update values" />
-							</children>
-							<VBox.margin>
-								<Insets bottom="5.0" right="5.0" top="5.0" />
-							</VBox.margin>
-							<padding>
-								<Insets bottom="5.0" right="5.0" top="5.0" />
-							</padding>
-						</HBox>
-						<Label text="Global parameters" />
-                  <HBox spacing="5.0" VBox.vgrow="NEVER">
+      <TabPane tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
+        <tabs>
+          <Tab text="Project">
+            <content>
+              <AnchorPane>
                      <children>
-                        <Label text="Number of endpoints :" />
-                        <Label fx:id="nbEndpoints" text="Label" />
+                  		<VBox>
+                  			<children>
+                  				<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
+                  					<children>
+                  						<Label minWidth="-Infinity" prefWidth="30.0" text="URL" />
+                  						<TextField fx:id="baseUrl" promptText="http://host:8080/rest" HBox.hgrow="ALWAYS" />
+                  					</children>
+                                 <VBox.margin>
+                                    <Insets bottom="20.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                  				</HBox>
+                  				<VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                  					<children>
+                  						<HBox fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
+                  							<children>
+                  								<ComboBox fx:id="parameterLocation" minWidth="-Infinity" prefWidth="110.0">
+                  									<items>
+                  										<FXCollections fx:factory="observableArrayList">
+                  											<String fx:value="HEADER" />
+                  											<String fx:value="QUERY" />
+                  										</FXCollections>
+                  									</items>
+                  									<value>
+                  										<String fx:value="HEADER" />
+                  									</value>
+                  								</ComboBox>
+                  								<TextField fx:id="parameterName" promptText="Name" />
+                  								<TextField fx:id="parameterValue" promptText="Value" />
+                                          <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#updateParametersValue" prefWidth="120.0" text="Update values" />
+                  							</children>
+                  							<VBox.margin>
+                  								<Insets bottom="5.0" right="5.0" top="5.0" />
+                  							</VBox.margin>
+                  							<padding>
+                  								<Insets bottom="5.0" right="5.0" top="5.0" />
+                  							</padding>
+                  						</HBox>
+                  						<Label text="Global parameters" />
+                                    <HBox fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
+                                       <children>
+                                          <Label text="Number of endpoints :" />
+                                          <Label fx:id="nbEndpoints" text="Label" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
+                  					</children>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                  				</VBox>
+                  			</children>
+                  		</VBox>
                      </children>
-                  </HBox>
-                  <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Web">
+            <content>
+              <AnchorPane>
                      <children>
-                        <WebView fx:id="webView" minHeight="400.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="597.0" VBox.vgrow="ALWAYS" />
-                        <HBox spacing="5.0" VBox.vgrow="NEVER">
+                        <VBox fillWidth="false" prefHeight="636.0" prefWidth="607.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <TextField fx:id="url" prefHeight="26.0" prefWidth="500.0" HBox.hgrow="ALWAYS" />
-                              <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#load" prefWidth="50.0" text="Load" />
+                              <HBox spacing="5.0">
+                                 <children>
+                                    <TextField fx:id="url" prefHeight="26.0" prefWidth="500.0" HBox.hgrow="ALWAYS" />
+                                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#load" prefWidth="50.0" text="Load" />
+                                 </children>
+                                 <padding>
+                                    <Insets top="5.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <WebView fx:id="webView" minHeight="400.0" minWidth="400.0" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                                 </children>
+                              </HBox>
                            </children>
-                           <padding>
-                              <Insets top="5.0" />
-                           </padding>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </HBox>
+                        </VBox>
                      </children>
-                  </VBox>
-					</children>
-               <VBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </VBox.margin>
-				</VBox>
-			</children>
-		</VBox>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
 	</children>
 	<padding>
 		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

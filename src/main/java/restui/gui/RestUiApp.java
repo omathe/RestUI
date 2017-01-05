@@ -16,7 +16,6 @@ public class RestUiApp extends Application {
 		primaryStage.setTitle("RestUI");
 		primaryStage.setScene(new Scene(root));
 		primaryStage.show();
-
 	}
 
 	public static void main(final String[] args) {

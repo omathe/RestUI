@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -10,7 +11,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="743.0" prefWidth="786.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController" stylesheets="@stylesheet.css">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController">
    <top>
       <HBox alignment="TOP_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
@@ -28,9 +29,9 @@
    <center>
       <SplitPane dividerPositions="0.29797979797979796" BorderPane.alignment="CENTER">
         <items>
-          <AnchorPane>
+          <AnchorPane prefHeight="705.0" prefWidth="132.0">
                <children>
-                  <TreeView fx:id="treeView" prefHeight="572.0" prefWidth="248.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <TreeView fx:id="treeView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
           <AnchorPane>
@@ -41,4 +42,19 @@
         </items>
       </SplitPane>
    </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="time" text="Label" />
+            <Label text="|" />
+            <Label fx:id="memory" />
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </bottom>
 </BorderPane>

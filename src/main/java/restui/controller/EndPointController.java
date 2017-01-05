@@ -49,7 +49,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DefaultStringConverter;
 import restui.model.Endpoint;
 import restui.model.Exchange;
-import restui.model.Header;
 import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Location;
@@ -96,9 +95,9 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	private TableView<Parameter> responseHeaders;
 	@FXML
-	private TableColumn<Header, String> headerNameColumn;
+	private TableColumn<Parameter, String> headerNameColumn;
 	@FXML
-	private TableColumn<Header, String> headerValueColumn;
+	private TableColumn<Parameter, String> headerValueColumn;
 	@FXML
 	private TextArea responseBody;
 	@FXML
@@ -186,8 +185,8 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		// response headers
-		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("name"));
-		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Header, String>("value"));
+		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("name"));
+		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("value"));
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			refreshExchangeData(newSelection);

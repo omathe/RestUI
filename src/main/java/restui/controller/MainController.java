@@ -3,8 +3,13 @@ package restui.controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ResourceBundle;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -13,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -20,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.model.Endpoint;
 import restui.model.Item;
@@ -34,6 +41,12 @@ public class MainController implements Initializable {
 	@FXML
 	private VBox vBox;
 
+	@FXML
+	private Label memory;
+	
+	@FXML
+	private Label time;
+
 	private ProjectController projectController;
 	private EndPointController endPointController;
 
@@ -46,10 +59,10 @@ public class MainController implements Initializable {
 
 		final Project project = ApplicationService.openProject(new File("/home/olivier/.restui/Oss.xml"));
 		final TreeItem<Item> projectItem = new TreeItem<>(project);
-		
+
 		builTree(projectItem);
 		treeView.setRoot(projectItem);
-	
+
 		projectItem.setExpanded(true);
 
 		// end manual open
@@ -98,6 +111,22 @@ public class MainController implements Initializable {
 				}
 			}
 		});
+
+		// time
+		final Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), event -> {
+			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+			time.setText(simpleDateFormat.format(Instant.now().toEpochMilli()));
+		}));
+		timeline.setCycleCount(Animation.INDEFINITE);
+		timeline.play();
+		
+		// memory usage
+		final Timeline timelineMemory = new Timeline(new KeyFrame(Duration.millis(2000), event -> {
+			final Double mem = (double) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_000_000);
+			memory.setText(mem.toString() + " Mo");
+		}));
+		timelineMemory.setCycleCount(Animation.INDEFINITE);
+		timelineMemory.play();
 	}
 
 	@FXML
@@ -133,7 +162,7 @@ public class MainController implements Initializable {
 		if (file != null) {
 			final Project project = ApplicationService.openProject(file);
 			final TreeItem<Item> projectItem = new TreeItem<>(project);
-			
+
 			builTree(projectItem);
 			treeView.setRoot(projectItem);
 		}

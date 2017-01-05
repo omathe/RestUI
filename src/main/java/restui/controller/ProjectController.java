@@ -53,6 +53,7 @@ public class ProjectController extends AbstractController implements Initializab
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		
+		
 	}
 	
 	@FXML
