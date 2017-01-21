@@ -9,107 +9,122 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.web.WebView?>
 
-<HBox alignment="CENTER" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.ProjectController">
+<HBox spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.ProjectController">
 	<children>
-      <TabPane tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
-        <tabs>
-          <Tab text="Project">
-            <content>
-              <AnchorPane>
-                     <children>
-                  		<VBox>
-                  			<children>
-                  				<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
-                  					<children>
-                  						<Label minWidth="-Infinity" prefWidth="30.0" text="URL" />
-                  						<TextField fx:id="baseUrl" promptText="http://host:8080/rest" HBox.hgrow="ALWAYS" />
-                  					</children>
-                                 <VBox.margin>
-                                    <Insets bottom="20.0" left="5.0" right="5.0" top="5.0" />
-                                 </VBox.margin>
-                  				</HBox>
-                  				<VBox spacing="5.0" VBox.vgrow="ALWAYS">
-                  					<children>
-                  						<HBox fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
-                  							<children>
-                  								<ComboBox fx:id="parameterLocation" minWidth="-Infinity" prefWidth="110.0">
-                  									<items>
-                  										<FXCollections fx:factory="observableArrayList">
-                  											<String fx:value="HEADER" />
-                  											<String fx:value="QUERY" />
-                  										</FXCollections>
-                  									</items>
-                  									<value>
-                  										<String fx:value="HEADER" />
-                  									</value>
-                  								</ComboBox>
-                  								<TextField fx:id="parameterName" promptText="Name" />
-                  								<TextField fx:id="parameterValue" promptText="Value" />
-                                          <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#updateParametersValue" prefWidth="120.0" text="Update values" />
-                  							</children>
-                  							<VBox.margin>
-                  								<Insets bottom="5.0" right="5.0" top="5.0" />
-                  							</VBox.margin>
-                  							<padding>
-                  								<Insets bottom="5.0" right="5.0" top="5.0" />
-                  							</padding>
-                  						</HBox>
-                  						<Label text="Global parameters" />
-                                    <HBox fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
-                                       <children>
-                                          <Label text="Number of endpoints :" />
-                                          <Label fx:id="nbEndpoints" text="Label" />
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </HBox>
-                  					</children>
-                                 <VBox.margin>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </VBox.margin>
-                  				</VBox>
-                  			</children>
-                  		</VBox>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-          <Tab text="Web">
-            <content>
-              <AnchorPane>
-                     <children>
-                        <VBox fillWidth="false" prefHeight="636.0" prefWidth="607.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <HBox spacing="5.0">
-                                 <children>
-                                    <TextField fx:id="url" prefHeight="26.0" prefWidth="500.0" HBox.hgrow="ALWAYS" />
-                                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#load" prefWidth="50.0" text="Load" />
-                                 </children>
-                                 <padding>
-                                    <Insets top="5.0" />
-                                 </padding>
-                              </HBox>
-                              <HBox VBox.vgrow="ALWAYS">
-                                 <children>
-                                    <WebView fx:id="webView" minHeight="400.0" minWidth="400.0" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-        </tabs>
-      </TabPane>
+		<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
+			<tabs>
+				<Tab text="Project">
+					<content>
+						<AnchorPane>
+							<children>
+								<VBox>
+									<children>
+										<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
+											<children>
+												<Label text="URL" />
+												<TextField fx:id="baseUrl" maxWidth="1.7976931348623157E308" promptText="http://host:8080/rest" HBox.hgrow="ALWAYS" />
+											</children>
+											<VBox.margin>
+												<Insets bottom="20.0" left="5.0" right="5.0" top="5.0" />
+											</VBox.margin>
+										</HBox>
+										<VBox spacing="5.0" VBox.vgrow="ALWAYS">
+											<children>
+												<HBox fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
+													<children>
+														<ComboBox fx:id="parameterLocation" minWidth="-Infinity" prefWidth="110.0">
+															<items>
+																<FXCollections fx:factory="observableArrayList">
+																	<String fx:value="HEADER" />
+																	<String fx:value="QUERY" />
+																</FXCollections>
+															</items>
+															<value>
+																<String fx:value="HEADER" />
+															</value>
+														</ComboBox>
+														<TextField fx:id="parameterName" promptText="Name" />
+														<TextField fx:id="parameterValue" promptText="Value" />
+														<Button minWidth="-Infinity" mnemonicParsing="false" onAction="#updateParametersValue" prefWidth="120.0" text="Update values" />
+													</children>
+													<VBox.margin>
+														<Insets bottom="5.0" right="5.0" top="5.0" />
+													</VBox.margin>
+													<padding>
+														<Insets bottom="5.0" right="5.0" top="5.0" />
+													</padding>
+												</HBox>
+												<Label text="Global parameters" />
+												<HBox fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
+													<children>
+														<Label text="Number of endpoints :" />
+														<Label fx:id="nbEndpoints" text="Label" />
+													</children>
+													<padding>
+														<Insets bottom="5.0" right="5.0" top="5.0" />
+													</padding>
+												</HBox>
+											</children>
+											<VBox.margin>
+												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+											</VBox.margin>
+										</VBox>
+									</children>
+								</VBox>
+							</children>
+						</AnchorPane>
+					</content>
+				</Tab>
+				<Tab text="Web">
+					<content>
+						<AnchorPane>
+							<children>
+								<VBox maxHeight="1.7976931348623157E308" prefHeight="600.0" prefWidth="30.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<children>
+										<HBox maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="300.0" spacing="5.0" VBox.vgrow="NEVER">
+											<children>
+												<ComboBox fx:id="url" editable="true" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+													<items>
+														<FXCollections fx:factory="observableArrayList">
+															<String fx:value="http://www.jsoneditoronline.org/" />
+															<String fx:value="https://currentmillis.com/" />
+															<String fx:value="https://www.google.fr/" />
+														</FXCollections>
+													</items>
+													<value>
+														<String fx:value="http://www.jsoneditoronline.org/" />
+													</value>
+												</ComboBox>
+												<Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#load" prefWidth="50.0" text="Load" />
+											</children>
+											<padding>
+												<Insets top="5.0" />
+											</padding>
+										</HBox>
+										<HBox VBox.vgrow="ALWAYS">
+											<children>
+												<WebView fx:id="webView" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+											</children>
+										</HBox>
+									</children>
+								</VBox>
+							</children>
+						</AnchorPane>
+					</content>
+				</Tab>
+			</tabs>
+		</TabPane>
 	</children>
 	<padding>
 		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 	</padding>
+	<effect>
+		<Glow />
+	</effect>
 </HBox>

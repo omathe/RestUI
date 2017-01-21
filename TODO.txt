@@ -8,6 +8,7 @@ Fix(parameter) : copy and paste within 2 exchanges
 Feat(application) : add webView
 Feat(exchange) : duplicate exchange
 Feat(project) : count and display the number of endpoints in the project panel
+Feat(project) : color according to project base url
 -------------------------------------------------------------------------------
 
 

@@ -23,6 +23,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
@@ -90,7 +91,8 @@ public class MainController implements Initializable {
 							hBox.setAlignment(Pos.TOP_LEFT);
 							projectController = (ProjectController) fxmlLoader.getController();
 							projectController.setTreeItem(newValue);
-							vBox.getChildren().clear();
+							
+							VBox.setVgrow(hBox, Priority.ALWAYS); // webView fill height 
 							vBox.getChildren().add(hBox);
 						} catch (final IOException e) {
 							e.printStackTrace();
@@ -113,7 +115,7 @@ public class MainController implements Initializable {
 		});
 
 		// time
-		final Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), event -> {
+		final Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {
 			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
 			time.setText(simpleDateFormat.format(Instant.now().toEpochMilli()));
 		}));
