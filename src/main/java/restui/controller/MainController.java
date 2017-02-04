@@ -44,7 +44,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Label memory;
-	
+
 	@FXML
 	private Label time;
 
@@ -91,8 +91,9 @@ public class MainController implements Initializable {
 							hBox.setAlignment(Pos.TOP_LEFT);
 							projectController = (ProjectController) fxmlLoader.getController();
 							projectController.setTreeItem(newValue);
-							
-							VBox.setVgrow(hBox, Priority.ALWAYS); // webView fill height 
+
+							VBox.setVgrow(hBox, Priority.ALWAYS); // webView fill height
+						 	vBox.getChildren().clear();
 							vBox.getChildren().add(hBox);
 						} catch (final IOException e) {
 							e.printStackTrace();
@@ -100,8 +101,7 @@ public class MainController implements Initializable {
 					} else if (newValue.getValue() instanceof Endpoint) {
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
-							final HBox hBox = fxmlLoader
-									.load(MainController.class.getResource("/endpoint.fxml").openStream());
+							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/endpoint.fxml").openStream());
 							endPointController = (EndPointController) fxmlLoader.getController();
 							endPointController.setTreeItem(newValue);
 							vBox.getChildren().clear();
@@ -121,7 +121,7 @@ public class MainController implements Initializable {
 		}));
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
-		
+
 		// memory usage
 		final Timeline timelineMemory = new Timeline(new KeyFrame(Duration.millis(2000), event -> {
 			final Double mem = (double) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_000_000);

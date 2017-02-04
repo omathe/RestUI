@@ -334,6 +334,7 @@ public class EndPointController extends AbstractController implements Initializa
 				response = RestClient.patch(builtUri, requestBody.getText(), exchange.getRequestParameters());
 			} else if (method.getValue().equals("GET")) {
 				response = RestClient.get(builtUri, exchange.getRequestParameters());
+				
 			} else if (method.getValue().equals("DELETE")) {
 				response = RestClient.delete(builtUri, exchange.getRequestParameters());
 			}
