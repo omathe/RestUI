@@ -2,7 +2,6 @@ package restui.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -57,32 +56,27 @@ public class MainController implements Initializable {
 
 	private ProjectController projectController;
 	private EndPointController endPointController;
+	private Application application;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		try {
-			ApplicationService.createApplicationDefaultSettings();
-		} catch (final IOException e1) {
-			e1.printStackTrace();
-		} catch (final URISyntaxException e1) {
-			e1.printStackTrace();
-		}
+		ApplicationService.createApplicationDefaultSettings();
 		
 		ApplicationService.createApplicationDirectory();
-		final Application app = ApplicationService.openApplication();
+		application = ApplicationService.openApplication();
 
-		// start manual open
-
-		final Project project = ProjectService.openProject(app.getCurrentProject());
-		final TreeItem<Item> projectItem = new TreeItem<>(project);
-
-		builTree(projectItem);
-		treeView.setRoot(projectItem);
-
-		projectItem.setExpanded(true);
-
-		// end manual open
+		if (application.getCurrentProject() != null) {
+			final Project project = ProjectService.openProject(application.getCurrentProject());
+			final TreeItem<Item> projectItem = new TreeItem<>(project);
+			builTree(projectItem);
+			treeView.setRoot(projectItem);
+			projectItem.setExpanded(true);
+		}
+		
+		if (application.getStyleFile() != null) {
+			setStyle(application.getStyleFile());
+		}
 
 		treeView.setEditable(true);
 		treeView.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {
@@ -187,20 +181,21 @@ public class MainController implements Initializable {
 	}
 	
 	@FXML
-	protected void setStyle(final ActionEvent event) {
-		
-		borderPane.getStylesheets().stream().forEach(System.out::println);
+	protected void openStyle(final ActionEvent event) {
 		
 		final FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Select the project file");
+		fileChooser.setTitle("Select the style sheet file");
 		fileChooser.setInitialDirectory(new File(ApplicationService.getHomeDirectory()));
 		final File file = fileChooser.showOpenDialog(null);
 		if (file != null) {
-			//final File f = new File("filecss.css");
-			
-			borderPane.getStylesheets().clear();
-			borderPane.getStylesheets().add("file:///" + file.getAbsolutePath().replace("\\", "/"));
+			setStyle(file.toURI().toString());
 		}
+	}
+	
+	private void setStyle(final String uri) {
+		
+		borderPane.getStylesheets().clear();
+		borderPane.getStylesheets().add(uri);
 	}
 
 	private void builTree(final TreeItem<Item> parent) {

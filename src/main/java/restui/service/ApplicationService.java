@@ -38,7 +38,7 @@ public class ApplicationService {
 		}
 	}
 
-	public static void createApplicationDefaultSettings() throws IOException, URISyntaxException {
+	public static void createApplicationDefaultSettings() {
 
 		final File applicationDefaultStyle = new File(getHomeDirectory() + File.separator + APPLICATION_DEFAULT_STYLE_DIRECTORY);
 
@@ -50,7 +50,11 @@ public class ApplicationService {
 		final URL url = ApplicationService.class.getResource("/" + APPLICATION_DEFAULT_STYLE_SHEET);
 		final File stylesheet = Paths.get(applicationDefaultStyle.getAbsolutePath(), "/", APPLICATION_DEFAULT_STYLE_SHEET).toFile();
 		if (!stylesheet.exists()) {
-			Files.copy(Paths.get(url.toURI()), stylesheet.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+			try {
+				Files.copy(Paths.get(url.toURI()), stylesheet.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+			} catch (IOException | URISyntaxException e) {
+				e.printStackTrace();
+			}
 		}
 
 		// create images directory if not exists
@@ -61,10 +65,14 @@ public class ApplicationService {
 
 		// copy all images if not exist
 		final URL imagesUrl = ApplicationService.class.getResource("/images");
-		for (final File image : Paths.get(imagesUrl.toURI()).toFile().listFiles()) {
-			if (!Paths.get(imagesDirectory.getAbsolutePath(), image.getName()).toFile().exists()) {
-				Files.copy(image.toPath(), Paths.get(imagesDirectory.getAbsolutePath(), image.getName()), StandardCopyOption.COPY_ATTRIBUTES);
+		try {
+			for (final File image : Paths.get(imagesUrl.toURI()).toFile().listFiles()) {
+				if (!Paths.get(imagesDirectory.getAbsolutePath(), image.getName()).toFile().exists()) {
+					Files.copy(image.toPath(), Paths.get(imagesDirectory.getAbsolutePath(), image.getName()), StandardCopyOption.COPY_ATTRIBUTES);
+				}
 			}
+		} catch (URISyntaxException | IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -95,6 +103,9 @@ public class ApplicationService {
 
 			final Element styleDirectoryElement = applicationElement.getChild("styleDirectory");
 			application.setStyleDirectory(styleDirectoryElement.getValue());
+			
+			final Element styleFileElement = applicationElement.getChild("styleFile");
+			application.setStyleFile(styleFileElement.getValue());
 
 		} catch (final Exception e) {
 			e.printStackTrace();
