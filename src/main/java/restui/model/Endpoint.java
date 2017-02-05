@@ -89,7 +89,7 @@ public class Endpoint extends Item {
 		Collections.reverse(names);
 		final String builtPath = "/" + names.stream().collect(Collectors.joining("/")).toString();
 		path.set(builtPath);
-		System.out.println("builtPath = " + builtPath);
+//		System.out.println("builtPath = " + builtPath);
 	}
 	
 	public String getBaseUrl() {

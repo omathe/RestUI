@@ -2,6 +2,7 @@ package restui.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -22,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -29,10 +31,12 @@ import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import restui.controller.cellFactory.TreeCellFactory;
+import restui.model.Application;
 import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Project;
 import restui.service.ApplicationService;
+import restui.service.ProjectService;
 
 public class MainController implements Initializable {
 
@@ -47,6 +51,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Label time;
+	
+	@FXML
+	private BorderPane borderPane;
 
 	private ProjectController projectController;
 	private EndPointController endPointController;
@@ -54,11 +61,20 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
+		try {
+			ApplicationService.createApplicationDefaultSettings();
+		} catch (final IOException e1) {
+			e1.printStackTrace();
+		} catch (final URISyntaxException e1) {
+			e1.printStackTrace();
+		}
+		
 		ApplicationService.createApplicationDirectory();
+		final Application app = ApplicationService.openApplication();
 
 		// start manual open
 
-		final Project project = ApplicationService.openProject(new File("/home/olivier/.restui/Oss.xml"));
+		final Project project = ProjectService.openProject(app.getCurrentProject());
 		final TreeItem<Item> projectItem = new TreeItem<>(project);
 
 		builTree(projectItem);
@@ -150,7 +166,7 @@ public class MainController implements Initializable {
 
 		if (treeView.getRoot() != null) {
 			final Project project = (Project) treeView.getRoot().getValue();
-			ApplicationService.saveProject(project);
+			ProjectService.saveProject(project);
 		}
 	}
 
@@ -162,11 +178,28 @@ public class MainController implements Initializable {
 		fileChooser.setInitialDirectory(new File(ApplicationService.getHomeDirectory()));
 		final File file = fileChooser.showOpenDialog(null);
 		if (file != null) {
-			final Project project = ApplicationService.openProject(file);
+			final Project project = ProjectService.openProject(file.getAbsoluteFile().getAbsolutePath());
 			final TreeItem<Item> projectItem = new TreeItem<>(project);
 
 			builTree(projectItem);
 			treeView.setRoot(projectItem);
+		}
+	}
+	
+	@FXML
+	protected void setStyle(final ActionEvent event) {
+		
+		borderPane.getStylesheets().stream().forEach(System.out::println);
+		
+		final FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Select the project file");
+		fileChooser.setInitialDirectory(new File(ApplicationService.getHomeDirectory()));
+		final File file = fileChooser.showOpenDialog(null);
+		if (file != null) {
+			//final File f = new File("filecss.css");
+			
+			borderPane.getStylesheets().clear();
+			borderPane.getStylesheets().add("file:///" + file.getAbsolutePath().replace("\\", "/"));
 		}
 	}
 
