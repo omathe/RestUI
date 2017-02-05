@@ -120,9 +120,11 @@ public class RestClient {
 		final Client client = Client.create();
 
 		try {
-			final WebResource webResource = Client.create(new DefaultClientConfig()).resource(uri);
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
+
 			addHeaders(builder, parameters);
+
 			response = builder.delete(ClientResponse.class);
 		} catch (final Exception e) {
 			e.printStackTrace();
