@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -19,6 +21,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -41,6 +44,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TreeView<Item> treeView;
+	
+	@FXML
+	private TextField searchItem;
 
 	@FXML
 	private VBox vBox;
@@ -139,6 +145,18 @@ public class MainController implements Initializable {
 		}));
 		timelineMemory.setCycleCount(Animation.INDEFINITE);
 		timelineMemory.play();
+		
+		searchItem.textProperty().addListener((observable, oldValue, newValue) -> {
+		    System.out.println("textfield changed from " + oldValue + " to " + newValue);
+		});
+		
+		final Optional<TreeItem<Item>> search = findChild(treeView.getRoot(), "createCustomer");
+		System.out.println("search found ? : " + search.isPresent());
+		
+		final Stream<TreeItem<Item>> flattened = MainController.flattened(treeView.getRoot());
+		System.out.println("flattened count = " + flattened.count());
+		
+		treeView.getSelectionModel().select(search.get());
 	}
 
 	@FXML
@@ -207,7 +225,19 @@ public class MainController implements Initializable {
 			parent.getChildren().add(childTreeItem);
 			builTree(childTreeItem);
 		}
-
+	}
+	
+	public Optional<TreeItem<Item>> findChild(final TreeItem<Item> parent, final String name) {
+		
+		
+		return flattened(parent).filter(ti -> ti.getValue().getName().equals(name)).findFirst();
+	}
+	
+	public static Stream<TreeItem<Item>> flattened(final TreeItem<Item> parent) {
+		
+		return Stream.concat(
+				Stream.of(parent),
+				parent.getChildren().stream().flatMap(a -> MainController.flattened(a)));
 	}
 
 }

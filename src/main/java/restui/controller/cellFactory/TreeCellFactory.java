@@ -24,7 +24,7 @@ import restui.model.Project;
 
 public class TreeCellFactory extends TextFieldTreeCell<Item> {
 
-	private TreeView<Item> treeView;
+	//private TreeView<Item> treeView;
 	private TextField textField;
 	private final ContextMenu addMenu = new ContextMenu();
 	private final MenuItem menuItemPath;
