@@ -109,12 +109,10 @@ public class EndPointController extends AbstractController implements Initializa
 
 	public EndPointController() {
 		super();
-		System.out.println("construct EndPointController ");
 	}
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		System.out.println("initialize");
 
 		// start
 		final ContextMenu contextMenu = new ContextMenu();

@@ -7,9 +7,8 @@ public class AbstractController {
 
 	protected TreeItem<Item> treeItem;
 	
-	public void setTreeItem(TreeItem<Item> treeItem) {
+	public void setTreeItem(final TreeItem<Item> treeItem) {
 		this.treeItem = treeItem;
-		System.out.println("construct AbstractController ");
 	}
 	
 }
