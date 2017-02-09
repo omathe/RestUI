@@ -236,6 +236,8 @@ public class EndPointController extends AbstractController implements Initializa
 
 		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
 		exchanges.setItems((ObservableList<Exchange>) endPoint.getExchanges());
+		
+		exchanges.getSelectionModel().select(0);
 	}
 
 	private void refreshExchangeData(final Exchange exchange) {
