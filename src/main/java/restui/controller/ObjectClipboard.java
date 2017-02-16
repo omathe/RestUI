@@ -1,14 +1,16 @@
 package restui.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import restui.model.Parameter;
 
 public class ObjectClipboard {
 
-	public List<Parameter> parameters;
+	private final List<Parameter> parameters;
 
 	private ObjectClipboard() {
+		parameters = new ArrayList<>();
 	}
 
 	private static class SingletonHolder {
@@ -24,7 +26,9 @@ public class ObjectClipboard {
 	}
 	
 	public void setParameters(final List<Parameter> parameters) {
-		this.parameters = parameters;
+		
+		this.parameters.clear();
+		this.parameters.addAll(parameters);
 	}
 	
 }

@@ -114,7 +114,6 @@ public class EndPointController extends AbstractController implements Initializa
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		// start
 		final ContextMenu contextMenu = new ContextMenu();
 		final MenuItem menuItemCopy = new MenuItem("Copy");
 		final MenuItem menuItemPaste = new MenuItem("Paste");
@@ -137,28 +136,6 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 		});
 		
-//		menuItemCopy.setOnAction(new EventHandler() {
-//			@Override
-//			public void handle(final Event t) {
-//				final Parameter parameter = parameters.getSelectionModel().getSelectedItem();
-//				final List<Parameter> selectedParameters = parameters.getSelectionModel().getSelectedItems();
-//				ObjectClipboard.getInstance().setParameters(selectedParameters);
-//			}
-//		});
-//		menuItemPaste.setOnAction(new EventHandler() {
-//			@Override
-//			public void handle(final Event t) {
-//				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-//				if (exchange != null) {
-//					final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
-//					for (final Parameter p : parameters) {
-//						exchange.addRequestParameter(p);
-//					}
-//				}
-//			}
-//		});
-		// end
-
 		// request parameters
 		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell<>());
 		parameterEnabledColumn.setCellValueFactory(parameter -> {
