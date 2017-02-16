@@ -19,7 +19,6 @@ public class RestClient {
 
     /**
      * Get resource
-     *
      * @param uri
      * @param parameters
      * @return
@@ -46,7 +45,6 @@ public class RestClient {
 
     /**
      * Post resource
-     *
      * @param uri
      * @param body
      * @param parameters
@@ -72,6 +70,13 @@ public class RestClient {
         return response;
     }
 
+    /**
+     * Put resource
+     * @param uri
+     * @param body
+     * @param parameters
+     * @return
+     */
     public static ClientResponse put(final String uri, final String body, final List<Parameter> parameters) {
 
         ClientResponse response = null;
@@ -92,6 +97,13 @@ public class RestClient {
         return response;
     }
 
+    /**
+     * Patch resource
+     * @param uri
+     * @param body
+     * @param parameters
+     * @return
+     */
     public static ClientResponse patch(final String uri, final String body, final List<Parameter> parameters) {
 
         ClientResponse response = null;
@@ -116,6 +128,13 @@ public class RestClient {
         return response;
     }
 
+    /**
+     * Delete resource
+     * @param uri
+     * @param body
+     * @param parameters
+     * @return
+     */
     public static ClientResponse delete(final String uri, final List<Parameter> parameters) {
 
         ClientResponse response = null;
@@ -149,7 +168,7 @@ public class RestClient {
 
         final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         for (final Parameter parameter : parameters) {
-            if (parameter.getEnabled()) {
+            if (parameter.getEnabled() && parameter.isQueryParameter()) {
                 try {
                     final String encodedName = URLEncoder.encode(parameter.getName(), "UTF-8");
                     final String encodedValue = URLEncoder.encode(parameter.getValue(), "UTF-8");
