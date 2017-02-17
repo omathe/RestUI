@@ -35,8 +35,8 @@
                <children>
                   <VBox prefHeight="536.0" prefWidth="234.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TextField fx:id="searchItem" />
-                        <TreeView fx:id="treeView" VBox.vgrow="ALWAYS" />
+                        <TextField fx:id="searchItem" style="-fx-background-color: gray;" />
+                        <TreeView fx:id="treeView" minWidth="200.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
                </children>
@@ -52,6 +52,8 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
+            <Label fx:id="style" text="style" />
+            <Region HBox.hgrow="ALWAYS" />
             <Label fx:id="time" text="Label" />
             <Label text="|" />
             <Label fx:id="memory" text="0" />
