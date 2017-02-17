@@ -3,6 +3,7 @@ package restui.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -11,6 +12,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import restui.exception.NotFoundException;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
@@ -23,20 +25,29 @@ import restui.model.Response;
 
 public class ProjectService {
 
-	public static Project openProject(final String file) {
+	public static Project openProject(final String uri) throws NotFoundException {
+		
+		Project project = null;
+		if (uri != null && !uri.isEmpty()) {
+			
+			final File file = new File(URI.create(uri));
+			if (!file.exists()) {
+				throw new NotFoundException("file", file.getAbsolutePath());
+			}
+			
+			project = new Project();
 
-		Project project = new Project();
+			final SAXBuilder sxb = new SAXBuilder();
+			try {
+				final Document document = sxb.build(uri);
+				// project
+				final Element element = document.getRootElement();
+				project = (Project) buildItem(null, element);
+				browseXml(project, element);
 
-		final SAXBuilder sxb = new SAXBuilder();
-		try {
-			final Document document = sxb.build(file);
-			// project
-			final Element element = document.getRootElement();
-			project = (Project) buildItem(null, element);
-			browseXml(project, element);
-
-		} catch (final Exception e) {
-			e.printStackTrace();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return project;
 	}
@@ -58,7 +69,7 @@ public class ProjectService {
 			final XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
 			final Document document = new Document(projectElement);
 
-			final File projectFile = new File(ApplicationService.getHomeDirectory() + File.separator + project.getName() + ".xml");
+			final File projectFile = new File(ApplicationService.getApplicationHome() + File.separator + project.getName() + ".xml");
 			try {
 				output.output(document, new FileOutputStream(projectFile));
 			} catch (final IOException e) {

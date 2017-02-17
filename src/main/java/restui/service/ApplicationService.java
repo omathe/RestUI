@@ -1,6 +1,8 @@
 package restui.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -11,37 +13,93 @@ import java.nio.file.StandardCopyOption;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 import restui.model.Application;
 
 public class ApplicationService {
 
-	public static final String APPLICATION_HOME = "restui";
-	public static final String APPLICATION_DEFAULT_STYLE_DIRECTORY = "style/default";
-	public static final String APPLICATION_DEFAULT_STYLE_IMAGES_DIRECTORY = "style/default/images";
-	public static final String APPLICATION_DEFAULT_STYLE_SHEET = "stylesheet.css";
-	public static final String APPLICATION_SETTINGS = "application.xml";
+	private static final String APPLICATION_HOME = "restui";
+	private static final String APPLICATION_DEFAULT_STYLE_DIRECTORY = "style/default";
+	private static final String APPLICATION_DEFAULT_STYLE_IMAGES_DIRECTORY = "style/default/images";
+	private static final String APPLICATION_DEFAULT_STYLE_SHEET = "stylesheet.css";
+	private static final String APPLICATION_SETTINGS = "application.xml";
 
-	public static String getHomeDirectory() {
+	public static Application openApplication() {
+
+		createApplicationDefaultSettings();
+
+		final Application application = new Application();
+
+		final SAXBuilder sxb = new SAXBuilder();
+
+		try {
+			final Document document = sxb.build(ApplicationService.getApplicationHome() + File.separator + APPLICATION_SETTINGS);
+			// application
+			final Element applicationElement = document.getRootElement();
+			final Element currentProjectElement = applicationElement.getChild("currentProject");
+			application.setCurrentProject(currentProjectElement.getValue());
+
+			final Element styleFileElement = applicationElement.getChild("styleFile");
+			if (styleFileElement.getValue().isEmpty()) {
+				application.setStyleFile("file:" + getApplicationHome() + File.separator + APPLICATION_DEFAULT_STYLE_DIRECTORY + File.separator + APPLICATION_DEFAULT_STYLE_SHEET);
+			} else {
+				application.setStyleFile(styleFileElement.getValue());
+			}
+
+		} catch (final FileNotFoundException e) {
+			saveApplication(null);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		return application;
+	}
+
+	public static void saveApplication(final Application application) {
+
+		Application app = application;
+		if (application == null) {
+			app = new Application();
+			app.setStyleFile(getApplicationHome() + "/style/default/stylesheet.css");
+		}
+
+		final Element rootElement = new Element("application");
+
+		final Element currentProjectElement = new Element("currentProject");
+		currentProjectElement.setText(app.getCurrentProject());
+		rootElement.addContent(currentProjectElement);
+
+		final Element styleFileElement = new Element("styleFile");
+		styleFileElement.setText(app.getStyleFile());
+		rootElement.addContent(styleFileElement);
+
+		final XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+		final Document document = new Document(rootElement);
+		final File projectFile = new File(ApplicationService.getApplicationHome() + File.separator + APPLICATION_SETTINGS);
+		try {
+			xmlOutputter.output(document, new FileOutputStream(projectFile));
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String getApplicationHome() {
 
 		final String userHome = System.getProperty("user.home");
 		return userHome + File.separator + getPrefix() + APPLICATION_HOME;
 	}
 
-	public static void createApplicationDirectory() {
+	private static void createApplicationDefaultSettings() {
 
-		final String userHome = System.getProperty("user.home");
-
-		final File applicationDirectory = new File(userHome + File.separator + getPrefix() + APPLICATION_HOME);
+		// create application home directory
+		final File applicationDirectory = new File(getApplicationHome());
 		if (!applicationDirectory.exists()) {
 			applicationDirectory.mkdir();
 		}
-	}
 
-	public static void createApplicationDefaultSettings() {
-
-		final File applicationDefaultStyle = new File(getHomeDirectory() + File.separator + APPLICATION_DEFAULT_STYLE_DIRECTORY);
-
+		// create default style
+		final File applicationDefaultStyle = new File(getApplicationHome() + File.separator + APPLICATION_DEFAULT_STYLE_DIRECTORY);
 		if (!applicationDefaultStyle.exists()) {
 			applicationDefaultStyle.mkdirs();
 		}
@@ -58,7 +116,7 @@ public class ApplicationService {
 		}
 
 		// create images directory if not exists
-		final File imagesDirectory = new File(getHomeDirectory() + File.separator + APPLICATION_DEFAULT_STYLE_IMAGES_DIRECTORY);
+		final File imagesDirectory = new File(getApplicationHome() + File.separator + APPLICATION_DEFAULT_STYLE_IMAGES_DIRECTORY);
 		if (!imagesDirectory.exists()) {
 			imagesDirectory.mkdirs();
 		}
@@ -88,28 +146,4 @@ public class ApplicationService {
 		return prefix;
 	}
 
-	public static Application openApplication() {
-
-		final Application application = new Application();
-
-		final SAXBuilder sxb = new SAXBuilder();
-
-		try {
-			final Document document = sxb.build(ApplicationService.getHomeDirectory() + File.separator + APPLICATION_SETTINGS);
-			// application
-			final Element applicationElement = document.getRootElement();
-			final Element currentProjectElement = applicationElement.getChild("currentProject");
-			application.setCurrentProject(currentProjectElement.getAttributeValue("name"));
-
-			final Element styleDirectoryElement = applicationElement.getChild("styleDirectory");
-			application.setStyleDirectory(styleDirectoryElement.getValue());
-			
-			final Element styleFileElement = applicationElement.getChild("styleFile");
-			application.setStyleFile(styleFileElement.getValue());
-
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		return application;
-	}
 }

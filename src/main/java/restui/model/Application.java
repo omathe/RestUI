@@ -3,7 +3,6 @@ package restui.model;
 public class Application {
 
 	private String currentProject;
-	private String styleDirectory;
 	private String styleFile;
 
 	public String getCurrentProject() {
@@ -12,14 +11,6 @@ public class Application {
 
 	public void setCurrentProject(final String currentProject) {
 		this.currentProject = currentProject;
-	}
-
-	public String getStyleDirectory() {
-		return styleDirectory;
-	}
-
-	public void setStyleDirectory(final String styleDirectory) {
-		this.styleDirectory = styleDirectory;
 	}
 
 	public String getStyleFile() {
@@ -32,7 +23,7 @@ public class Application {
 
 	@Override
 	public String toString() {
-		return "Application [currentProject=" + currentProject + ", styleDirectory=" + styleDirectory + ", styleFile=" + styleFile + "]";
+		return "Application [currentProject=" + currentProject + ", styleFile=" + styleFile + "]";
 	}
 
 }
