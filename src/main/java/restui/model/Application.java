@@ -1,5 +1,7 @@
 package restui.model;
 
+import java.nio.file.Paths;
+
 public class Application {
 
 	private String currentProject;
@@ -19,6 +21,10 @@ public class Application {
 
 	public void setStyleFile(final String styleFile) {
 		this.styleFile = styleFile;
+	}
+	
+	public String getStyleName() {
+		return Paths.get(styleFile).getParent().getFileName().toString();
 	}
 
 	@Override
