@@ -1,8 +1,7 @@
-group 'no.tornado'
+group 'fr.omathe'
 version '1.0'
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'no.tornado.fxlauncher'
 
 buildscript {
@@ -17,59 +16,48 @@ buildscript {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-/*version = '1.0'
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Quickstart',
-                   'Implementation-Version': version
-    }
-}*/
-
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
-    testCompile group: 'junit', name: 'junit', version: '4.+'
-    
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.3'
-    compile group: 'com.sun.jersey', name: 'jersey-client', version: '1.9.1'
-    compile group: 'org.jdom', name: 'jdom', version: '2.0.2'
-    
-    compile 'no.tornado:fxlauncher:1.0.8'
+task copyLibs(type: Copy) {
+
+	into "lib"
+	from configurations.runtime
 }
 
-test {
-    systemProperties 'property': 'value'
-}
+jar {
+	/*into('lib') {
+        from configurations.compile
+    }*/
 
-uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                   'Implementation-Version': version,
+					'Main-class': 'restui.gui.RestUiApp',
+					'Class-Path': '. jdom-2.0.2.jar'
     }
 }
 
-/*eclipse {
-	classpath {
-		downloadSources=true
-		containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/')
-		//containers 'org.eclipse.jdt.launching.JRE_CONTAINER'
-	}
-}*/
+dependencies {
+    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.3'
+    compile group: 'com.sun.jersey', name: 'jersey-client', version: '1.9.1'
+    compile group: 'org.jdom', name: 'jdom', version: '2.0.2'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
 
 fxlauncher {
-    applicationVendor 'omathe'
-    applicationUrl 'http://omathe.free.fr/restui'
+    applicationVendor 'RestUI'
+    applicationUrl 'http://omathe.free.fr/restui/'
     applicationMainClass 'restui.gui.RestUiApp'
     acceptDowngrade false
     deployTarget 'w48839@fxldemo.tornado.no:fxldemo'
 }
 
-task hello << {
-	println project.property('org.gradle.java.home')
+task copyToLib(type: Copy) {
+    into "$buildDir/output/lib"
+    from configurations.runtime
 }
 
 
