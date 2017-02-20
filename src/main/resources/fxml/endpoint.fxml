@@ -35,7 +35,7 @@
                                     <TableColumn fx:id="exchangeStatusColumn" prefWidth="140.0" text="Status" />
                                 </columns>
                               </TableView>
-                  				<FlowPane hgap="5.0" vgap="5.0">
+                  				<FlowPane hgap="5.0" vgap="5.0" VBox.vgrow="NEVER">
                   					<children>
                   						<Button mnemonicParsing="false" onAction="#removeExchange" text="-" />
                   						<Button mnemonicParsing="false" onAction="#addExchange" text="+" />
@@ -44,24 +44,24 @@
                   						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                   					</padding>
                   				</FlowPane>
+                              <HBox alignment="CENTER" prefWidth="812.0" spacing="5.0" VBox.vgrow="NEVER">
+                                 <children>
+                                    <Label fx:id="endpoint" text="Label">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </HBox>
                            </children>
                         </VBox>
                      </children>
                   </AnchorPane>
                 <AnchorPane>
                      <children>
-                        <HBox alignment="CENTER" prefWidth="812.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <Label fx:id="endpoint" text="Label">
-                                 <font>
-                                    <Font size="16.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding>
-                        </HBox>
             				<SplitPane fx:id="requestResponseSplitPane" dividerPositions="0.4967948717948718" prefHeight="699.0" prefWidth="812.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             					<items>
             						<AnchorPane maxWidth="1.7976931348623157E308">
