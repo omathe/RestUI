@@ -56,7 +56,7 @@ fxlauncher {
 }
 
 task copyToLib(type: Copy) {
-    into "$buildDir/output/lib"
+    into "$buildDir/libs"
     from configurations.runtime
 }
 

@@ -3,6 +3,7 @@ package restui.controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.List;
@@ -62,6 +63,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Label time;
+	
+	@FXML
+	private Label style;
 
 	@FXML
 	private BorderPane borderPane;
@@ -69,6 +73,7 @@ public class MainController implements Initializable {
 	private ProjectController projectController;
 	private EndPointController endPointController;
 	private Application application;
+	private String projectDirectory;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
@@ -79,6 +84,7 @@ public class MainController implements Initializable {
 
 		if (application.getStyleFile() != null) {
 			setStyle(application.getStyleFile());
+			style.setText(application.getStyleName());
 		}
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -101,7 +107,7 @@ public class MainController implements Initializable {
 
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
-							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/project.fxml").openStream());
+							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
 							hBox.setAlignment(Pos.TOP_LEFT);
 							projectController = (ProjectController) fxmlLoader.getController();
 							projectController.setTreeItem(newValue);
@@ -115,7 +121,7 @@ public class MainController implements Initializable {
 					} else if (newValue.getValue() instanceof Endpoint) {
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
-							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/endpoint.fxml").openStream());
+							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
 							endPointController = (EndPointController) fxmlLoader.getController();
 							endPointController.setTreeItem(newValue);
 							vBox.getChildren().clear();
@@ -166,6 +172,7 @@ public class MainController implements Initializable {
 	protected void newProject(final ActionEvent event) {
 
 		final Project project = new Project(null, "Project 1", "");
+		application.setCurrentProject(project.getName());
 		final TreeItem<Item> projectItem = new TreeItem<>(project);
 		treeView.setRoot(projectItem);
 	}
@@ -176,6 +183,7 @@ public class MainController implements Initializable {
 		if (treeView.getRoot() != null) {
 			final Project project = (Project) treeView.getRoot().getValue();
 			ProjectService.saveProject(project);
+			application.setCurrentProject(projectDirectory + File.separator + project.getName() + ".xml");
 		}
 	}
 
@@ -189,6 +197,7 @@ public class MainController implements Initializable {
 		if (file != null) {
 			loadProject(file.toURI().toString());
 			application.setCurrentProject(file.toURI().toString());
+			projectDirectory = file.getParent().toString();
 		}
 	}
 
@@ -201,6 +210,9 @@ public class MainController implements Initializable {
 				builTree(projectItem);
 				treeView.setRoot(projectItem);
 				projectItem.setExpanded(true);
+				projectDirectory = Paths.get(uri).getParent().toString();
+			} else {
+				projectDirectory = "file://" + ApplicationService.getApplicationHome();
 			}
 		} catch (final NotFoundException e) {
 			final Alert alert = new Alert(AlertType.ERROR);
@@ -220,6 +232,7 @@ public class MainController implements Initializable {
 		final File file = fileChooser.showOpenDialog(null);
 		if (file != null) {
 			setStyle(file.toURI().toString());
+			application.setStyleFile(file.toURI().toString());
 		}
 	}
 
@@ -228,6 +241,7 @@ public class MainController implements Initializable {
 		borderPane.getStylesheets().clear();
 		borderPane.getStylesheets().add(uri);
 		application.setStyleFile(uri);
+		style.setText(application.getStyleName());
 	}
 
 	private void builTree(final TreeItem<Item> parent) {

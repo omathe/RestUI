@@ -34,9 +34,7 @@ public class ProjectService {
 			if (!file.exists()) {
 				throw new NotFoundException("file", file.getAbsolutePath());
 			}
-			
 			project = new Project();
-
 			final SAXBuilder sxb = new SAXBuilder();
 			try {
 				final Document document = sxb.build(uri);
@@ -66,12 +64,12 @@ public class ProjectService {
 			final Element projectElement = buildElement(null, project);
 			browseTree(project, projectElement);
 
-			final XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+			final XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			final Document document = new Document(projectElement);
 
 			final File projectFile = new File(ApplicationService.getApplicationHome() + File.separator + project.getName() + ".xml");
 			try {
-				output.output(document, new FileOutputStream(projectFile));
+				xmlOutputter.output(document, new FileOutputStream(projectFile));
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
