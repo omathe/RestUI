@@ -4,15 +4,15 @@ import java.nio.file.Paths;
 
 public class Application {
 
-	private String currentProject;
+	private String lastProjectUri;
 	private String styleFile;
 
-	public String getCurrentProject() {
-		return currentProject;
+	public String getLastProjectUri() {
+		return lastProjectUri;
 	}
 
-	public void setCurrentProject(final String currentProject) {
-		this.currentProject = currentProject;
+	public void setLastProjectUri(final String lastProjectUri) {
+		this.lastProjectUri = lastProjectUri;
 	}
 
 	public String getStyleFile() {
@@ -29,7 +29,7 @@ public class Application {
 
 	@Override
 	public String toString() {
-		return "Application [currentProject=" + currentProject + ", styleFile=" + styleFile + "]";
+		return "Application [lastProjectUri=" + lastProjectUri + ", styleFile=" + styleFile + "]";
 	}
 
 }

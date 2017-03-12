@@ -8,4 +8,5 @@ public interface Validate {
 			throw new IllegalArgumentException(name + " must be defined.");
 		}
 	}
+	
 }

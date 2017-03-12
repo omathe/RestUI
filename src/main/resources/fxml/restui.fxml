@@ -19,6 +19,8 @@
             <Button mnemonicParsing="false" onAction="#newProject" text="New" />
             <Button mnemonicParsing="false" onAction="#open" text="Open" />
 	    <Button mnemonicParsing="false" onAction="#save" text="Save" />
+            <Button mnemonicParsing="false" onAction="#saveAs" text="Save as ..." />
+            <Button mnemonicParsing="false" onAction="#delete" text="Delete" />
             <Button mnemonicParsing="false" onAction="#openStyle" text="Style" />
             <Region HBox.hgrow="ALWAYS" />
             <Button mnemonicParsing="false" onAction="#exit" text="Exit" />

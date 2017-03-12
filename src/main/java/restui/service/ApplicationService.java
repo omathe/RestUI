@@ -42,8 +42,8 @@ public class ApplicationService {
 			final Document document = sxb.build(ApplicationService.getApplicationHome() + File.separator + APPLICATION_XML);
 			// application
 			final Element applicationElement = document.getRootElement();
-			final Element currentProjectElement = applicationElement.getChild("currentProject");
-			application.setCurrentProject(currentProjectElement.getValue());
+			final Element currentProjectElement = applicationElement.getChild("lastProjectUri");
+			application.setLastProjectUri(currentProjectElement.getValue());
 
 			final Element styleFileElement = applicationElement.getChild("styleFile");
 			if (styleFileElement.getValue().isEmpty()) {
@@ -70,8 +70,8 @@ public class ApplicationService {
 
 		final Element rootElement = new Element("application");
 
-		final Element currentProjectElement = new Element("currentProject");
-		currentProjectElement.addContent(app.getCurrentProject());
+		final Element currentProjectElement = new Element("lastProjectUri");
+		currentProjectElement.addContent(app.getLastProjectUri());
 		rootElement.addContent(currentProjectElement);
 
 		final Element styleFileElement = new Element("styleFile");
