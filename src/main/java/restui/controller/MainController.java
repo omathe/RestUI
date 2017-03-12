@@ -70,6 +70,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Label style;
+	
+	@FXML
+	private Label file;
 
 	@FXML
 	private BorderPane borderPane;
@@ -174,6 +177,7 @@ public class MainController implements Initializable {
 		treeView.setRoot(projectItem);
 		
 		projectFile = null;
+		file.setText("");
 	}
 
 	@FXML
@@ -201,6 +205,7 @@ public class MainController implements Initializable {
 				treeView.setRoot(projectItem);
 				projectItem.setExpanded(true);
 				projectFile = new File(URI.create(uri));
+				file.setText(projectFile.getAbsolutePath());
 				application.setLastProjectUri(uri.toString());
 			}
 		} catch (final NotFoundException e) {
