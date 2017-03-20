@@ -1,15 +1,20 @@
 group 'fr.omathe'
 version '1.0'
 
+apply plugin: 'com.gradle.build-scan'
 apply plugin: 'java'
 apply plugin: 'no.tornado.fxlauncher'
 
 buildscript {
     repositories {
-        mavenCentral()
+    	mavenCentral()
+    	maven {
+      		url "https://plugins.gradle.org/m2/"
+    	}
     }
     dependencies {
         classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.14'
+        classpath "com.gradle:build-scan-plugin:1.6"
     }
 }
 
@@ -31,6 +36,7 @@ jar {
         from configurations.compile
     }*/
 
+	//include 'fxml/*.xml'
     manifest {
         attributes 'Implementation-Title': 'Gradle Quickstart',
                    'Implementation-Version': version,
@@ -58,6 +64,15 @@ fxlauncher {
 task copyToLib(type: Copy) {
     into "$buildDir/libs"
     from configurations.runtime
+}
+
+buildScan {
+    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+    licenseAgree = 'yes'
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '3.4'
 }
 
 

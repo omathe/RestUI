@@ -85,14 +85,14 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		application = ApplicationService.openApplication();
+		/*application = ApplicationService.openApplication();
 
 		loadProject(application.getLastProjectUri());
 
 		if (application.getStyleFile() != null) {
 			setStyle(application.getStyleFile());
 			style.setText(application.getStyleName());
-		}
+		}*/
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		treeView.setEditable(true);
