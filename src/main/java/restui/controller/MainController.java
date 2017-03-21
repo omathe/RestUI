@@ -70,7 +70,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Label style;
-	
+
 	@FXML
 	private Label file;
 
@@ -85,14 +85,14 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		/*application = ApplicationService.openApplication();
+		application = ApplicationService.openApplication();
 
 		loadProject(application.getLastProjectUri());
 
 		if (application.getStyleFile() != null) {
 			setStyle(application.getStyleFile());
 			style.setText(application.getStyleName());
-		}*/
+		}
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		treeView.setEditable(true);
@@ -158,15 +158,15 @@ public class MainController implements Initializable {
 		timelineMemory.play();
 
 		searchItem.textProperty().addListener((observable, oldItem, newItem) -> {
-			treeView.getSelectionModel().clearSelection();
-			if (!newItem.isEmpty()) {
+			if (!newItem.isEmpty() && treeView.getRoot() != null) {
+				treeView.getSelectionModel().clearSelection();
 				final List<TreeItem<Item>> search = findChildren(treeView.getRoot(), newItem);
 				search.stream().forEach(item -> {
 					treeView.getSelectionModel().select(item);
 				});
 			}
 		});
-		
+
 	}
 
 	@FXML
@@ -175,7 +175,7 @@ public class MainController implements Initializable {
 		final Project project = new Project(null, "New project", "");
 		final TreeItem<Item> projectItem = new TreeItem<>(project);
 		treeView.setRoot(projectItem);
-		
+
 		projectFile = null;
 		file.setText("");
 	}
@@ -185,10 +185,10 @@ public class MainController implements Initializable {
 
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open a project");
-		
+
 		final File initialDirectory = projectFile == null ? new File(ApplicationService.getApplicationHome()) : projectFile.getParentFile();
 		fileChooser.setInitialDirectory(initialDirectory);
-		
+
 		final File file = fileChooser.showOpenDialog(null);
 		if (file != null) {
 			loadProject(file.toURI().toString());
@@ -226,12 +226,12 @@ public class MainController implements Initializable {
 			if (projectFile == null) {
 				final FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save the project " + project.getName());
-				
+
 				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome())
 						: new File(URI.create(application.getLastProjectUri())).getParentFile();
 				fileChooser.setInitialDirectory(initialDirectory);
 				fileChooser.setInitialFileName(project.getName() + ".xml");
-				
+
 				final File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
 				if (file != null) {
 					projectFile = file.getName().endsWith(".xml") ? file : new File(file.getAbsolutePath() + ".xml");
@@ -243,19 +243,19 @@ public class MainController implements Initializable {
 			}
 		}
 	}
-	
+
 	@FXML
 	protected void saveAs(final ActionEvent event) {
-		
+
 		if (projectFile != null) {
 			final FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Save the project as");
-			
+
 			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome())
 					: new File(URI.create(application.getLastProjectUri())).getParentFile();
 			fileChooser.setInitialDirectory(initialDirectory);
 			fileChooser.setInitialFileName("projectCopy.xml");
-			
+
 			final File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
 			if (file != null) {
 				try {
@@ -271,7 +271,7 @@ public class MainController implements Initializable {
 			}
 		}
 	}
-	
+
 	@FXML
 	protected void openStyle(final ActionEvent event) {
 
@@ -284,12 +284,12 @@ public class MainController implements Initializable {
 			application.setStyleFile(file.toURI().toString());
 		}
 	}
-	
+
 	@FXML
 	protected void delete(final ActionEvent event) {
-		
+
 		final Alert alert = new Alert(AlertType.CONFIRMATION);
-		
+
 		alert.setTitle("Delete the project");
 		alert.setHeaderText("Confirm your choice");
 		final Project project = (Project) treeView.getRoot().getValue();
@@ -300,13 +300,15 @@ public class MainController implements Initializable {
 		alert.getButtonTypes().setAll(noButton, yesButton);
 
 		final Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == yesButton){
-		   projectFile.delete();
-		   projectFile = null;
-		   treeView.setRoot(null);
+		if (result.get() == yesButton) {
+			if (projectFile != null) {
+				projectFile.delete();
+			}
+			projectFile = null;
+			treeView.setRoot(null);
 		}
 	}
-	
+
 	@FXML
 	protected void exit(final ActionEvent event) {
 

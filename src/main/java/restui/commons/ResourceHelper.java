@@ -19,8 +19,11 @@ public class ResourceHelper {
 
 	/**
 	 * Copy source to destination
-	 * @param source - The source path
-	 * @param destination - The destination path directory
+	 * 
+	 * @param source
+	 *            - The source path
+	 * @param destination
+	 *            - The destination path directory
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
@@ -62,7 +65,6 @@ public class ResourceHelper {
 						} finally {
 							if (inputStream != null) {
 								inputStream.close();
-								System.out.println("inputStream closed");
 							}
 						}
 					}
@@ -93,35 +95,10 @@ public class ResourceHelper {
 				} finally {
 					if (inputStream != null) {
 						inputStream.close();
-						System.out.println("close inputStream");
 					}
 				}
 			}
 		}
-	}
-
-	public static void main(final String[] args) throws Exception {
-
-		// URISyntaxException | IOException
-
-		final URL url = ResourceHelper.class.getResource("/style");
-		System.out.println(url);
-		final Path root = Paths.get(url.toURI());
-		System.out.println(root);
-
-		// Files.walk(Paths.get("/media/DATA/dev/workspace/RestUI/src/main/resources/style"))
-		Files.walk(root)
-				.filter(Files::isRegularFile)
-				.forEach(path -> {
-
-					// System.out.println(path);
-					System.out.println("/style/" + root.relativize(path));
-				});
-
-		final Stream<Path> paths = Files.walk(Paths.get("/media/DATA/dev/workspace/RestUI/src/main/resources/style"))
-				.filter(Files::isRegularFile);
-		System.err.println("count = " + paths.count());
-		paths.close();
 	}
 
 }

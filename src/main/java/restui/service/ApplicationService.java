@@ -18,10 +18,7 @@ public class ApplicationService {
 
 	private static final String APPLICATION_HOME = "restui";
 	private static final String APPLICATION_XML = "application.xml";
-	
-	
 	private static final String APPLICATION_DEFAULT_STYLE_DIRECTORY = "style/default";
-	private static final String APPLICATION_DEFAULT_STYLE_IMAGES_DIRECTORY = "style/default/images";
 	private static final String APPLICATION_DEFAULT_STYLE_SHEET = "stylesheet.css";
 
 	public static String getApplicationHome() {
@@ -29,7 +26,7 @@ public class ApplicationService {
 		final String userHome = System.getProperty("user.home");
 		return userHome + File.separator + getPrefix() + APPLICATION_HOME;
 	}
-	
+
 	public static Application openApplication() {
 
 		createApplicationDefaultSettings();
@@ -96,51 +93,12 @@ public class ApplicationService {
 			applicationDirectory.mkdir();
 		}
 
-		// create default style
-//		final File applicationDefaultStyle = new File(getApplicationHome() + File.separator + APPLICATION_DEFAULT_STYLE_DIRECTORY);
-//		if (!applicationDefaultStyle.exists()) {
-//			applicationDefaultStyle.mkdirs();
-//		}
-
 		// copy stylesheet.css if not exists
-//		ResourceHelper.copyResource("/style/default/stylesheet.css", getApplicationHome() + File.separator + "style/default/stylesheet.css");
 		try {
 			ResourceHelper.copyResource("/style", getApplicationHome());
 		} catch (final Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		/*final URL url = ApplicationService.class.getResource("/style");
-		System.out.println("url = " + url);
-		final File stylesheet = Paths.get(applicationDefaultStyle.getAbsolutePath(), "/", APPLICATION_DEFAULT_STYLE_SHEET).toFile();
-		if (!stylesheet.exists()) {
-			try {
-				Files.copy(Paths.get(url.toURI()), stylesheet.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
-			} catch (IOException | URISyntaxException e) {
-				e.printStackTrace();
-			}
-		}*/
-/*
-		// create images directory if not exists
-		final File imagesDirectory = new File(getApplicationHome() + File.separator + APPLICATION_DEFAULT_STYLE_IMAGES_DIRECTORY);
-		if (!imagesDirectory.exists()) {
-			imagesDirectory.mkdirs();
-		}
-
-		// copy all images if not exist
-		final URL imagesUrl = ApplicationService.class.getResource("/images");
-		try {
-			for (final File image : Paths.get(imagesUrl.toURI()).toFile().listFiles()) {
-				if (!Paths.get(imagesDirectory.getAbsolutePath(), image.getName()).toFile().exists()) {
-					Files.copy(image.toPath(), Paths.get(imagesDirectory.getAbsolutePath(), image.getName()), StandardCopyOption.COPY_ATTRIBUTES);
-				}
-			}
-		} catch (URISyntaxException | IOException e) {
-			e.printStackTrace();
-		}
-*/		
 	}
 
 	private static String getPrefix() {
