@@ -315,6 +315,21 @@ public class MainController implements Initializable {
 		ApplicationService.saveApplication(application);
 		Platform.exit();
 	}
+	
+	@FXML
+	protected void collapse(final ActionEvent event) {
+		
+		collapseTreeView(treeView.getRoot());
+	}
+	
+	private void collapseTreeView(final TreeItem<?> item){
+	    if(item != null && !item.isLeaf()){
+	        item.setExpanded(false);
+	        for(final TreeItem<?> child:item.getChildren()){
+	            collapseTreeView(child);
+	        }
+	    }
+	}
 
 	private void setStyle(final String uri) {
 

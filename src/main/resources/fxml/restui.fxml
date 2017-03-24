@@ -43,7 +43,12 @@
                <children>
                   <VBox prefHeight="536.0" prefWidth="234.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TextField fx:id="searchItem" style="-fx-background-color: pink;" />
+                        <HBox>
+                           <children>
+                              <TextField fx:id="searchItem" style="-fx-background-color: pink;" HBox.hgrow="ALWAYS" />
+                              <Button mnemonicParsing="false" onAction="#collapse" text="-" />
+                           </children>
+                        </HBox>
                         <TreeView fx:id="treeView" minWidth="200.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
