@@ -28,9 +28,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -57,7 +57,7 @@ public class MainController implements Initializable {
 	private TreeView<Item> treeView;
 
 	@FXML
-	private TextField searchItem;
+	private ComboBox<String> searchItem;
 
 	@FXML
 	private VBox vBox;
@@ -73,6 +73,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Label file;
+
+	@FXML
+	private Label searchCount;
 
 	@FXML
 	private BorderPane borderPane;
@@ -157,16 +160,28 @@ public class MainController implements Initializable {
 		timelineMemory.setCycleCount(Animation.INDEFINITE);
 		timelineMemory.play();
 
-		searchItem.textProperty().addListener((observable, oldItem, newItem) -> {
+		// searching for an endpoint
+		searchItem.getEditor().textProperty().addListener((observable, oldItem, newItem) -> {
+			searchCount.setText("");
 			if (!newItem.isEmpty() && treeView.getRoot() != null) {
-				collapseTreeView(treeView.getRoot());
 				treeView.getSelectionModel().clearSelection();
 				final List<TreeItem<Item>> search = findChildren(treeView.getRoot(), newItem);
+				searchCount.setText(String.valueOf(search.size()));
 				search.stream().forEach(item -> {
 					treeView.getSelectionModel().select(item);
 				});
 			} else {
 				treeView.getSelectionModel().clearSelection();
+			}
+		});
+		
+		searchItem.setOnMouseClicked(mouseEvent -> {
+			if (mouseEvent.getClickCount() == 2) {
+				System.out.println("double clic");
+			} else {
+				searchItem.getItems().clear();
+				final List<TreeItem<Item>> endpoints = collectEndpoints();
+				endpoints.stream().forEach(e -> searchItem.getItems().add(e.getValue().getName()));
 			}
 		});
 	}
@@ -317,20 +332,20 @@ public class MainController implements Initializable {
 		ApplicationService.saveApplication(application);
 		Platform.exit();
 	}
-	
+
 	@FXML
 	protected void collapse(final ActionEvent event) {
-		
+
 		collapseTreeView(treeView.getRoot());
 	}
-	
-	private void collapseTreeView(final TreeItem<?> item){
-	    if(item != null && !item.isLeaf()){
-	        item.setExpanded(false);
-	        for(final TreeItem<?> child:item.getChildren()){
-	            collapseTreeView(child);
-	        }
-	    }
+
+	private void collapseTreeView(final TreeItem<?> item) {
+		if (item != null && !item.isLeaf()) {
+			item.setExpanded(false);
+			for (final TreeItem<?> child : item.getChildren()) {
+				collapseTreeView(child);
+			}
+		}
 	}
 
 	private void setStyle(final String uri) {
@@ -350,6 +365,15 @@ public class MainController implements Initializable {
 			parent.getChildren().add(childTreeItem);
 			builTree(childTreeItem);
 		}
+	}
+
+	public List<TreeItem<Item>> collectEndpoints() {
+
+		return flattened(treeView.getRoot())
+				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
+				.sorted((ti1, ti2) -> ti1.getValue().getName()
+						.compareTo(ti2.getValue().getName()))
+				.collect(Collectors.toList());
 	}
 
 	public List<TreeItem<Item>> findChildren(final TreeItem<Item> parent, final String name) {

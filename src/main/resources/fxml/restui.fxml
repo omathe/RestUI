@@ -2,11 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -43,11 +43,15 @@
                <children>
                   <VBox prefHeight="536.0" prefWidth="234.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <HBox>
+                        <HBox alignment="CENTER" spacing="3.0">
                            <children>
-                              <TextField fx:id="searchItem" style="-fx-background-color: pink;" HBox.hgrow="ALWAYS" />
+                              <ComboBox fx:id="searchItem" editable="true" maxWidth="1.7976931348623157E308" prefWidth="150.0" style="-fx-background-color: pink;" HBox.hgrow="ALWAYS" />
+                              <Label fx:id="searchCount" />
                               <Button mnemonicParsing="false" onAction="#collapse" text="-" />
                            </children>
+                           <VBox.margin>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                           </VBox.margin>
                         </HBox>
                         <TreeView fx:id="treeView" minWidth="200.0" VBox.vgrow="ALWAYS" />
                      </children>
