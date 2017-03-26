@@ -362,7 +362,6 @@ public class EndPointController extends AbstractController implements Initializa
 			end = data.indexOf(suffix, end);
 			if (start > 0) {
 				final String token = data.substring(start + 1, end);
-				System.out.println("token : " + token);
 				tokens.add(token);
 				start += 1;
 				end += 1;

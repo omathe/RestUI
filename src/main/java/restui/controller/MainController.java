@@ -159,14 +159,16 @@ public class MainController implements Initializable {
 
 		searchItem.textProperty().addListener((observable, oldItem, newItem) -> {
 			if (!newItem.isEmpty() && treeView.getRoot() != null) {
+				collapseTreeView(treeView.getRoot());
 				treeView.getSelectionModel().clearSelection();
 				final List<TreeItem<Item>> search = findChildren(treeView.getRoot(), newItem);
 				search.stream().forEach(item -> {
 					treeView.getSelectionModel().select(item);
 				});
+			} else {
+				treeView.getSelectionModel().clearSelection();
 			}
 		});
-
 	}
 
 	@FXML
