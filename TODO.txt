@@ -3,12 +3,9 @@ Scope : application, parameter, endpoint
 
 
 ------------------------------------- TODO ------------------------------------
-Fix(endpoint) : encode URI (example: sort=+date)
-Fix(parameter) : copy and paste within 2 exchanges
-Feat(application) : add webView
 Feat(exchange) : duplicate exchange
-Feat(project) : count and display the number of endpoints in the project panel
 Feat(project) : color according to project base url
+Feat(project) : save the duration of an exchange
 -------------------------------------------------------------------------------
 
 
@@ -20,6 +17,11 @@ Feat(project) : color according to project base url
 
 
 ------------------------------------- DONE ------------------------------------
+Feat(exchange) : select the first exchange when entering an endpoint
+Feat(application) : add webView
+Feat(project) : count and display the number of endpoints in the project panel
+Fix(parameter) : copy and paste within 2 exchanges
+Fix(endpoint) : encode URI (example: sort=+date)
 
 -------------------------------------------------------------------------------
 
