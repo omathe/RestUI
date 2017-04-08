@@ -27,6 +27,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -174,7 +175,7 @@ public class MainController implements Initializable {
 				treeView.getSelectionModel().clearSelection();
 			}
 		});
-		
+
 		searchItem.setOnMouseClicked(mouseEvent -> {
 			if (mouseEvent.getClickCount() == 2) {
 				System.out.println("double clic");
@@ -188,6 +189,13 @@ public class MainController implements Initializable {
 
 	@FXML
 	protected void newProject(final ActionEvent event) {
+		
+		if (projectFile != null) {
+			final ButtonData choice = confirmSaveProject();
+			if (choice.equals(ButtonData.YES)) {
+				save(null);
+			}
+		}
 
 		final Project project = new Project(null, "New project", "");
 		final TreeItem<Item> projectItem = new TreeItem<>(project);
@@ -330,6 +338,7 @@ public class MainController implements Initializable {
 	protected void exit(final ActionEvent event) {
 
 		ApplicationService.saveApplication(application);
+		confirmSaveProject();
 		Platform.exit();
 	}
 
@@ -399,4 +408,22 @@ public class MainController implements Initializable {
 				parent.getChildren().stream().flatMap(a -> MainController.flattened(a)));
 	}
 
+	private ButtonData confirmSaveProject() {
+
+		final Alert alert = new Alert(AlertType.CONFIRMATION);
+
+		alert.setTitle("Save the project");
+		alert.setHeaderText("Confirm your choice");
+		final Project project = (Project) treeView.getRoot().getValue();
+		alert.setContentText("Do you want \nto save the project " + project.getName() + " ?\n\n");
+		final ButtonType yesButton = new ButtonType("Yes", ButtonData.YES);
+		final ButtonType noButton = new ButtonType("No", ButtonData.NO);
+		final ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+		alert.getButtonTypes().setAll(yesButton, noButton, cancelButton);
+
+		final Optional<ButtonType> result = alert.showAndWait();
+		
+		return result.get().getButtonData();
+	}
 }
