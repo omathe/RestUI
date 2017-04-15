@@ -1,5 +1,7 @@
 package restui.controller.cellFactory;
 
+import java.util.Comparator;
+
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -33,6 +35,21 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	private final Node projectImageView;
 	private final Node pathImageView;
 	private final Node endpointImageView;
+	
+	public static Comparator<TreeItem<Item>> itemName = (ti1, ti2) -> {
+		if (ti1.getParent() == ti2.getParent()) {
+			return ti1.getValue().getName().compareTo(ti2.getValue().getName());
+		} else {
+			return -1;
+		}
+	};
+	public static Comparator<TreeItem<Item>> endpointType = (ti1, ti2) -> {
+		return ti2.getValue().getClass().getName().compareTo(ti1.getValue().getClass().getName());
+	};
+	
+	public static Comparator<TreeItem<Item>> comparator = (ti1, ti2) -> {
+		return endpointType.thenComparing(itemName).compare(ti1, ti2);
+	};
 
 	@SuppressWarnings("unchecked")
 	public TreeCellFactory(final TreeView<Item> treeView) {
@@ -263,6 +280,10 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			public void handle(final KeyEvent e) {
 				if (e.getCode() == KeyCode.ENTER) {
 					getItem().setName(textField.getText());
+					
+					// sort the items
+					getTreeItem().getParent().getChildren().sort(comparator);
+					
 					commitEdit(getItem());
 
 					if (getItem() instanceof Path) { // renaming all the endpoints path

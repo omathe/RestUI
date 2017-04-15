@@ -189,7 +189,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	protected void newProject(final ActionEvent event) {
-		
+
 		if (projectFile != null) {
 			final ButtonData choice = confirmSaveProject();
 			if (choice.equals(ButtonData.YES)) {
@@ -228,6 +228,9 @@ public class MainController implements Initializable {
 				final TreeItem<Item> projectItem = new TreeItem<>(project);
 				builTree(projectItem);
 				treeView.setRoot(projectItem);
+				
+				sort(projectItem);
+
 				projectItem.setExpanded(true);
 				projectFile = new File(URI.create(uri));
 				file.setText(projectFile.getAbsolutePath());
@@ -241,7 +244,15 @@ public class MainController implements Initializable {
 			alert.showAndWait();
 		}
 	}
-
+	
+	private void sort(final TreeItem<Item> parent) {
+		
+		parent.getChildren().sort(TreeCellFactory.comparator);
+		for (final TreeItem<Item> child : parent.getChildren()) {
+			sort(child);
+		}
+	}
+	
 	@FXML
 	protected void save(final ActionEvent event) {
 
@@ -423,7 +434,7 @@ public class MainController implements Initializable {
 		alert.getButtonTypes().setAll(yesButton, noButton, cancelButton);
 
 		final Optional<ButtonType> result = alert.showAndWait();
-		
+
 		return result.get().getButtonData();
 	}
 }
