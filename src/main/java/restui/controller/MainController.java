@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -163,11 +164,10 @@ public class MainController implements Initializable {
 
 		// searching for an endpoint
 		searchItem.getEditor().textProperty().addListener((observable, oldItem, newItem) -> {
-			searchCount.setText("");
 			if (!newItem.isEmpty() && treeView.getRoot() != null) {
 				treeView.getSelectionModel().clearSelection();
 				final List<TreeItem<Item>> search = findChildren(treeView.getRoot(), newItem);
-				searchCount.setText(String.valueOf(search.size()));
+				searchCount.setText(String.valueOf(search == null ? 0 : search.size()));
 				search.stream().forEach(item -> {
 					treeView.getSelectionModel().select(item);
 				});
@@ -178,7 +178,6 @@ public class MainController implements Initializable {
 
 		searchItem.setOnMouseClicked(mouseEvent -> {
 			if (mouseEvent.getClickCount() == 2) {
-				System.out.println("double clic");
 			} else {
 				searchItem.getItems().clear();
 				final List<TreeItem<Item>> endpoints = collectEndpoints();
@@ -228,7 +227,7 @@ public class MainController implements Initializable {
 				final TreeItem<Item> projectItem = new TreeItem<>(project);
 				builTree(projectItem);
 				treeView.setRoot(projectItem);
-				
+
 				sort(projectItem);
 
 				projectItem.setExpanded(true);
@@ -244,15 +243,7 @@ public class MainController implements Initializable {
 			alert.showAndWait();
 		}
 	}
-	
-	private void sort(final TreeItem<Item> parent) {
-		
-		parent.getChildren().sort(TreeCellFactory.comparator);
-		for (final TreeItem<Item> child : parent.getChildren()) {
-			sort(child);
-		}
-	}
-	
+
 	@FXML
 	protected void save(final ActionEvent event) {
 
@@ -349,8 +340,11 @@ public class MainController implements Initializable {
 	protected void exit(final ActionEvent event) {
 
 		ApplicationService.saveApplication(application);
-		confirmSaveProject();
-		Platform.exit();
+		
+		final ButtonData choice = confirmSaveProject();
+		if (!choice.equals(ButtonData.CANCEL_CLOSE)) {
+			Platform.exit();
+		}
 	}
 
 	@FXML
@@ -389,7 +383,7 @@ public class MainController implements Initializable {
 
 	public List<TreeItem<Item>> collectEndpoints() {
 
-		return flattened(treeView.getRoot())
+		return treeView.getRoot() == null ? new ArrayList<>() : flattened(treeView.getRoot())
 				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
 				.sorted((ti1, ti2) -> ti1.getValue().getName()
 						.compareTo(ti2.getValue().getName()))
@@ -398,7 +392,7 @@ public class MainController implements Initializable {
 
 	public List<TreeItem<Item>> findChildren(final TreeItem<Item> parent, final String name) {
 
-		return flattened(parent)
+		return parent == null ? null :flattened(parent)
 				.filter(ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase()))
 				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
 				.collect(Collectors.toList());
@@ -421,20 +415,29 @@ public class MainController implements Initializable {
 
 	private ButtonData confirmSaveProject() {
 
-		final Alert alert = new Alert(AlertType.CONFIRMATION);
+		ButtonData buttonData = ButtonData.OTHER;
+		
+		if (treeView.getRoot() != null) {
+			final Project project = (Project) treeView.getRoot().getValue();
+			final Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Save the project");
+			alert.setHeaderText("Do you want to save the project\n" + project.getName());
+			final ButtonType yesButton = new ButtonType("Yes", ButtonData.YES);
+			final ButtonType noButton = new ButtonType("No", ButtonData.NO);
+			final ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+			
+			alert.getButtonTypes().setAll(yesButton, noButton, cancelButton);
+			final Optional<ButtonType> result = alert.showAndWait();
+			buttonData = result.get().getButtonData();
+		}
+		return buttonData;
+	}
 
-		alert.setTitle("Save the project");
-		alert.setHeaderText("Confirm your choice");
-		final Project project = (Project) treeView.getRoot().getValue();
-		alert.setContentText("Do you want \nto save the project " + project.getName() + " ?\n\n");
-		final ButtonType yesButton = new ButtonType("Yes", ButtonData.YES);
-		final ButtonType noButton = new ButtonType("No", ButtonData.NO);
-		final ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+	private void sort(final TreeItem<Item> parent) {
 
-		alert.getButtonTypes().setAll(yesButton, noButton, cancelButton);
-
-		final Optional<ButtonType> result = alert.showAndWait();
-
-		return result.get().getButtonData();
+		parent.getChildren().sort(TreeCellFactory.comparator);
+		for (final TreeItem<Item> child : parent.getChildren()) {
+			sort(child);
+		}
 	}
 }

@@ -1,11 +1,15 @@
 package restui.controller.cellFactory;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
@@ -35,18 +39,18 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	private final Node projectImageView;
 	private final Node pathImageView;
 	private final Node endpointImageView;
-	
-	public static Comparator<TreeItem<Item>> itemName = (ti1, ti2) -> {
+
+	private static Comparator<TreeItem<Item>> itemName = (ti1, ti2) -> {
 		if (ti1.getParent() == ti2.getParent()) {
 			return ti1.getValue().getName().compareTo(ti2.getValue().getName());
 		} else {
 			return -1;
 		}
 	};
-	public static Comparator<TreeItem<Item>> endpointType = (ti1, ti2) -> {
-		return ti2.getValue().getClass().getName().compareTo(ti1.getValue().getClass().getName());
+	private static Comparator<TreeItem<Item>> endpointType = (ti1, ti2) -> {
+		return ti1.getValue().getClass().getName().compareTo(ti2.getValue().getClass().getName());
 	};
-	
+
 	public static Comparator<TreeItem<Item>> comparator = (ti1, ti2) -> {
 		return endpointType.thenComparing(itemName).compare(ti1, ti2);
 	};
@@ -93,14 +97,22 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		menuDeleteItem.setOnAction(new EventHandler() {
 			@Override
 			public void handle(final Event t) {
+
 				final TreeItem<Item> treeItemToDelete = getTreeItem();
 				final Item itemToDelete = getTreeItem().getValue();
-				if (treeItemToDelete.getParent() != null) {
-					getTreeItem().getParent().getChildren().remove(getTreeItem());
-					itemToDelete.getParent().getChildren().remove(itemToDelete);
 
-				} else {
-					treeView.setRoot(null);
+				final Alert alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Delete the item");
+				alert.setHeaderText("Do you want to delete\n" + itemToDelete.getName());
+				final Optional<ButtonType> result = alert.showAndWait();
+				if (result.get() == ButtonType.OK) {
+					if (treeItemToDelete.getParent() != null) {
+						getTreeItem().getParent().getChildren().remove(getTreeItem());
+						itemToDelete.getParent().getChildren().remove(itemToDelete);
+
+					} else {
+						treeView.setRoot(null);
+					}
 				}
 			}
 		});
@@ -230,7 +242,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				}
 				setText(getString());
 				setGraphic(getTreeItem().getGraphic());
-				
+
 				// contextual menu
 				setContextMenu(addMenu);
 				addMenu.getItems().clear();
@@ -280,10 +292,10 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			public void handle(final KeyEvent e) {
 				if (e.getCode() == KeyCode.ENTER) {
 					getItem().setName(textField.getText());
-					
+
 					// sort the items
 					getTreeItem().getParent().getChildren().sort(comparator);
-					
+
 					commitEdit(getItem());
 
 					if (getItem() instanceof Path) { // renaming all the endpoints path
