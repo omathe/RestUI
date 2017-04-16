@@ -49,8 +49,11 @@
 																<String fx:value="HEADER" />
 															</value>
 														</ComboBox>
-														<TextField fx:id="parameterName" promptText="Name" />
-														<TextField fx:id="parameterValue" promptText="Value" />
+														<TextField fx:id="parameterName" promptText="Name" text="Authorization" />
+														<TextField fx:id="parameterValue" promptText="Value" text="Bearer ">
+                                             <opaqueInsets>
+                                                <Insets />
+                                             </opaqueInsets></TextField>
 														<Button minWidth="-Infinity" mnemonicParsing="false" onAction="#updateParametersValue" prefWidth="120.0" text="Update values" />
 													</children>
 													<VBox.margin>
