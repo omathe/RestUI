@@ -30,6 +30,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -47,6 +48,7 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DefaultStringConverter;
+import restui.commons.AlertBuilder;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
@@ -237,6 +239,13 @@ public class EndPointController extends AbstractController implements Initializa
 			responseHeaders.setItems(responseHeadersData);
 			// response status
 			responseStatus.setText(exchange.getStatus().toString());
+		} else {
+			requestBody.setText("");
+			parameters.setItems(null);
+			responseBody.setText("");
+			responseHeaders.setItems(null);
+			responseStatus.setText("");
+			uri.setText("");
 		}
 	}
 
@@ -266,8 +275,12 @@ public class EndPointController extends AbstractController implements Initializa
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
-			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
-			endpoint.removeExchange(exchange);
+			final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
+			if (response.equals(ButtonType.OK)) {
+				final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
+				endpoint.removeExchange(exchange);
+				refreshExchangeData(null);
+			}
 		}
 	}
 
