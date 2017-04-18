@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +23,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -36,6 +38,8 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -166,7 +170,7 @@ public class MainController implements Initializable {
 		searchItem.getEditor().textProperty().addListener((observable, oldItem, newItem) -> {
 			if (!newItem.isEmpty() && treeView.getRoot() != null) {
 				treeView.getSelectionModel().clearSelection();
-				final List<TreeItem<Item>> search = findChildren(treeView.getRoot(), newItem);
+				final List<TreeItem<Item>> search = findChildren(treeView.getRoot(), newItem, false);
 				searchCount.setText(String.valueOf(search == null ? 0 : search.size()));
 				search.stream().forEach(item -> {
 					treeView.getSelectionModel().select(item);
@@ -175,31 +179,38 @@ public class MainController implements Initializable {
 				treeView.getSelectionModel().clearSelection();
 			}
 		});
-
+		
 		searchItem.setOnMouseClicked(mouseEvent -> {
 			if (mouseEvent.getClickCount() == 2) {
 			} else {
+				System.err.println("clic: " + searchItem.getValue());
 				searchItem.getItems().clear();
 				final List<TreeItem<Item>> endpoints = collectEndpoints();
 				endpoints.stream().forEach(e -> searchItem.getItems().add(e.getValue().getName()));
 			}
 		});
+		
+		searchItem.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(final KeyEvent ke) {
+				if (ke.getCode() == KeyCode.ENTER) {
+					System.err.println("ENTER: " + searchItem.getValue());
+					if (treeView.getRoot() != null) {
+						treeView.getSelectionModel().clearSelection();
+						final List<TreeItem<Item>> search = findChildren(treeView.getRoot(), searchItem.getValue(), true);
+						System.err.println("search: " + search.size());
+						searchCount.setText(String.valueOf(search == null ? 0 : search.size()));
+						search.stream().forEach(item -> {
+							treeView.getSelectionModel().select(item);
+						});
+					} else {
+						treeView.getSelectionModel().clearSelection();
+					}
+				} else {
 
-		/*
-		 * searchItem.getEditor().setOnKeyReleased(keyEvent -> { System.out.println("key0 = " + keyEvent.getCode()); if (keyEvent.getCode() == KeyCode.ENTER) { System.out.println("key = " +
-		 * keyEvent.getCode()); } else { System.out.println("key = " + keyEvent.getText()); } });
-		 */
-
-		// searchItem.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-		// @Override
-		// public void handle(final KeyEvent ke) {
-		// if (ke.getCode() == KeyCode.ENTER) {
-		// System.out.println("ENTER was released");
-		// } else {
-		//
-		// }
-		// }
-		// });
+				}
+			}
+		});
 		//searchItem.addEventFilter(KeyEvent.KEY_RELEASED, SearchItemEvents.keyPressed);
 
 	}
@@ -403,15 +414,16 @@ public class MainController implements Initializable {
 
 		return treeView.getRoot() == null ? new ArrayList<>() : flattened(treeView.getRoot())
 				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
-				.sorted((ti1, ti2) -> ti1.getValue().getName()
-						.compareTo(ti2.getValue().getName()))
+				.sorted((ti1, ti2) -> ti1.getValue().getName().compareTo(ti2.getValue().getName()))
 				.collect(Collectors.toList());
 	}
 
-	public List<TreeItem<Item>> findChildren(final TreeItem<Item> parent, final String name) {
+	public List<TreeItem<Item>> findChildren(final TreeItem<Item> parent, final String name, final boolean contains) {
 
+		final Predicate<TreeItem<Item>> predicate = contains ? ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase()) :
+			ti -> ti.getValue().getName().toLowerCase().equals(name.toLowerCase());
 		return parent == null ? null : flattened(parent)
-				.filter(ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase()))
+				.filter(predicate)
 				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
 				.collect(Collectors.toList());
 	}
