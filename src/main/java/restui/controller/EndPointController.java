@@ -232,7 +232,6 @@ public class EndPointController extends AbstractController implements Initializa
 			requestBody.setText(exchange.getRequestBodyProperty().get());
 
 			// response
-			// responseBody.setText(exchange.getResponseBody());
 			displayResponseBody(exchange);
 
 			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();

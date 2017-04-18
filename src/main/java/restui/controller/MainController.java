@@ -184,6 +184,24 @@ public class MainController implements Initializable {
 				endpoints.stream().forEach(e -> searchItem.getItems().add(e.getValue().getName()));
 			}
 		});
+
+		/*
+		 * searchItem.getEditor().setOnKeyReleased(keyEvent -> { System.out.println("key0 = " + keyEvent.getCode()); if (keyEvent.getCode() == KeyCode.ENTER) { System.out.println("key = " +
+		 * keyEvent.getCode()); } else { System.out.println("key = " + keyEvent.getText()); } });
+		 */
+
+		// searchItem.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+		// @Override
+		// public void handle(final KeyEvent ke) {
+		// if (ke.getCode() == KeyCode.ENTER) {
+		// System.out.println("ENTER was released");
+		// } else {
+		//
+		// }
+		// }
+		// });
+		//searchItem.addEventFilter(KeyEvent.KEY_RELEASED, SearchItemEvents.keyPressed);
+
 	}
 
 	@FXML
@@ -340,7 +358,7 @@ public class MainController implements Initializable {
 	protected void exit(final ActionEvent event) {
 
 		ApplicationService.saveApplication(application);
-		
+
 		final ButtonData choice = confirmSaveProject();
 		if (!choice.equals(ButtonData.CANCEL_CLOSE)) {
 			Platform.exit();
@@ -392,7 +410,7 @@ public class MainController implements Initializable {
 
 	public List<TreeItem<Item>> findChildren(final TreeItem<Item> parent, final String name) {
 
-		return parent == null ? null :flattened(parent)
+		return parent == null ? null : flattened(parent)
 				.filter(ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase()))
 				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
 				.collect(Collectors.toList());
@@ -416,7 +434,7 @@ public class MainController implements Initializable {
 	private ButtonData confirmSaveProject() {
 
 		ButtonData buttonData = ButtonData.OTHER;
-		
+
 		if (treeView.getRoot() != null) {
 			final Project project = (Project) treeView.getRoot().getValue();
 			final Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -425,7 +443,7 @@ public class MainController implements Initializable {
 			final ButtonType yesButton = new ButtonType("Yes", ButtonData.YES);
 			final ButtonType noButton = new ButtonType("No", ButtonData.NO);
 			final ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-			
+
 			alert.getButtonTypes().setAll(yesButton, noButton, cancelButton);
 			final Optional<ButtonType> result = alert.showAndWait();
 			buttonData = result.get().getButtonData();
