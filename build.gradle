@@ -3,6 +3,7 @@ version '1.0'
 
 apply plugin: 'com.gradle.build-scan'
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'no.tornado.fxlauncher'
 
 buildscript {
@@ -69,6 +70,18 @@ task copyToLib(type: Copy) {
 buildScan {
     licenseAgreementUrl = 'https://gradle.com/terms-of-service'
     licenseAgree = 'yes'
+}
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'RestUI',
+        	'Implementation-Version': version,
+        	'Main-class': 'restui.gui.RestUiApp'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 task wrapper(type: Wrapper) {
