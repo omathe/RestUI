@@ -80,7 +80,11 @@ task fatJar(type: Jar) {
         	'Main-class': 'restui.gui.RestUiApp'
     }
     baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from {
+    	configurations.compile.collect {
+    		it.isDirectory() ? it : zipTree(it)
+    	}
+    }
     with jar
 }
 
