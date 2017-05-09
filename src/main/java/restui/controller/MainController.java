@@ -9,9 +9,11 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,11 +92,14 @@ public class MainController implements Initializable {
 	private EndPointController endPointController;
 	private Application application;
 	private File projectFile;
+	private Set<String> bookmarks;
+	TreeCellFactory treeCellFactory;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
 		application = ApplicationService.openApplication();
+		bookmarks = new HashSet<>();
 
 		loadProject(application.getLastProjectUri());
 
@@ -105,10 +110,11 @@ public class MainController implements Initializable {
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		treeView.setEditable(true);
+
 		treeView.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {
 			@Override
 			public TreeCell<Item> call(final TreeView<Item> param) {
-				return new TreeCellFactory(treeView);
+				return new TreeCellFactory(treeView, bookmarks);
 			}
 		});
 
@@ -120,7 +126,7 @@ public class MainController implements Initializable {
 
 				if (newValue != null) {
 					if (newValue.getValue() instanceof Project) {
-
+						
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
 							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
@@ -166,7 +172,7 @@ public class MainController implements Initializable {
 		timelineMemory.setCycleCount(Animation.INDEFINITE);
 		timelineMemory.play();
 
-		// searching for an endpoint
+		// searching for endpoints
 		searchItem.getEditor().textProperty().addListener((observable, oldItem, newItem) -> {
 			if (!newItem.isEmpty() && treeView.getRoot() != null) {
 				treeView.getSelectionModel().clearSelection();
@@ -179,17 +185,22 @@ public class MainController implements Initializable {
 				treeView.getSelectionModel().clearSelection();
 			}
 		});
-		
+
 		searchItem.setOnMouseClicked(mouseEvent -> {
 			if (mouseEvent.getClickCount() == 2) {
 			} else {
-				System.err.println("clic: " + searchItem.getValue());
 				searchItem.getItems().clear();
 				final List<TreeItem<Item>> endpoints = collectEndpoints();
 				endpoints.stream().forEach(e -> searchItem.getItems().add(e.getValue().getName()));
+				for (final String bookmark : bookmarks) {
+					searchItem.getItems().add(0, bookmark);
+				}
+				if (bookmarks.size() > 0) {
+					searchItem.getItems().add(bookmarks.size(), "____________________________");
+				}
 			}
 		});
-		
+
 		searchItem.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(final KeyEvent ke) {
@@ -212,7 +223,6 @@ public class MainController implements Initializable {
 			}
 		});
 		//searchItem.addEventFilter(KeyEvent.KEY_RELEASED, SearchItemEvents.keyPressed);
-
 	}
 
 	@FXML
@@ -420,8 +430,8 @@ public class MainController implements Initializable {
 
 	public List<TreeItem<Item>> findChildren(final TreeItem<Item> parent, final String name, final boolean contains) {
 
-		final Predicate<TreeItem<Item>> predicate = contains ? ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase()) :
-			ti -> ti.getValue().getName().toLowerCase().equals(name.toLowerCase());
+		final Predicate<TreeItem<Item>> predicate = contains ? ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase())
+				: ti -> ti.getValue().getName().toLowerCase().equals(name.toLowerCase());
 		return parent == null ? null : flattened(parent)
 				.filter(predicate)
 				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))

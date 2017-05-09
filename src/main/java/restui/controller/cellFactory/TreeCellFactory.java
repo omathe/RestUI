@@ -2,6 +2,7 @@ package restui.controller.cellFactory;
 
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.Set;
 
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -35,10 +36,13 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	private final MenuItem menuItemPath;
 	private final MenuItem menuItemEndpoint;
 	private final MenuItem menuDeleteItem;
+	private final MenuItem menuAddBookmarkItem;
+	private final MenuItem menuRemoveBookmarkItem;
 	private TreeItem<Item> treeItemToMove;
 	private final Node projectImageView;
 	private final Node pathImageView;
 	private final Node endpointImageView;
+	private final Set<String> bookmarks;
 
 	private static Comparator<TreeItem<Item>> itemName = (ti1, ti2) -> {
 		if (ti1.getParent() == ti2.getParent()) {
@@ -47,6 +51,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			return -1;
 		}
 	};
+
 	private static Comparator<TreeItem<Item>> endpointType = (ti1, ti2) -> {
 		return ti1.getValue().getClass().getName().compareTo(ti2.getValue().getClass().getName());
 	};
@@ -56,11 +61,14 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	};
 
 	@SuppressWarnings("unchecked")
-	public TreeCellFactory(final TreeView<Item> treeView) {
+	public TreeCellFactory(final TreeView<Item> treeView, final Set<String> bookmarks) {
 
+		this.bookmarks = bookmarks;
 		menuItemPath = new MenuItem("New path");
 		menuItemEndpoint = new MenuItem("New endpoint");
 		menuDeleteItem = new MenuItem("Delete");
+		menuAddBookmarkItem = new MenuItem("Add bookmark");
+		menuRemoveBookmarkItem = new MenuItem("Remove bookmark");
 		projectImageView = new ImageView();
 		pathImageView = new ImageView();
 		endpointImageView = new ImageView();
@@ -114,6 +122,21 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 						treeView.setRoot(null);
 					}
 				}
+			}
+		});
+
+		menuAddBookmarkItem.setOnAction(new EventHandler() {
+			@Override
+			public void handle(final Event t) {
+				final Item itemToBookmark = treeView.getSelectionModel().getSelectedItem().getValue();
+				bookmarks.add(itemToBookmark.getName());
+			}
+		});
+		menuRemoveBookmarkItem.setOnAction(new EventHandler() {
+			@Override
+			public void handle(final Event t) {
+				final Item itemToBookmark = treeView.getSelectionModel().getSelectedItem().getValue();
+				bookmarks.remove(itemToBookmark.getName());
 			}
 		});
 
@@ -220,6 +243,33 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				event.consume();
 			}
 		});
+
+		//treeView.setOnMouseClicked(e -> System.out.println("left clic ..."));
+
+		// contextual menu
+		treeView.setContextMenu(addMenu);
+		addMenu.getItems().add(menuRemoveBookmarkItem);
+
+		treeView.setOnContextMenuRequested(e -> {
+			final Item selectedItem = treeView.getSelectionModel().getSelectedItem().getValue();
+			if (selectedItem != null) {
+				addMenu.getItems().clear();
+				if (selectedItem instanceof Project || selectedItem instanceof Path) {
+					addMenu.getItems().add(menuItemPath);
+					addMenu.getItems().add(menuItemEndpoint);
+					addMenu.getItems().add(menuDeleteItem);
+					setGraphic(selectedItem instanceof Project ? projectImageView : pathImageView);
+				} else if (selectedItem instanceof Endpoint) {
+					addMenu.getItems().add(menuDeleteItem);
+					if (bookmarks.contains(selectedItem.getName())) {
+						addMenu.getItems().add(menuRemoveBookmarkItem);
+					} else {
+						addMenu.getItems().add(menuAddBookmarkItem);
+					}
+					setGraphic(endpointImageView);
+				}
+			}
+		});
 	}
 
 	@Override
@@ -242,19 +292,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				}
 				setText(getString());
 				setGraphic(getTreeItem().getGraphic());
-
-				// contextual menu
-				setContextMenu(addMenu);
-				addMenu.getItems().clear();
-				if (item instanceof Project || item instanceof Path) {
-					addMenu.getItems().add(menuItemPath);
-					addMenu.getItems().add(menuItemEndpoint);
-					addMenu.getItems().add(menuDeleteItem);
-					setGraphic(item instanceof Project ? projectImageView : pathImageView);
-				} else if (item instanceof Endpoint) {
-					addMenu.getItems().add(menuDeleteItem);
-					setGraphic(endpointImageView);
-				}
 			}
 		}
 	}
@@ -274,7 +311,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	private void createTextField() {
 
 		textField = new TextField(getString());
-
 		textField.focusedProperty().addListener((observableValue, oldValue, newValue) -> {
 			Platform.runLater(new Runnable() {
 				@Override
