@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import javafx.application.Platform;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -42,7 +41,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	private final Node projectImageView;
 	private final Node pathImageView;
 	private final Node endpointImageView;
-	private final Set<String> bookmarks;
 
 	private static Comparator<TreeItem<Item>> itemName = (ti1, ti2) -> {
 		if (ti1.getParent() == ti2.getParent()) {
@@ -60,10 +58,8 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		return endpointType.thenComparing(itemName).compare(ti1, ti2);
 	};
 
-	@SuppressWarnings("unchecked")
 	public TreeCellFactory(final TreeView<Item> treeView, final Set<String> bookmarks) {
 
-		this.bookmarks = bookmarks;
 		menuItemPath = new MenuItem("New path");
 		menuItemEndpoint = new MenuItem("New endpoint");
 		menuDeleteItem = new MenuItem("Delete");
@@ -76,68 +72,56 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		endpointImageView.setId("imageViewEndpoint");
 		pathImageView.setId("imageViewPath");
 
-		menuItemPath.setOnAction(new EventHandler() {
-			@Override
-			public void handle(final Event t) {
-				final Item item = getTreeItem().getValue();
-				final Path path = new Path(item, "New path");
-				item.addChild(path);
-				final TreeItem<Item> newItem = new TreeItem<>(path);
-				getTreeItem().getChildren().add(newItem);
-				treeView.getSelectionModel().select(newItem);
-				getTreeItem().setExpanded(true);
-			}
+		menuItemPath.setOnAction(actionEvent -> {
+			final TreeItem<Item> treeItem = treeView.getSelectionModel().getSelectedItem();
+			final Item item = treeItem.getValue();
+
+			final Path path = new Path(item, "New path");
+			item.addChild(path);
+			final TreeItem<Item> newItem = new TreeItem<>(path);
+			treeItem.getChildren().add(newItem);
+			treeView.getSelectionModel().select(newItem);
+			treeItem.setExpanded(true);
 		});
 
-		menuItemEndpoint.setOnAction(new EventHandler() {
-			@Override
-			public void handle(final Event t) {
-				final Item item = getTreeItem().getValue();
-				final Endpoint endPoint = new Endpoint(item, "New endpoint", "GET");
-				item.addChild(endPoint);
-				final TreeItem<Item> newItem = new TreeItem<>(endPoint);
-				getTreeItem().getChildren().add(newItem);
-				treeView.getSelectionModel().select(newItem);
-				getTreeItem().setExpanded(true);
-			}
+		menuItemEndpoint.setOnAction(actionEvent -> {
+			final TreeItem<Item> treeItem = treeView.getSelectionModel().getSelectedItem();
+			final Item item = treeItem.getValue();
+
+			final Endpoint endPoint = new Endpoint(item, "New endpoint", "GET");
+			item.addChild(endPoint);
+			final TreeItem<Item> newItem = new TreeItem<>(endPoint);
+			treeItem.getChildren().add(newItem);
+			treeView.getSelectionModel().select(newItem);
+			treeItem.setExpanded(true);
 		});
 
-		menuDeleteItem.setOnAction(new EventHandler() {
-			@Override
-			public void handle(final Event t) {
+		menuDeleteItem.setOnAction(actionEvent -> {
+			final TreeItem<Item> treeItemToDelete = treeView.getSelectionModel().getSelectedItem();
+			final Item itemToDelete = treeItemToDelete.getValue();
 
-				final TreeItem<Item> treeItemToDelete = getTreeItem();
-				final Item itemToDelete = getTreeItem().getValue();
-
-				final Alert alert = new Alert(AlertType.CONFIRMATION);
-				alert.setTitle("Delete the item");
-				alert.setHeaderText("Do you want to delete\n" + itemToDelete.getName());
-				final Optional<ButtonType> result = alert.showAndWait();
-				if (result.get() == ButtonType.OK) {
-					if (treeItemToDelete.getParent() != null) {
-						getTreeItem().getParent().getChildren().remove(getTreeItem());
-						itemToDelete.getParent().getChildren().remove(itemToDelete);
-
-					} else {
-						treeView.setRoot(null);
-					}
+			final Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Delete the item");
+			alert.setHeaderText("Do you want to delete\n" + itemToDelete.getName());
+			final Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK) {
+				if (treeItemToDelete.getParent() != null) {
+					treeItemToDelete.getParent().getChildren().remove(treeItemToDelete);
+					itemToDelete.getParent().getChildren().remove(itemToDelete);
+				} else {
+					treeView.setRoot(null);
 				}
 			}
 		});
 
-		menuAddBookmarkItem.setOnAction(new EventHandler() {
-			@Override
-			public void handle(final Event t) {
-				final Item itemToBookmark = treeView.getSelectionModel().getSelectedItem().getValue();
-				bookmarks.add(itemToBookmark.getName());
-			}
+		menuAddBookmarkItem.setOnAction(actionEvent -> {
+			final Item itemToBookmark = treeView.getSelectionModel().getSelectedItem().getValue();
+			bookmarks.add(itemToBookmark.getName());
 		});
-		menuRemoveBookmarkItem.setOnAction(new EventHandler() {
-			@Override
-			public void handle(final Event t) {
-				final Item itemToBookmark = treeView.getSelectionModel().getSelectedItem().getValue();
-				bookmarks.remove(itemToBookmark.getName());
-			}
+
+		menuRemoveBookmarkItem.setOnAction(actionEvent -> {
+			final Item itemToBookmark = treeView.getSelectionModel().getSelectedItem().getValue();
+			bookmarks.remove(itemToBookmark.getName());
 		});
 
 		// Drag and drop management
