@@ -112,6 +112,7 @@ public class MainController implements Initializable {
 		treeView.setEditable(true);
 
 		treeView.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {
+
 			@Override
 			public TreeCell<Item> call(final TreeView<Item> param) {
 				return new TreeCellFactory(treeView, bookmarks);
@@ -126,7 +127,7 @@ public class MainController implements Initializable {
 
 				if (newValue != null) {
 					if (newValue.getValue() instanceof Project) {
-						
+
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
 							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
@@ -222,7 +223,6 @@ public class MainController implements Initializable {
 				}
 			}
 		});
-		//searchItem.addEventFilter(KeyEvent.KEY_RELEASED, SearchItemEvents.keyPressed);
 	}
 
 	@FXML

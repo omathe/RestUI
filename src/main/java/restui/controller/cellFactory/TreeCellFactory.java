@@ -3,6 +3,7 @@ package restui.controller.cellFactory;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -37,10 +38,10 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 	private final MenuItem menuDeleteItem;
 	private final MenuItem menuAddBookmarkItem;
 	private final MenuItem menuRemoveBookmarkItem;
-	private TreeItem<Item> treeItemToMove;
 	private final Node projectImageView;
 	private final Node pathImageView;
 	private final Node endpointImageView;
+	final TreeView<Item> treeView;
 
 	private static Comparator<TreeItem<Item>> itemName = (ti1, ti2) -> {
 		if (ti1.getParent() == ti2.getParent()) {
@@ -60,6 +61,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 
 	public TreeCellFactory(final TreeView<Item> treeView, final Set<String> bookmarks) {
 
+		this.treeView = treeView;
 		menuItemPath = new MenuItem("New path");
 		menuItemEndpoint = new MenuItem("New endpoint");
 		menuDeleteItem = new MenuItem("Delete");
@@ -129,21 +131,14 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		// (1)
 		setOnDragDetected(e -> {
 			final Item item = getItem();
-			System.out.println("DragDetected " + item);
 
-			final Dragboard db = startDragAndDrop(TransferMode.MOVE);
-
-			/* Put a string on a dragboard */
-			final ClipboardContent content = new ClipboardContent();
-			content.putString("toto");
-
-			db.setContent(content);
-
-			treeItemToMove = getTreeItem();
-			System.out.println("treeItemToMove() " + treeItemToMove);
-
+			if (!(item instanceof Project)) {
+				final Dragboard db = startDragAndDrop(TransferMode.MOVE);
+				final ClipboardContent content = new ClipboardContent();
+				content.putString(item.getId());
+				db.setContent(content);
+			}
 			e.consume();
-
 		});
 
 		// (2)
@@ -151,17 +146,10 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 
 			@Override
 			public void handle(final DragEvent event) {
-				if (event.getGestureSource() != event.getTarget()) {
-					/*
-					 * allow for both copying and moving, whatever user chooses
-					 */
+				final Item item = getItem();
+				if (event.getGestureSource() != event.getTarget() && !(item instanceof Endpoint)) {
 					event.acceptTransferModes(TransferMode.MOVE);
-					final Item item = getItem();
-
-					// System.out.println("over " + item);
-					// System.out.println("getTreeItem() " + getTreeItem());
-					// System.out.println("DragOver " + event.getTarget());
-					// item.setName(event.getDragboard().getString());
+				} else {
 				}
 				event.consume();
 			}
@@ -171,19 +159,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		setOnDragEntered(new EventHandler<DragEvent>() {
 			@Override
 			public void handle(final DragEvent event) {
-
-				// System.out.println("DragEntered " + event.getTarget());
-				System.out.println("DragEntered() " + getTreeItem());
-
-				/* the drag-and-drop gesture entered the target */
-				/* show to the user that it is an actual gesture target */
-
-				// target = event.getTarget();
-				// if (event.getGestureSource() != event.getTarget() &&
-				// event.getDragboard().hasString()) {
-				// event.getTarget().setFill(Color.GREEN);
-				// }
-
 				event.consume();
 			}
 		});
@@ -192,9 +167,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		setOnDragExited(new EventHandler<DragEvent>() {
 			@Override
 			public void handle(final DragEvent event) {
-				/* mouse moved away, remove the graphical cues */
-				System.out.println("DragExited " + event.getTarget());
-
 				event.consume();
 			}
 		});
@@ -203,16 +175,28 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		setOnDragDropped(new EventHandler<DragEvent>() {
 			@Override
 			public void handle(final DragEvent event) {
-				System.out.println("DragDropped " + getTreeItem());
-				// System.out.println("DragDropped source" + event.getSource());
-				final Object obj = event.getSource();
-				// System.out.println("DragDropped event.getGestureSource()" +
-				// event.getGestureSource());
-				/*
-				 * let the source know whether the string was successfully transferred and used
-				 */
-				event.setDropCompleted(true);
+				final Item item = getItem();
+				if (!(item instanceof Endpoint)) {
+					final Dragboard db = event.getDragboard();
+					boolean success = false;
+					if (db.hasString()) {
+						final Optional<TreeItem<Item>> source = findTreeItemByItemId(treeView.getRoot(), db.getString());
 
+						if (source.isPresent()) {
+							final TreeItem<Item> sourceTreeItem = source.get();
+							// removes source from parent
+							sourceTreeItem.getParent().getChildren().remove(sourceTreeItem);
+							sourceTreeItem.getValue().getParent().getChildren().remove(sourceTreeItem.getValue());
+
+							// add source to target
+							final TreeItem<Item> targetTreeItem = getTreeItem();
+							targetTreeItem.getChildren().add(sourceTreeItem);
+							sourceTreeItem.getValue().setParent(targetTreeItem.getValue());
+						}
+						success = true;
+					}
+					event.setDropCompleted(success);
+				}
 				event.consume();
 			}
 		});
@@ -221,9 +205,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 		setOnDragDone(new EventHandler<DragEvent>() {
 			@Override
 			public void handle(final DragEvent event) {
-				/* the drag and drop gesture ended */
-				/* if the data was successfully moved, clear it */
-				System.out.println("DragDone " + event.getTarget());
 				event.consume();
 			}
 		});
@@ -314,8 +295,9 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 					getItem().setName(textField.getText());
 
 					// sort the items
-					getTreeItem().getParent().getChildren().sort(comparator);
-
+					if (getTreeItem().getParent() != null) {
+						getTreeItem().getParent().getChildren().sort(comparator);
+					}
 					commitEdit(getItem());
 
 					if (getItem() instanceof Path) { // renaming all the endpoints path
@@ -335,6 +317,20 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				}
 			}
 		});
+	}
+
+	private Optional<TreeItem<Item>> findTreeItemByItemId(final TreeItem<Item> parent, final String itemId) {
+
+		return flattened(treeView.getRoot())
+				.filter(ti -> ti.getValue().getId().equals(itemId))
+				.findFirst();
+	}
+
+	private static Stream<TreeItem<Item>> flattened(final TreeItem<Item> parent) {
+
+		return Stream.concat(
+				Stream.of(parent),
+				parent.getChildren().stream().flatMap(a -> TreeCellFactory.flattened(a)));
 	}
 
 	private String getString() {

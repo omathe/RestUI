@@ -180,13 +180,13 @@ public class EndPointController extends AbstractController implements Initializa
 		execute.textProperty().bind(method.valueProperty());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setTreeItem(final TreeItem<Item> treeItem) {
 		super.setTreeItem(treeItem);
 
 		final Endpoint endPoint = (Endpoint) this.treeItem.getValue();
 		endpoint.setText(endPoint.getName());
+		endPoint.buildPath();
 		path.setText(endPoint.getPath());
 		baseUrl = endPoint.getBaseUrl();
 		method.valueProperty().bindBidirectional(endPoint.methodProperty());
@@ -393,9 +393,9 @@ public class EndPointController extends AbstractController implements Initializa
 			uri.setText(baseUrl + builtUri);
 		} else {
 			for (final Parameter parameter : exchange.getRequestParameters()) {
-				if (parameter.isPathParameter() && !parameter.getEnabled()) {
+				if (parameter.isPathParameter() && parameter.getValue().isEmpty()) {
 					disable = true;
-					uri.setText("");
+					uri.setText(builtUri.replaceAll("\\{[^}]*\\}", "{?}"));
 					break;
 				}
 				if (parameter.isPathParameter() && parameter.getEnabled() && !parameter.getValue().isEmpty()) {
@@ -406,7 +406,9 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 			}
 			// query parameters
-			final Set<String> queryParams = exchange.getRequestParameters().stream().filter(p -> p.isQueryParameter() && p.getEnabled()).map(p -> p.getName() + "=" + p.getValue())
+			final Set<String> queryParams = exchange.getRequestParameters().stream()
+					.filter(p -> p.isQueryParameter() && p.getEnabled())
+					.map(p -> p.getName() + "=" + p.getValue())
 					.collect(Collectors.toSet());
 			if (!queryParams.isEmpty()) {
 				builtUri += "?" + String.join("&", queryParams);
@@ -458,4 +460,5 @@ public class EndPointController extends AbstractController implements Initializa
 
 		});
 	}
+	
 }

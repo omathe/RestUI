@@ -3,12 +3,14 @@ package restui.model;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 public class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	protected String uuid;
 	protected Item parent;
 	protected String name;
 
@@ -16,14 +18,20 @@ public class Item implements Serializable {
 
 	public Item() {
 		super();
+		this.uuid = UUID.randomUUID().toString();
 		this.children = new HashSet<>();
 	}
 
 	public Item(final Item parent, final String name) {
 		super();
 		this.parent = parent;
+		this.uuid = UUID.randomUUID().toString();
 		this.name = name;
 		this.children = new HashSet<>();
+	}
+	
+	public String getId() {
+		return uuid;
 	}
 
 	public String getName() {
@@ -63,15 +71,15 @@ public class Item implements Serializable {
 		return children != null && !children.isEmpty();
 	}
 
-	@Override
-	public String toString() {
-		return name;
-	}
-
 	public Stream<Item> flattened() {
 		return Stream.concat(
 				Stream.of(this),
 				children.stream().flatMap(Item::flattened));
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }

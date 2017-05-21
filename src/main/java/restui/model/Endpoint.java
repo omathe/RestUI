@@ -81,7 +81,7 @@ public class Endpoint extends Item {
 		Item currentItem = this;
 		
 		while (currentItem != null) {
-			if (currentItem.getClass().getSimpleName().equals(Path.class.getSimpleName())) {
+			if (currentItem instanceof Path) {
 				names.add(currentItem.getName());
 			}
 			currentItem = currentItem.getParent();
@@ -89,7 +89,6 @@ public class Endpoint extends Item {
 		Collections.reverse(names);
 		final String builtPath = "/" + names.stream().collect(Collectors.joining("/")).toString();
 		path.set(builtPath);
-//		System.out.println("builtPath = " + builtPath);
 	}
 	
 	public String getBaseUrl() {

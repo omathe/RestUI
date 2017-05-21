@@ -58,24 +58,6 @@ public class ProjectService {
 		}
 	}
 
-//	public static void saveProject(final Project project) {
-//
-//		if (project != null) {
-//			final Element projectElement = buildElement(null, project);
-//			browseTree(project, projectElement);
-//
-//			final XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-//			final Document document = new Document(projectElement);
-//
-//			final File projectFile = new File(ApplicationService.getApplicationHome() + File.separator + project.getName() + ".xml");
-//			try {
-//				xmlOutputter.output(document, new FileOutputStream(projectFile));
-//			} catch (final IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-	
 	public static void saveProject(final Project project, final File file) {
 		
 		if (project != null) {
@@ -198,8 +180,6 @@ public class ProjectService {
 	}
 
 	private static Item buildItem(final Item parent, final Element element) {
-
-		// System.out.println("build item with element " + element.getName() + " and parent " + parent);
 
 		if (element.getName().equalsIgnoreCase(Project.class.getSimpleName())) {
 			final Project project = new Project();
