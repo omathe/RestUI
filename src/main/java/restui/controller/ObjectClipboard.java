@@ -2,6 +2,7 @@ package restui.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import restui.model.Parameter;
 
@@ -28,7 +29,8 @@ public class ObjectClipboard {
 	public void setParameters(final List<Parameter> parameters) {
 		
 		this.parameters.clear();
-		this.parameters.addAll(parameters);
+		final List<Parameter> copy = parameters.stream().map(p -> new Parameter(p)).collect(Collectors.toList());
+		this.parameters.addAll(copy);
 	}
 	
 }

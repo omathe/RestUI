@@ -34,6 +34,14 @@ public class Parameter {
 		this.value = new SimpleStringProperty(value);
 	}
 
+	public Parameter(final Parameter parameter) {
+		super();
+		this.enabled = new SimpleBooleanProperty(parameter.getEnabled());
+		this.location = new SimpleStringProperty(parameter.getLocation());
+		this.name = new SimpleStringProperty(parameter.getName());
+		this.value = new SimpleStringProperty(parameter.getValue());
+	}
+	
 	public Boolean getEnabled() {
 		return enabled.get();
 	}
