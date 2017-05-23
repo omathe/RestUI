@@ -137,7 +137,7 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 			}
 		});
-		
+
 		// request parameters
 		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell<>());
 		parameterEnabledColumn.setCellValueFactory(parameter -> {
@@ -215,7 +215,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
 		exchanges.setItems((ObservableList<Exchange>) endPoint.getExchanges());
-		
+
 		exchanges.getSelectionModel().select(0);
 	}
 
@@ -323,7 +323,7 @@ public class EndPointController extends AbstractController implements Initializa
 				response = RestClient.patch(builtUri, requestBody.getText(), exchange.getRequestParameters());
 			} else if (method.getValue().equals("GET")) {
 				response = RestClient.get(builtUri, exchange.getRequestParameters());
-				
+
 			} else if (method.getValue().equals("DELETE")) {
 				response = RestClient.delete(builtUri, exchange.getRequestParameters());
 			}
@@ -388,18 +388,19 @@ public class EndPointController extends AbstractController implements Initializa
 		boolean disable = false;
 		String builtUri = path.getText();
 
-		// path parameters
 		if (exchange.getRequestParameters().isEmpty()) {
 			uri.setText(baseUrl + builtUri);
 		} else {
 			for (final Parameter parameter : exchange.getRequestParameters()) {
-				if (parameter.isPathParameter() && parameter.getValue().isEmpty()) {
-					disable = true;
-					uri.setText(builtUri.replaceAll("\\{[^}]*\\}", "{?}"));
-					break;
-				}
-				if (parameter.isPathParameter() && parameter.getEnabled() && !parameter.getValue().isEmpty()) {
-					builtUri = builtUri.replace("{" + parameter.getName() + "}", parameter.getValue());
+				// path parameters
+				if (parameter.isPathParameter()) {
+					if (!parameter.getEnabled() || parameter.getValue().isEmpty()) {
+						disable = true;
+						uri.setText(builtUri.replace("{" + parameter.getName() + "}", "{" + parameter.getName() + "}"));
+						break;
+					} else {
+						builtUri = builtUri.replace("{" + parameter.getName() + "}", parameter.getValue());
+					}
 				}
 				if (parameter.getValue().isEmpty() || parameter.getName().isEmpty()) {
 					disable = true;
@@ -414,9 +415,9 @@ public class EndPointController extends AbstractController implements Initializa
 				builtUri += "?" + String.join("&", queryParams);
 			}
 		}
+		builtUri = baseUrl + builtUri;
+		uri.setText(builtUri);
 		if (!disable) {
-			builtUri = baseUrl + builtUri;
-			uri.setText(builtUri);
 			exchange.getRequest().setUri(builtUri);
 		}
 		execute.setDisable(disable);
@@ -460,5 +461,5 @@ public class EndPointController extends AbstractController implements Initializa
 
 		});
 	}
-	
+
 }
