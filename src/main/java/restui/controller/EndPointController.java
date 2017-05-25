@@ -128,6 +128,7 @@ public class EndPointController extends AbstractController implements Initializa
 			final List<Parameter> selectedParameters = parameters.getSelectionModel().getSelectedItems();
 			ObjectClipboard.getInstance().setParameters(selectedParameters);
 		});
+
 		menuItemPaste.setOnAction(e -> {
 			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 			if (exchange != null) {
@@ -221,10 +222,19 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void refreshExchangeData(final Exchange exchange) {
 
-		if (exchange != null) {
+		if (exchange == null) {
+			requestBody.setText("");
+			parameters.setItems(null);
+			responseBody.setText("");
+			responseHeaders.setItems(null);
+			responseStatus.setText("");
+			uri.setText("");
+		} else {
 			// request
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
+
 			parameters.setItems(parameterData);
+			parameters.refresh();
 
 			buildParameters();
 			buildUri();
@@ -235,16 +245,13 @@ public class EndPointController extends AbstractController implements Initializa
 			displayResponseBody(exchange);
 
 			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
+			
+			// response body
+			responseBody.setText(exchange.getResponseBodyProperty().get());
+			
 			responseHeaders.setItems(responseHeadersData);
 			// response status
 			responseStatus.setText(exchange.getStatus().toString());
-		} else {
-			requestBody.setText("");
-			parameters.setItems(null);
-			responseBody.setText("");
-			responseHeaders.setItems(null);
-			responseStatus.setText("");
-			uri.setText("");
 		}
 	}
 

@@ -127,7 +127,8 @@ public class MainController implements Initializable {
 
 				if (newValue != null) {
 					if (newValue.getValue() instanceof Project) {
-
+						
+						// Project
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
 							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
@@ -142,6 +143,8 @@ public class MainController implements Initializable {
 							e.printStackTrace();
 						}
 					} else if (newValue.getValue() instanceof Endpoint) {
+						
+						// Endpoint
 						final FXMLLoader fxmlLoader = new FXMLLoader();
 						try {
 							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
