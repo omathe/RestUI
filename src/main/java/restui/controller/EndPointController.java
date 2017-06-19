@@ -239,14 +239,14 @@ public class EndPointController extends AbstractController implements Initializa
 			buildParameters();
 			buildUri();
 			uri.setText(exchange.getRequest().getUri());
-			//requestBody.setText(exchange.getRequestBodyProperty().get());
+			requestBody.setText(exchange.getRequestBodyProperty().get());
 
 			// response
 			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
-			
+
 			// response body
 			displayResponseBody(exchange);
-			
+
 			responseHeaders.setItems(responseHeadersData);
 			// response status
 			responseStatus.setText(exchange.getStatus().toString());
@@ -305,6 +305,13 @@ public class EndPointController extends AbstractController implements Initializa
 			final Parameter parameter = parameters.getSelectionModel().getSelectedItem();
 			exchange.removeRequestParameter(parameter);
 		}
+	}
+
+	@FXML
+	protected void selectInTree(final ActionEvent event) {
+
+		treeView.getSelectionModel().select(treeItem);
+		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
 	}
 
 	@FXML
