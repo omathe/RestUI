@@ -94,10 +94,12 @@ public class MainController implements Initializable {
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
+	
+	int index = 0;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-
+		
 		application = ApplicationService.openApplication();
 		bookmarks = new HashSet<>();
 
@@ -149,6 +151,7 @@ public class MainController implements Initializable {
 						try {
 							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
 							endPointController = (EndPointController) fxmlLoader.getController();
+							endPointController.setTreeView(treeView);
 							endPointController.setTreeItem(newValue);
 							vBox.getChildren().clear();
 							vBox.getChildren().add(hBox);
@@ -178,12 +181,14 @@ public class MainController implements Initializable {
 
 		// searching for endpoints
 		searchItem.getEditor().textProperty().addListener((observable, oldItem, newItem) -> {
+			
 			if (!newItem.isEmpty() && treeView.getRoot() != null) {
 				treeView.getSelectionModel().clearSelection();
 				final List<TreeItem<Item>> search = findChildren(treeView.getRoot(), newItem, false);
 				searchCount.setText(String.valueOf(search == null ? 0 : search.size()));
 				search.stream().forEach(item -> {
 					treeView.getSelectionModel().select(item);
+					treeView.scrollTo(treeView.getSelectionModel().getSelectedIndices().get(0));
 				});
 			} else {
 				treeView.getSelectionModel().clearSelection();
@@ -218,6 +223,7 @@ public class MainController implements Initializable {
 						search.stream().forEach(item -> {
 							treeView.getSelectionModel().select(item);
 						});
+						treeView.scrollTo(treeView.getSelectionModel().getSelectedIndices().get(0));
 					} else {
 						treeView.getSelectionModel().clearSelection();
 					}
@@ -482,5 +488,24 @@ public class MainController implements Initializable {
 		for (final TreeItem<Item> child : parent.getChildren()) {
 			sort(child);
 		}
+	}
+	
+	@FXML
+	protected void moveTree(final ActionEvent event) {
+		
+		treeView.scrollTo(index++);
+		System.err.println("value = " + treeView.getSelectionModel().getSelectedIndex());
+		System.err.println("getBoundsInLocal = " + treeView.getBoundsInLocal());
+		
+		
+		//final double maxY = treeView.getSelectionModel().getSelectedItem().getGraphic().getBoundsInParent().getMaxY();
+		//System.err.println("maxY = " + maxY);
+		
+		
+//		final double h = scrollPane.getContent().getBoundsInLocal().getHeight();
+//	    final double y = (node.getBoundsInParent().getMaxY() + 
+//	                node.getBoundsInParent().getMinY()) / 2.0;
+//	    final double v = scrollPane.getViewportBounds().getHeight();
+//	    scrollPane.setVvalue(scrollPane.getVmax() * ((y - 0.5 * v) / (h - v)));
 	}
 }

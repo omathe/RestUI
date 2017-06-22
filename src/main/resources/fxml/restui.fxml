@@ -28,6 +28,7 @@
               </items>
             </MenuButton>
             <Button mnemonicParsing="false" onAction="#openStyle" text="Style" />
+            <Button mnemonicParsing="false" onAction="#moveTree" text="move" />
             <Region HBox.hgrow="ALWAYS" />
             <Button mnemonicParsing="false" onAction="#exit" text="Exit" />
          </children>
@@ -64,6 +65,9 @@
                </children>
             </AnchorPane>
         </items>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
       </SplitPane>
    </center>
    <bottom>
