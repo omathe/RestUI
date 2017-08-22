@@ -17,172 +17,173 @@ import restui.model.Parameter;
 
 public class RestClient {
 
-    /**
-     * Get resource
-     * @param uri
-     * @param parameters
-     * @return
-     */
-    public static ClientResponse get(final String uri, final List<Parameter> parameters) {
+	/**
+	 * Get resource
+	 * @param uri
+	 * @param parameters
+	 * @return
+	 */
+	public static ClientResponse get(final String uri, final List<Parameter> parameters) {
 
-        ClientResponse response = null;
-        final Client client = Client.create();
+		ClientResponse response = null;
+		final Client client = Client.create();
 
-        try {
-            final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-            final WebResource.Builder builder = webResource.getRequestBuilder();
+		try {
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-            addHeaders(builder, parameters);
+			addHeaders(builder, parameters);
 
-            response = builder.get(ClientResponse.class);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        } finally {
-            client.destroy();
-        }
-        return response;
-    }
+			response = builder.get(ClientResponse.class);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
 
-    /**
-     * Post resource
-     * @param uri
-     * @param body
-     * @param parameters
-     * @return
-     */
-    public static ClientResponse post(final String uri, final String body, final List<Parameter> parameters) {
+	/**
+	 * Post resource
+	 * @param uri
+	 * @param body
+	 * @param parameters
+	 * @return
+	 */
+	public static ClientResponse post(final String uri, final String body, final List<Parameter> parameters) {
 
-        ClientResponse response = null;
-        final Client client = Client.create();
+		ClientResponse response = null;
+		final Client client = Client.create();
 
-        try {
-            final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-            final WebResource.Builder builder = webResource.getRequestBuilder();
+		try {
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-            addHeaders(builder, parameters);
+			addHeaders(builder, parameters);
 
-            response = builder.post(ClientResponse.class, body);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        } finally {
-            client.destroy();
-        }
-        return response;
-    }
+			response = builder.post(ClientResponse.class, body);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
 
-    /**
-     * Put resource
-     * @param uri
-     * @param body
-     * @param parameters
-     * @return
-     */
-    public static ClientResponse put(final String uri, final String body, final List<Parameter> parameters) {
+	/**
+	 * Put resource
+	 * @param uri
+	 * @param body
+	 * @param parameters
+	 * @return
+	 */
+	public static ClientResponse put(final String uri, final String body, final List<Parameter> parameters) {
 
-        ClientResponse response = null;
-        final Client client = Client.create();
+		ClientResponse response = null;
+		final Client client = Client.create();
 
-        try {
-            final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-            final WebResource.Builder builder = webResource.getRequestBuilder();
+		try {
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-            addHeaders(builder, parameters);
+			addHeaders(builder, parameters);
 
-            response = builder.put(ClientResponse.class, body);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        } finally {
-            client.destroy();
-        }
-        return response;
-    }
+			response = builder.put(ClientResponse.class, body);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
 
-    /**
-     * Patch resource
-     * @param uri
-     * @param body
-     * @param parameters
-     * @return
-     */
-    public static ClientResponse patch(final String uri, final String body, final List<Parameter> parameters) {
+	/**
+	 * Patch resource
+	 * @param uri
+	 * @param body
+	 * @param parameters
+	 * @return
+	 */
+	public static ClientResponse patch(final String uri, final String body, final List<Parameter> parameters) {
 
-        ClientResponse response = null;
-        final DefaultClientConfig config = new DefaultClientConfig();
-        config.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
-        final Client client = Client.create(config);
+		ClientResponse response = null;
+		final DefaultClientConfig config = new DefaultClientConfig();
+		config.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
+		final Client client = Client.create(config);
 
-        try {
+		try {
 
-            final WebResource webResource = client.resource(uriWithoutQueryParams(uriWithoutQueryParams(uri))).queryParams(buildParams(parameters));
-            final WebResource.Builder builder = webResource.getRequestBuilder();
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uriWithoutQueryParams(uri))).queryParams(buildParams(parameters));
+			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-            addHeaders(builder, parameters);
+			addHeaders(builder, parameters);
 
-            response = builder.method("PATCH", ClientResponse.class, body);
+			response = builder.method("PATCH", ClientResponse.class, body);
 
-        } catch (final Exception e) {
-            e.printStackTrace();
-        } finally {
-            client.destroy();
-        }
-        return response;
-    }
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
 
-    /**
-     * Delete resource
-     * @param uri
-     * @param body
-     * @param parameters
-     * @return
-     */
-    public static ClientResponse delete(final String uri, final List<Parameter> parameters) {
+	/**
+	 * Delete resource
+	 * @param uri
+	 * @param body
+	 * @param parameters
+	 * @return
+	 */
+	public static ClientResponse delete(final String uri, final List<Parameter> parameters) {
 
-        ClientResponse response = null;
-        final Client client = Client.create();
+		ClientResponse response = null;
+		final Client client = Client.create();
 
-        try {
-            final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-            final WebResource.Builder builder = webResource.getRequestBuilder();
+		try {
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-            addHeaders(builder, parameters);
+			addHeaders(builder, parameters);
 
-            response = builder.delete(ClientResponse.class);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        } finally {
-            client.destroy();
-        }
-        return response;
-    }
+			response = builder.delete(ClientResponse.class);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
 
-    private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {
+	private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {
 
-        // add query parameters
-        parameters.stream().filter(p -> p.getEnabled() && p.isHeaderParameter())
-                .forEach(p -> builder.header(p.getName(), p.getValue()));
+		// add query parameters
+		parameters.stream().filter(p -> p.getEnabled() && p.isHeaderParameter())
+				.forEach(p -> builder.header(p.getName(), p.getValue()));
 
-        return builder;
-    }
+		return builder;
+	}
 
-    private static MultivaluedMap<String, String> buildParams(final List<Parameter> parameters) {
+	private static MultivaluedMap<String, String> buildParams(final List<Parameter> parameters) {
 
-        final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        for (final Parameter parameter : parameters) {
-            if (parameter.getEnabled() && parameter.isQueryParameter()) {
-                try {
-                    final String encodedName = URLEncoder.encode(parameter.getName(), "UTF-8");
-                    final String encodedValue = URLEncoder.encode(parameter.getValue(), "UTF-8");
-                    params.add(encodedName, encodedValue);
-                } catch (final UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return params;
-    }
+		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+		for (final Parameter parameter : parameters) {
+			if (parameter.getEnabled() && parameter.isQueryParameter()) {
+				try {
+					final String encodedName = URLEncoder.encode(parameter.getName(), "UTF-8");
+					final String encodedValue = URLEncoder.encode(parameter.getValue(), "UTF-8").replaceAll("[+]", "%20");
+					params.add(encodedName, encodedValue);
+				} catch (final UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return params;
+	}
 
-    private static String uriWithoutQueryParams(final String uri) {
+	private static String uriWithoutQueryParams(final String uri) {
 
-        return uri.split("[?]")[0];
-    }
+		return uri.split("[?]")[0];
+	}
+
 }
