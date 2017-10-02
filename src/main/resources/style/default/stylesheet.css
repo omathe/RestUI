@@ -69,10 +69,8 @@
     -fx-grid-lines-visible: true;
 }
 
-
-
 #imageViewProject {
-    -fx-image: url("images/project.png");
+    -fx-image: url("images/project.svg");
 }
 
 #imageViewPath {
@@ -83,3 +81,10 @@
     -fx-image: url("images/endpoint.png");
 }
 
+.tree-cell > .tree-disclosure-node > .arrow  {
+    -fx-background-color: red;
+}
+
+.tree-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-background-color: blue;
+}

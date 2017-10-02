@@ -308,13 +308,6 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 	@FXML
-	protected void selectInTree(final ActionEvent event) {
-
-		treeView.getSelectionModel().select(treeItem);
-		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-	}
-
-	@FXML
 	protected void execute(final ActionEvent event) {
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
@@ -438,6 +431,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private void displayResponseBody(final Exchange exchange) {
 
 		exchange.findResponseHeader("Content-Type").ifPresent(p -> {
+			
 			if (p.getValue().contains("json")) {
 				final ObjectMapper mapper = new ObjectMapper();
 				try {

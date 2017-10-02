@@ -257,6 +257,13 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 				}
 				setText(getString());
 				setGraphic(getTreeItem().getGraphic());
+
+				// icons
+				if (item instanceof Project) {
+					setGraphic(projectImageView);
+				} else if (item instanceof Endpoint) {
+					setGraphic(endpointImageView);
+				}
 			}
 		}
 	}

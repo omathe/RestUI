@@ -3,6 +3,7 @@ package restui.gui;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -14,6 +15,7 @@ public class RestUiApp extends Application {
 		final BorderPane root = FXMLLoader.load(getClass().getResource("/fxml/restui.fxml"));
 
 		primaryStage.setTitle("RestUI");
+		primaryStage.getIcons().add(new Image("/style/applicationIcon.png"));
 		primaryStage.setScene(new Scene(root));
 		primaryStage.show();
 	}
