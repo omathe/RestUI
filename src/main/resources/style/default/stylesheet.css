@@ -2,8 +2,6 @@
     -fx-background-color: blue;
 }
 
-// treeView source node
-
 #checkBoxProfile {
     -fx-text-fill: black;
 }
@@ -67,10 +65,6 @@
 }
 #destinationGrid {
     -fx-grid-lines-visible: true;
-}
-
-#imageViewProject {
-    -fx-image: url("images/project.svg");
 }
 
 #imageViewPath {
