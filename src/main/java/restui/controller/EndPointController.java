@@ -35,6 +35,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
@@ -47,6 +48,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
 import javafx.util.converter.DefaultStringConverter;
 import restui.commons.AlertBuilder;
 import restui.model.Endpoint;
@@ -108,6 +110,8 @@ public class EndPointController extends AbstractController implements Initializa
 	private Label exchangeDuration;
 	@FXML
 	private Button execute;
+	@FXML
+	private RadioButton rawBody;
 
 	public EndPointController() {
 		super();
@@ -115,7 +119,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-
+		
 		final ContextMenu contextMenu = new ContextMenu();
 		final MenuItem menuItemCopy = new MenuItem("Copy");
 		final MenuItem menuItemPaste = new MenuItem("Paste");
@@ -466,6 +470,12 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 
 		});
+	}
+	
+	@FXML
+	protected void rawBodySelected(final MouseEvent event) {
+		
+		System.err.println("rawBodySelected");
 	}
 
 }
