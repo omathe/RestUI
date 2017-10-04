@@ -49,6 +49,7 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
 import restui.commons.AlertBuilder;
 import restui.model.Endpoint;
@@ -64,54 +65,76 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	private SplitPane requestResponseSplitPane;
+	
 	@FXML
 	private TableView<Exchange> exchanges;
+	
 	@FXML
 	private TableColumn<Exchange, String> exchangeNameColumn;
+	
 	@FXML
 	private TableColumn<Exchange, Long> exchangeDateColumn;
+	
 	@FXML
 	private TableColumn<Exchange, Integer> exchangeStatusColumn;
 
 	@FXML
 	private TableView<Parameter> parameters;
+
 	@FXML
 	private TableColumn<Parameter, Boolean> parameterEnabledColumn;
+
 	@FXML
 	private TableColumn<Parameter, String> parameterLocationColumn;
+
 	@FXML
 	private TableColumn<Parameter, String> parameterNameColumn;
+
 	@FXML
 	private TableColumn<Parameter, String> parameterValueColumn;
 
 	@FXML
 	private ComboBox<String> method;
+
 	@FXML
 	private Label endpoint;
+
 	@FXML
 	private TextField path;
+
 	@FXML
 	private TextField uri;
+
 	@FXML
 	private TextArea requestBody;
 
 	// Response
 	@FXML
 	private TableView<Parameter> responseHeaders;
+
 	@FXML
 	private TableColumn<Parameter, String> headerNameColumn;
+
 	@FXML
 	private TableColumn<Parameter, String> headerValueColumn;
+
 	@FXML
 	private TextArea responseBody;
+
 	@FXML
 	private Label responseStatus;
+
 	@FXML
 	private Label exchangeDuration;
+
 	@FXML
 	private Button execute;
+
 	@FXML
 	private RadioButton rawBody;
+
+	@FXML
+	private VBox bodyVBox;
 
 	public EndPointController() {
 		super();
@@ -119,7 +142,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		
+
 		final ContextMenu contextMenu = new ContextMenu();
 		final MenuItem menuItemCopy = new MenuItem("Copy");
 		final MenuItem menuItemPaste = new MenuItem("Paste");
@@ -435,7 +458,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private void displayResponseBody(final Exchange exchange) {
 
 		exchange.findResponseHeader("Content-Type").ifPresent(p -> {
-			
+
 			if (p.getValue().contains("json")) {
 				final ObjectMapper mapper = new ObjectMapper();
 				try {
@@ -471,11 +494,19 @@ public class EndPointController extends AbstractController implements Initializa
 
 		});
 	}
-	
+
 	@FXML
 	protected void rawBodySelected(final MouseEvent event) {
+
+		if (!bodyVBox.getChildren().contains(requestBody)) {
+			bodyVBox.getChildren().add(requestBody);
+		}
+	}
+	
+	@FXML
+	protected void formEncodedBodySelected(final MouseEvent event) {
 		
-		System.err.println("rawBodySelected");
+		bodyVBox.getChildren().remove(requestBody);
 	}
 
 }

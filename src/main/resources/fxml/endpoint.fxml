@@ -141,7 +141,7 @@
                                                          <children>
                                                             <VBox prefHeight="285.0" prefWidth="386.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                <children>
-                                                                  <VBox prefHeight="285.0" prefWidth="386.0" VBox.vgrow="ALWAYS">
+                                                                  <VBox fx:id="bodyVBox" prefHeight="285.0" prefWidth="386.0" VBox.vgrow="ALWAYS">
                                                                      <children>
                                                                         <HBox spacing="5.0">
                                                                            <children>
@@ -153,7 +153,7 @@
                                                                                  </toggleGroup>
                                                                               </RadioButton>
                                                                               <RadioButton fx:id="formDataBody" mnemonicParsing="false" text="form data" toggleGroup="$bodyGroup" />
-                                                                              <RadioButton fx:id="formEncodedBody" mnemonicParsing="false" text="x-www-form-urlencoded" toggleGroup="$bodyGroup" />
+                                                                              <RadioButton fx:id="formEncodedBody" mnemonicParsing="false" onMouseClicked="#formEncodedBodySelected" text="x-www-form-urlencoded" toggleGroup="$bodyGroup" />
                                                                               <RadioButton fx:id="binaryBody" mnemonicParsing="false" text="binary" toggleGroup="$bodyGroup" />
                                                                            </children>
                                                                            <padding>
