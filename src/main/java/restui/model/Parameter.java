@@ -13,7 +13,7 @@ import javafx.beans.property.StringProperty;
 public class Parameter {
 
 	public enum Location {
-		PATH, QUERY, HEADER;
+		BODY, HEADER, PATH, QUERY;
 	}
 
 	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name())
@@ -41,7 +41,7 @@ public class Parameter {
 		this.name = new SimpleStringProperty(parameter.getName());
 		this.value = new SimpleStringProperty(parameter.getValue());
 	}
-	
+
 	public Boolean getEnabled() {
 		return enabled.get();
 	}
@@ -93,15 +93,15 @@ public class Parameter {
 	public StringProperty valueProperty() {
 		return value;
 	}
-	
+
 	public boolean isPathParameter() {
 		return location.get().equals(Location.PATH.name());
 	}
-	
+
 	public boolean isQueryParameter() {
 		return location.get().equals(Location.QUERY.name());
 	}
-	
+
 	public boolean isHeaderParameter() {
 		return location.get().equals(Location.HEADER.name());
 	}

@@ -143,7 +143,7 @@
                                                                <children>
                                                                   <VBox fx:id="bodyVBox" prefHeight="285.0" prefWidth="386.0" VBox.vgrow="ALWAYS">
                                                                      <children>
-                                                                        <HBox spacing="5.0">
+                                                                        <HBox fx:id="bodyHBox" spacing="5.0">
                                                                            <children>
                                                                               <Label text="Body" />
                                                                               <Region HBox.hgrow="ALWAYS" />

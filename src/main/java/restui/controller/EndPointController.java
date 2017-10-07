@@ -28,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -49,6 +50,8 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
 import restui.commons.AlertBuilder;
@@ -132,9 +135,14 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	private RadioButton rawBody;
+	@FXML
+	private RadioButton formEncodedBody;
 
 	@FXML
 	private VBox bodyVBox;
+	
+	@FXML
+	private HBox bodyHBox;
 
 	public EndPointController() {
 		super();
@@ -260,7 +268,7 @@ public class EndPointController extends AbstractController implements Initializa
 			// request
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
 
-			parameters.setItems(parameterData);
+			parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
 			parameters.refresh();
 
 			buildParameters();
@@ -273,7 +281,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 			// response body
 			displayResponseBody(exchange);
-
+			
 			responseHeaders.setItems(responseHeadersData);
 			// response status
 			responseStatus.setText(exchange.getStatus().toString());
@@ -498,6 +506,8 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void rawBodySelected(final MouseEvent event) {
 
+		bodyVBox.getChildren().clear();
+		bodyVBox.getChildren().add(bodyHBox);
 		if (!bodyVBox.getChildren().contains(requestBody)) {
 			bodyVBox.getChildren().add(requestBody);
 		}
@@ -506,7 +516,21 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void formEncodedBodySelected(final MouseEvent event) {
 		
-		bodyVBox.getChildren().remove(requestBody);
+		bodyVBox.getChildren().clear();
+		bodyVBox.getChildren().add(bodyHBox);
+		
+		final FXMLLoader fxmlLoader = new FXMLLoader();
+		try {
+			final AnchorPane anchorPane = fxmlLoader.load(MainController.class.getResource("/fxml/bodyParameters.fxml").openStream());
+			final BodyController bodyController = (BodyController) fxmlLoader.getController();
+			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+			bodyController.setExchange(exchange);
+			if (!bodyVBox.getChildren().contains(anchorPane)) {
+				bodyVBox.getChildren().add(anchorPane);
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
