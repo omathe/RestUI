@@ -11,6 +11,8 @@
          <children>
             <TableView fx:id="bodyTableView" editable="true">
               <columns>
+                  <TableColumn fx:id="bodyEnabledColumn" prefWidth="75.0" text="Enabled" />
+                  <TableColumn fx:id="bodyTypeColumn" prefWidth="75.0" text="Type" />
                 <TableColumn fx:id="bodyNameColumn" prefWidth="75.0" text="Name" />
                 <TableColumn fx:id="bodyValueColumn" prefWidth="75.0" text="Value" />
               </columns>

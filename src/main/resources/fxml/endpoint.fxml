@@ -152,7 +152,7 @@
                                                                                     <ToggleGroup fx:id="bodyGroup" />
                                                                                  </toggleGroup>
                                                                               </RadioButton>
-                                                                              <RadioButton fx:id="formDataBody" mnemonicParsing="false" text="form data" toggleGroup="$bodyGroup" />
+                                                                              <RadioButton fx:id="formDataBody" mnemonicParsing="false" onMouseClicked="#formDataBodySelected" text="form data" toggleGroup="$bodyGroup" />
                                                                               <RadioButton fx:id="formEncodedBody" mnemonicParsing="false" onMouseClicked="#formEncodedBodySelected" text="x-www-form-urlencoded" toggleGroup="$bodyGroup" />
                                                                               <RadioButton fx:id="binaryBody" mnemonicParsing="false" text="binary" toggleGroup="$bodyGroup" />
                                                                            </children>

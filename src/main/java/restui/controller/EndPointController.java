@@ -55,6 +55,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
 import restui.commons.AlertBuilder;
+import restui.controller.BodyController.Type;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
@@ -68,16 +69,16 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	private SplitPane requestResponseSplitPane;
-	
+
 	@FXML
 	private TableView<Exchange> exchanges;
-	
+
 	@FXML
 	private TableColumn<Exchange, String> exchangeNameColumn;
-	
+
 	@FXML
 	private TableColumn<Exchange, Long> exchangeDateColumn;
-	
+
 	@FXML
 	private TableColumn<Exchange, Integer> exchangeStatusColumn;
 
@@ -140,7 +141,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	private VBox bodyVBox;
-	
+
 	@FXML
 	private HBox bodyHBox;
 
@@ -281,7 +282,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 			// response body
 			displayResponseBody(exchange);
-			
+
 			responseHeaders.setItems(responseHeadersData);
 			// response status
 			responseStatus.setText(exchange.getStatus().toString());
@@ -512,10 +513,32 @@ public class EndPointController extends AbstractController implements Initializa
 			bodyVBox.getChildren().add(requestBody);
 		}
 	}
-	
+
+
 	@FXML
 	protected void formEncodedBodySelected(final MouseEvent event) {
-		
+
+		bodyVBox.getChildren().clear();
+		bodyVBox.getChildren().add(bodyHBox);
+
+		final FXMLLoader fxmlLoader = new FXMLLoader();
+		try {
+			final AnchorPane anchorPane = fxmlLoader.load(MainController.class.getResource("/fxml/bodyParameters.fxml").openStream());
+			final BodyController bodyController = (BodyController) fxmlLoader.getController();
+			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+			bodyController.setType(Type.X_WWW_FORM_URL_ENCODED);
+			bodyController.setExchange(exchange);
+			if (!bodyVBox.getChildren().contains(anchorPane)) {
+				bodyVBox.getChildren().add(anchorPane);
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	protected void formDataBodySelected(final MouseEvent event) {
+
 		bodyVBox.getChildren().clear();
 		bodyVBox.getChildren().add(bodyHBox);
 		
@@ -524,6 +547,7 @@ public class EndPointController extends AbstractController implements Initializa
 			final AnchorPane anchorPane = fxmlLoader.load(MainController.class.getResource("/fxml/bodyParameters.fxml").openStream());
 			final BodyController bodyController = (BodyController) fxmlLoader.getController();
 			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+			bodyController.setType(Type.FORM_DATA);
 			bodyController.setExchange(exchange);
 			if (!bodyVBox.getChildren().contains(anchorPane)) {
 				bodyVBox.getChildren().add(anchorPane);

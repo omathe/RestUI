@@ -168,7 +168,7 @@ public class RestClient {
 
 		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 		for (final Parameter parameter : parameters) {
-			if (parameter.getEnabled() && parameter.isQueryParameter()) {
+			if (parameter.getEnabled() && (parameter.isQueryParameter() || parameter.isBodyParameter())) {
 				try {
 					final String encodedName = URLEncoder.encode(parameter.getName(), "UTF-8");
 					final String encodedValue = URLEncoder.encode(parameter.getValue(), "UTF-8").replaceAll("[+]", "%20");
