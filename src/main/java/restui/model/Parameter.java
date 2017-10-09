@@ -15,15 +15,15 @@ public class Parameter {
 	public enum Location {
 		BODY, HEADER, PATH, QUERY;
 	}
-	
+
 	public enum Type {
-		STRING, FILE;
+		TEXT, FILE;
 	}
 
-	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name())
-			.collect(Collectors.toSet());
-	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type")
-			.collect(Collectors.toSet());
+	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name()).collect(Collectors.toSet());
+	public static Set<String> types = Arrays.stream(Type.values()).map(e -> e.name()).collect(Collectors.toSet());
+
+	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type").collect(Collectors.toSet());
 
 	private final BooleanProperty enabled;
 	private final StringProperty type;
@@ -34,7 +34,7 @@ public class Parameter {
 	public Parameter(final Boolean enabled, final Location location, final String name, final String value) {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
-		this.type = new SimpleStringProperty(Type.STRING.name());
+		this.type = new SimpleStringProperty(Type.TEXT.name());
 		this.location = new SimpleStringProperty(location.name());
 		this.name = new SimpleStringProperty(name);
 		this.value = new SimpleStringProperty(value);
@@ -52,15 +52,15 @@ public class Parameter {
 	public Boolean getEnabled() {
 		return enabled.get();
 	}
-	
+
 	public StringProperty typeProperty() {
 		return type;
 	}
-	
+
 	public String getType() {
 		return type.get();
 	}
-	
+
 	public void setType(final Type type) {
 		this.type.set(type.name());
 	}
@@ -120,7 +120,7 @@ public class Parameter {
 	public boolean isQueryParameter() {
 		return location.get().equals(Location.QUERY.name());
 	}
-	
+
 	public boolean isBodyParameter() {
 		return location.get().equals(Location.BODY.name());
 	}
