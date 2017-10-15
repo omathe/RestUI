@@ -129,6 +129,14 @@ public class Parameter {
 		return location.get().equals(Location.HEADER.name());
 	}
 
+	public boolean isTypeText() {
+		return type.get().equals(Type.TEXT.name());
+	}
+	
+	public boolean isTypeFile() {
+		return type.get().equals(Type.FILE.name());
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -162,8 +170,7 @@ public class Parameter {
 
 	@Override
 	public String toString() {
-		return "Parameter [enabled=" + enabled.get() + ", location=" + location.get() + ", name=" + name.get()
-				+ ", value=" + value.get() + "]";
+		return "Parameter [enabled=" + enabled.get() + ", type=" + type.get() + ", location=" + location.get() + ", name=" + name.get() + ", value=" + value.get() + "]";
 	}
 
 }

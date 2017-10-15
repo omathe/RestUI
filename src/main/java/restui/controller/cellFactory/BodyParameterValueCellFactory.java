@@ -1,15 +1,22 @@
 package restui.controller.cellFactory;
 
+import java.io.File;
+
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.FileChooser;
 import restui.model.Parameter;
+import restui.model.Parameter.Type;
 
 public class BodyParameterValueCellFactory extends TableCell<Parameter, String> {
 
 	private TextField textField;
+	private Button button;
+	private String type;
 
 	public BodyParameterValueCellFactory() {
 		super();
@@ -19,13 +26,27 @@ public class BodyParameterValueCellFactory extends TableCell<Parameter, String> 
 	public void startEdit() {
 		super.startEdit();
 
-		if (textField == null) {
-			createTextField();
+		if (getTableRow().getItem() != null) {
+			final Parameter parameter = (Parameter) getTableRow().getItem();
+			this.type = parameter.getType();
+
+			if (parameter.getType().equals(Type.TEXT.name())) {
+				if (textField == null) {
+					createTextField();
+				}
+				setText(null);
+				setGraphic(textField);
+				textField.requestFocus();
+				textField.selectAll();
+
+			} else if (parameter.getType().equals(Type.FILE.name())) {
+				if (button == null) {
+					createButton();
+				}
+				setText(null);
+				setGraphic(button);
+			}
 		}
-		setText(null);
-		setGraphic(textField);
-		textField.requestFocus();
-		textField.selectAll();
 	}
 
 	@Override
@@ -45,11 +66,17 @@ public class BodyParameterValueCellFactory extends TableCell<Parameter, String> 
 			setGraphic(null);
 		} else {
 			if (isEditing()) {
-				if (textField != null) {
-					textField.setText(getString());
+				if (type.equals(Type.TEXT.name())) {
+					if (textField != null) {
+						textField.setText(getString());
+					}
+					setText(null);
+					setGraphic(textField);
+				} else if (type.equals(Type.FILE.name())) {
+					setText(null);
+					setGraphic(button);
 				}
-				setText(null);
-				setGraphic(textField);
+
 			} else {
 				setText(getString());
 				setGraphic(null);
@@ -75,6 +102,22 @@ public class BodyParameterValueCellFactory extends TableCell<Parameter, String> 
 				} else if (e.getCode() == KeyCode.ESCAPE) {
 					cancelEdit();
 				}
+			}
+		});
+	}
+
+	private void createButton() {
+
+		button = new Button("select file...");
+
+		button.setOnAction(event -> {
+
+			final FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Select file");
+
+			final File file = fileChooser.showOpenDialog(null);
+			if (file != null) {
+				commitEdit(file.toURI().toString());
 			}
 		});
 	}
