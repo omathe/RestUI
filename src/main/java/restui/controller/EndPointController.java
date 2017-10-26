@@ -41,6 +41,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -49,6 +50,8 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -200,7 +203,28 @@ public class EndPointController extends AbstractController implements Initializa
 
 		// response headers
 		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("name"));
+
 		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("value"));
+
+		headerValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		final ContextMenu responseHeadersContextMenu = new ContextMenu();
+		final MenuItem responseHeadersContextMenuItemCopy = new MenuItem("Copy to clipboard");
+		responseHeadersContextMenu.getItems().add(responseHeadersContextMenuItemCopy);
+		responseHeaders.setContextMenu(responseHeadersContextMenu);
+
+		responseHeadersContextMenuItemCopy.setOnAction(e -> {
+			final Parameter parameter = responseHeaders.getSelectionModel().getSelectedItem();
+			@SuppressWarnings("unchecked")
+			final TablePosition<Parameter, ?> position = responseHeaders.getFocusModel().getFocusedCell();
+
+			final TableColumn<Parameter, ?> column = position.getTableColumn();
+			final String data = (String) column.getCellObservableValue(parameter).getValue();
+
+			final Clipboard clipboard = Clipboard.getSystemClipboard();
+			final ClipboardContent content = new ClipboardContent();
+			content.putString(data);
+			clipboard.setContent(content);
+		});
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			refreshExchangeData(newSelection);
@@ -514,7 +538,6 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
-
 	@FXML
 	protected void formEncodedBodySelected(final MouseEvent event) {
 
@@ -535,13 +558,13 @@ public class EndPointController extends AbstractController implements Initializa
 			e.printStackTrace();
 		}
 	}
-	
+
 	@FXML
 	protected void formDataBodySelected(final MouseEvent event) {
 
 		bodyVBox.getChildren().clear();
 		bodyVBox.getChildren().add(bodyHBox);
-		
+
 		final FXMLLoader fxmlLoader = new FXMLLoader();
 		try {
 			final AnchorPane anchorPane = fxmlLoader.load(MainController.class.getResource("/fxml/bodyParameters.fxml").openStream());
