@@ -218,10 +218,10 @@
                                                             <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                <children>
                                                                   <Label text="Headers" />
-                                                                  <TableView fx:id="responseHeaders" editable="true" VBox.vgrow="ALWAYS">
+                                                                  <TableView fx:id="responseHeaders" VBox.vgrow="ALWAYS">
                                                                      <columns>
-                                                                        <TableColumn fx:id="headerNameColumn" prefWidth="75.0" text="Name" />
-                                                                        <TableColumn fx:id="headerValueColumn" prefWidth="75.0" text="Value" />
+                                                                        <TableColumn fx:id="headerNameColumn" editable="false" prefWidth="75.0" text="Name" />
+                                                                        <TableColumn fx:id="headerValueColumn" editable="false" prefWidth="75.0" text="Value" />
                                                                      </columns>
                                                                   </TableView>
                                                                </children>
