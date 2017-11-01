@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,6 +48,7 @@ import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
@@ -158,6 +160,8 @@ public class EndPointController extends AbstractController implements Initializa
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
+		path.setTooltip(new Tooltip("Endpoint path value"));
+		
 		final ContextMenu contextMenu = new ContextMenu();
 		final MenuItem menuItemCopy = new MenuItem("Copy");
 		final MenuItem menuItemPaste = new MenuItem("Paste");
@@ -181,14 +185,12 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 		});
 
-		// exchanges d1
 		final ContextMenu exchangesContextMenu = new ContextMenu();
-
-		//exchanges.setContextMenu(exchangesContextMenu);
 
 		exchanges.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.DELETE)) {
-				removeExchange(null);
+				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+				deleteExchange(exchange);
 			}
 		});
 
@@ -197,34 +199,35 @@ public class EndPointController extends AbstractController implements Initializa
 			@Override
 			public void handle(final MouseEvent event) {
 
-				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-				if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-					addExchange(null);
-				}
+				final Optional<Exchange> exchange = getSelectedExchange();
 				if (event.isSecondaryButtonDown()) {
-					final MenuItem add = new MenuItem("Add");
-					final Menu delete = new Menu("Delete");
-					final MenuItem deleteExchange = new MenuItem(exchange.getName());
-					final MenuItem deleteAll = new MenuItem("All");
-					delete.getItems().addAll(deleteExchange, deleteAll);
 					exchangesContextMenu.getItems().clear();
-					exchangesContextMenu.getItems().addAll(add, delete);
-					exchanges.setContextMenu(exchangesContextMenu);
-
+					final MenuItem add = new MenuItem("Add");
+					exchangesContextMenu.getItems().add(add);
 					add.setOnAction(e -> {
-						addExchange(null);
+						addExchange();
 					});
-					deleteExchange.setOnAction(e -> {
-						deleteExchange(exchange);
-					});
-					deleteAll.setOnAction(e -> {
-						deleteAllExchanges();
-					});
+					if (exchange.isPresent()) {
+						final MenuItem duplicate = new MenuItem("Duplicate");
+						final MenuItem deleteExchange = new MenuItem(exchange.get().getName());
+						final Menu delete = new Menu("Delete");
+						final MenuItem deleteAll = new MenuItem("All");
+						delete.getItems().addAll(deleteExchange, deleteAll);
+						exchangesContextMenu.getItems().addAll(duplicate, delete);
+						duplicate.setOnAction(e -> {
+							duplicateExchange(exchange.get());
+						});
+						deleteExchange.setOnAction(e -> {
+							deleteExchange(exchange.get());
+						});
+						deleteAll.setOnAction(e -> {
+							deleteAllExchanges();
+						});
+					}
+					exchanges.setContextMenu(exchangesContextMenu);
 				}
 			}
 		});
-
-		// f1
 
 		// request parameters
 		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell<>());
@@ -374,35 +377,27 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
-	@FXML
-	protected void addExchange(final ActionEvent event) {
-
+	private void addExchange() {
+		
 		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 		final Exchange exchange = new Exchange("echange", Instant.now().toEpochMilli());
 		endpoint.addExchange(exchange);
 	}
-
-	@FXML
-	protected void removeExchange(final ActionEvent event) {
-
-		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		if (exchange != null) {
-			final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
-			if (response.equals(ButtonType.OK)) {
-				final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
-				endpoint.removeExchange(exchange);
-				refreshExchangeData(null);
-			}
-		}
+	
+	private void duplicateExchange(final Exchange exchange) {
+		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
+		final Exchange duplicate = exchange.duplicate(exchange.getName() + " (copy)");
+		endpoint.addExchange(duplicate);
+		refreshExchangeData(null);
 	}
-
+	
 	private void deleteExchange(final Exchange exchange) {
 
 		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
 		if (response.equals(ButtonType.OK)) {
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
-			refreshExchangeData(null);
+			refreshExchangeData(getSelectedExchange().get());
 		}
 	}
 
@@ -646,6 +641,15 @@ public class EndPointController extends AbstractController implements Initializa
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private Optional<Exchange> getSelectedExchange() {
+		
+		Optional<Exchange> optional = Optional.empty();
+		if (exchanges != null && exchanges.getSelectionModel().getSelectedItem() != null) {
+			optional = Optional.of(exchanges.getSelectionModel().getSelectedItem());
+		}
+		return optional;
 	}
 
 }

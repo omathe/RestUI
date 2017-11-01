@@ -32,20 +32,11 @@
                            <children>
                               <TableView fx:id="exchanges" editable="true" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                                 <columns>
-                                  <TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="800.0" text="Name" />
+                                  <TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="300.0" text="Name" />
                                   <TableColumn fx:id="exchangeDateColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="250.0" text="Date" />
                                     <TableColumn fx:id="exchangeStatusColumn" maxWidth="1.7976931348623157E308" prefWidth="120.0" text="Status" />
                                 </columns>
                               </TableView>
-                  				<FlowPane hgap="5.0" vgap="5.0" VBox.vgrow="NEVER">
-                  					<children>
-                  						<Button mnemonicParsing="false" onAction="#removeExchange" text="-" />
-                  						<Button mnemonicParsing="false" onAction="#addExchange" text="+" />
-                  					</children>
-                  					<padding>
-                  						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                  					</padding>
-                  				</FlowPane>
                               <HBox alignment="CENTER" prefWidth="812.0" spacing="5.0" VBox.vgrow="NEVER" />
                            </children>
                         </VBox>
@@ -73,24 +64,14 @@
                   							<children>
                         								<VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         									<children>
-                        												<Label maxWidth="1.7976931348623157E308" text="Request">
+                        												<Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Request">
                                                    <font>
                                                       <Font size="16.0" />
                                                    </font>
                                                 </Label>
                         										<HBox alignment="CENTER_LEFT" spacing="5.0">
                         											<children>
-                        												<Label minWidth="70.0" text="Path" HBox.hgrow="ALWAYS" />
-                        												<TextField fx:id="path" editable="false" prefHeight="26.0" prefWidth="341.0" HBox.hgrow="ALWAYS" />
-                        											</children>
-                                                   <VBox.margin>
-                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                   </VBox.margin>
-                        										</HBox>
-                        										<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
-                        											<children>
-                        												<Label minWidth="50.0" prefWidth="50.0" text="Method" />
-                        												<ComboBox fx:id="method">
+                        												<ComboBox fx:id="method" HBox.hgrow="ALWAYS">
                         													<items>
                         														<FXCollections fx:factory="observableArrayList">
                         															<String fx:value="GET" />
@@ -104,10 +85,11 @@
                         														<String fx:value="GET" />
                         													</value>
                         												</ComboBox>
+                        												<TextField fx:id="path" editable="false" HBox.hgrow="ALWAYS" />
                         											</children>
-                        											<VBox.margin>
-                        												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                        											</VBox.margin>
+                                                   <VBox.margin>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </VBox.margin>
                         										</HBox>
                                                 <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" VBox.vgrow="ALWAYS">
                                                   <items>
@@ -186,15 +168,11 @@
                   							<children>
                                           <VBox layoutX="-110.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <HBox>
-                                                   <children>
-                        										<Label text="Response">
-                                                         <font>
-                                                            <Font size="16.0" />
-                                                         </font>
-                                                      </Label>
-                                                   </children>
-                                                </HBox>
+                  										<Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Response">
+                                                   <font>
+                                                      <Font size="16.0" />
+                                                   </font>
+                                                </Label>
                                                 <HBox alignment="BOTTOM_RIGHT" spacing="5.0">
                                                    <children>
                                                       <Label text="Status :" />

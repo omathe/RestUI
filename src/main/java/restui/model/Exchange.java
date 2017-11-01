@@ -1,5 +1,6 @@
 package restui.model;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,6 +43,25 @@ public class Exchange {
 		this.response = new Response("");
 	}
 
+	public Exchange duplicate(final String name) {
+		final Exchange duplicate = new Exchange(name, Instant.now().toEpochMilli());
+		
+		for (final Parameter parameter : this.getRequestParameters()) {
+			final Parameter duplicateParameter = new Parameter(parameter);
+			duplicate.addRequestParameter(duplicateParameter);
+		}
+		for (final Parameter header : this.getResponseHeaders()) {
+			final Parameter duplicateParameter = new Parameter(header);
+			duplicate.addResponseHeader(duplicateParameter);
+		}
+		duplicate.setStatus(this.getStatus());
+		duplicate.setRequestBody(this.getRequest().getBody());
+		duplicate.setResponseBody(this.getResponseBody());
+		
+		return duplicate;
+	}
+
+	
 	public String getName() {
 		return name.get();
 	}
@@ -154,7 +174,7 @@ public class Exchange {
 	public Optional<Parameter> findResponseHeader(final String name) {
 		return response.findParameter(Location.HEADER, name);
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + ", status=" + status.get() + "]";
