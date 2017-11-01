@@ -120,7 +120,19 @@ public class Exchange {
 	}
 
 	public void removeRequestParameter(final Parameter parameter) {
-		request.parameters.remove(parameter);
+		if (parameter != null) {
+			request.parameters.remove(parameter);
+		}
+	}
+	
+	public void removeRequestParameters(final List<Parameter> parameters) {
+		if (parameters != null) {
+			request.parameters.removeAll(parameters);
+		}
+	}
+	
+	public void clearRequestParameters() {
+		request.parameters.clear();
 	}
 
 	public List<Parameter> findParameters(final String location, final String name) {

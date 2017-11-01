@@ -161,7 +161,7 @@ public class EndPointController extends AbstractController implements Initializa
 	public void initialize(final URL location, final ResourceBundle resources) {
 
 		path.setTooltip(new Tooltip("Endpoint path value"));
-		
+
 		final ContextMenu contextMenu = new ContextMenu();
 		final MenuItem menuItemCopy = new MenuItem("Copy");
 		final MenuItem menuItemPaste = new MenuItem("Paste");
@@ -185,8 +185,8 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 		});
 
+		// exchanges
 		final ContextMenu exchangesContextMenu = new ContextMenu();
-
 		exchanges.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.DELETE)) {
 				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
@@ -230,6 +230,44 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		// request parameters
+
+		final ContextMenu requestParametersContextMenu = new ContextMenu();
+		parameters.setOnKeyPressed(event -> {
+			if (event.getCode().equals(KeyCode.DELETE)) {
+				deleteRequestParameters(parameters.getSelectionModel().getSelectedItems());
+			}
+		});
+		parameters.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(final MouseEvent event) {
+
+				final Optional<Exchange> exchange = getSelectedExchange();
+				final Optional<Parameter> parameter = getSelectedRequestParameter();
+
+				if (event.isSecondaryButtonDown()) {
+					requestParametersContextMenu.getItems().clear();
+					final MenuItem add = new MenuItem("Add");
+					requestParametersContextMenu.getItems().add(add);
+					add.setOnAction(e -> {
+						addRequestParameter(new Parameter(false, Location.QUERY, "", ""));
+					});
+					if (exchange.isPresent() && parameter.isPresent()) {
+						final MenuItem duplicate = new MenuItem("Duplicate");
+						final MenuItem delete = new MenuItem("Delete");
+						requestParametersContextMenu.getItems().addAll(duplicate, delete);
+						duplicate.setOnAction(e -> {
+							duplicateExchange(exchange.get());
+						});
+						delete.setOnAction(e -> {
+							deleteRequestParameters(parameters.getSelectionModel().getSelectedItems());
+						});
+					}
+					parameters.setContextMenu(requestParametersContextMenu);
+				}
+			}
+		});
+
 		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell<>());
 		parameterEnabledColumn.setCellValueFactory(parameter -> {
 			buildUri();
@@ -378,26 +416,26 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 	private void addExchange() {
-		
+
 		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 		final Exchange exchange = new Exchange("echange", Instant.now().toEpochMilli());
 		endpoint.addExchange(exchange);
 	}
-	
+
 	private void duplicateExchange(final Exchange exchange) {
 		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 		final Exchange duplicate = exchange.duplicate(exchange.getName() + " (copy)");
 		endpoint.addExchange(duplicate);
 		refreshExchangeData(null);
 	}
-	
+
 	private void deleteExchange(final Exchange exchange) {
 
 		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
 		if (response.equals(ButtonType.OK)) {
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
-			refreshExchangeData(getSelectedExchange().get());
+			refreshExchangeData(getSelectedExchange().orElse(null));
 		}
 	}
 
@@ -411,23 +449,27 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
-	@FXML
-	protected void addRequestParameter(final ActionEvent event) {
-		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		if (exchange != null) {
-			final Parameter parameter = new Parameter(false, Location.QUERY, "", "");
-			exchange.addRequestParameter(parameter);
-		}
+	private void addRequestParameter(final Parameter parameter) {
+
+		getSelectedExchange().ifPresent(exchange -> {
+			if (parameter != null) {
+				exchange.addRequestParameter(parameter);
+			}
+		});
 	}
 
-	@FXML
-	protected void removeRequestParameter(final ActionEvent event) {
+	private void deleteRequestParameters(final List<Parameter> parameters) {
 
-		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		if (exchange != null) {
-			final Parameter parameter = parameters.getSelectionModel().getSelectedItem();
-			exchange.removeRequestParameter(parameter);
-		}
+		getSelectedExchange().ifPresent(exchange -> {
+			if (parameters != null && !parameters.isEmpty()) {
+				final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?"
+						: "Do you want to delete the " + parameters.size() + " selected parameters ?";
+				final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
+				if (response.equals(ButtonType.OK)) {
+					exchange.removeRequestParameters(parameters);
+				}
+			}
+		});
 	}
 
 	@FXML
@@ -642,12 +684,21 @@ public class EndPointController extends AbstractController implements Initializa
 			e.printStackTrace();
 		}
 	}
-	
+
 	private Optional<Exchange> getSelectedExchange() {
-		
+
 		Optional<Exchange> optional = Optional.empty();
 		if (exchanges != null && exchanges.getSelectionModel().getSelectedItem() != null) {
 			optional = Optional.of(exchanges.getSelectionModel().getSelectedItem());
+		}
+		return optional;
+	}
+
+	private Optional<Parameter> getSelectedRequestParameter() {
+
+		Optional<Parameter> optional = Optional.empty();
+		if (parameters != null && parameters.getSelectionModel().getSelectedItem() != null) {
+			optional = Optional.of(parameters.getSelectionModel().getSelectedItem());
 		}
 		return optional;
 	}
