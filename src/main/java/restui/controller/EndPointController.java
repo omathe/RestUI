@@ -27,6 +27,7 @@ import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -35,6 +36,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
@@ -52,6 +54,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -177,6 +180,51 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 			}
 		});
+
+		// exchanges d1
+		final ContextMenu exchangesContextMenu = new ContextMenu();
+
+		//exchanges.setContextMenu(exchangesContextMenu);
+
+		exchanges.setOnKeyPressed(event -> {
+			if (event.getCode().equals(KeyCode.DELETE)) {
+				removeExchange(null);
+			}
+		});
+
+		exchanges.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(final MouseEvent event) {
+
+				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+				if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+					addExchange(null);
+				}
+				if (event.isSecondaryButtonDown()) {
+					final MenuItem add = new MenuItem("Add");
+					final Menu delete = new Menu("Delete");
+					final MenuItem deleteExchange = new MenuItem(exchange.getName());
+					final MenuItem deleteAll = new MenuItem("All");
+					delete.getItems().addAll(deleteExchange, deleteAll);
+					exchangesContextMenu.getItems().clear();
+					exchangesContextMenu.getItems().addAll(add, delete);
+					exchanges.setContextMenu(exchangesContextMenu);
+
+					add.setOnAction(e -> {
+						addExchange(null);
+					});
+					deleteExchange.setOnAction(e -> {
+						deleteExchange(exchange);
+					});
+					deleteAll.setOnAction(e -> {
+						deleteAllExchanges();
+					});
+				}
+			}
+		});
+
+		// f1
 
 		// request parameters
 		parameterEnabledColumn.setCellFactory(object -> new CheckBoxTableCell<>());
@@ -345,6 +393,26 @@ public class EndPointController extends AbstractController implements Initializa
 				endpoint.removeExchange(exchange);
 				refreshExchangeData(null);
 			}
+		}
+	}
+
+	private void deleteExchange(final Exchange exchange) {
+
+		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
+		if (response.equals(ButtonType.OK)) {
+			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
+			endpoint.removeExchange(exchange);
+			refreshExchangeData(null);
+		}
+	}
+
+	private void deleteAllExchanges() {
+
+		final ButtonType response = AlertBuilder.confirm("Delete all the exchanges", "Do you want to delete all the exchanges ?\n");
+		if (response.equals(ButtonType.OK)) {
+			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
+			endpoint.getExchanges().clear();
+			refreshExchangeData(null);
 		}
 	}
 
