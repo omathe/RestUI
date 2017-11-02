@@ -41,6 +41,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -162,12 +163,6 @@ public class EndPointController extends AbstractController implements Initializa
 
 		path.setTooltip(new Tooltip("Endpoint path value"));
 
-		//		final ContextMenu contextMenu = new ContextMenu();
-		//		final MenuItem menuItemCopy = new MenuItem("Copy");
-		//		final MenuItem menuItemPaste = new MenuItem("Paste");
-		//		contextMenu.getItems().addAll(menuItemCopy, menuItemPaste);
-		//		parameters.setContextMenu(contextMenu);
-
 		// exchanges
 		final ContextMenu exchangesContextMenu = new ContextMenu();
 		exchanges.setOnKeyPressed(event -> {
@@ -232,31 +227,32 @@ public class EndPointController extends AbstractController implements Initializa
 				if (event.isSecondaryButtonDown()) {
 					requestParametersContextMenu.getItems().clear();
 					final MenuItem add = new MenuItem("Add");
-					requestParametersContextMenu.getItems().add(add);
-					add.setOnAction(e -> {
-						addRequestParameter(new Parameter(false, Location.QUERY, "", ""));
-					});
-					if (exchange.isPresent() && parameter.isPresent()) {
-						final MenuItem duplicate = new MenuItem("Duplicate");
-						final MenuItem delete = new MenuItem("Delete");
-						final MenuItem copy = new MenuItem("Copy");
-						final MenuItem paste = new MenuItem("Paste");
-						requestParametersContextMenu.getItems().addAll(duplicate, delete, copy, paste);
-						duplicate.setOnAction(e -> {
-							duplicateExchange(exchange.get());
-						});
-						delete.setOnAction(e -> {
-							deleteRequestParameters(parameters.getSelectionModel().getSelectedItems());
-						});
-						copy.setOnAction(e -> {
-							final List<Parameter> selectedParameters = parameters.getSelectionModel().getSelectedItems();
-							ObjectClipboard.getInstance().setParameters(selectedParameters);
+					final MenuItem copy = new MenuItem("Copy");
+					final MenuItem paste = new MenuItem("Paste");
+					final MenuItem delete = new MenuItem("Delete");
+					copy.setDisable(!parameter.isPresent());
+					paste.setDisable(ObjectClipboard.getInstance().getParameters().isEmpty());
+					delete.setDisable(!parameter.isPresent());
+					requestParametersContextMenu.getItems().addAll(add, copy, paste, new SeparatorMenuItem(), delete);
+					
+					if (exchange.isPresent()) {
+						add.setOnAction(e -> {
+							addRequestParameter(new Parameter(false, Location.QUERY, "", ""));
 						});
 						paste.setOnAction(e -> {
 							final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
 							for (final Parameter p : parameters) {
 								exchange.get().addRequestParameter(p);
 							}
+						});
+					}
+					if (exchange.isPresent() && parameter.isPresent()) {
+						delete.setOnAction(e -> {
+							deleteRequestParameters(parameters.getSelectionModel().getSelectedItems());
+						});
+						copy.setOnAction(e -> {
+							final List<Parameter> selectedParameters = parameters.getSelectionModel().getSelectedItems();
+							ObjectClipboard.getInstance().setParameters(selectedParameters);
 						});
 					}
 					parameters.setContextMenu(requestParametersContextMenu);
