@@ -70,6 +70,7 @@ import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Request;
 import restui.model.Request.BodyType;
+import restui.service.RestClient;
 
 public class EndPointController extends AbstractController implements Initializable {
 
@@ -472,19 +473,19 @@ public class EndPointController extends AbstractController implements Initializa
 			final long t0 = System.currentTimeMillis();
 
 			ClientResponse response = null;
-			/*
-			 * if (method.getValue().equals("POST")) { response = RestClient.post(builtUri,
-			 * requestBody.getText(), exchange.getRequestParameters()); } else if
-			 * (method.getValue().equals("PUT")) { response = RestClient.put(builtUri,
-			 * requestBody.getText(), exchange.getRequestParameters()); } else if
-			 * (method.getValue().equals("PATCH")) { response = RestClient.patch(builtUri,
-			 * requestBody.getText(), exchange.getRequestParameters()); } else if
-			 * (method.getValue().equals("GET")) { response = RestClient.get(builtUri,
-			 * exchange.getRequestParameters());
-			 *
-			 * } else if (method.getValue().equals("DELETE")) { response =
-			 * RestClient.delete(builtUri, exchange.getRequestParameters()); }
-			 */
+
+			if (method.getValue().equals("POST")) {
+				response = RestClient.post(builtUri, exchange.getRequestBody(), exchange.getRequestParameters());
+			} else if (method.getValue().equals("PUT")) {
+				response = RestClient.put(builtUri, exchange.getRequestBody(), exchange.getRequestParameters());
+			} else if (method.getValue().equals("PATCH")) {
+				response = RestClient.patch(builtUri, exchange.getRequestBody(), exchange.getRequestParameters());
+			} else if (method.getValue().equals("GET")) {
+				response = RestClient.get(builtUri, exchange.getRequestParameters());
+			} else if (method.getValue().equals("DELETE")) {
+				response = RestClient.delete(builtUri, exchange.getRequestParameters());
+			}
+
 			if (response == null) {
 				responseBody.setText("");
 				responseStatus.setText("0");
