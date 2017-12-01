@@ -305,11 +305,6 @@ public class EndPointController extends AbstractController implements Initializa
 		// disable request/response area if no exchange selected
 		requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
-//		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-//			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-//			exchange.setRequestBody(newValue);
-//		});
-
 		execute.textProperty().bind(method.valueProperty());
 	}
 
@@ -354,7 +349,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshExchangeData(final Exchange exchange) {
 
 		if (exchange == null) {
-//			requestBody.setText("");
+			// requestBody.setText("");
 			parameters.setItems(null);
 			responseBody.setText("");
 			responseHeaders.setItems(null);
@@ -370,7 +365,6 @@ public class EndPointController extends AbstractController implements Initializa
 			buildParameters();
 			buildUri();
 			uri.setText(exchange.getRequest().getUri());
-//			requestBody.setText(exchange.getRequestBody());
 
 			// response
 			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
@@ -456,8 +450,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		getSelectedExchange().ifPresent(exchange -> {
 			if (parameters != null && !parameters.isEmpty()) {
-				final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?"
-						: "Do you want to delete the " + parameters.size() + " selected parameters ?";
+				final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
 				final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
 				if (response.equals(ButtonType.OK)) {
 					exchange.removeRequestParameters(parameters);
@@ -479,19 +472,19 @@ public class EndPointController extends AbstractController implements Initializa
 			final long t0 = System.currentTimeMillis();
 
 			ClientResponse response = null;
-/*			if (method.getValue().equals("POST")) {
-				response = RestClient.post(builtUri, requestBody.getText(), exchange.getRequestParameters());
-			} else if (method.getValue().equals("PUT")) {
-				response = RestClient.put(builtUri, requestBody.getText(), exchange.getRequestParameters());
-			} else if (method.getValue().equals("PATCH")) {
-				response = RestClient.patch(builtUri, requestBody.getText(), exchange.getRequestParameters());
-			} else if (method.getValue().equals("GET")) {
-				response = RestClient.get(builtUri, exchange.getRequestParameters());
-
-			} else if (method.getValue().equals("DELETE")) {
-				response = RestClient.delete(builtUri, exchange.getRequestParameters());
-			}
-*/
+			/*
+			 * if (method.getValue().equals("POST")) { response = RestClient.post(builtUri,
+			 * requestBody.getText(), exchange.getRequestParameters()); } else if
+			 * (method.getValue().equals("PUT")) { response = RestClient.put(builtUri,
+			 * requestBody.getText(), exchange.getRequestParameters()); } else if
+			 * (method.getValue().equals("PATCH")) { response = RestClient.patch(builtUri,
+			 * requestBody.getText(), exchange.getRequestParameters()); } else if
+			 * (method.getValue().equals("GET")) { response = RestClient.get(builtUri,
+			 * exchange.getRequestParameters());
+			 *
+			 * } else if (method.getValue().equals("DELETE")) { response =
+			 * RestClient.delete(builtUri, exchange.getRequestParameters()); }
+			 */
 			if (response == null) {
 				responseBody.setText("");
 				responseStatus.setText("0");
@@ -569,10 +562,7 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 			}
 			// query parameters
-			final Set<String> queryParams = exchange.getRequestParameters().stream()
-					.filter(p -> p.isQueryParameter() && p.getEnabled())
-					.map(p -> p.getName() + "=" + p.getValue())
-					.collect(Collectors.toSet());
+			final Set<String> queryParams = exchange.getRequestParameters().stream().filter(p -> p.isQueryParameter() && p.getEnabled()).map(p -> p.getName() + "=" + p.getValue()).collect(Collectors.toSet());
 			if (!queryParams.isEmpty()) {
 				builtUri += "?" + String.join("&", queryParams);
 			}
@@ -628,30 +618,23 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	protected void rawBodySelected(final MouseEvent event) {
-
-		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
-		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
-		requestBodyController.display(this, fxmlRequestBody, BodyType.RAW);
+		requestBody(BodyType.RAW);
 	}
 
 	@FXML
 	protected void formEncodedBodySelected(final MouseEvent event) {
-
-		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
-		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
-		requestBodyController.display(this, fxmlRequestBody, BodyType.X_WWW_FORM_URL_ENCODED);
+		requestBody(BodyType.X_WWW_FORM_URL_ENCODED);
 	}
 
 	@FXML
 	protected void formDataBodySelected(final MouseEvent event) {
-
-		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
-		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
-		requestBodyController.display(this, fxmlRequestBody, BodyType.FORM_DATA);
+		requestBody(BodyType.FORM_DATA);
 	}
 
-	private void requestBody() {
-
+	private void requestBody(BodyType bodyType) {
+		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
+		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
+		requestBodyController.display(this, fxmlRequestBody, bodyType);
 	}
 
 	public Optional<Exchange> getSelectedExchange() {

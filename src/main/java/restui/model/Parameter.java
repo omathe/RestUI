@@ -146,27 +146,33 @@ public class Parameter {
 		int result = 1;
 		result = prime * result + ((location == null) ? 0 : location.get().hashCode());
 		result = prime * result + ((name == null) ? 0 : name.get().hashCode());
+		result = prime * result + ((type == null) ? 0 : type.get().hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final Parameter other = (Parameter) obj;
-		if (location == null) {
-			if (other.location != null)
+		Parameter other = (Parameter) obj;
+		if (getLocation() == null) {
+			if (other.getLocation() != null)
 				return false;
-		} else if (!location.get().equals(other.location.get()))
+		} else if (!getLocation().equals(other.getLocation()))
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (getName() == null) {
+			if (other.getName() != null)
 				return false;
-		} else if (!name.get().equals(other.name.get()))
+		} else if (!getName().equals(other.getName()))
+			return false;
+		if (getType() == null) {
+			if (other.getType() != null)
+				return false;
+		} else if (!getType().equals(other.getType()))
 			return false;
 		return true;
 	}

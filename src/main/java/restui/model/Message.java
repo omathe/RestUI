@@ -9,27 +9,17 @@ import restui.model.Parameter.Type;
 
 public class Message {
 
-//	protected BodyType bodyType;
 	protected List<Parameter> parameters;
 
 	public Message() {
 		super();
 		this.parameters = FXCollections.observableArrayList();
-//		this.bodyType = BodyType.RAW;
 	}
-
-//	public Message(final String body) {
-//		super();
-//		this.parameters = FXCollections.observableArrayList();
-//		setRawBody(body);
-////		this.bodyType = BodyType.RAW;
-//	}
 
 	public Message(final String body, final String bodyType) {
 		super();
 		this.parameters = FXCollections.observableArrayList();
 		setRawBody(body);
-//		this.bodyType = bodyType == null ? BodyType.RAW : BodyType.valueOf(bodyType);
 	}
 
 	public String getRawBody() {
@@ -63,7 +53,10 @@ public class Message {
 	}
 
 	public void addParameter(final Parameter parameter) {
-		parameters.add(parameter);
+
+		if (!parameters.contains(parameter)) {
+			parameters.add(parameter);
+		}
 	}
 
 	public Optional<Parameter> findParameter(final Location location, final String name) {

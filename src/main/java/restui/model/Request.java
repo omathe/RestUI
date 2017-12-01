@@ -24,16 +24,6 @@ public class Request extends Message {
 		this.bodyType = bodyType;
 	}
 
-	// public Request(final String body, final String uri) {
-	// super(body);
-	// this.uri = new SimpleStringProperty(uri);
-	// }
-	//
-	// public Request(final String body, final String bodyType, final String uri) {
-	// super(body, bodyType);
-	// this.uri = new SimpleStringProperty(uri);
-	// }
-
 	public String getUri() {
 		return uri.get();
 	}

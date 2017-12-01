@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -19,7 +17,6 @@ public class Exchange {
 	private ObjectProperty<Long> date;
 	private Request request;
 	private Response response;
-	// private IntegerProperty status;
 
 	public Exchange() {
 		super();
@@ -31,17 +28,7 @@ public class Exchange {
 		this.date = new SimpleObjectProperty<>(date);
 		this.request = new Request();
 		this.response = new Response();
-		// this.status = new SimpleIntegerProperty();
 	}
-
-//	public Exchange(final String name, final Long date, final Integer status) {
-//		super();
-//		this.name = new SimpleStringProperty(name);
-//		this.date = new SimpleObjectProperty<>(date);
-//		// this.status = new SimpleIntegerProperty(status);
-//		this.request = new Request();
-//		this.response = new Response("");
-//	}
 
 	public Exchange duplicate(final String name) {
 		final Exchange duplicate = new Exchange(name, Instant.now().toEpochMilli());
@@ -54,7 +41,6 @@ public class Exchange {
 			final Parameter duplicateParameter = new Parameter(header);
 			duplicate.addResponseHeader(duplicateParameter);
 		}
-//		duplicate.setStatus(this.getStatus());
 		duplicate.setRequestBody(this.getRequest().getRawBody());
 		duplicate.setResponseBody(this.getResponseBody());
 
@@ -76,16 +62,6 @@ public class Exchange {
 	public Integer getStatus() {
 		return response.getStatus();
 	}
-
-	// public void setStatus(final Integer status) {
-	//
-	// this.status.set(status);
-	// response.setStatus(status);
-	// }
-
-	// public IntegerProperty statusProperty() {
-	// return status;
-	// }
 
 	public Long getDate() {
 		return date.get();
@@ -112,7 +88,7 @@ public class Exchange {
 	}
 
 	public void addRequestParameter(final Parameter parameter) {
-		request.parameters.add(parameter);
+		request.addParameter(parameter);
 	}
 
 	public void removeRequestParameter(final Parameter parameter) {
@@ -132,9 +108,7 @@ public class Exchange {
 	}
 
 	public List<Parameter> findParameters(final String location, final String name) {
-		return request.parameters.stream().filter(
-				parameter -> parameter.getLocation().equals(location) && parameter.getName().equalsIgnoreCase(name))
-				.collect(Collectors.toList());
+		return request.parameters.stream().filter(parameter -> parameter.getLocation().equals(location) && parameter.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
 	}
 
 	public Response getResponse() {
