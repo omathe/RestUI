@@ -18,6 +18,7 @@ import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Location;
+import restui.model.Parameter.Type;
 import restui.model.Project;
 
 public class ProjectController extends AbstractController implements Initializable {
@@ -65,7 +66,7 @@ public class ProjectController extends AbstractController implements Initializab
 	@FXML
 	protected void updateParametersValue(final ActionEvent event) {
 		
-		final Parameter parameter = new Parameter(true, Location.valueOf(parameterLocation.getValue()), parameterName.getText(), parameterValue.getText());
+		final Parameter parameter = new Parameter(true, Type.TEXT, Location.valueOf(parameterLocation.getValue()), parameterName.getText(), parameterValue.getText());
 		final Project project = (Project) treeItem.getValue();
 		browseTree(project, parameter);
 	}

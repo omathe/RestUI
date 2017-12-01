@@ -12,6 +12,10 @@ import javafx.beans.property.StringProperty;
 
 public class Parameter {
 
+	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name()).collect(Collectors.toSet());
+	public static Set<String> types = Arrays.stream(Type.values()).map(e -> e.name()).collect(Collectors.toSet());
+	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type").collect(Collectors.toSet());
+
 	public enum Location {
 		BODY, HEADER, PATH, QUERY;
 	}
@@ -20,21 +24,16 @@ public class Parameter {
 		TEXT, FILE;
 	}
 
-	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name()).collect(Collectors.toSet());
-	public static Set<String> types = Arrays.stream(Type.values()).map(e -> e.name()).collect(Collectors.toSet());
-
-	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type").collect(Collectors.toSet());
-
 	private final BooleanProperty enabled;
 	private final StringProperty type;
 	private final StringProperty location;
 	private final StringProperty name;
 	private final StringProperty value;
 
-	public Parameter(final Boolean enabled, final Location location, final String name, final String value) {
+	public Parameter(final Boolean enabled, Type type, final Location location, final String name, final String value) {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
-		this.type = new SimpleStringProperty(Type.TEXT.name());
+		this.type = new SimpleStringProperty(type.name());
 		this.location = new SimpleStringProperty(location.name());
 		this.name = new SimpleStringProperty(name);
 		this.value = new SimpleStringProperty(value);
@@ -122,7 +121,11 @@ public class Parameter {
 	}
 
 	public boolean isBodyParameter() {
-		return location.get().equals(Location.BODY.name());
+		return location.get().equals(Location.BODY.name()) && getName() != null && !getName().trim().isEmpty();
+	}
+
+	public boolean isRawBodyParameter() {
+		return location.get().equals(Location.BODY.name()) && getName() == null;
 	}
 
 	public boolean isHeaderParameter() {
@@ -132,11 +135,11 @@ public class Parameter {
 	public boolean isTypeText() {
 		return type.get().equals(Type.TEXT.name());
 	}
-	
+
 	public boolean isTypeFile() {
 		return type.get().equals(Type.FILE.name());
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

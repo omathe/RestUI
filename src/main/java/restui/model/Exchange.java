@@ -19,7 +19,7 @@ public class Exchange {
 	private ObjectProperty<Long> date;
 	private Request request;
 	private Response response;
-	private IntegerProperty status;
+	// private IntegerProperty status;
 
 	public Exchange() {
 		super();
@@ -29,23 +29,23 @@ public class Exchange {
 		super();
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleObjectProperty<>(date);
-		this.request = new Request("", "");
-		this.response = new Response("");
-		this.status = new SimpleIntegerProperty();
+		this.request = new Request();
+		this.response = new Response();
+		// this.status = new SimpleIntegerProperty();
 	}
 
-	public Exchange(final String name, final Long date, final Integer status) {
-		super();
-		this.name = new SimpleStringProperty(name);
-		this.date = new SimpleObjectProperty<>(date);
-		this.status = new SimpleIntegerProperty(status);
-		this.request = new Request("", "");
-		this.response = new Response("");
-	}
+//	public Exchange(final String name, final Long date, final Integer status) {
+//		super();
+//		this.name = new SimpleStringProperty(name);
+//		this.date = new SimpleObjectProperty<>(date);
+//		// this.status = new SimpleIntegerProperty(status);
+//		this.request = new Request();
+//		this.response = new Response("");
+//	}
 
 	public Exchange duplicate(final String name) {
 		final Exchange duplicate = new Exchange(name, Instant.now().toEpochMilli());
-		
+
 		for (final Parameter parameter : this.getRequestParameters()) {
 			final Parameter duplicateParameter = new Parameter(parameter);
 			duplicate.addRequestParameter(duplicateParameter);
@@ -54,14 +54,13 @@ public class Exchange {
 			final Parameter duplicateParameter = new Parameter(header);
 			duplicate.addResponseHeader(duplicateParameter);
 		}
-		duplicate.setStatus(this.getStatus());
-		duplicate.setRequestBody(this.getRequest().getBody());
+//		duplicate.setStatus(this.getStatus());
+		duplicate.setRequestBody(this.getRequest().getRawBody());
 		duplicate.setResponseBody(this.getResponseBody());
-		
+
 		return duplicate;
 	}
 
-	
 	public String getName() {
 		return name.get();
 	}
@@ -75,18 +74,18 @@ public class Exchange {
 	}
 
 	public Integer getStatus() {
-		return status == null ? null : status.get();
+		return response.getStatus();
 	}
 
-	public void setStatus(final Integer status) {
+	// public void setStatus(final Integer status) {
+	//
+	// this.status.set(status);
+	// response.setStatus(status);
+	// }
 
-		this.status.set(status);
-		response.setStatus(status);
-	}
-
-	public IntegerProperty statusProperty() {
-		return status;
-	}
+	// public IntegerProperty statusProperty() {
+	// return status;
+	// }
 
 	public Long getDate() {
 		return date.get();
@@ -111,12 +110,9 @@ public class Exchange {
 	public List<Parameter> getRequestParameters() {
 		return request.parameters;
 	}
-	
-	public void addRequestParameter(final Parameter parameter) {
 
-		if (!request.parameters.contains(parameter)) {
-			request.parameters.add(parameter);
-		}
+	public void addRequestParameter(final Parameter parameter) {
+		request.parameters.add(parameter);
 	}
 
 	public void removeRequestParameter(final Parameter parameter) {
@@ -124,20 +120,21 @@ public class Exchange {
 			request.parameters.remove(parameter);
 		}
 	}
-	
+
 	public void removeRequestParameters(final List<Parameter> parameters) {
 		if (parameters != null) {
 			request.parameters.removeAll(parameters);
 		}
 	}
-	
+
 	public void clearRequestParameters() {
 		request.parameters.clear();
 	}
 
 	public List<Parameter> findParameters(final String location, final String name) {
-		return request.parameters.stream().filter(parameter -> parameter.getLocation().equals(location)
-				&& parameter.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+		return request.parameters.stream().filter(
+				parameter -> parameter.getLocation().equals(location) && parameter.getName().equalsIgnoreCase(name))
+				.collect(Collectors.toList());
 	}
 
 	public Response getResponse() {
@@ -163,33 +160,29 @@ public class Exchange {
 		response.parameters.clear();
 	}
 
-	public StringProperty getRequestBodyProperty() {
-		return request.bodyProperty();
+	public String getRequestBody() {
+		return request.getRawBody();
 	}
 
 	public void setRequestBody(final String body) {
-		request.bodyProperty().set(body);
+		request.setRawBody(body);
 	}
 
 	public String getResponseBody() {
-		return response.getBody();
+		return response.getRawBody();
 	}
 
 	public void setResponseBody(final String body) {
-		response.bodyProperty().set(body);
-	}
-
-	public StringProperty getResponseBodyProperty() {
-		return response.bodyProperty();
+		response.setRawBody(body);
 	}
 
 	public Optional<Parameter> findResponseHeader(final String name) {
 		return response.findParameter(Location.HEADER, name);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Exchange [name=" + name + ", date=" + date + ", status=" + status.get() + "]";
+		return "Exchange [name=" + name + ", date=" + date + ", request=" + request + ", response=" + response + "]";
 	}
 
 }

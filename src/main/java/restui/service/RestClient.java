@@ -1,7 +1,12 @@
 package restui.service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -60,8 +65,57 @@ public class RestClient {
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
 			addHeaders(builder, parameters);
+			
+			// multipart/form-data
+			final StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("--oma\r\n");
+//			stringBuilder.append("Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n");
+			parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter())
+			.forEach(p -> {
+				System.err.println("=> " + p.getValue());
+				stringBuilder.append("Content-Disposition: form-data; name=\"" + p.getName() + "\"; filename=\"" + p.getValue() + "\r\n");
+				final URI uri2 = URI.create(p.getValue());
+				final Path path = Paths.get(uri2);
+				byte[] content = null;
+				try {
+					content = Files.readAllBytes(path);
+				} catch (final IOException e) {
+				}
+				try {
+					stringBuilder.append(new String(content, "UTF-8"));
+				} catch (final UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			});
+			
+			
+	//		final StringBuilder stringBuilder = new StringBuilder();
+	//		stringBuilder.append("--oma\r\n");
+			//stringBuilder.append("Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n");
+//			stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
+			stringBuilder.append("Content-Type: text/plain\r\n\r\n");
+			
+			//stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
+			
+			
+//			final File file = new File("/home/olivier/tmp/style.css");
+//			final Path path = file.toPath();
+//			byte[] content = null;
+//			try {
+//				content = Files.readAllBytes(path);
+//			} catch (final IOException e) {
+//			}
+			
+			stringBuilder.append("\r\n\r\n");
+			stringBuilder.append("--oma");
+			
+			response = builder.post(ClientResponse.class, stringBuilder.toString());
+			
+			
 
-			response = builder.post(ClientResponse.class, body);
+//			response = builder.post(ClientResponse.class, body);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -184,6 +238,20 @@ public class RestClient {
 	private static String uriWithoutQueryParams(final String uri) {
 
 		return uri.split("[?]")[0];
+	}
+	
+	public static void main(final String[] args) {
+		
+		
+		final StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("--oma\r\n");
+		stringBuilder.append("Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n");
+		stringBuilder.append("Content-Type: text/plain\r\n\r\n");
+		
+		stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
+		stringBuilder.append("--oma");
+		
+		System.out.println(stringBuilder.toString());
 	}
 
 }

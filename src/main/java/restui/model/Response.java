@@ -9,24 +9,20 @@ public class Response extends Message {
 
 	public Response() {
 		super();
-	}
-	
-	public Response(final String body) {
-		super(body);
 		this.status = new SimpleIntegerProperty();
 	}
-	
-	public Response(final String body, final Integer status) {
-		super(body);
+
+	public Response(final Integer status) {
+		super();
 		this.status = new SimpleIntegerProperty(status);
 	}
 
 	public Integer getStatus() {
 		return status.get();
 	}
-	
+
 	public void setStatus(final Integer status) {
-		
+
 		this.status.set(status);
 	}
 
@@ -37,4 +33,10 @@ public class Response extends Message {
 	public IntegerProperty statusProperty() {
 		return status;
 	}
+
+	@Override
+	public String toString() {
+		return "Response [status=" + status + "]";
+	}
+
 }

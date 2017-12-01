@@ -13,7 +13,6 @@ public class Item implements Serializable {
 	protected String uuid;
 	protected Item parent;
 	protected String name;
-
 	protected Set<Item> children;
 
 	public Item() {

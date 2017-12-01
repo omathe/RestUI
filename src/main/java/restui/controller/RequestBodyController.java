@@ -13,10 +13,13 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
 import restui.controller.cellFactory.BodyParameterValueCellFactory;
@@ -27,7 +30,10 @@ import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Request.BodyType;
 
-public class BodyController extends AbstractController implements Initializable {
+public class RequestBodyController extends AbstractController implements Initializable {
+
+	@FXML
+	private VBox vBox;
 
 	@FXML
 	private TableView<Parameter> bodyTableView;
@@ -45,9 +51,11 @@ public class BodyController extends AbstractController implements Initializable 
 	private TableColumn<Parameter, String> bodyValueColumn;
 
 	private Exchange exchange;
-	private BodyType type;
 
-	public BodyController() {
+	@FXML
+	private TextArea requestBody;
+
+	public RequestBodyController() {
 		super();
 	}
 
@@ -96,20 +104,56 @@ public class BodyController extends AbstractController implements Initializable 
 		});
 	}
 
-	public void setType(final BodyType type) {
+	public void display(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
 
-		this.type = type;
-		bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-	}
+		exchange = endPointController.getSelectedExchange().get();
 
-	public void setExchange(final Exchange exchange) {
-		this.exchange = exchange;
 		final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
 
-		if (type.equals(BodyType.FORM_DATA)) {
+		if (type.equals(BodyType.RAW)) {
+			// RAW
+			requestBody.setText(exchange.getRequestBody());
+
+			endPointController.getBodyVBox().getChildren().clear();
+			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+			}
+			vBox.getChildren().clear();
+			vBox.getChildren().add(requestBody);
+			VBox.setVgrow(vBox, Priority.ALWAYS);
+
+			requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
+				exchange.setRequestBody(newValue);
+			});
+
+		} else if (type.equals(BodyType.FORM_DATA)) {
+			// FORM_DATA
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
+
+			endPointController.getBodyVBox().getChildren().clear();
+			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+			}
+			bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
+			vBox.getChildren().clear();
+			vBox.getChildren().add(bodyTableView);
+			VBox.setVgrow(vBox, Priority.ALWAYS);
+
 		} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+			// X_WWW_FORM_URL_ENCODED
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
+
+			endPointController.getBodyVBox().getChildren().clear();
+			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+			}
+			bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
+			vBox.getChildren().clear();
+			vBox.getChildren().add(bodyTableView);
+			VBox.setVgrow(vBox, Priority.ALWAYS);
 		}
 	}
 

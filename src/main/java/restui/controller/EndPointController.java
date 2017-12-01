@@ -30,7 +30,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -59,18 +58,18 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
 import restui.commons.AlertBuilder;
-import restui.controller.BodyController.Type;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Location;
-import restui.service.RestClient;
+import restui.model.Parameter.Type;
+import restui.model.Request;
+import restui.model.Request.BodyType;
 
 public class EndPointController extends AbstractController implements Initializable {
 
@@ -87,9 +86,6 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	private TableColumn<Exchange, Long> exchangeDateColumn;
-
-	@FXML
-	private TableColumn<Exchange, Integer> exchangeStatusColumn;
 
 	@FXML
 	private TableView<Parameter> parameters;
@@ -118,9 +114,6 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	private TextField uri;
 
-	@FXML
-	private TextArea requestBody;
-
 	// Response
 	@FXML
 	private TableView<Parameter> responseHeaders;
@@ -144,9 +137,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private Button execute;
 
 	@FXML
-	private RadioButton rawBody;
-	@FXML
-	private RadioButton formEncodedBody;
+	private RadioButton rawBody, formEncodedBody, formDataBody, binaryBody;
 
 	@FXML
 	private VBox bodyVBox;
@@ -234,10 +225,10 @@ public class EndPointController extends AbstractController implements Initializa
 					paste.setDisable(ObjectClipboard.getInstance().getParameters().isEmpty());
 					delete.setDisable(!parameter.isPresent());
 					requestParametersContextMenu.getItems().addAll(add, copy, paste, new SeparatorMenuItem(), delete);
-					
+
 					if (exchange.isPresent()) {
 						add.setOnAction(e -> {
-							addRequestParameter(new Parameter(false, Location.QUERY, "", ""));
+							addRequestParameter(new Parameter(false, Type.TEXT, Location.QUERY, "", ""));
 						});
 						paste.setOnAction(e -> {
 							final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
@@ -314,10 +305,10 @@ public class EndPointController extends AbstractController implements Initializa
 		// disable request/response area if no exchange selected
 		requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
-		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-			exchange.setRequestBody(newValue);
-		});
+//		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
+//			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+//			exchange.setRequestBody(newValue);
+//		});
 
 		execute.textProperty().bind(method.valueProperty());
 	}
@@ -355,7 +346,6 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 		exchangeDateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 
-		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
 		exchanges.setItems((ObservableList<Exchange>) endPoint.getExchanges());
 
 		exchanges.getSelectionModel().select(0);
@@ -364,7 +354,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshExchangeData(final Exchange exchange) {
 
 		if (exchange == null) {
-			requestBody.setText("");
+//			requestBody.setText("");
 			parameters.setItems(null);
 			responseBody.setText("");
 			responseHeaders.setItems(null);
@@ -380,13 +370,25 @@ public class EndPointController extends AbstractController implements Initializa
 			buildParameters();
 			buildUri();
 			uri.setText(exchange.getRequest().getUri());
-			requestBody.setText(exchange.getRequestBodyProperty().get());
+//			requestBody.setText(exchange.getRequestBody());
 
 			// response
 			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
 
 			// response body
 			displayResponseBody(exchange);
+			if (exchange.getRequest().getBodyType().equals(Request.BodyType.RAW)) {
+				rawBody.setSelected(true);
+				rawBodySelected(null);
+			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.X_WWW_FORM_URL_ENCODED)) {
+				formEncodedBody.setSelected(true);
+				formEncodedBodySelected(null);
+			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.FORM_DATA)) {
+				formDataBody.setSelected(true);
+				formDataBodySelected(null);
+			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.BINARY)) {
+				binaryBody.setSelected(true);
+			}
 
 			responseHeaders.setItems(responseHeadersData);
 			// response status
@@ -401,7 +403,7 @@ public class EndPointController extends AbstractController implements Initializa
 			final String endpointUri = path.getText();
 			final Set<String> tokens = extractTokens(endpointUri, "{", "}");
 			tokens.stream().forEach(token -> {
-				final Parameter parameter = new Parameter(true, Location.PATH, token, "");
+				final Parameter parameter = new Parameter(true, Type.TEXT, Location.PATH, token, "");
 				exchange.addRequestParameter(parameter);
 			});
 		}
@@ -477,7 +479,7 @@ public class EndPointController extends AbstractController implements Initializa
 			final long t0 = System.currentTimeMillis();
 
 			ClientResponse response = null;
-			if (method.getValue().equals("POST")) {
+/*			if (method.getValue().equals("POST")) {
 				response = RestClient.post(builtUri, requestBody.getText(), exchange.getRequestParameters());
 			} else if (method.getValue().equals("PUT")) {
 				response = RestClient.put(builtUri, requestBody.getText(), exchange.getRequestParameters());
@@ -489,21 +491,19 @@ public class EndPointController extends AbstractController implements Initializa
 			} else if (method.getValue().equals("DELETE")) {
 				response = RestClient.delete(builtUri, exchange.getRequestParameters());
 			}
-
+*/
 			if (response == null) {
 				responseBody.setText("");
 				responseStatus.setText("0");
-				exchange.setStatus(0);
 			} else {
 				// build response headers
 				response.getHeaders().entrySet().stream().forEach(e -> {
 					for (final String value : e.getValue()) {
-						final Parameter header = new Parameter(true, Location.HEADER, e.getKey(), value);
+						final Parameter header = new Parameter(true, Type.TEXT, Location.HEADER, e.getKey(), value);
 						exchange.addResponseHeader(header);
 					}
 				});
 				// response status
-				exchange.setStatus(response.getStatus());
 				exchange.setDate(Instant.now().toEpochMilli());
 				responseStatus.setText(String.valueOf(response.getStatus()));
 
@@ -564,7 +564,7 @@ public class EndPointController extends AbstractController implements Initializa
 						builtUri = builtUri.replace("{" + parameter.getName() + "}", parameter.getValue());
 					}
 				}
-				if (parameter.getValue().isEmpty() || parameter.getName().isEmpty()) {
+				if (parameter.getValue().isEmpty() || parameter.getName() == null || parameter.getName().isEmpty()) {
 					disable = true;
 				}
 			}
@@ -593,6 +593,7 @@ public class EndPointController extends AbstractController implements Initializa
 				final ObjectMapper mapper = new ObjectMapper();
 				try {
 					final String body = exchange.getResponseBody();
+					System.err.println("rb = " + body);
 					final Object json = mapper.readValue(body, Object.class);
 					responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
 				} catch (final IOException e1) {
@@ -628,56 +629,32 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void rawBodySelected(final MouseEvent event) {
 
-		bodyVBox.getChildren().clear();
-		bodyVBox.getChildren().add(bodyHBox);
-		if (!bodyVBox.getChildren().contains(requestBody)) {
-			bodyVBox.getChildren().add(requestBody);
-		}
+		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
+		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
+		requestBodyController.display(this, fxmlRequestBody, BodyType.RAW);
 	}
 
 	@FXML
 	protected void formEncodedBodySelected(final MouseEvent event) {
 
-		bodyVBox.getChildren().clear();
-		bodyVBox.getChildren().add(bodyHBox);
-
-		final FXMLLoader fxmlLoader = new FXMLLoader();
-		try {
-			final AnchorPane anchorPane = fxmlLoader.load(MainController.class.getResource("/fxml/bodyParameters.fxml").openStream());
-			final BodyController bodyController = (BodyController) fxmlLoader.getController();
-			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-			bodyController.setType(Type.X_WWW_FORM_URL_ENCODED);
-			bodyController.setExchange(exchange);
-			if (!bodyVBox.getChildren().contains(anchorPane)) {
-				bodyVBox.getChildren().add(anchorPane);
-			}
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
+		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
+		requestBodyController.display(this, fxmlRequestBody, BodyType.X_WWW_FORM_URL_ENCODED);
 	}
 
 	@FXML
 	protected void formDataBodySelected(final MouseEvent event) {
 
-		bodyVBox.getChildren().clear();
-		bodyVBox.getChildren().add(bodyHBox);
-
-		final FXMLLoader fxmlLoader = new FXMLLoader();
-		try {
-			final AnchorPane anchorPane = fxmlLoader.load(MainController.class.getResource("/fxml/bodyParameters.fxml").openStream());
-			final BodyController bodyController = (BodyController) fxmlLoader.getController();
-			final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-			bodyController.setType(Type.FORM_DATA);
-			bodyController.setExchange(exchange);
-			if (!bodyVBox.getChildren().contains(anchorPane)) {
-				bodyVBox.getChildren().add(anchorPane);
-			}
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
+		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
+		requestBodyController.display(this, fxmlRequestBody, BodyType.FORM_DATA);
 	}
 
-	private Optional<Exchange> getSelectedExchange() {
+	private void requestBody() {
+
+	}
+
+	public Optional<Exchange> getSelectedExchange() {
 
 		Optional<Exchange> optional = Optional.empty();
 		if (exchanges != null && exchanges.getSelectionModel().getSelectedItem() != null) {
@@ -693,6 +670,14 @@ public class EndPointController extends AbstractController implements Initializa
 			optional = Optional.of(parameters.getSelectionModel().getSelectedItem());
 		}
 		return optional;
+	}
+
+	public HBox getBodyHBox() {
+		return bodyHBox;
+	}
+
+	public VBox getBodyVBox() {
+		return bodyVBox;
 	}
 
 }
