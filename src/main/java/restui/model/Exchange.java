@@ -37,12 +37,12 @@ public class Exchange {
 			final Parameter duplicateParameter = new Parameter(parameter);
 			duplicate.addRequestParameter(duplicateParameter);
 		}
-		for (final Parameter header : this.getResponseHeaders()) {
-			final Parameter duplicateParameter = new Parameter(header);
-			duplicate.addResponseHeader(duplicateParameter);
+		for (final Parameter parameter : this.getResponseParameters()) {
+			final Parameter duplicateParameter = new Parameter(parameter);
+			duplicate.addResponseParameter(duplicateParameter);
 		}
-		duplicate.setRequestBody(this.getRequest().getRawBody());
-		duplicate.setResponseBody(this.getResponseBody());
+		//duplicate.setRequestBody(this.getRequest().getRawBody());
+		//duplicate.setResponseBody(this.getResponseBody());
 
 		return duplicate;
 	}
@@ -119,18 +119,15 @@ public class Exchange {
 		this.response = response;
 	}
 
-	public List<Parameter> getResponseHeaders() {
+	public List<Parameter> getResponseParameters() {
 		return response.parameters;
 	}
 
-	public void addResponseHeader(final Parameter parameter) {
-
-		if (!response.parameters.contains(parameter)) {
-			response.parameters.add(parameter);
-		}
+	public void addResponseParameter(final Parameter parameter) {
+		response.parameters.add(parameter);
 	}
 
-	public void clearResponseHeaders() {
+	public void clearResponseParameters() {
 		response.parameters.clear();
 	}
 

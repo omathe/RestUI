@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -360,7 +359,6 @@ public class EndPointController extends AbstractController implements Initializa
 		} else {
 			// request
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
-
 			parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
 			parameters.refresh();
 
@@ -369,7 +367,8 @@ public class EndPointController extends AbstractController implements Initializa
 			uri.setText(exchange.getRequest().getUri());
 
 			// response
-			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseHeaders();
+			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseParameters();
+			responseHeaders.setItems(responseHeadersData.filtered(p -> p.isHeaderParameter()));
 
 			// response body
 			displayResponseBody(exchange);
@@ -386,7 +385,6 @@ public class EndPointController extends AbstractController implements Initializa
 				binaryBody.setSelected(true);
 			}
 
-			responseHeaders.setItems(responseHeadersData);
 			// response status
 			Bindings.bindBidirectional(responseStatus.textProperty(), exchange.getResponse().statusProperty(), new NumberStringConverter());
 			// response duration
@@ -399,7 +397,7 @@ public class EndPointController extends AbstractController implements Initializa
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
 			final String endpointUri = path.getText();
-			final Set<String> tokens = extractTokens(endpointUri, "{", "}");
+			final Set<String> tokens = extractTokens(endpointUri, Parameter.ID_PREFIX, Parameter.ID_SUFFIX);
 			tokens.stream().forEach(token -> {
 				final Parameter parameter = new Parameter(true, Type.TEXT, Location.PATH, token, "");
 				exchange.addRequestParameter(parameter);
@@ -470,7 +468,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		if (exchange != null) {
 			responseBody.setText("");
-			exchange.clearResponseHeaders();
+			exchange.clearResponseParameters();
 
 			final String builtUri = uri.getText();
 			final long t0 = System.currentTimeMillis();
@@ -497,12 +495,11 @@ public class EndPointController extends AbstractController implements Initializa
 				response.getHeaders().entrySet().stream().forEach(e -> {
 					for (final String value : e.getValue()) {
 						final Parameter header = new Parameter(true, Type.TEXT, Location.HEADER, e.getKey(), value);
-						exchange.addResponseHeader(header);
+						exchange.addResponseParameter(header);
 					}
 				});
 				// response status
 				exchange.setDate(Instant.now().toEpochMilli());
-				responseStatus.setText(String.valueOf(response.getStatus()));
 				exchange.setResponseStatus(response.getStatus());
 
 				if (response.getStatus() != 204) {
@@ -515,7 +512,6 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 				response.close();
 			}
-			responseDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
 			exchange.setResponseDuration((int) (System.currentTimeMillis() - t0));
 			// refresh tableView (workaround)
 			exchanges.getColumns().get(0).setVisible(false);
@@ -545,39 +541,10 @@ public class EndPointController extends AbstractController implements Initializa
 	private void buildUri() {
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		boolean disable = false;
-		String builtUri = path.getText();
+		exchange.getRequest().buildValuedUri(baseUrl + path.getText());
 
-		if (exchange.getRequestParameters().isEmpty()) {
-			uri.setText(baseUrl + builtUri);
-		} else {
-			for (final Parameter parameter : exchange.getRequestParameters()) {
-				// path parameters
-				if (parameter.isPathParameter()) {
-					if (!parameter.getEnabled() || parameter.getValue().isEmpty()) {
-						disable = true;
-						uri.setText(builtUri.replace("{" + parameter.getName() + "}", "{" + parameter.getName() + "}"));
-						break;
-					} else {
-						builtUri = builtUri.replace("{" + parameter.getName() + "}", parameter.getValue());
-					}
-				}
-				if (parameter.getValue().isEmpty() || parameter.getName() == null || parameter.getName().isEmpty()) {
-					disable = true;
-				}
-			}
-			// query parameters
-			final Set<String> queryParams = exchange.getRequestParameters().stream().filter(p -> p.isQueryParameter() && p.getEnabled()).map(p -> p.getName() + "=" + p.getValue()).collect(Collectors.toSet());
-			if (!queryParams.isEmpty()) {
-				builtUri += "?" + String.join("&", queryParams);
-			}
-		}
-		builtUri = baseUrl + builtUri;
-		uri.setText(builtUri);
-		if (!disable) {
-			exchange.getRequest().setUri(builtUri);
-		}
-		execute.setDisable(disable);
+		uri.setText(exchange.getRequest().getUri());
+		execute.setDisable(!exchange.getRequest().getValidUri());
 	}
 
 	private void displayResponseBody(final Exchange exchange) {

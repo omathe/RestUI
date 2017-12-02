@@ -15,6 +15,8 @@ public class Parameter {
 	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name()).collect(Collectors.toSet());
 	public static Set<String> types = Arrays.stream(Type.values()).map(e -> e.name()).collect(Collectors.toSet());
 	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type").collect(Collectors.toSet());
+	public static final String ID_PREFIX = "{";
+	public static final String ID_SUFFIX = "}";
 
 	public enum Location {
 		BODY, HEADER, PATH, QUERY;
@@ -138,6 +140,30 @@ public class Parameter {
 
 	public boolean isTypeFile() {
 		return type.get().equals(Type.FILE.name());
+	}
+
+	public boolean hasNameNullOrEmpty() {
+		return name.get() == null || (name.get() != null && name.get().trim().isEmpty());
+	}
+
+	public boolean queryParameterValid() {
+		if (!getLocation().equals(Location.QUERY.name())) {
+			return true;
+		}
+		return getName() != null && !getName().trim().isEmpty() && getValue() != null && !getValue().trim().isEmpty();
+	}
+
+	public boolean isValid() {
+
+		boolean valid = false;
+		if (getLocation().equals(Location.QUERY.name()) || getLocation().equals(Location.HEADER.name())) {
+			valid = getName() != null && !getName().trim().isEmpty() && getValue() != null && !getValue().trim().isEmpty();
+		} else if (getLocation().equals(Location.PATH.name())) {
+			valid = getEnabled() && getValue() != null && !getValue().trim().isEmpty();
+		} else if (getLocation().equals(Location.BODY.name())) {
+			valid = getValue() != null && !getValue().trim().isEmpty();
+		}
+		return valid;
 	}
 
 	@Override
