@@ -174,7 +174,7 @@
                                                       </Label>
                                                       <Region HBox.hgrow="ALWAYS" />
                                                       <Label text="Duration :" />
-                                                      <Label fx:id="exchangeDuration" />
+                                                      <Label fx:id="responseDuration" />
                                                    </children>
                                                    <VBox.margin>
                                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

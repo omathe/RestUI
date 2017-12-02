@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -61,6 +62,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
+import javafx.util.converter.NumberStringConverter;
 import restui.commons.AlertBuilder;
 import restui.model.Endpoint;
 import restui.model.Exchange;
@@ -132,7 +134,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private Label responseStatus;
 
 	@FXML
-	private Label exchangeDuration;
+	private Label responseDuration;
 
 	@FXML
 	private Button execute;
@@ -350,7 +352,6 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshExchangeData(final Exchange exchange) {
 
 		if (exchange == null) {
-			// requestBody.setText("");
 			parameters.setItems(null);
 			responseBody.setText("");
 			responseHeaders.setItems(null);
@@ -387,7 +388,9 @@ public class EndPointController extends AbstractController implements Initializa
 
 			responseHeaders.setItems(responseHeadersData);
 			// response status
-			responseStatus.setText(exchange.getStatus().toString());
+			Bindings.bindBidirectional(responseStatus.textProperty(), exchange.getResponse().statusProperty(), new NumberStringConverter());
+			// response duration
+			Bindings.bindBidirectional(responseDuration.textProperty(), exchange.getResponse().durationProperty(), new NumberStringConverter());
 		}
 	}
 
@@ -488,7 +491,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 			if (response == null) {
 				responseBody.setText("");
-				responseStatus.setText("0");
+				exchange.setResponseStatus(0);
 			} else {
 				// build response headers
 				response.getHeaders().entrySet().stream().forEach(e -> {
@@ -512,13 +515,12 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 				response.close();
 			}
-			exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
+			responseDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
 			exchange.setResponseDuration((int) (System.currentTimeMillis() - t0));
 			// refresh tableView (workaround)
 			exchanges.getColumns().get(0).setVisible(false);
 			exchanges.getColumns().get(0).setVisible(true);
 		}
-
 	}
 
 	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {
