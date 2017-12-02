@@ -6,15 +6,22 @@ import javafx.beans.property.SimpleIntegerProperty;
 public class Response extends Message {
 
 	private IntegerProperty status;
+	private IntegerProperty duration;
 
 	public Response() {
 		super();
 		this.status = new SimpleIntegerProperty();
+		this.duration = new SimpleIntegerProperty();
 	}
 
-	public Response(final Integer status) {
+	public Response(final Integer status, Integer duration) {
 		super();
 		this.status = new SimpleIntegerProperty(status);
+		this.duration = new SimpleIntegerProperty(duration);
+	}
+
+	public IntegerProperty statusProperty() {
+		return status;
 	}
 
 	public Integer getStatus() {
@@ -22,16 +29,19 @@ public class Response extends Message {
 	}
 
 	public void setStatus(final Integer status) {
-
 		this.status.set(status);
 	}
 
-	public void setBody(final Integer status) {
-		this.status.set(status);
+	public IntegerProperty durationProperty() {
+		return duration;
 	}
 
-	public IntegerProperty statusProperty() {
-		return status;
+	public Integer getDuration() {
+		return duration.get();
+	}
+
+	public void setDuration(Integer duration) {
+		this.duration.set(duration);
 	}
 
 	@Override

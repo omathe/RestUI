@@ -121,57 +121,40 @@ public class ProjectService {
 				final Element elementExchanges = new Element("exchanges");
 				for (final Exchange exchange : endpoint.getExchanges()) {
 					final Element elementExchange = new Element("exchange");
-					final Attribute attributeExchangeName = new Attribute("name", exchange.getName());
-					final Attribute attributeExchangeDate = new Attribute("date", exchange.getDate().toString());
-					final Attribute attributeExchangeStatus = new Attribute("status", exchange.getStatus() == null ? "" : exchange.getStatus().toString());
-					elementExchange.setAttribute(attributeExchangeName);
-					elementExchange.setAttribute(attributeExchangeDate);
-					elementExchange.setAttribute(attributeExchangeStatus);
+					elementExchange.setAttribute(new Attribute("name", exchange.getName()));
+					elementExchange.setAttribute(new Attribute("date", exchange.getDate().toString()));
 					elementExchanges.addContent(elementExchange);
 
 					// request
 					final Request request = exchange.getRequest();
 					final Element elementRequest = new Element("request");
-					final Attribute attributeRequestUri = new Attribute("uri", request.getUri());
-					elementRequest.setAttribute(attributeRequestUri);
-					final Attribute attributeRequestBodyType = new Attribute("bodyType", request.getBodyType().name());
-					elementRequest.setAttribute(attributeRequestBodyType);
+					elementRequest.setAttribute(new Attribute("uri", request.getUri()));
+					elementRequest.setAttribute(new Attribute("bodyType", request.getBodyType().name()));
 					elementExchange.addContent(elementRequest);
-					//final Element elementRequestBody = new Element("body");
-					//final Attribute attributeBodyType = new Attribute("type", request.getBodyType().name());
-					//elementRequestBody.setAttribute(attributeBodyType);
-					//elementRequestBody.addContent(request.getRawBody());
-					//elementRequest.addContent(elementRequestBody);
+
 					final Element elementRequestParameters = new Element("parameters");
 					elementRequest.addContent(elementRequestParameters);
 					for (final Parameter parameter : request.getParameters()) {
 						final Element elementRequestParameter = new Element("parameter");
-						final Attribute attributeRequestParameterEnabled = new Attribute("enabled", parameter.getEnabled().toString());
-						final Attribute attributeRequestParameterType = new Attribute("type", parameter.getType());
-						final Attribute attributeRequestParameterLocation = new Attribute("location", parameter.getLocation());
 						if (parameter.getName() != null) {
-							final Attribute attributeRequestParameterName = new Attribute("name", parameter.getName());
-							elementRequestParameter.setAttribute(attributeRequestParameterName);
+							elementRequestParameter.setAttribute(new Attribute("name", parameter.getName()));
 						}
-						final Attribute attributeRequestParameterValue = new Attribute("value", parameter.getValue());
-						elementRequestParameter.setAttribute(attributeRequestParameterEnabled);
-						elementRequestParameter.setAttribute(attributeRequestParameterType);
-						elementRequestParameter.setAttribute(attributeRequestParameterLocation);
-						elementRequestParameter.setAttribute(attributeRequestParameterValue);
+						elementRequestParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
+						elementRequestParameter.setAttribute(new Attribute("type", parameter.getType()));
+						elementRequestParameter.setAttribute(new Attribute("location", parameter.getLocation()));
+						elementRequestParameter.setAttribute(new Attribute("value", parameter.getValue()));
 						elementRequestParameters.addContent(elementRequestParameter);
 					}
 
 					// response
 					final Response response = exchange.getResponse();
 					final Element elementResponse = new Element("response");
-					final Attribute attributeResponseStatus = new Attribute("status", response.getStatus() == null ? "" : response.getStatus().toString());
-					//final Element elementResponseBody = new Element("body");
-					//elementResponseBody.addContent(response.getRawBody());
-					//elementResponse.addContent(elementResponseBody);
-					elementResponse.setAttribute(attributeResponseStatus);
-					//final Element elementResponseHeaders = new Element("headers");
-					//elementResponse.addContent(elementResponseHeaders);
+					elementResponse.setAttribute(new Attribute("status", response.getStatus() == null ? "" : response.getStatus().toString()));
+					elementResponse.setAttribute(new Attribute("duration", response.getDuration() == null ? "" : response.getDuration().toString()));
+					elementExchange.addContent(elementResponse);
 
+					final Element elementResponseParameters = new Element("parameters");
+					elementResponse.addContent(elementResponseParameters);
 					// response parameters
 					for (final Parameter parameter : response.getParameters()) {
 						final Element elementResponseParameter = new Element("parameter");
@@ -182,23 +165,8 @@ public class ProjectService {
 							elementResponseParameter.setAttribute(new Attribute("name", parameter.getName()));
 						}
 						elementResponseParameter.setAttribute(new Attribute("value", parameter.getValue()));
-						elementRequestParameters.addContent(elementResponseParameter);
+						elementResponseParameters.addContent(elementResponseParameter);
 					}
-
-					/*for (final Parameter parameter : response.getParameters()) {
-						final Element elementResponseHeader = new Element("header");
-						if (parameter.getName() != null) {
-							final Attribute attributeResponsetHeaderName = new Attribute("name", parameter.getName());
-							elementResponseHeader.setAttribute(attributeResponsetHeaderName);
-						}
-						if (parameter.getValue() != null) {
-							final Attribute attributeResponseHeaderValue = new Attribute("value", parameter.getValue());
-							elementResponseHeader.setAttribute(attributeResponseHeaderValue);
-						}
-						elementResponseHeaders.addContent(elementResponseHeader);
-					}*/
-
-					elementExchange.addContent(elementResponse);
 				}
 				element.addContent(elementExchanges);
 			}
@@ -256,10 +224,8 @@ public class ProjectService {
 					}
 					// Response
 					final Element elementResponse = elementExchange.getChild("response");
-//					final Element elementResponseBody = elementResponse.getChild("body");
-					final Response response = new Response(Integer.valueOf(elementResponse.getAttributeValue("status")));
+					final Response response = new Response(Integer.valueOf(elementResponse.getAttributeValue("status")), Integer.valueOf(elementResponse.getAttributeValue("duration")));
 					exchange.setResponse(response);
-
 
 					// Response parameters
 					final Element responseParameters = elementResponse.getChild("parameters");
@@ -276,18 +242,6 @@ public class ProjectService {
 							}
 						}
 					}
-
-					/*
-					// headers
-					final Element elementResponseHeaders = elementResponse.getChild("headers");
-					for (final Element elementResponseHeader : elementResponseHeaders.getChildren()) {
-						if (elementResponseHeader != null) {
-							final String name = elementResponseHeader.getAttributeValue("name");
-							final String value = elementResponseHeader.getAttributeValue("value");
-							final Parameter header = new Parameter(true, Location.HEADER, name, value);
-							response.addParameter(header);
-						}
-					}*/
 				}
 			}
 			return endpoint;

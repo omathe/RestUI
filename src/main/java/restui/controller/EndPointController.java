@@ -500,6 +500,7 @@ public class EndPointController extends AbstractController implements Initializa
 				// response status
 				exchange.setDate(Instant.now().toEpochMilli());
 				responseStatus.setText(String.valueOf(response.getStatus()));
+				exchange.setResponseStatus(response.getStatus());
 
 				if (response.getStatus() != 204) {
 
@@ -512,6 +513,7 @@ public class EndPointController extends AbstractController implements Initializa
 				response.close();
 			}
 			exchangeDuration.setText(String.valueOf(System.currentTimeMillis() - t0 + " ms"));
+			exchange.setResponseDuration((int) (System.currentTimeMillis() - t0));
 			// refresh tableView (workaround)
 			exchanges.getColumns().get(0).setVisible(false);
 			exchanges.getColumns().get(0).setVisible(true);

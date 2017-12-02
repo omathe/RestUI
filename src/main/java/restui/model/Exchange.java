@@ -154,6 +154,14 @@ public class Exchange {
 		return response.findParameter(Location.HEADER, name);
 	}
 
+	public void setResponseStatus(Integer status) {
+		response.setStatus(status);
+	}
+
+	public void setResponseDuration(Integer duration) {
+		response.setDuration(duration);
+	}
+
 	@Override
 	public String toString() {
 		return "Exchange [name=" + name + ", date=" + date + ", request=" + request + ", response=" + response + "]";
