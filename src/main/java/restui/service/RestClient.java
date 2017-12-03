@@ -46,12 +46,16 @@ public class RestClient {
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
+			// X_WWW_FORM_URL_ENCODED
 			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
 				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "application/x-www-form-urlencoded"));
-				body = parameters.stream()
-						.filter(p -> p.getEnabled() && p.isBodyParameter())
-						.map(p -> encode(p.getName()) + "=" + encode(p.getValue()))
-						.collect(Collectors.joining("&"));
+
+				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter())
+						.map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
+
+			} else if (request.getBodyType().equals(BodyType.RAW)) {
+				// RAW
+				body = request.getRawBody();
 			}
 			addHeaders(builder, parameters);
 			response = builder.post(ClientResponse.class, body);
