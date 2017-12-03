@@ -40,7 +40,7 @@ public class RestClient {
 			addHeaders(builder, parameters);
 
 			response = builder.get(ClientResponse.class);
-		} catch (final Exception e) {
+		}catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
 			client.destroy();
@@ -65,7 +65,7 @@ public class RestClient {
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
 			addHeaders(builder, parameters);
-			
+
 			// multipart/form-data
 			final StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("--oma\r\n");
@@ -87,19 +87,19 @@ public class RestClient {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			});
-			
-			
+
+
 	//		final StringBuilder stringBuilder = new StringBuilder();
 	//		stringBuilder.append("--oma\r\n");
 			//stringBuilder.append("Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n");
 //			stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
 			stringBuilder.append("Content-Type: text/plain\r\n\r\n");
-			
+
 			//stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
-			
-			
+
+
 //			final File file = new File("/home/olivier/tmp/style.css");
 //			final Path path = file.toPath();
 //			byte[] content = null;
@@ -107,13 +107,13 @@ public class RestClient {
 //				content = Files.readAllBytes(path);
 //			} catch (final IOException e) {
 //			}
-			
+
 			stringBuilder.append("\r\n\r\n");
 			stringBuilder.append("--oma");
-			
+
 			response = builder.post(ClientResponse.class, stringBuilder.toString());
-			
-			
+
+
 
 //			response = builder.post(ClientResponse.class, body);
 		} catch (final Exception e) {
@@ -239,18 +239,18 @@ public class RestClient {
 
 		return uri.split("[?]")[0];
 	}
-	
+
 	public static void main(final String[] args) {
-		
-		
+
+
 		final StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("--oma\r\n");
 		stringBuilder.append("Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n");
 		stringBuilder.append("Content-Type: text/plain\r\n\r\n");
-		
+
 		stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
 		stringBuilder.append("--oma");
-		
+
 		System.out.println(stringBuilder.toString());
 	}
 

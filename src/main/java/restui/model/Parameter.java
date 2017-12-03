@@ -15,8 +15,6 @@ public class Parameter {
 	public static Set<String> locations = Arrays.stream(Location.values()).map(e -> e.name()).collect(Collectors.toSet());
 	public static Set<String> types = Arrays.stream(Type.values()).map(e -> e.name()).collect(Collectors.toSet());
 	public static Set<String> headerNames = Stream.of("Accept", "Authorization", "Content-Type").collect(Collectors.toSet());
-	public static final String ID_PREFIX = "{";
-	public static final String ID_SUFFIX = "}";
 
 	public enum Location {
 		BODY, HEADER, PATH, QUERY;

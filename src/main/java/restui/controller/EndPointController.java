@@ -69,6 +69,7 @@ import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
+import restui.model.Path;
 import restui.model.Request;
 import restui.model.Request.BodyType;
 import restui.service.RestClient;
@@ -397,7 +398,7 @@ public class EndPointController extends AbstractController implements Initializa
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 		if (exchange != null) {
 			final String endpointUri = path.getText();
-			final Set<String> tokens = extractTokens(endpointUri, Parameter.ID_PREFIX, Parameter.ID_SUFFIX);
+			final Set<String> tokens = extractTokens(endpointUri, Path.ID_PREFIX, Path.ID_SUFFIX);
 			tokens.stream().forEach(token -> {
 				final Parameter parameter = new Parameter(true, Type.TEXT, Location.PATH, token, "");
 				exchange.addRequestParameter(parameter);
@@ -486,7 +487,6 @@ public class EndPointController extends AbstractController implements Initializa
 			} else if (method.getValue().equals("DELETE")) {
 				response = RestClient.delete(builtUri, exchange.getRequestParameters());
 			}
-
 			if (response == null) {
 				responseBody.setText("");
 				exchange.setResponseStatus(0);
@@ -541,10 +541,35 @@ public class EndPointController extends AbstractController implements Initializa
 	private void buildUri() {
 
 		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		exchange.getRequest().buildValuedUri(baseUrl + path.getText());
+		boolean validUri = true;
 
-		uri.setText(exchange.getRequest().getUri());
-		execute.setDisable(!exchange.getRequest().getValidUri());
+		String valuedUri = baseUrl + path.getText();
+		Set<String> queryParams = new HashSet<String>();
+
+		for (Parameter parameter : exchange.getRequest().getParameters()) {
+			if (parameter.isPathParameter()) {
+				if (!parameter.getEnabled() || !parameter.isValid()) {
+					validUri = false;
+					continue;
+				} else {
+					valuedUri = valuedUri.replace(Path.ID_PREFIX + parameter.getName() + Path.ID_SUFFIX, parameter.getValue());
+				}
+			} else if (parameter.isQueryParameter()) {
+				if (!parameter.isValid()) {
+					validUri = false;
+				} else if (parameter.getEnabled()) {
+					queryParams.add(parameter.getName() + "=" + parameter.getValue());
+				}
+			}
+		}
+		if (!queryParams.isEmpty()) {
+			valuedUri += "?" + String.join("&", queryParams);
+		}
+		uri.setText(valuedUri);
+		if (validUri) {
+			exchange.getRequest().setUri(valuedUri);
+		}
+		execute.setDisable(!validUri);
 	}
 
 	private void displayResponseBody(final Exchange exchange) {
