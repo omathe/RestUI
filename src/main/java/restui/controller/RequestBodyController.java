@@ -112,6 +112,7 @@ public class RequestBodyController extends AbstractController implements Initial
 
 		if (type.equals(BodyType.RAW)) {
 			// RAW
+			exchange.getRequest().setBodyType(BodyType.RAW);
 			requestBody.setText(exchange.getRequestBody());
 
 			endPointController.getBodyVBox().getChildren().clear();
@@ -129,6 +130,7 @@ public class RequestBodyController extends AbstractController implements Initial
 
 		} else if (type.equals(BodyType.FORM_DATA)) {
 			// FORM_DATA
+			exchange.getRequest().setBodyType(BodyType.FORM_DATA);
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
 
 			endPointController.getBodyVBox().getChildren().clear();
@@ -142,6 +144,7 @@ public class RequestBodyController extends AbstractController implements Initial
 			VBox.setVgrow(vBox, Priority.ALWAYS);
 
 		} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+			exchange.getRequest().setBodyType(BodyType.X_WWW_FORM_URL_ENCODED);
 			// X_WWW_FORM_URL_ENCODED
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
 

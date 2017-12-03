@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -19,11 +20,52 @@ import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import restui.model.Parameter;
+import restui.model.Parameter.Location;
+import restui.model.Parameter.Type;
+import restui.model.Request;
+import restui.model.Request.BodyType;
 
 public class RestClient {
 
 	/**
+	 * Create a new resource
+	 *
+	 * @param request
+	 *            - The request
+	 */
+	public static ClientResponse post(final Request request) {
+
+		ClientResponse response = null;
+		final Client client = Client.create();
+
+		String body = null;
+		try {
+			String uri = request.getUri();
+			List<Parameter> parameters = request.getParameters();
+
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+			final WebResource.Builder builder = webResource.getRequestBuilder();
+
+			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "application/x-www-form-urlencoded"));
+				body = parameters.stream()
+						.filter(p -> p.getEnabled() && p.isBodyParameter())
+						.map(p -> encode(p.getName()) + "=" + encode(p.getValue()))
+						.collect(Collectors.joining("&"));
+			}
+			addHeaders(builder, parameters);
+			response = builder.post(ClientResponse.class, body);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
+
+	/**
 	 * Get resource
+	 *
 	 * @param uri
 	 * @param parameters
 	 * @return
@@ -40,7 +82,7 @@ public class RestClient {
 			addHeaders(builder, parameters);
 
 			response = builder.get(ClientResponse.class);
-		}catch (final Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
 			client.destroy();
@@ -50,6 +92,7 @@ public class RestClient {
 
 	/**
 	 * Post resource
+	 *
 	 * @param uri
 	 * @param body
 	 * @param parameters
@@ -69,9 +112,9 @@ public class RestClient {
 			// multipart/form-data
 			final StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("--oma\r\n");
-//			stringBuilder.append("Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n");
-			parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter())
-			.forEach(p -> {
+			// stringBuilder.append("Content-Disposition: form-data; name=\"file\";
+			// filename=\"a.txt\"\r\n");
+			parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter()).forEach(p -> {
 				System.err.println("=> " + p.getValue());
 				stringBuilder.append("Content-Disposition: form-data; name=\"" + p.getName() + "\"; filename=\"" + p.getValue() + "\r\n");
 				final URI uri2 = URI.create(p.getValue());
@@ -90,32 +133,29 @@ public class RestClient {
 
 			});
 
-
-	//		final StringBuilder stringBuilder = new StringBuilder();
-	//		stringBuilder.append("--oma\r\n");
-			//stringBuilder.append("Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n");
-//			stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
+			// final StringBuilder stringBuilder = new StringBuilder();
+			// stringBuilder.append("--oma\r\n");
+			// stringBuilder.append("Content-Disposition: form-data; name=\"file\";
+			// filename=\"a.txt\"\r\n");
+			// stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
 			stringBuilder.append("Content-Type: text/plain\r\n\r\n");
 
-			//stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
+			// stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
 
-
-//			final File file = new File("/home/olivier/tmp/style.css");
-//			final Path path = file.toPath();
-//			byte[] content = null;
-//			try {
-//				content = Files.readAllBytes(path);
-//			} catch (final IOException e) {
-//			}
+			// final File file = new File("/home/olivier/tmp/style.css");
+			// final Path path = file.toPath();
+			// byte[] content = null;
+			// try {
+			// content = Files.readAllBytes(path);
+			// } catch (final IOException e) {
+			// }
 
 			stringBuilder.append("\r\n\r\n");
 			stringBuilder.append("--oma");
 
 			response = builder.post(ClientResponse.class, stringBuilder.toString());
 
-
-
-//			response = builder.post(ClientResponse.class, body);
+			// response = builder.post(ClientResponse.class, body);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -126,6 +166,7 @@ public class RestClient {
 
 	/**
 	 * Put resource
+	 *
 	 * @param uri
 	 * @param body
 	 * @param parameters
@@ -153,6 +194,7 @@ public class RestClient {
 
 	/**
 	 * Patch resource
+	 *
 	 * @param uri
 	 * @param body
 	 * @param parameters
@@ -184,6 +226,7 @@ public class RestClient {
 
 	/**
 	 * Delete resource
+	 *
 	 * @param uri
 	 * @param body
 	 * @param parameters
@@ -212,8 +255,7 @@ public class RestClient {
 	private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {
 
 		// add query parameters
-		parameters.stream().filter(p -> p.getEnabled() && p.isHeaderParameter())
-				.forEach(p -> builder.header(p.getName(), p.getValue()));
+		parameters.stream().filter(p -> p.getEnabled() && p.isHeaderParameter()).forEach(p -> builder.header(p.getName(), p.getValue()));
 
 		return builder;
 	}
@@ -222,7 +264,7 @@ public class RestClient {
 
 		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 		for (final Parameter parameter : parameters) {
-			if (parameter.getEnabled() && (parameter.isQueryParameter() || parameter.isBodyParameter())) {
+			if (parameter.getEnabled() && (parameter.isQueryParameter() /* || parameter.isBodyParameter() */)) {
 				try {
 					final String encodedName = URLEncoder.encode(parameter.getName(), "UTF-8");
 					final String encodedValue = URLEncoder.encode(parameter.getValue(), "UTF-8").replaceAll("[+]", "%20");
@@ -240,8 +282,18 @@ public class RestClient {
 		return uri.split("[?]")[0];
 	}
 
-	public static void main(final String[] args) {
+	private static String encode(String value) {
 
+		String encodedValue = null;
+		try {
+			encodedValue = URLEncoder.encode(value, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return encodedValue;
+	}
+
+	public static void main(final String[] args) {
 
 		final StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("--oma\r\n");
@@ -253,5 +305,4 @@ public class RestClient {
 
 		System.out.println(stringBuilder.toString());
 	}
-
 }
