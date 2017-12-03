@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -41,13 +42,13 @@ public class RestClient {
 		String body = null;
 		try {
 			String uri = request.getUri();
-			List<Parameter> parameters = request.getParameters();
+			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
 
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-			// X_WWW_FORM_URL_ENCODED
 			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+				// X_WWW_FORM_URL_ENCODED
 				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "application/x-www-form-urlencoded"));
 
 				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter())
@@ -56,6 +57,24 @@ public class RestClient {
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
 				// RAW
 				body = request.getRawBody();
+			}
+			else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
+				// FORM_DATA
+				Optional<Parameter> opt = request.findParameter(Location.HEADER, "content-type");
+				if (opt.isPresent()) {
+					request.getParameters().remove(opt.get());
+				}
+
+				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=--oma"));
+				final StringBuilder stringBuilder = new StringBuilder();
+				stringBuilder.append("--oma\r\n");
+				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "build.gradle" + "\r\n");
+
+				stringBuilder.append(getFileContent("file:///home/olivier/tmp/build.gradle"));
+				stringBuilder.append("Content-Type: text/plain\r\n\r\n");
+				stringBuilder.append("\r\n\r\n");
+				stringBuilder.append("--oma");
+				body = stringBuilder.toString();
 			}
 			addHeaders(builder, parameters);
 			response = builder.post(ClientResponse.class, body);
@@ -295,6 +314,19 @@ public class RestClient {
 			e.printStackTrace();
 		}
 		return encodedValue;
+	}
+
+	private static String getFileContent(String uri) {
+		String content = null;
+
+		try {
+			final Path path = Paths.get(URI.create(uri));
+			byte[] bytes = Files.readAllBytes(path);
+			content = new String(bytes, "UTF-8");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return content;
 	}
 
 	public static void main(final String[] args) {
