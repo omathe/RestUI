@@ -64,16 +64,16 @@ public class RestClient {
 				if (opt.isPresent()) {
 					request.getParameters().remove(opt.get());
 				}
-
-				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=--oma"));
+				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=oma"));
 				final StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.append("--oma\r\n");
 				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "build.gradle" + "\r\n");
+				stringBuilder.append("\r\n");
 
 				stringBuilder.append(getFileContent("file:///home/olivier/tmp/build.gradle"));
-				stringBuilder.append("Content-Type: text/plain\r\n\r\n");
-				stringBuilder.append("\r\n\r\n");
-				stringBuilder.append("--oma");
+				//stringBuilder.append("Content-Type: text/plain\r\n\r\n");
+				stringBuilder.append("\r\n");
+				stringBuilder.append("--oma--\n\r");
 				body = stringBuilder.toString();
 			}
 			addHeaders(builder, parameters);
