@@ -28,12 +28,6 @@ import restui.model.Request.BodyType;
 
 public class RestClient {
 
-	/**
-	 * Create a new resource
-	 *
-	 * @param request
-	 *            - The request
-	 */
 	public static ClientResponse post(final Request request) {
 
 		ClientResponse response = null;
@@ -64,17 +58,38 @@ public class RestClient {
 				if (opt.isPresent()) {
 					request.getParameters().remove(opt.get());
 				}
+
 				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=oma"));
 				final StringBuilder stringBuilder = new StringBuilder();
 				stringBuilder.append("--oma\r\n");
-				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "build.gradle" + "\r\n");
+				stringBuilder.append("Content-Disposition: form-data; name=\"name\"\r\n");
+				stringBuilder.append("\r\n");
+				stringBuilder.append("MATHE\r\n");
+
+				stringBuilder.append("--oma\r\n");
+				stringBuilder.append("Content-Disposition: form-data; name=\"age\"\r\n");
+				stringBuilder.append("\r\n");
+				stringBuilder.append("50\r\n");
+
+
+				stringBuilder.append("--oma\r\n");
+				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "build.gradle\"" + "\r\n");
+				stringBuilder.append("Content-Type: text/plain\r\n");
+				stringBuilder.append("\r\n");
+				stringBuilder.append(getFileContent("file:///home/olivier/tmp/build.gradle"));
 				stringBuilder.append("\r\n");
 
-				stringBuilder.append(getFileContent("file:///home/olivier/tmp/build.gradle"));
-				//stringBuilder.append("Content-Type: text/plain\r\n\r\n");
+				stringBuilder.append("--oma\r\n");
+				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file2" + "\"; filename=\"" + "test.csv\"" + "\r\n");
+				stringBuilder.append("Content-Type: text/plain\r\n");
+				stringBuilder.append("\r\n");
+
+				stringBuilder.append(getFileContent("file:///home/olivier/tmp/test.csv"));
+
 				stringBuilder.append("\r\n");
 				stringBuilder.append("--oma--\n\r");
 				body = stringBuilder.toString();
+//				System.out.println(body);
 			}
 			addHeaders(builder, parameters);
 			response = builder.post(ClientResponse.class, body);
@@ -85,6 +100,78 @@ public class RestClient {
 		}
 		return response;
 	}
+
+//	public static ClientResponse post(final Request request) {
+//
+//		ClientResponse response = null;
+//		final Client client = Client.create();
+//
+//		String body = null;
+//		try {
+//			String uri = request.getUri();
+//			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+//
+//			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+//			final WebResource.Builder builder = webResource.getRequestBuilder();
+//
+//			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+//				// X_WWW_FORM_URL_ENCODED
+//				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "application/x-www-form-urlencoded"));
+//
+//				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter())
+//						.map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
+//
+//			} else if (request.getBodyType().equals(BodyType.RAW)) {
+//				// RAW
+//				body = request.getRawBody();
+//			}
+//			else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
+//				// FORM_DATA
+//				Optional<Parameter> opt = request.findParameter(Location.HEADER, "content-type");
+//				if (opt.isPresent()) {
+//					request.getParameters().remove(opt.get());
+//				}
+//
+//				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=oma"));
+//				final StringBuilder stringBuilder = new StringBuilder();
+//				stringBuilder.append("--oma\r\n");
+//				stringBuilder.append("Content-Disposition: form-data; name=\"name\"\r\n");
+//				stringBuilder.append("\r\n");
+//				stringBuilder.append("MATHE\r\n");
+//
+//				stringBuilder.append("--oma\r\n");
+//				stringBuilder.append("Content-Disposition: form-data; name=\"age\"\r\n");
+//				stringBuilder.append("\r\n");
+//				stringBuilder.append("50\r\n");
+//				/*--AaB03x
+//				   Content-Disposition: form-data; name="submit-name"
+//
+//				   Larry
+//				   --AaB03x
+//				*/
+//
+//
+//
+//				stringBuilder.append("--oma\r\n");
+//				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "build.gradle" + "\r\n");
+//				stringBuilder.append("Content-Type: text/plain\r\n");
+//				stringBuilder.append("\r\n");
+//
+//				stringBuilder.append(getFileContent("file:///home/olivier/tmp/build.gradle"));
+//
+//				stringBuilder.append("\r\n");
+//				stringBuilder.append("--oma--\n\r");
+//				body = stringBuilder.toString();
+//			}
+//			addHeaders(builder, parameters);
+//			response = builder.post(ClientResponse.class, body);
+//		} catch (final Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			client.destroy();
+//		}
+//		return response;
+//	}
 
 	/**
 	 * Get resource
@@ -121,71 +208,71 @@ public class RestClient {
 	 * @param parameters
 	 * @return
 	 */
-	public static ClientResponse post(final String uri, final String body, final List<Parameter> parameters) {
-
-		ClientResponse response = null;
-		final Client client = Client.create();
-
-		try {
-			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-			final WebResource.Builder builder = webResource.getRequestBuilder();
-
-			addHeaders(builder, parameters);
-
-			// multipart/form-data
-			final StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("--oma\r\n");
-			// stringBuilder.append("Content-Disposition: form-data; name=\"file\";
-			// filename=\"a.txt\"\r\n");
-			parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter()).forEach(p -> {
-				System.err.println("=> " + p.getValue());
-				stringBuilder.append("Content-Disposition: form-data; name=\"" + p.getName() + "\"; filename=\"" + p.getValue() + "\r\n");
-				final URI uri2 = URI.create(p.getValue());
-				final Path path = Paths.get(uri2);
-				byte[] content = null;
-				try {
-					content = Files.readAllBytes(path);
-				} catch (final IOException e) {
-				}
-				try {
-					stringBuilder.append(new String(content, "UTF-8"));
-				} catch (final UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			});
-
-			// final StringBuilder stringBuilder = new StringBuilder();
-			// stringBuilder.append("--oma\r\n");
-			// stringBuilder.append("Content-Disposition: form-data; name=\"file\";
-			// filename=\"a.txt\"\r\n");
-			// stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
-			stringBuilder.append("Content-Type: text/plain\r\n\r\n");
-
-			// stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
-
-			// final File file = new File("/home/olivier/tmp/style.css");
-			// final Path path = file.toPath();
-			// byte[] content = null;
-			// try {
-			// content = Files.readAllBytes(path);
-			// } catch (final IOException e) {
-			// }
-
-			stringBuilder.append("\r\n\r\n");
-			stringBuilder.append("--oma");
-
-			response = builder.post(ClientResponse.class, stringBuilder.toString());
-
-			// response = builder.post(ClientResponse.class, body);
-		} catch (final Exception e) {
-			e.printStackTrace();
-		} finally {
-			client.destroy();
-		}
-		return response;
-	}
+//	public static ClientResponse post(final String uri, final String body, final List<Parameter> parameters) {
+//
+//		ClientResponse response = null;
+//		final Client client = Client.create();
+//
+//		try {
+//			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+//			final WebResource.Builder builder = webResource.getRequestBuilder();
+//
+//			addHeaders(builder, parameters);
+//
+//			// multipart/form-data
+//			final StringBuilder stringBuilder = new StringBuilder();
+//			stringBuilder.append("--oma\r\n");
+//			// stringBuilder.append("Content-Disposition: form-data; name=\"file\";
+//			// filename=\"a.txt\"\r\n");
+//			parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter()).forEach(p -> {
+//				System.err.println("=> " + p.getValue());
+//				stringBuilder.append("Content-Disposition: form-data; name=\"" + p.getName() + "\"; filename=\"" + p.getValue() + "\r\n");
+//				final URI uri2 = URI.create(p.getValue());
+//				final Path path = Paths.get(uri2);
+//				byte[] content = null;
+//				try {
+//					content = Files.readAllBytes(path);
+//				} catch (final IOException e) {
+//				}
+//				try {
+//					stringBuilder.append(new String(content, "UTF-8"));
+//				} catch (final UnsupportedEncodingException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//			});
+//
+//			// final StringBuilder stringBuilder = new StringBuilder();
+//			// stringBuilder.append("--oma\r\n");
+//			// stringBuilder.append("Content-Disposition: form-data; name=\"file\";
+//			// filename=\"a.txt\"\r\n");
+//			// stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
+//			stringBuilder.append("Content-Type: text/plain\r\n\r\n");
+//
+//			// stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
+//
+//			// final File file = new File("/home/olivier/tmp/style.css");
+//			// final Path path = file.toPath();
+//			// byte[] content = null;
+//			// try {
+//			// content = Files.readAllBytes(path);
+//			// } catch (final IOException e) {
+//			// }
+//
+//			stringBuilder.append("\r\n\r\n");
+//			stringBuilder.append("--oma");
+//
+//			response = builder.post(ClientResponse.class, stringBuilder.toString());
+//
+//			// response = builder.post(ClientResponse.class, body);
+//		} catch (final Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			client.destroy();
+//		}
+//		return response;
+//	}
 
 	/**
 	 * Put resource
