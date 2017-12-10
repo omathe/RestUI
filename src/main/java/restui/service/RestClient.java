@@ -1,5 +1,6 @@
 package restui.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -28,12 +29,15 @@ import restui.model.Request.BodyType;
 
 public class RestClient {
 
+	private static final String LINE_FEED = "\r\n";
+
 	public static ClientResponse post(final Request request) {
 
 		ClientResponse response = null;
 		final Client client = Client.create();
 
 		String body = null;
+		ByteArrayOutputStream bos = null;
 		try {
 			String uri = request.getUri();
 			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
@@ -58,41 +62,28 @@ public class RestClient {
 				if (opt.isPresent()) {
 					request.getParameters().remove(opt.get());
 				}
-
 				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=oma"));
-				final StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.append("--oma\r\n");
-				stringBuilder.append("Content-Disposition: form-data; name=\"name\"\r\n");
-				stringBuilder.append("\r\n");
-				stringBuilder.append("MATHE\r\n");
-
-				stringBuilder.append("--oma\r\n");
-				stringBuilder.append("Content-Disposition: form-data; name=\"age\"\r\n");
-				stringBuilder.append("\r\n");
-				stringBuilder.append("50\r\n");
-
-
-				stringBuilder.append("--oma\r\n");
-				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "build.gradle\"" + "\r\n");
-				stringBuilder.append("Content-Type: text/plain\r\n");
-				stringBuilder.append("\r\n");
-				stringBuilder.append(getFileContent("file:///home/olivier/tmp/build.gradle"));
-				stringBuilder.append("\r\n");
-
-				stringBuilder.append("--oma\r\n");
-				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file2" + "\"; filename=\"" + "test.csv\"" + "\r\n");
-				stringBuilder.append("Content-Type: text/plain\r\n");
-				stringBuilder.append("\r\n");
-
-				stringBuilder.append(getFileContent("file:///home/olivier/tmp/test.csv"));
-
-				stringBuilder.append("\r\n");
-				stringBuilder.append("--oma--\n\r");
-				body = stringBuilder.toString();
-//				System.out.println(body);
+				bos = new ByteArrayOutputStream();
+				bos.write(new String("--oma\r\n").getBytes());
+				bos.write(new String("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "photo.jpg\"" + "\r\n").getBytes());
+				//bos.write(new String("Content-Type: application/octet-stream\r\n").getBytes());
+				bos.write(new String("\r\n").getBytes());
+				//bos.write(new String("Content-Transfer-Encoding: binary\r\n").getBytes());
+				//bos.write(new String("\r\n").getBytes());
+				byte[] bytes = getFileContentBytes("file:///home/olivier/tmp/photo.jpg");
+//				for (Byte b : bytes) {
+//					bos.write(b);
+//				}
+				bos.write(bytes);
+				//bos.write(new String("Hello world !").getBytes());
+				bos.write(new String("\r\n").getBytes());
+				bos.write(new String("--oma--\n\r").getBytes());
+				bos.flush();
+				System.out.println("" + bos.toString("UTF-8"));
 			}
 			addHeaders(builder, parameters);
-			response = builder.post(ClientResponse.class, body);
+			response = builder/*.type(MediaType.MULTIPART_FORM_DATA)*/.post(ClientResponse.class, bos.toByteArray());
+			bos.close();
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -410,10 +401,35 @@ public class RestClient {
 			final Path path = Paths.get(URI.create(uri));
 			byte[] bytes = Files.readAllBytes(path);
 			content = new String(bytes, "UTF-8");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return content;
+	}
+
+	private static byte[] getFileContentBytes(String uri) {
+		byte[] bytes = null;
+
+		try {
+			final Path path = Paths.get(URI.create(uri));
+			bytes = Files.readAllBytes(path);
+
+//			FileOutputStream fos = new FileOutputStream(new File("/home/olivier/tmp/copy1.jpg"));
+//			   fos.write(bytes);
+//			   fos.close();
+
+
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+
+
+
+		return bytes;
 	}
 
 	public static void main(final String[] args) {
