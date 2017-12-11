@@ -61,8 +61,6 @@ public class Message {
 
 	public Optional<Parameter> findParameter(final Location location, final String name) {
 
-		System.out.println("try to find parameter " + location + ", " + name);
-
 		return parameters.stream()
 				.filter(p -> p.isHeaderParameter() && p.getName().equalsIgnoreCase(name))
 				.findFirst();

@@ -64,25 +64,40 @@ public class RestClient {
 				}
 				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=oma"));
 				bos = new ByteArrayOutputStream();
-				bos.write(new String("--oma\r\n").getBytes());
-				bos.write(new String("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "photo.jpg\"" + "\r\n").getBytes());
-				//bos.write(new String("Content-Type: application/octet-stream\r\n").getBytes());
-				bos.write(new String("\r\n").getBytes());
-				//bos.write(new String("Content-Transfer-Encoding: binary\r\n").getBytes());
-				//bos.write(new String("\r\n").getBytes());
+
+				bos.write(new String("--oma" + LINE_FEED).getBytes());
+				bos.write(new String("Content-Disposition: form-data; name=\"name\"" + LINE_FEED).getBytes());
+				bos.write(new String(LINE_FEED).getBytes());
+				bos.write(new String("MATHE" + LINE_FEED).getBytes());
+
+				bos.write(new String("--oma" + LINE_FEED).getBytes());
+				bos.write(new String("Content-Disposition: form-data; name=\"age\"" + LINE_FEED).getBytes());
+				bos.write(new String(LINE_FEED).getBytes());
+				bos.write(new String("50" + LINE_FEED).getBytes());
+
+				bos.write(new String("--oma" + LINE_FEED).getBytes());
+				bos.write(new String("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "photo.jpg\"" + LINE_FEED).getBytes());
+				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
+				bos.write(new String(LINE_FEED).getBytes());
 				byte[] bytes = getFileContentBytes("file:///home/olivier/tmp/photo.jpg");
-//				for (Byte b : bytes) {
-//					bos.write(b);
-//				}
 				bos.write(bytes);
-				//bos.write(new String("Hello world !").getBytes());
-				bos.write(new String("\r\n").getBytes());
-				bos.write(new String("--oma--\n\r").getBytes());
+				bos.write(new String(LINE_FEED).getBytes());
+				//bos.write(new String("--oma--" + LINE_FEED).getBytes());
+
+				bos.write(new String("--oma" + LINE_FEED).getBytes());
+				bos.write(new String("Content-Disposition: form-data; name=\"" + "file2" + "\"; filename=\"" + "build.gradle\"" + LINE_FEED).getBytes());
+				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
+				bos.write(new String(LINE_FEED).getBytes());
+				byte[] bytes2 = getFileContentBytes("file:///home/olivier/tmp/build.gradle");
+				bos.write(bytes2);
+				bos.write(new String(LINE_FEED).getBytes());
+				bos.write(new String("--oma--" + LINE_FEED).getBytes());
+
 				bos.flush();
-				System.out.println("" + bos.toString("UTF-8"));
+//				System.out.println("" + bos.toString("UTF-8"));
 			}
 			addHeaders(builder, parameters);
-			response = builder/*.type(MediaType.MULTIPART_FORM_DATA)*/.post(ClientResponse.class, bos.toByteArray());
+			response = builder.post(ClientResponse.class, bos.toByteArray());
 			bos.close();
 		} catch (final Exception e) {
 			e.printStackTrace();
