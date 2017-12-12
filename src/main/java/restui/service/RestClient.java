@@ -1,6 +1,7 @@
 package restui.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -30,6 +31,7 @@ import restui.model.Request.BodyType;
 public class RestClient {
 
 	private static final String LINE_FEED = "\r\n";
+	private static final String BOUNDARY = "--oma";
 
 	public static ClientResponse post(final Request request) {
 
@@ -49,14 +51,12 @@ public class RestClient {
 				// X_WWW_FORM_URL_ENCODED
 				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "application/x-www-form-urlencoded"));
 
-				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter())
-						.map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
+				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
 				// RAW
 				body = request.getRawBody();
-			}
-			else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
+			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
 				// FORM_DATA
 				Optional<Parameter> opt = request.findParameter(Location.HEADER, "content-type");
 				if (opt.isPresent()) {
@@ -65,36 +65,35 @@ public class RestClient {
 				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=oma"));
 				bos = new ByteArrayOutputStream();
 
-				bos.write(new String("--oma" + LINE_FEED).getBytes());
-				bos.write(new String("Content-Disposition: form-data; name=\"name\"" + LINE_FEED).getBytes());
-				bos.write(new String(LINE_FEED).getBytes());
-				bos.write(new String("MATHE" + LINE_FEED).getBytes());
+				for (Parameter parameter : request.getParameters()) {
+					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
+						addMultiparTextParameter(bos, parameter);
+					}
+					else if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.FILE.name())) {
+						addMultiparFileParameter(bos, parameter);
+					}
+				}
 
-				bos.write(new String("--oma" + LINE_FEED).getBytes());
-				bos.write(new String("Content-Disposition: form-data; name=\"age\"" + LINE_FEED).getBytes());
-				bos.write(new String(LINE_FEED).getBytes());
-				bos.write(new String("50" + LINE_FEED).getBytes());
+//				bos.write(new String("--oma" + LINE_FEED).getBytes());
+//				bos.write(new String("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "photo.jpg\"" + LINE_FEED).getBytes());
+//				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
+//				bos.write(new String(LINE_FEED).getBytes());
+//				byte[] bytes = getFileContentBytes("file:///home/olivier/tmp/photo.jpg");
+//				bos.write(bytes);
+//				bos.write(new String(LINE_FEED).getBytes());
+//
+//				bos.write(new String("--oma" + LINE_FEED).getBytes());
+//				bos.write(new String("Content-Disposition: form-data; name=\"" + "file2" + "\"; filename=\"" + "build.gradle\"" + LINE_FEED).getBytes());
+//				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
+//				bos.write(new String(LINE_FEED).getBytes());
+//				byte[] bytes2 = getFileContentBytes("file:///home/olivier/tmp/build.gradle");
+//				bos.write(bytes2);
+//				bos.write(new String(LINE_FEED).getBytes());
 
-				bos.write(new String("--oma" + LINE_FEED).getBytes());
-				bos.write(new String("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "photo.jpg\"" + LINE_FEED).getBytes());
-				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
-				bos.write(new String(LINE_FEED).getBytes());
-				byte[] bytes = getFileContentBytes("file:///home/olivier/tmp/photo.jpg");
-				bos.write(bytes);
-				bos.write(new String(LINE_FEED).getBytes());
-				//bos.write(new String("--oma--" + LINE_FEED).getBytes());
-
-				bos.write(new String("--oma" + LINE_FEED).getBytes());
-				bos.write(new String("Content-Disposition: form-data; name=\"" + "file2" + "\"; filename=\"" + "build.gradle\"" + LINE_FEED).getBytes());
-				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
-				bos.write(new String(LINE_FEED).getBytes());
-				byte[] bytes2 = getFileContentBytes("file:///home/olivier/tmp/build.gradle");
-				bos.write(bytes2);
-				bos.write(new String(LINE_FEED).getBytes());
-				bos.write(new String("--oma--" + LINE_FEED).getBytes());
+				bos.write(new String(BOUNDARY + "--" + LINE_FEED).getBytes());
 
 				bos.flush();
-//				System.out.println("" + bos.toString("UTF-8"));
+				// System.out.println("" + bos.toString("UTF-8"));
 			}
 			addHeaders(builder, parameters);
 			response = builder.post(ClientResponse.class, bos.toByteArray());
@@ -107,81 +106,8 @@ public class RestClient {
 		return response;
 	}
 
-//	public static ClientResponse post(final Request request) {
-//
-//		ClientResponse response = null;
-//		final Client client = Client.create();
-//
-//		String body = null;
-//		try {
-//			String uri = request.getUri();
-//			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
-//
-//			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-//			final WebResource.Builder builder = webResource.getRequestBuilder();
-//
-//			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-//				// X_WWW_FORM_URL_ENCODED
-//				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "application/x-www-form-urlencoded"));
-//
-//				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter())
-//						.map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
-//
-//			} else if (request.getBodyType().equals(BodyType.RAW)) {
-//				// RAW
-//				body = request.getRawBody();
-//			}
-//			else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
-//				// FORM_DATA
-//				Optional<Parameter> opt = request.findParameter(Location.HEADER, "content-type");
-//				if (opt.isPresent()) {
-//					request.getParameters().remove(opt.get());
-//				}
-//
-//				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=oma"));
-//				final StringBuilder stringBuilder = new StringBuilder();
-//				stringBuilder.append("--oma\r\n");
-//				stringBuilder.append("Content-Disposition: form-data; name=\"name\"\r\n");
-//				stringBuilder.append("\r\n");
-//				stringBuilder.append("MATHE\r\n");
-//
-//				stringBuilder.append("--oma\r\n");
-//				stringBuilder.append("Content-Disposition: form-data; name=\"age\"\r\n");
-//				stringBuilder.append("\r\n");
-//				stringBuilder.append("50\r\n");
-//				/*--AaB03x
-//				   Content-Disposition: form-data; name="submit-name"
-//
-//				   Larry
-//				   --AaB03x
-//				*/
-//
-//
-//
-//				stringBuilder.append("--oma\r\n");
-//				stringBuilder.append("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "build.gradle" + "\r\n");
-//				stringBuilder.append("Content-Type: text/plain\r\n");
-//				stringBuilder.append("\r\n");
-//
-//				stringBuilder.append(getFileContent("file:///home/olivier/tmp/build.gradle"));
-//
-//				stringBuilder.append("\r\n");
-//				stringBuilder.append("--oma--\n\r");
-//				body = stringBuilder.toString();
-//			}
-//			addHeaders(builder, parameters);
-//			response = builder.post(ClientResponse.class, body);
-//		} catch (final Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			client.destroy();
-//		}
-//		return response;
-//	}
-
 	/**
 	 * Get resource
-	 *
 	 * @param uri
 	 * @param parameters
 	 * @return
@@ -214,71 +140,75 @@ public class RestClient {
 	 * @param parameters
 	 * @return
 	 */
-//	public static ClientResponse post(final String uri, final String body, final List<Parameter> parameters) {
-//
-//		ClientResponse response = null;
-//		final Client client = Client.create();
-//
-//		try {
-//			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-//			final WebResource.Builder builder = webResource.getRequestBuilder();
-//
-//			addHeaders(builder, parameters);
-//
-//			// multipart/form-data
-//			final StringBuilder stringBuilder = new StringBuilder();
-//			stringBuilder.append("--oma\r\n");
-//			// stringBuilder.append("Content-Disposition: form-data; name=\"file\";
-//			// filename=\"a.txt\"\r\n");
-//			parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter()).forEach(p -> {
-//				System.err.println("=> " + p.getValue());
-//				stringBuilder.append("Content-Disposition: form-data; name=\"" + p.getName() + "\"; filename=\"" + p.getValue() + "\r\n");
-//				final URI uri2 = URI.create(p.getValue());
-//				final Path path = Paths.get(uri2);
-//				byte[] content = null;
-//				try {
-//					content = Files.readAllBytes(path);
-//				} catch (final IOException e) {
-//				}
-//				try {
-//					stringBuilder.append(new String(content, "UTF-8"));
-//				} catch (final UnsupportedEncodingException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//
-//			});
-//
-//			// final StringBuilder stringBuilder = new StringBuilder();
-//			// stringBuilder.append("--oma\r\n");
-//			// stringBuilder.append("Content-Disposition: form-data; name=\"file\";
-//			// filename=\"a.txt\"\r\n");
-//			// stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
-//			stringBuilder.append("Content-Type: text/plain\r\n\r\n");
-//
-//			// stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
-//
-//			// final File file = new File("/home/olivier/tmp/style.css");
-//			// final Path path = file.toPath();
-//			// byte[] content = null;
-//			// try {
-//			// content = Files.readAllBytes(path);
-//			// } catch (final IOException e) {
-//			// }
-//
-//			stringBuilder.append("\r\n\r\n");
-//			stringBuilder.append("--oma");
-//
-//			response = builder.post(ClientResponse.class, stringBuilder.toString());
-//
-//			// response = builder.post(ClientResponse.class, body);
-//		} catch (final Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			client.destroy();
-//		}
-//		return response;
-//	}
+	// public static ClientResponse post(final String uri, final String body, final
+	// List<Parameter> parameters) {
+	//
+	// ClientResponse response = null;
+	// final Client client = Client.create();
+	//
+	// try {
+	// final WebResource webResource =
+	// client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+	// final WebResource.Builder builder = webResource.getRequestBuilder();
+	//
+	// addHeaders(builder, parameters);
+	//
+	// // multipart/form-data
+	// final StringBuilder stringBuilder = new StringBuilder();
+	// stringBuilder.append("--oma\r\n");
+	// // stringBuilder.append("Content-Disposition: form-data; name=\"file\";
+	// // filename=\"a.txt\"\r\n");
+	// parameters.stream().filter(p -> p.getEnabled() &&
+	// p.isBodyParameter()).forEach(p -> {
+	// System.err.println("=> " + p.getValue());
+	// stringBuilder.append("Content-Disposition: form-data; name=\"" + p.getName()
+	// + "\"; filename=\"" + p.getValue() + "\r\n");
+	// final URI uri2 = URI.create(p.getValue());
+	// final Path path = Paths.get(uri2);
+	// byte[] content = null;
+	// try {
+	// content = Files.readAllBytes(path);
+	// } catch (final IOException e) {
+	// }
+	// try {
+	// stringBuilder.append(new String(content, "UTF-8"));
+	// } catch (final UnsupportedEncodingException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// });
+	//
+	// // final StringBuilder stringBuilder = new StringBuilder();
+	// // stringBuilder.append("--oma\r\n");
+	// // stringBuilder.append("Content-Disposition: form-data; name=\"file\";
+	// // filename=\"a.txt\"\r\n");
+	// // stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
+	// stringBuilder.append("Content-Type: text/plain\r\n\r\n");
+	//
+	// // stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
+	//
+	// // final File file = new File("/home/olivier/tmp/style.css");
+	// // final Path path = file.toPath();
+	// // byte[] content = null;
+	// // try {
+	// // content = Files.readAllBytes(path);
+	// // } catch (final IOException e) {
+	// // }
+	//
+	// stringBuilder.append("\r\n\r\n");
+	// stringBuilder.append("--oma");
+	//
+	// response = builder.post(ClientResponse.class, stringBuilder.toString());
+	//
+	// // response = builder.post(ClientResponse.class, body);
+	// } catch (final Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// client.destroy();
+	// }
+	// return response;
+	// }
 
 	/**
 	 * Put resource
@@ -429,34 +359,44 @@ public class RestClient {
 		try {
 			final Path path = Paths.get(URI.create(uri));
 			bytes = Files.readAllBytes(path);
-
-//			FileOutputStream fos = new FileOutputStream(new File("/home/olivier/tmp/copy1.jpg"));
-//			   fos.write(bytes);
-//			   fos.close();
-
-
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-
-
-
-
 		return bytes;
 	}
 
-	public static void main(final String[] args) {
+	private static void addMultiparTextParameter(ByteArrayOutputStream bos, Parameter parameter) {
 
-		final StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("--oma\r\n");
-		stringBuilder.append("Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n");
-		stringBuilder.append("Content-Type: text/plain\r\n\r\n");
+		try {
+			bos.write(new String(BOUNDARY + LINE_FEED).getBytes());
+			bos.write(new String("Content-Disposition: form-data; name=\"" + parameter.getName() + "\"" + LINE_FEED).getBytes());
+			bos.write(new String(LINE_FEED).getBytes());
+			bos.write(new String(parameter.getValue() + LINE_FEED).getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-		stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
-		stringBuilder.append("--oma");
+	private static void addMultiparFileParameter(ByteArrayOutputStream bos, Parameter parameter) {
 
-		System.out.println(stringBuilder.toString());
+		try {
+			Path path = Paths.get(URI.create(parameter.getValue()));
+			File file = path.toFile();
+			if (file.exists()) {
+				String fileName = file.getName();
+				bos.write(new String(BOUNDARY + LINE_FEED).getBytes());
+				bos.write(new String("Content-Disposition: form-data; name=\"" + parameter.getName() + "\"; filename=\"" + fileName + "\"" + LINE_FEED).getBytes());
+				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
+				bos.write(new String(LINE_FEED).getBytes());
+				byte[] bytes = getFileContentBytes(parameter.getValue());
+				bos.write(bytes);
+				bos.write(new String(LINE_FEED).getBytes());
+			}
+			else {
+				System.err.println("Error : the file '" + parameter.getValue() + "' does not exist.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
