@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -49,51 +48,33 @@ public class RestClient {
 
 			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
 				// X_WWW_FORM_URL_ENCODED
-				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "application/x-www-form-urlencoded"));
 
-				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
+				parameters = parameters.stream().filter(p -> p.getEnabled() && p.getType().equals(Type.TEXT.name()) && (p.isBodyParameter() || !p.getName().equalsIgnoreCase("Content-Type"))).collect(Collectors.toList());
+				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+				body = parameters.stream().map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
+				bos = new ByteArrayOutputStream();
+				bos.write(new String(body).getBytes());
+				bos.flush();
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
 				// RAW
 				body = request.getRawBody();
 			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
 				// FORM_DATA
-				Optional<Parameter> opt = request.findParameter(Location.HEADER, "content-type");
-				if (opt.isPresent()) {
-					request.getParameters().remove(opt.get());
-				}
-				request.addParameter(new Parameter(true, Type.TEXT, Location.HEADER, "content-type", "multipart/form-data; boundary=oma"));
 				bos = new ByteArrayOutputStream();
 
-				for (Parameter parameter : request.getParameters()) {
+				parameters = parameters.stream().filter(p -> p.getEnabled() && (p.isBodyParameter() || !p.getName().equalsIgnoreCase("Content-Type"))).collect(Collectors.toList());
+				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=oma"));
+
+				for (Parameter parameter : parameters) {
 					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
 						addMultiparTextParameter(bos, parameter);
-					}
-					else if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.FILE.name())) {
+					} else if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.FILE.name())) {
 						addMultiparFileParameter(bos, parameter);
 					}
 				}
-
-//				bos.write(new String("--oma" + LINE_FEED).getBytes());
-//				bos.write(new String("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "photo.jpg\"" + LINE_FEED).getBytes());
-//				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
-//				bos.write(new String(LINE_FEED).getBytes());
-//				byte[] bytes = getFileContentBytes("file:///home/olivier/tmp/photo.jpg");
-//				bos.write(bytes);
-//				bos.write(new String(LINE_FEED).getBytes());
-//
-//				bos.write(new String("--oma" + LINE_FEED).getBytes());
-//				bos.write(new String("Content-Disposition: form-data; name=\"" + "file2" + "\"; filename=\"" + "build.gradle\"" + LINE_FEED).getBytes());
-//				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
-//				bos.write(new String(LINE_FEED).getBytes());
-//				byte[] bytes2 = getFileContentBytes("file:///home/olivier/tmp/build.gradle");
-//				bos.write(bytes2);
-//				bos.write(new String(LINE_FEED).getBytes());
-
 				bos.write(new String(BOUNDARY + "--" + LINE_FEED).getBytes());
-
 				bos.flush();
-				// System.out.println("" + bos.toString("UTF-8"));
 			}
 			addHeaders(builder, parameters);
 			response = builder.post(ClientResponse.class, bos.toByteArray());
@@ -102,12 +83,20 @@ public class RestClient {
 			e.printStackTrace();
 		} finally {
 			client.destroy();
+			if (bos != null) {
+				try {
+					bos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return response;
 	}
 
 	/**
 	 * Get resource
+	 *
 	 * @param uri
 	 * @param parameters
 	 * @return
@@ -391,8 +380,7 @@ public class RestClient {
 				byte[] bytes = getFileContentBytes(parameter.getValue());
 				bos.write(bytes);
 				bos.write(new String(LINE_FEED).getBytes());
-			}
-			else {
+			} else {
 				System.err.println("Error : the file '" + parameter.getValue() + "' does not exist.");
 			}
 		} catch (IOException e) {
