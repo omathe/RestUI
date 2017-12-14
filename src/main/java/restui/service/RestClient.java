@@ -30,15 +30,19 @@ import restui.model.Request.BodyType;
 public class RestClient {
 
 	private static final String LINE_FEED = "\r\n";
-	private static final String BOUNDARY = "--oma";
+	private static final String BOUNDARY = "oma";
+	private static final String END_BOUNDARY = "--oma";
+	private static final String CLOSE_BOUNDARY = "--oma--";
+
+	private static final Client client = Client.create();
 
 	public static ClientResponse post(final Request request) {
 
 		ClientResponse response = null;
-		final Client client = Client.create();
 
 		String body = null;
-		ByteArrayOutputStream bos = null;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();;
+
 		try {
 			String uri = request.getUri();
 			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
@@ -47,24 +51,18 @@ public class RestClient {
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
 			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-				// X_WWW_FORM_URL_ENCODED
-
 				parameters = parameters.stream().filter(p -> p.getEnabled() && p.getType().equals(Type.TEXT.name()) && (p.isBodyParameter() || !p.getName().equalsIgnoreCase("Content-Type"))).collect(Collectors.toList());
 				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
 				body = parameters.stream().map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
-
-				bos = new ByteArrayOutputStream();
 				bos.write(new String(body).getBytes());
-				bos.flush();
-			} else if (request.getBodyType().equals(BodyType.RAW)) {
-				// RAW
-				body = request.getRawBody();
-			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
-				// FORM_DATA
-				bos = new ByteArrayOutputStream();
 
+			} else if (request.getBodyType().equals(BodyType.RAW)) {
+				body = request.getRawBody();
+				bos.write(new String(body).getBytes());
+
+			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
 				parameters = parameters.stream().filter(p -> p.getEnabled() && (p.isBodyParameter() || !p.getName().equalsIgnoreCase("Content-Type"))).collect(Collectors.toList());
-				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=oma"));
+				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
 
 				for (Parameter parameter : parameters) {
 					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
@@ -73,12 +71,11 @@ public class RestClient {
 						addMultiparFileParameter(bos, parameter);
 					}
 				}
-				bos.write(new String(BOUNDARY + "--" + LINE_FEED).getBytes());
-				bos.flush();
+				bos.write(new String(CLOSE_BOUNDARY + LINE_FEED).getBytes());
 			}
 			addHeaders(builder, parameters);
+			bos.flush();
 			response = builder.post(ClientResponse.class, bos.toByteArray());
-			bos.close();
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -357,7 +354,7 @@ public class RestClient {
 	private static void addMultiparTextParameter(ByteArrayOutputStream bos, Parameter parameter) {
 
 		try {
-			bos.write(new String(BOUNDARY + LINE_FEED).getBytes());
+			bos.write(new String(END_BOUNDARY + LINE_FEED).getBytes());
 			bos.write(new String("Content-Disposition: form-data; name=\"" + parameter.getName() + "\"" + LINE_FEED).getBytes());
 			bos.write(new String(LINE_FEED).getBytes());
 			bos.write(new String(parameter.getValue() + LINE_FEED).getBytes());
@@ -373,7 +370,7 @@ public class RestClient {
 			File file = path.toFile();
 			if (file.exists()) {
 				String fileName = file.getName();
-				bos.write(new String(BOUNDARY + LINE_FEED).getBytes());
+				bos.write(new String(END_BOUNDARY + LINE_FEED).getBytes());
 				bos.write(new String("Content-Disposition: form-data; name=\"" + parameter.getName() + "\"; filename=\"" + fileName + "\"" + LINE_FEED).getBytes());
 				bos.write(new String("Content-Type: application/octet-stream" + LINE_FEED).getBytes());
 				bos.write(new String(LINE_FEED).getBytes());
