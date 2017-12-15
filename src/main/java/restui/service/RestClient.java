@@ -31,8 +31,8 @@ public class RestClient {
 
 	private static final String LINE_FEED = "\r\n";
 	private static final String BOUNDARY = "oma";
-	private static final String END_BOUNDARY = "--oma";
-	private static final String CLOSE_BOUNDARY = "--oma--";
+	private static final String END_BOUNDARY = "--" + BOUNDARY;
+	private static final String CLOSE_BOUNDARY = "--" + BOUNDARY + "--";
 
 	private static final Client client = Client.create();
 
@@ -41,7 +41,7 @@ public class RestClient {
 		ClientResponse response = null;
 
 		String body = null;
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 		try {
 			String uri = request.getUri();
@@ -91,13 +91,6 @@ public class RestClient {
 		return response;
 	}
 
-	/**
-	 * Get resource
-	 *
-	 * @param uri
-	 * @param parameters
-	 * @return
-	 */
 	public static ClientResponse get(final String uri, final List<Parameter> parameters) {
 
 		ClientResponse response = null;
@@ -118,92 +111,6 @@ public class RestClient {
 		return response;
 	}
 
-	/**
-	 * Post resource
-	 *
-	 * @param uri
-	 * @param body
-	 * @param parameters
-	 * @return
-	 */
-	// public static ClientResponse post(final String uri, final String body, final
-	// List<Parameter> parameters) {
-	//
-	// ClientResponse response = null;
-	// final Client client = Client.create();
-	//
-	// try {
-	// final WebResource webResource =
-	// client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-	// final WebResource.Builder builder = webResource.getRequestBuilder();
-	//
-	// addHeaders(builder, parameters);
-	//
-	// // multipart/form-data
-	// final StringBuilder stringBuilder = new StringBuilder();
-	// stringBuilder.append("--oma\r\n");
-	// // stringBuilder.append("Content-Disposition: form-data; name=\"file\";
-	// // filename=\"a.txt\"\r\n");
-	// parameters.stream().filter(p -> p.getEnabled() &&
-	// p.isBodyParameter()).forEach(p -> {
-	// System.err.println("=> " + p.getValue());
-	// stringBuilder.append("Content-Disposition: form-data; name=\"" + p.getName()
-	// + "\"; filename=\"" + p.getValue() + "\r\n");
-	// final URI uri2 = URI.create(p.getValue());
-	// final Path path = Paths.get(uri2);
-	// byte[] content = null;
-	// try {
-	// content = Files.readAllBytes(path);
-	// } catch (final IOException e) {
-	// }
-	// try {
-	// stringBuilder.append(new String(content, "UTF-8"));
-	// } catch (final UnsupportedEncodingException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	//
-	// });
-	//
-	// // final StringBuilder stringBuilder = new StringBuilder();
-	// // stringBuilder.append("--oma\r\n");
-	// // stringBuilder.append("Content-Disposition: form-data; name=\"file\";
-	// // filename=\"a.txt\"\r\n");
-	// // stringBuilder.append("Content-Type: application/octet-stream\r\n\r\n");
-	// stringBuilder.append("Content-Type: text/plain\r\n\r\n");
-	//
-	// // stringBuilder.append("Je suis Olivier MATHE !\r\n\r\n");
-	//
-	// // final File file = new File("/home/olivier/tmp/style.css");
-	// // final Path path = file.toPath();
-	// // byte[] content = null;
-	// // try {
-	// // content = Files.readAllBytes(path);
-	// // } catch (final IOException e) {
-	// // }
-	//
-	// stringBuilder.append("\r\n\r\n");
-	// stringBuilder.append("--oma");
-	//
-	// response = builder.post(ClientResponse.class, stringBuilder.toString());
-	//
-	// // response = builder.post(ClientResponse.class, body);
-	// } catch (final Exception e) {
-	// e.printStackTrace();
-	// } finally {
-	// client.destroy();
-	// }
-	// return response;
-	// }
-
-	/**
-	 * Put resource
-	 *
-	 * @param uri
-	 * @param body
-	 * @param parameters
-	 * @return
-	 */
 	public static ClientResponse put(final String uri, final String body, final List<Parameter> parameters) {
 
 		ClientResponse response = null;
@@ -224,14 +131,6 @@ public class RestClient {
 		return response;
 	}
 
-	/**
-	 * Patch resource
-	 *
-	 * @param uri
-	 * @param body
-	 * @param parameters
-	 * @return
-	 */
 	public static ClientResponse patch(final String uri, final String body, final List<Parameter> parameters) {
 
 		ClientResponse response = null;
@@ -256,14 +155,6 @@ public class RestClient {
 		return response;
 	}
 
-	/**
-	 * Delete resource
-	 *
-	 * @param uri
-	 * @param body
-	 * @param parameters
-	 * @return
-	 */
 	public static ClientResponse delete(final String uri, final List<Parameter> parameters) {
 
 		ClientResponse response = null;
@@ -323,20 +214,6 @@ public class RestClient {
 			e.printStackTrace();
 		}
 		return encodedValue;
-	}
-
-	private static String getFileContent(String uri) {
-		String content = null;
-
-		try {
-			final Path path = Paths.get(URI.create(uri));
-			byte[] bytes = Files.readAllBytes(path);
-			content = new String(bytes, "UTF-8");
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return content;
 	}
 
 	private static byte[] getFileContentBytes(String uri) {
