@@ -87,6 +87,7 @@ public class RequestBodyController extends AbstractController implements Initial
 				return new BodyParameterValueCellFactory();
 			}
 		});
+
 		bodyValueColumn.setCellValueFactory(parameter -> parameter.getValue().valueProperty());
 
 		add.setOnAction(e -> {

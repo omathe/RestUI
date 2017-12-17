@@ -36,7 +36,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
@@ -140,7 +139,13 @@ public class EndPointController extends AbstractController implements Initializa
 	private Button execute;
 
 	@FXML
-	private RadioButton rawBody, formEncodedBody, formDataBody, binaryBody;
+	private RadioButton rawBody;
+
+	@FXML
+	private RadioButton formEncodedBody;
+
+	@FXML
+	private RadioButton formDataBody;
 
 	@FXML
 	private VBox bodyVBox;
@@ -181,19 +186,13 @@ public class EndPointController extends AbstractController implements Initializa
 					});
 					if (exchange.isPresent()) {
 						final MenuItem duplicate = new MenuItem("Duplicate");
-						final MenuItem deleteExchange = new MenuItem(exchange.get().getName());
-						final Menu delete = new Menu("Delete");
-						final MenuItem deleteAll = new MenuItem("All");
-						delete.getItems().addAll(deleteExchange, deleteAll);
-						exchangesContextMenu.getItems().addAll(duplicate, delete);
+						final MenuItem delete = new MenuItem("Delete");
+						exchangesContextMenu.getItems().addAll(duplicate, new SeparatorMenuItem(), delete);
 						duplicate.setOnAction(e -> {
 							duplicateExchange(exchange.get());
 						});
-						deleteExchange.setOnAction(e -> {
+						delete.setOnAction(e -> {
 							deleteExchange(exchange.get());
-						});
-						deleteAll.setOnAction(e -> {
-							deleteAllExchanges();
 						});
 					}
 					exchanges.setContextMenu(exchangesContextMenu);
@@ -382,8 +381,6 @@ public class EndPointController extends AbstractController implements Initializa
 			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.FORM_DATA)) {
 				formDataBody.setSelected(true);
 				formDataBodySelected(null);
-			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.BINARY)) {
-				binaryBody.setSelected(true);
 			}
 
 			// response status
@@ -430,16 +427,6 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
-	private void deleteAllExchanges() {
-
-		final ButtonType response = AlertBuilder.confirm("Delete all the exchanges", "Do you want to delete all the exchanges ?\n");
-		if (response.equals(ButtonType.OK)) {
-			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
-			endpoint.getExchanges().clear();
-			refreshExchangeData(null);
-		}
-	}
-
 	private void addRequestParameter(final Parameter parameter) {
 
 		getSelectedExchange().ifPresent(exchange -> {
@@ -471,22 +458,10 @@ public class EndPointController extends AbstractController implements Initializa
 			responseBody.setText("");
 			exchange.clearResponseParameters();
 
-			final String builtUri = uri.getText();
 			final long t0 = System.currentTimeMillis();
 
-			ClientResponse response = null;
+			ClientResponse response = RestClient.execute(method.getValue(), exchange.getRequest());
 
-			if (method.getValue().equals("POST")) {
-				response = RestClient.post(exchange.getRequest());
-			} else if (method.getValue().equals("PUT")) {
-				response = RestClient.put(builtUri, exchange.getRequestBody(), exchange.getRequestParameters());
-			} else if (method.getValue().equals("PATCH")) {
-				response = RestClient.patch(builtUri, exchange.getRequestBody(), exchange.getRequestParameters());
-			} else if (method.getValue().equals("GET")) {
-				response = RestClient.get(builtUri, exchange.getRequestParameters());
-			} else if (method.getValue().equals("DELETE")) {
-				response = RestClient.delete(builtUri, exchange.getRequestParameters());
-			}
 			if (response == null) {
 				responseBody.setText("");
 				exchange.setResponseStatus(0);
@@ -580,7 +555,6 @@ public class EndPointController extends AbstractController implements Initializa
 				final ObjectMapper mapper = new ObjectMapper();
 				try {
 					final String body = exchange.getResponseBody();
-					System.err.println("rb = " + body);
 					final Object json = mapper.readValue(body, Object.class);
 					responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
 				} catch (final IOException e1) {

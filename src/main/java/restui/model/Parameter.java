@@ -164,6 +164,11 @@ public class Parameter {
 		return valid;
 	}
 
+	public boolean nameIs(String name) {
+
+		return getName() != null && getName().equalsIgnoreCase(name);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

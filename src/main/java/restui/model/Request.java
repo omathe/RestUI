@@ -6,7 +6,7 @@ import javafx.beans.property.StringProperty;
 public class Request extends Message {
 
 	public enum BodyType {
-		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA, BINARY;
+		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
 	}
 
 	private StringProperty uri;

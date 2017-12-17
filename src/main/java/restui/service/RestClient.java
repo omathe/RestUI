@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -36,7 +37,33 @@ public class RestClient {
 
 	private static final Client client = Client.create();
 
-	public static ClientResponse post(final Request request) {
+	public static ClientResponse execute(String method, final Request request) {
+		ClientResponse response = null;
+
+		switch (method) {
+		case "POST":
+			response = post(request);
+			break;
+		case "GET":
+			response = get(request);
+			break;
+		case "PUT":
+			response = put(request);
+			break;
+		case "PATCH":
+			response = patch(request);
+			break;
+		case "DELETE":
+			response = delete(request);
+			break;
+
+		default:
+			break;
+		}
+		return response;
+	}
+
+	private static ClientResponse post(final Request request) {
 
 		ClientResponse response = null;
 
@@ -51,9 +78,10 @@ public class RestClient {
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
 			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-				parameters = parameters.stream().filter(p -> p.getEnabled() && p.getType().equals(Type.TEXT.name()) && (p.isBodyParameter() || !p.getName().equalsIgnoreCase("Content-Type"))).collect(Collectors.toList());
+				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
+
+				parameters.clear();
 				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
-				body = parameters.stream().map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 				bos.write(new String(body).getBytes());
 
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
@@ -61,7 +89,10 @@ public class RestClient {
 				bos.write(new String(body).getBytes());
 
 			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
-				parameters = parameters.stream().filter(p -> p.getEnabled() && (p.isBodyParameter() || !p.getName().equalsIgnoreCase("Content-Type"))).collect(Collectors.toList());
+				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				if (optional.isPresent()) {
+					parameters.remove(optional.get());
+				}
 				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
 
 				for (Parameter parameter : parameters) {
@@ -91,12 +122,14 @@ public class RestClient {
 		return response;
 	}
 
-	public static ClientResponse get(final String uri, final List<Parameter> parameters) {
+	private static ClientResponse get(final Request request) {
 
 		ClientResponse response = null;
-		final Client client = Client.create();
 
 		try {
+			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+			String uri = request.getUri();
+
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
@@ -111,56 +144,136 @@ public class RestClient {
 		return response;
 	}
 
-	public static ClientResponse put(final String uri, final String body, final List<Parameter> parameters) {
+	private static ClientResponse put(final Request request) {
 
 		ClientResponse response = null;
-		final Client client = Client.create();
+
+		String body = null;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 		try {
+			String uri = request.getUri();
+			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-			addHeaders(builder, parameters);
+			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
-			response = builder.put(ClientResponse.class, body);
+				parameters.clear();
+				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+				bos.write(new String(body).getBytes());
+
+			} else if (request.getBodyType().equals(BodyType.RAW)) {
+				body = request.getRawBody();
+				bos.write(new String(body).getBytes());
+
+			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
+				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				if (optional.isPresent()) {
+					parameters.remove(optional.get());
+				}
+				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
+
+				for (Parameter parameter : parameters) {
+					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
+						addMultiparTextParameter(bos, parameter);
+					} else if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.FILE.name())) {
+						addMultiparFileParameter(bos, parameter);
+					}
+				}
+				bos.write(new String(CLOSE_BOUNDARY + LINE_FEED).getBytes());
+			}
+			addHeaders(builder, parameters);
+			bos.flush();
+			response = builder.put(ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
 			client.destroy();
+			if (bos != null) {
+				try {
+					bos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return response;
 	}
 
-	public static ClientResponse patch(final String uri, final String body, final List<Parameter> parameters) {
+	private static ClientResponse patch(final Request request) {
 
 		ClientResponse response = null;
 		final DefaultClientConfig config = new DefaultClientConfig();
 		config.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
+
 		final Client client = Client.create(config);
+		String body = null;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 		try {
+			String uri = request.getUri();
+			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
 
-			final WebResource webResource = client.resource(uriWithoutQueryParams(uriWithoutQueryParams(uri))).queryParams(buildParams(parameters));
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
+			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
+
+				parameters.clear();
+				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+				bos.write(new String(body).getBytes());
+
+			} else if (request.getBodyType().equals(BodyType.RAW)) {
+				body = request.getRawBody();
+				bos.write(new String(body).getBytes());
+
+			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
+				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				if (optional.isPresent()) {
+					parameters.remove(optional.get());
+				}
+				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
+
+				for (Parameter parameter : parameters) {
+					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
+						addMultiparTextParameter(bos, parameter);
+					} else if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.FILE.name())) {
+						addMultiparFileParameter(bos, parameter);
+					}
+				}
+				bos.write(new String(CLOSE_BOUNDARY + LINE_FEED).getBytes());
+			}
 			addHeaders(builder, parameters);
-
-			response = builder.method("PATCH", ClientResponse.class, body);
-
+			bos.flush();
+			response = builder.method("PATCH", ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
 			client.destroy();
+			if (bos != null) {
+				try {
+					bos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return response;
 	}
 
-	public static ClientResponse delete(final String uri, final List<Parameter> parameters) {
+	private static ClientResponse delete(final Request request) {
 
 		ClientResponse response = null;
 		final Client client = Client.create();
 
 		try {
+			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+			String uri = request.getUri();
+
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 

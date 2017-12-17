@@ -1,11 +1,13 @@
 package restui.controller.cellFactory;
 
 import java.io.File;
+import java.net.URI;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
@@ -80,6 +82,17 @@ public class BodyParameterValueCellFactory extends TableCell<Parameter, String> 
 			} else {
 				setText(getString());
 				setGraphic(null);
+				String tooltipText = item;
+				if (item.startsWith("file:")) {
+					URI uri = URI.create(item);
+					File file = new File(uri);
+					if (file.exists()) {
+						tooltipText = file.getName() + "\nsize = " + file.length();
+					} else {
+						tooltipText = "File does not exist !";
+					}
+				}
+				setTooltip(new Tooltip(tooltipText));
 			}
 		}
 	}

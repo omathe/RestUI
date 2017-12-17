@@ -99,7 +99,10 @@
                                                                   <Label text="Parameters">
                                                                      <font>
                                                                         <Font size="14.0" />
-                                                                     </font></Label>
+                                                                     </font>
+                                                                     <padding>
+                                                                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                                     </padding></Label>
                                                                   <TableView fx:id="parameters" editable="true" VBox.vgrow="ALWAYS">
                                                                      <columns>
                                                                         <TableColumn fx:id="parameterEnabledColumn" prefWidth="75.0" text="Enabled" />
@@ -120,8 +123,7 @@
                                                                      <children>
                                                                         <HBox fx:id="bodyHBox" spacing="5.0">
                                                                            <children>
-                                                                              <Label text="Body" />
-                                                                              <Region HBox.hgrow="ALWAYS" />
+                                                                              <Label minWidth="-Infinity" text="Body" HBox.hgrow="ALWAYS" />
                                                                               <RadioButton fx:id="rawBody" mnemonicParsing="false" onMouseClicked="#rawBodySelected" selected="true" text="raw">
                                                                                  <toggleGroup>
                                                                                     <ToggleGroup fx:id="bodyGroup" />
@@ -129,7 +131,6 @@
                                                                               </RadioButton>
                                                                               <RadioButton fx:id="formDataBody" mnemonicParsing="false" onMouseClicked="#formDataBodySelected" text="form data" toggleGroup="$bodyGroup" />
                                                                               <RadioButton fx:id="formEncodedBody" mnemonicParsing="false" onMouseClicked="#formEncodedBodySelected" text="x-www-form-urlencoded" toggleGroup="$bodyGroup" />
-                                                                              <RadioButton fx:id="binaryBody" mnemonicParsing="false" text="binary" toggleGroup="$bodyGroup" />
                                                                            </children>
                                                                            <padding>
                                                                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -168,11 +169,7 @@
                                                 <HBox alignment="BOTTOM_RIGHT" spacing="5.0">
                                                    <children>
                                                       <Label text="Status :" />
-                                                      <Label fx:id="responseStatus">
-                                                         <font>
-                                                            <Font size="15.0" />
-                                                         </font>
-                                                      </Label>
+                                                      <Label fx:id="responseStatus" />
                                                       <Region HBox.hgrow="ALWAYS" />
                                                       <Label text="Duration :" />
                                                       <Label fx:id="responseDuration">
@@ -193,7 +190,10 @@
                                                                   <Label text="Headers">
                                                                      <font>
                                                                         <Font size="14.0" />
-                                                                     </font></Label>
+                                                                     </font>
+                                                                     <padding>
+                                                                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                                     </padding></Label>
                                                                   <TableView fx:id="responseHeaders" VBox.vgrow="ALWAYS">
                                                                      <columns>
                                                                         <TableColumn fx:id="headerNameColumn" editable="false" prefWidth="75.0" text="Name" />
@@ -208,8 +208,11 @@
                                                          <children>
                                                             <VBox prefHeight="309.0" prefWidth="392.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                <children>
-                                                                  <Label text="Body" />
-                                                                  <TextArea fx:id="responseBody" editable="false" VBox.vgrow="ALWAYS" />
+                                                                  <Label text="Body">
+                                                                     <padding>
+                                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                                     </padding></Label>
+                                                                  <TextArea fx:id="responseBody" editable="false" prefHeight="323.0" prefWidth="392.0" VBox.vgrow="ALWAYS" />
                                                                </children>
                                                             </VBox>
                                                          </children>
