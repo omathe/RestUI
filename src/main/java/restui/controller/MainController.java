@@ -385,7 +385,7 @@ public class MainController implements Initializable {
 	}
 
 	@FXML
-	protected void exit(final ActionEvent event) {
+	public void exit(final ActionEvent event) {
 
 		ApplicationService.saveApplication(application);
 
