@@ -6,7 +6,7 @@ import javafx.beans.property.StringProperty;
 public class Project extends Item {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private StringProperty baseUrl;
 
 	public Project() {
@@ -33,5 +33,5 @@ public class Project extends Item {
 	public StringProperty baseUrlProperty() {
 		return baseUrl;
 	}
-	
+
 }

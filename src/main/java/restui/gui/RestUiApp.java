@@ -30,7 +30,6 @@ public class RestUiApp extends Application {
 		});
 
 		primaryStage.show();
-
 	}
 
 	public static void main(final String[] args) {

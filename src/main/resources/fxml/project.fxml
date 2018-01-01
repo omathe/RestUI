@@ -8,6 +8,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -15,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.web.WebView?>
 
-<HBox spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.ProjectController">
+<HBox onMouseExited="#mouseExited" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.ProjectController">
 	<children>
 		<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
 			<tabs>
@@ -23,18 +25,29 @@
 					<content>
 						<AnchorPane>
 							<children>
-								<VBox>
+								<VBox prefHeight="600.0" prefWidth="607.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<children>
-										<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
-											<children>
-												<Label text="URL" />
-												<TextField fx:id="baseUrl" maxWidth="1.7976931348623157E308" promptText="http://host:8080/rest" HBox.hgrow="ALWAYS" />
-											</children>
-											<VBox.margin>
-												<Insets bottom="20.0" left="5.0" right="5.0" top="5.0" />
-											</VBox.margin>
-										</HBox>
-										<VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                              <Label text="Hosts" />
+                              <TableView fx:id="hostsTable" editable="true" prefHeight="155.0" prefWidth="607.0">
+                                <columns>
+                                  <TableColumn fx:id="hostNameColumn" prefWidth="75.0" text="Name" />
+                                  <TableColumn fx:id="hostUrlColumn" prefWidth="370.0" text="Base URL" />
+                                </columns>
+                              </TableView>
+									</children>
+                           <padding>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                           </padding>
+								</VBox>
+							</children>
+						</AnchorPane>
+					</content>
+				</Tab>
+            <Tab text="Settings">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+										<VBox spacing="5.0">
 											<children>
 												<HBox fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
 													<children>
@@ -51,9 +64,10 @@
 														</ComboBox>
 														<TextField fx:id="parameterName" promptText="Name" text="Authorization" />
 														<TextField fx:id="parameterValue" promptText="Value" text="Bearer ">
-                                             <opaqueInsets>
-                                                <Insets />
-                                             </opaqueInsets></TextField>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </TextField>
 														<Button minWidth="-Infinity" mnemonicParsing="false" onAction="#updateParametersValue" prefWidth="120.0" text="Update values" />
 													</children>
 													<VBox.margin>
@@ -74,16 +88,11 @@
 													</padding>
 												</HBox>
 											</children>
-											<VBox.margin>
-												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-											</VBox.margin>
 										</VBox>
-									</children>
-								</VBox>
-							</children>
-						</AnchorPane>
-					</content>
-				</Tab>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
 				<Tab text="Web">
 					<content>
 						<AnchorPane>

@@ -390,6 +390,9 @@ public class MainController implements Initializable {
 		ApplicationService.saveApplication(application);
 
 		final ButtonData choice = confirmSaveProject();
+		if (choice.equals(ButtonData.YES)) {
+			save(null);
+		}
 		if (!choice.equals(ButtonData.CANCEL_CLOSE)) {
 			Platform.exit();
 		}
