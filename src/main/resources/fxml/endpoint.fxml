@@ -45,11 +45,11 @@
                      <children>
                         <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <HBox alignment="CENTER" spacing="5.0" style="-fx-background-color: pink;">
+                              <HBox alignment="CENTER" spacing="5.0" style="-fx-background-color: gray;">
                                  <children>
-                                    <Label fx:id="endpoint" text="Label">
+                                    <Label fx:id="endpoint" text="Label" textFill="#15d025">
                                        <font>
-                                          <Font size="16.0" />
+                                          <Font name="System Bold" size="16.0" />
                                        </font>
                                     </Label>
                                  </children>
