@@ -473,7 +473,7 @@ public class MainController implements Initializable {
 			final Project project = (Project) treeView.getRoot().getValue();
 			final Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Save the project");
-			alert.setHeaderText("Do you want to save the project\n" + project.getName());
+			alert.setHeaderText("Do you want to save the project\n" + project.getName() + " ?");
 			final ButtonType yesButton = new ButtonType("Yes", ButtonData.YES);
 			final ButtonType noButton = new ButtonType("No", ButtonData.NO);
 			final ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);

@@ -1,12 +1,15 @@
 package restui.controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
@@ -18,10 +21,13 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
+import restui.commons.AlertBuilder;
+import restui.commons.Strings;
 import restui.controller.cellFactory.BodyParameterValueCellFactory;
 import restui.model.Exchange;
 import restui.model.Item;
@@ -92,15 +98,21 @@ public class RequestBodyController extends AbstractController implements Initial
 
 		add.setOnAction(e -> {
 			if (exchange != null) {
-				final Parameter parameter = new Parameter(true, Type.TEXT, Location.BODY, "name", "value");
+				List<String> parameterNames = bodyTableView.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
+				final Parameter parameter = new Parameter(true, Type.TEXT, Location.BODY, Strings.getNextValue(parameterNames, "name"), "");
 				exchange.addRequestParameter(parameter);
 			}
 		});
 
 		remove.setOnAction(e -> {
 			if (exchange != null) {
-				final Parameter parameter = bodyTableView.getSelectionModel().getSelectedItem();
-				exchange.removeRequestParameter(parameter);
+				deleteRequestParameters(bodyTableView.getSelectionModel().getSelectedItems());
+			}
+		});
+
+		bodyTableView.setOnKeyPressed(event -> {
+			if (event.getCode().equals(KeyCode.DELETE)) {
+				deleteRequestParameters(bodyTableView.getSelectionModel().getSelectedItems());
 			}
 		});
 	}
@@ -164,6 +176,17 @@ public class RequestBodyController extends AbstractController implements Initial
 	@Override
 	public void setTreeItem(final TreeItem<Item> treeItem) {
 		super.setTreeItem(treeItem);
+	}
+
+	private void deleteRequestParameters(final List<Parameter> parameters) {
+
+		if (parameters != null && !parameters.isEmpty()) {
+			final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
+			final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
+			if (response.equals(ButtonType.OK)) {
+				exchange.removeRequestParameters(parameters);
+			}
+		}
 	}
 
 }

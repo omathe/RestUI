@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -62,6 +63,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.NumberStringConverter;
 import restui.commons.AlertBuilder;
+import restui.commons.Strings;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
@@ -203,12 +205,12 @@ public class EndPointController extends AbstractController implements Initializa
 		// request parameters
 		parameters.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-		final ContextMenu requestParametersContextMenu = new ContextMenu();
 		parameters.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.DELETE)) {
 				deleteRequestParameters(parameters.getSelectionModel().getSelectedItems());
 			}
 		});
+
 		parameters.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -218,6 +220,7 @@ public class EndPointController extends AbstractController implements Initializa
 				final Optional<Parameter> parameter = getSelectedRequestParameter();
 
 				if (event.isSecondaryButtonDown()) {
+					final ContextMenu requestParametersContextMenu = new ContextMenu();
 					requestParametersContextMenu.getItems().clear();
 					final MenuItem add = new MenuItem("Add");
 					final MenuItem copy = new MenuItem("Copy");
@@ -230,7 +233,8 @@ public class EndPointController extends AbstractController implements Initializa
 
 					if (exchange.isPresent()) {
 						add.setOnAction(e -> {
-							addRequestParameter(new Parameter(false, Type.TEXT, Location.QUERY, "", ""));
+							List<String> parameterNames = parameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
+							addRequestParameter(new Parameter(false, Type.TEXT, Location.QUERY, Strings.getNextValue(parameterNames, "name"), ""));
 						});
 						paste.setOnAction(e -> {
 							final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
@@ -406,7 +410,8 @@ public class EndPointController extends AbstractController implements Initializa
 	private void addExchange() {
 
 		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
-		final Exchange exchange = new Exchange("echange", Instant.now().toEpochMilli());
+		List<String> exchangeNames = exchanges.getItems().stream().map(ex -> ex.getName()).collect(Collectors.toList());
+		final Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames, "echange"), Instant.now().toEpochMilli());
 		endpoint.addExchange(exchange);
 	}
 

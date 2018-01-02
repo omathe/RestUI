@@ -91,8 +91,8 @@ public class BodyParameterValueCellFactory extends TableCell<Parameter, String> 
 					} else {
 						tooltipText = "File does not exist !";
 					}
+					setTooltip(new Tooltip(tooltipText));
 				}
-				setTooltip(new Tooltip(tooltipText));
 			}
 		}
 	}
