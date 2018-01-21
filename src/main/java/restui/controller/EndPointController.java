@@ -1,9 +1,12 @@
 package restui.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
@@ -60,6 +63,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.NumberStringConverter;
 import restui.commons.AlertBuilder;
@@ -74,6 +78,7 @@ import restui.model.Path;
 import restui.model.Request;
 import restui.model.Request.BodyType;
 import restui.service.RestClient;
+import restui.service.Tools;
 
 public class EndPointController extends AbstractController implements Initializable {
 
@@ -484,10 +489,39 @@ public class EndPointController extends AbstractController implements Initializa
 
 				if (response.getStatus() != 204) {
 
-					final String output = response.getEntity(String.class);
-					if (output != null && !output.isEmpty()) {
-						exchange.setResponseBody(output);
-						displayResponseBody(exchange);
+					final InputStream inputStream = response.getEntityInputStream();
+					if (inputStream != null) {
+						byte[] bytes = Tools.getBytes(inputStream);
+
+						if (bytes != null && bytes.length > 0) {
+							final String output = new String(bytes, StandardCharsets.UTF_8);
+
+							if (output != null && !output.isEmpty()) {
+
+								Optional<Parameter> contentType = exchange.findResponseHeader("Content-Type");
+
+								// if the response contains octet stream, open a dialog box to save the file
+								if (contentType.isPresent() && contentType.get().getValue().toLowerCase().contains("octet-stream")) {
+									final FileChooser fileChooser = new FileChooser();
+									fileChooser.setTitle("Save the file");
+
+									final File initialDirectory = new File(System.getProperty("user.home"));
+									fileChooser.setInitialDirectory(initialDirectory);
+
+									String fileName = null;
+									Optional<Parameter> contentDisposition = exchange.findResponseHeader("Content-Disposition");
+									if (contentDisposition.isPresent()) {
+										fileName = Tools.findFileName(contentDisposition.get().getValue());
+									}
+									fileChooser.setInitialFileName(fileName);
+									final File file = fileChooser.showSaveDialog(null);
+									Tools.writeBytesToFile(file, bytes);
+								} else {
+									exchange.setResponseBody(output);
+									displayResponseBody(exchange);
+								}
+							}
+						}
 					}
 				}
 				response.close();
@@ -556,7 +590,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		exchange.findResponseHeader("Content-Type").ifPresent(p -> {
 
-			if (p.getValue().contains("json")) {
+			if (p.getValue().toLowerCase().contains("json")) {
 				final ObjectMapper mapper = new ObjectMapper();
 				try {
 					final String body = exchange.getResponseBody();
@@ -588,7 +622,6 @@ public class EndPointController extends AbstractController implements Initializa
 			} else {
 				responseBody.setText(exchange.getResponseBody());
 			}
-
 		});
 	}
 
