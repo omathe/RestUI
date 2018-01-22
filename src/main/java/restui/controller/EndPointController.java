@@ -502,6 +502,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 								if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
 									// the response contains the Content-Disposition header and attachment key word
+
 									final FileChooser fileChooser = new FileChooser();
 									fileChooser.setTitle("Save the file");
 
