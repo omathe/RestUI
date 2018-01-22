@@ -498,21 +498,17 @@ public class EndPointController extends AbstractController implements Initializa
 
 							if (output != null && !output.isEmpty()) {
 
-								Optional<Parameter> contentType = exchange.findResponseHeader("Content-Type");
+								Optional<Parameter> contentDisposition = exchange.findResponseHeader("Content-Disposition");
 
-								// if the response contains octet stream, open a dialog box to save the file
-								if (contentType.isPresent() && contentType.get().getValue().toLowerCase().contains("octet-stream")) {
+								if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
+									// the response contains the Content-Disposition header and attachment key word
 									final FileChooser fileChooser = new FileChooser();
 									fileChooser.setTitle("Save the file");
 
 									final File initialDirectory = new File(System.getProperty("user.home"));
 									fileChooser.setInitialDirectory(initialDirectory);
 
-									String fileName = null;
-									Optional<Parameter> contentDisposition = exchange.findResponseHeader("Content-Disposition");
-									if (contentDisposition.isPresent()) {
-										fileName = Tools.findFileName(contentDisposition.get().getValue());
-									}
+									String fileName = Tools.findFileName(contentDisposition.get().getValue());
 									fileChooser.setInitialFileName(fileName);
 									final File file = fileChooser.showSaveDialog(null);
 									Tools.writeBytesToFile(file, bytes);
