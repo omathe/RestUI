@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.Response.Status;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -63,6 +64,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.NumberStringConverter;
@@ -159,6 +162,9 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	private HBox bodyHBox;
+
+	@FXML
+	private Circle statusCircle;
 
 	public EndPointController() {
 		super();
@@ -394,6 +400,11 @@ public class EndPointController extends AbstractController implements Initializa
 
 			// response status
 			Bindings.bindBidirectional(responseStatus.textProperty(), exchange.getResponse().statusProperty(), new NumberStringConverter());
+			displayStatusTooltip(exchange);
+
+			// status circle
+			displayStatusCircle(exchange);
+
 			// response duration
 			Bindings.bindBidirectional(responseDuration.textProperty(), exchange.getResponse().durationProperty(), new NumberStringConverter());
 		}
@@ -486,6 +497,9 @@ public class EndPointController extends AbstractController implements Initializa
 				// response status
 				exchange.setDate(Instant.now().toEpochMilli());
 				exchange.setResponseStatus(response.getStatus());
+				displayStatusTooltip(exchange);
+				// status circle
+				displayStatusCircle(exchange);
 
 				if (response.getStatus() != 204) {
 
@@ -622,6 +636,21 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 	}
 
+	private void displayStatusCircle(final Exchange exchange) {
+
+		if (exchange.getStatus().toString().startsWith("0")) {
+			statusCircle.setFill(Color.GRAY);
+		} else if (exchange.getStatus().toString().startsWith("2")) {
+			statusCircle.setFill(Color.LIGHTGREEN);
+		} else if (exchange.getStatus().toString().startsWith("3")) {
+			statusCircle.setFill(Color.BLUE);
+		} else if (exchange.getStatus().toString().startsWith("4")) {
+			statusCircle.setFill(Color.ORANGE);
+		} else if (exchange.getStatus().toString().startsWith("5")) {
+			statusCircle.setFill(Color.RED);
+		}
+	}
+
 	@FXML
 	protected void rawBodySelected(final MouseEvent event) {
 		requestBody(BodyType.RAW);
@@ -641,6 +670,13 @@ public class EndPointController extends AbstractController implements Initializa
 		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
 		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
 		requestBodyController.display(this, fxmlRequestBody, bodyType);
+	}
+
+	private void displayStatusTooltip(Exchange exchange) {
+		Status st = Status.fromStatusCode(exchange.getResponse().getStatus());
+		if (st != null) {
+			responseStatus.setTooltip(new Tooltip(st.getReasonPhrase()));
+		}
 	}
 
 	public Optional<Exchange> getSelectedExchange() {
