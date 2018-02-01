@@ -638,7 +638,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void displayStatusCircle(final Exchange exchange) {
 
-		if (exchange.getStatus().toString().startsWith("0")) {
+		if (exchange.getStatus().toString().startsWith("0") || exchange.getStatus().toString().isEmpty()) {
 			statusCircle.setFill(Color.GRAY);
 		} else if (exchange.getStatus().toString().startsWith("2")) {
 			statusCircle.setFill(Color.LIGHTGREEN);
