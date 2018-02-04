@@ -258,6 +258,8 @@ public class MainController implements Initializable {
 		});
 
 		centerNodes.put("projectTab", borderPane.getCenter());
+		centerNodes.put("editTab", borderPane.getCenter());
+		centerNodes.put("styleTab", borderPane.getCenter());
 	}
 
 	private Node getCenterNode(String tabId) {

@@ -46,6 +46,20 @@
                               </HBox>
                            </content>
                         </Tab>
+                        <Tab fx:id="editTab" text="Edit">
+                           <content>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                 <children>
+                                    <Label text="Search" />
+                                    <ComboBox fx:id="searchItem" editable="true" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="207.0" style="-fx-background-color: pink;" />
+                                    <Label fx:id="searchCount" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </HBox>
+                           </content>
+                        </Tab>
                       <Tab fx:id="settingsTab" text="Settings" />
                         <Tab fx:id="webTab" text="Web">
                            <content>
@@ -69,7 +83,14 @@
                         </Tab>
                         <Tab fx:id="styleTab" text="Style">
                            <content>
-                              <Button mnemonicParsing="false" onAction="#openStyle" text="Style" />
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#openStyle" text="Style" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </HBox>
                            </content>
                         </Tab>
                     </tabs>
@@ -92,10 +113,8 @@
                <children>
                   <VBox prefHeight="536.0" prefWidth="234.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <HBox alignment="CENTER" spacing="3.0">
+                        <HBox alignment="TOP_RIGHT" spacing="3.0">
                            <children>
-                              <ComboBox fx:id="searchItem" editable="true" maxWidth="1.7976931348623157E308" prefWidth="150.0" style="-fx-background-color: pink;" HBox.hgrow="ALWAYS" />
-                              <Label fx:id="searchCount" />
                               <Button mnemonicParsing="false" onAction="#collapse" text="-" />
                            </children>
                            <VBox.margin>
