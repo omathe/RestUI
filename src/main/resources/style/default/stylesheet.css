@@ -1,5 +1,5 @@
 .button:hover {
-    -fx-background-color: blue;
+    -fx-background-color: gray;
 }
 
 #checkBoxProfile {
@@ -44,20 +44,69 @@
     -fx-text-fill: red;
 }
 
-#imageViewArchiver {
-    -fx-image: url("images/archive.png");
+#newFileButton { 
+    -fx-background-image: url('images/newFile.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+#newFileButton:hover {
+	-fx-opacity :1.0
 }
 
-#imageViewSource {
-    -fx-image: url("images/source.png");
+#openFileButton { 
+    -fx-background-image: url('images/openFile.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+#openFileButton:hover {
+	-fx-opacity :1.0
 }
 
-#imageViewDestination {
-    -fx-image: url("images/destination.png");
+#saveFileButton { 
+    -fx-background-image: url('images/saveFile.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+#saveFileButton:hover {
+	-fx-opacity :1.0
 }
 
-#imageViewCondition {
-    -fx-image: url("images/condition.png");
+#saveFileAsButton { 
+    -fx-background-image: url('images/saveFileAs.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+#saveFileAsButton:hover {
+	-fx-opacity :1.0
+}
+
+#deleteFileButton { 
+    -fx-background-image: url('images/deleteFile.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+#deleteFileButton:hover {
+	-fx-opacity :1.0
+}
+
+#exitButton { 
+    -fx-background-image: url('images/exit.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#exitButton:hover {
+	-fx-opacity :1.0
+}
+
+#tabPane1 .tab-header-background {
+    -fx-background-color: #f1f1f1;
 }
 
 #sourceGrid {
