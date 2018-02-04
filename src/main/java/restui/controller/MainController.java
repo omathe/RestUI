@@ -291,15 +291,12 @@ public class MainController implements Initializable {
 		return webEngine;
 	}
 
-
 	@FXML
 	protected void newProject(final ActionEvent event) {
 
-		if (projectFile != null) {
-			final ButtonData choice = confirmSaveProject();
-			if (choice.equals(ButtonData.YES)) {
-				save(null);
-			}
+		final ButtonData choice = confirmSaveProject();
+		if (choice.equals(ButtonData.YES)) {
+			save(null);
 		}
 
 		final Project project = new Project(null, "New project", "");
