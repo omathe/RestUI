@@ -9,8 +9,10 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -30,6 +32,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -37,6 +40,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -46,6 +51,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -60,6 +67,10 @@ import restui.service.ApplicationService;
 import restui.service.ProjectService;
 
 public class MainController implements Initializable {
+
+	private Map<String, Node> centerNodes = new HashMap<String, Node>();
+	private WebView webView;
+	private WebEngine webEngine;
 
 	@FXML
 	private TreeView<Item> treeView;
@@ -87,6 +98,12 @@ public class MainController implements Initializable {
 
 	@FXML
 	private BorderPane borderPane;
+
+	@FXML
+	private TabPane topTabPane;
+
+	@FXML
+	private ComboBox<String> url;
 
 	private ProjectController projectController;
 	private EndPointController endPointController;
@@ -124,8 +141,7 @@ public class MainController implements Initializable {
 		treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Item>>() {
 
 			@Override
-			public void changed(final ObservableValue<? extends TreeItem<Item>> observable,
-					final TreeItem<Item> oldValue, final TreeItem<Item> newValue) {
+			public void changed(final ObservableValue<? extends TreeItem<Item>> observable, final TreeItem<Item> oldValue, final TreeItem<Item> newValue) {
 
 				if (newValue != null) {
 					if (newValue.getValue() instanceof Project) {
@@ -232,7 +248,49 @@ public class MainController implements Initializable {
 				}
 			}
 		});
+
+		// topTabPane
+		topTabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+			@Override
+			public void changed(ObservableValue<? extends Tab> ov, Tab oldValue, Tab newValue) {
+				// store previous center node used by borderPane
+				centerNodes.put(oldValue.getId(), borderPane.getCenter());
+
+				// set borderPane center node
+				borderPane.setCenter(getCenterNode(newValue.getId()));
+			}
+		});
+
+		centerNodes.put("projectTab", borderPane.getCenter());
 	}
+
+	private Node getCenterNode(String tabId) {
+
+		Node center = centerNodes.get(tabId);
+
+		if (center == null) {
+			if (tabId.equals("webTab")) {
+				getWebEngine().load("https://www.qwant.com/?l=fr");
+				center = webView;
+			}
+		}
+		return center;
+	}
+
+	private WebView getWebView() {
+		if (webView == null) {
+			webView = new WebView();
+		}
+		return webView;
+	}
+
+	private WebEngine getWebEngine() {
+		if (webEngine == null) {
+			webEngine = getWebView().getEngine();
+		}
+		return webEngine;
+	}
+
 
 	@FXML
 	protected void newProject(final ActionEvent event) {
@@ -302,8 +360,7 @@ public class MainController implements Initializable {
 				final FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save the project " + project.getName());
 
-				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome())
-						: new File(URI.create(application.getLastProjectUri())).getParentFile();
+				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome()) : new File(URI.create(application.getLastProjectUri())).getParentFile();
 				fileChooser.setInitialDirectory(initialDirectory);
 				fileChooser.setInitialFileName(project.getName() + ".xml");
 
@@ -326,8 +383,7 @@ public class MainController implements Initializable {
 			final FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Save the project as");
 
-			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome())
-					: new File(URI.create(application.getLastProjectUri())).getParentFile();
+			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome()) : new File(URI.create(application.getLastProjectUri())).getParentFile();
 			fileChooser.setInitialDirectory(initialDirectory);
 			fileChooser.setInitialFileName("projectCopy.xml");
 
@@ -399,6 +455,13 @@ public class MainController implements Initializable {
 	}
 
 	@FXML
+	public void launchWebPage(final ActionEvent event) {
+
+		getWebEngine().load(url.getValue());
+		borderPane.setCenter(webView);
+	}
+
+	@FXML
 	protected void collapse(final ActionEvent event) {
 
 		collapseTreeView(treeView.getRoot());
@@ -434,35 +497,24 @@ public class MainController implements Initializable {
 
 	public List<TreeItem<Item>> collectEndpoints() {
 
-		return treeView.getRoot() == null ? new ArrayList<>() : flattened(treeView.getRoot())
-				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
-				.sorted((ti1, ti2) -> ti1.getValue().getName().compareTo(ti2.getValue().getName()))
-				.collect(Collectors.toList());
+		return treeView.getRoot() == null ? new ArrayList<>()
+				: flattened(treeView.getRoot()).filter(ti -> ti.getValue().getClass().equals(Endpoint.class)).sorted((ti1, ti2) -> ti1.getValue().getName().compareTo(ti2.getValue().getName())).collect(Collectors.toList());
 	}
 
 	public List<TreeItem<Item>> findChildren(final TreeItem<Item> parent, final String name, final boolean contains) {
 
-		final Predicate<TreeItem<Item>> predicate = contains ? ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase())
-				: ti -> ti.getValue().getName().toLowerCase().equals(name.toLowerCase());
-		return parent == null ? null : flattened(parent)
-				.filter(predicate)
-				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
-				.collect(Collectors.toList());
+		final Predicate<TreeItem<Item>> predicate = contains ? ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase()) : ti -> ti.getValue().getName().toLowerCase().equals(name.toLowerCase());
+		return parent == null ? null : flattened(parent).filter(predicate).filter(ti -> ti.getValue().getClass().equals(Endpoint.class)).collect(Collectors.toList());
 	}
 
 	public Optional<TreeItem<Item>> findChild(final TreeItem<Item> parent, final String name) {
 
-		return flattened(parent)
-				.filter(ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase()))
-				.filter(ti -> ti.getValue().getClass().equals(Endpoint.class))
-				.findFirst();
+		return flattened(parent).filter(ti -> ti.getValue().getName().toLowerCase().contains(name.toLowerCase())).filter(ti -> ti.getValue().getClass().equals(Endpoint.class)).findFirst();
 	}
 
 	private static Stream<TreeItem<Item>> flattened(final TreeItem<Item> parent) {
 
-		return Stream.concat(
-				Stream.of(parent),
-				parent.getChildren().stream().flatMap(a -> MainController.flattened(a)));
+		return Stream.concat(Stream.of(parent), parent.getChildren().stream().flatMap(a -> MainController.flattened(a)));
 	}
 
 	private ButtonData confirmSaveProject() {

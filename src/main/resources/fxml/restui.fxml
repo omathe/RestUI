@@ -21,9 +21,9 @@
          <children>
             <HBox alignment="TOP_RIGHT" spacing="5.0">
                <children>
-                  <TabPane id="tabPane1" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
+                  <TabPane id="tabPane1" fx:id="topTabPane" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
                     <tabs>
-                      <Tab text="File">
+                      <Tab fx:id="projectTab" text="Project">
                            <content>
                               <HBox spacing="8.0">
                                  <children>
@@ -46,14 +46,30 @@
                               </HBox>
                            </content>
                         </Tab>
-                      <Tab text="Settings" />
-                        <Tab text="Web">
+                      <Tab fx:id="settingsTab" text="Settings" />
+                        <Tab fx:id="webTab" text="Web">
                            <content>
                               <HBox>
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#openStyle" text="Style" />
+                                    <HBox spacing="5.0">
+                                       <children>
+                                          <ComboBox fx:id="url" editable="true" prefHeight="26.0" prefWidth="476.0" />
+                                          <Button mnemonicParsing="false" onAction="#launchWebPage" text="OK" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
                                  </children>
                               </HBox>
+                           </content>
+                        </Tab>
+                        <Tab fx:id="styleTab" text="Style">
+                           <content>
+                              <Button mnemonicParsing="false" onAction="#openStyle" text="Style" />
                            </content>
                         </Tab>
                     </tabs>
