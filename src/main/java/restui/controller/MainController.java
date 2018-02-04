@@ -88,9 +88,6 @@ public class MainController implements Initializable {
 	private Label time;
 
 	@FXML
-	private Label style;
-
-	@FXML
 	private Label file;
 
 	@FXML
@@ -124,7 +121,6 @@ public class MainController implements Initializable {
 
 		if (application.getStyleFile() != null) {
 			setStyle(application.getStyleFile());
-			style.setText(application.getStyleName());
 		}
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -310,6 +306,11 @@ public class MainController implements Initializable {
 	@FXML
 	protected void open(final ActionEvent event) {
 
+		final ButtonData choice = confirmSaveProject();
+		if (choice.equals(ButtonData.YES)) {
+			save(null);
+		}
+
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open a project");
 
@@ -369,6 +370,7 @@ public class MainController implements Initializable {
 			if (projectFile != null) {
 				ProjectService.saveProject(project, projectFile);
 				application.setLastProjectUri(projectFile.toURI().toString());
+				file.setText(projectFile.getAbsolutePath());
 			}
 		}
 	}
@@ -478,7 +480,6 @@ public class MainController implements Initializable {
 		borderPane.getStylesheets().clear();
 		borderPane.getStylesheets().add(uri);
 		application.setStyleFile(uri);
-		style.setText(application.getStyleName());
 	}
 
 	private void builTree(final TreeItem<Item> parent) {

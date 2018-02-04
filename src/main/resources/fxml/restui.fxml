@@ -121,8 +121,6 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="style" text="style" />
-            <Label text="|" />
             <Label fx:id="file" text="file" />
             <Region HBox.hgrow="ALWAYS" />
             <Label fx:id="time" text="Label" />
