@@ -28,7 +28,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
@@ -65,7 +64,6 @@ public class ProjectController extends AbstractController implements Initializab
 	@FXML
 	private TableColumn<Host, String> hostUrlColumn;
 
-	private WebEngine webEngine;
 	private ObservableList<Host> hostsData;
 	private Project project;
 
@@ -89,8 +87,6 @@ public class ProjectController extends AbstractController implements Initializab
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-
-		webEngine = webView.getEngine();
 
 		// hosts
 		hostNameColumn.setCellValueFactory(new PropertyValueFactory<Host, String>("name"));
@@ -176,12 +172,6 @@ public class ProjectController extends AbstractController implements Initializab
 		if (response.equals(ButtonType.OK)) {
 			hostsData.remove(host);
 		}
-	}
-
-	@FXML
-	protected void load(final ActionEvent event) {
-
-		webEngine.load(url.getValue());
 	}
 
 	@FXML

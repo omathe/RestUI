@@ -63,21 +63,16 @@
                       <Tab fx:id="settingsTab" text="Settings" />
                         <Tab fx:id="webTab" text="Web">
                            <content>
-                              <HBox>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
-                                    <HBox spacing="5.0">
-                                       <children>
-                                          <ComboBox fx:id="url" editable="true" prefHeight="26.0" prefWidth="476.0" />
-                                          <Button mnemonicParsing="false" onAction="#launchWebPage" text="OK" />
-                                       </children>
-                                       <HBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </HBox.margin>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </HBox>
+                                    <ComboBox fx:id="url" editable="true" prefHeight="26.0" prefWidth="476.0" />
+                                    <Button mnemonicParsing="false" onAction="#launchWebPage" text="OK" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button mnemonicParsing="false" onAction="#closeWebView" text="close" />
                                  </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
                               </HBox>
                            </content>
                         </Tab>

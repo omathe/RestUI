@@ -545,4 +545,11 @@ public class MainController implements Initializable {
 		}
 	}
 
+	@FXML
+	protected void closeWebView(final ActionEvent event) {
+
+		getWebEngine().load(null);
+		webEngine = null;
+	}
+
 }
