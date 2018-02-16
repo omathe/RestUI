@@ -265,6 +265,7 @@ public class MainController implements Initializable {
 		centerNodes.put("projectTab", borderPane.getCenter());
 		centerNodes.put("editTab", borderPane.getCenter());
 		centerNodes.put("styleTab", borderPane.getCenter());
+		centerNodes.put("settingsTab", borderPane.getCenter());
 	}
 
 	private Node getCenterNode(String tabId) {
@@ -409,18 +410,18 @@ public class MainController implements Initializable {
 		}
 	}
 
-	@FXML
-	protected void openStyle(final ActionEvent event) {
-
-		final FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Select the style sheet file");
-		fileChooser.setInitialDirectory(new File(ApplicationService.getApplicationHome()));
-		final File file = fileChooser.showOpenDialog(null);
-		if (file != null) {
-			setStyle(file.toURI().toString());
-			application.setStyleFile(file.toURI().toString());
-		}
-	}
+//	@FXML
+//	protected void openStyle(final ActionEvent event) {
+//
+//		final FileChooser fileChooser = new FileChooser();
+//		fileChooser.setTitle("Select the style sheet file");
+//		fileChooser.setInitialDirectory(new File(ApplicationService.getApplicationHome()));
+//		final File file = fileChooser.showOpenDialog(null);
+//		if (file != null) {
+//			setStyle(file.toURI().toString());
+//			application.setStyleFile(file.toURI().toString());
+//		}
+//	}
 
 	@FXML
 	protected void delete(final ActionEvent event) {
@@ -555,6 +556,16 @@ public class MainController implements Initializable {
 
 		getWebEngine().load(null);
 		webEngine = null;
+	}
+
+	@FXML
+	protected void updateParametersValue(final ActionEvent event) {
+
+		System.err.println("ok");
+
+//		final Parameter parameter = new Parameter(true, Type.TEXT, Location.valueOf(parameterLocation.getValue()), parameterName.getText(), parameterValue.getText());
+//		final Project project = (Project) treeItem.getValue();
+//		browseTree(project, parameter);
 	}
 
 }

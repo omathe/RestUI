@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
@@ -35,14 +34,10 @@ import restui.model.BaseUrl;
 import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Parameter;
-import restui.model.Parameter.Location;
-import restui.model.Parameter.Type;
 import restui.model.Project;
 
 public class ProjectController extends AbstractController implements Initializable {
 
-	@FXML
-	private ComboBox<String> parameterLocation;
 	@FXML
 	private TextField parameterName;
 	@FXML
@@ -167,14 +162,6 @@ public class ProjectController extends AbstractController implements Initializab
 //				}
 			}
 		});*/
-	}
-
-	@FXML
-	protected void updateParametersValue(final ActionEvent event) {
-
-		final Parameter parameter = new Parameter(true, Type.TEXT, Location.valueOf(parameterLocation.getValue()), parameterName.getText(), parameterValue.getText());
-		final Project project = (Project) treeItem.getValue();
-		browseTree(project, parameter);
 	}
 
 	private static void browseTree(final Item parent, final Parameter parameter) {
