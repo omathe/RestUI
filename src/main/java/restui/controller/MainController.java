@@ -108,6 +108,8 @@ public class MainController implements Initializable {
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
+	private HBox projectHbox;
+	private HBox endpointHbox;
 
 	int index = 0;
 
@@ -143,33 +145,36 @@ public class MainController implements Initializable {
 					if (newValue.getValue() instanceof Project) {
 
 						// Project
-						final FXMLLoader fxmlLoader = new FXMLLoader();
-						try {
-							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
-							hBox.setAlignment(Pos.TOP_LEFT);
-							projectController = (ProjectController) fxmlLoader.getController();
-							projectController.setTreeItem(newValue);
-
-							VBox.setVgrow(hBox, Priority.ALWAYS); // webView fill height
-							vBox.getChildren().clear();
-							vBox.getChildren().add(hBox);
-						} catch (final IOException e) {
-							e.printStackTrace();
+						if (projectHbox == null) {
+							try {
+								final FXMLLoader fxmlLoader = new FXMLLoader();
+								projectHbox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
+								projectHbox.setAlignment(Pos.TOP_LEFT);
+								projectController = (ProjectController) fxmlLoader.getController();
+							} catch (final IOException e) {
+								e.printStackTrace();
+							}
 						}
+						projectController.setTreeItem(newValue);
+						VBox.setVgrow(projectHbox, Priority.ALWAYS); // webView fill height
+						vBox.getChildren().clear();
+						vBox.getChildren().add(projectHbox);
 					} else if (newValue.getValue() instanceof Endpoint) {
 
 						// Endpoint
-						final FXMLLoader fxmlLoader = new FXMLLoader();
-						try {
-							final HBox hBox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
-							endPointController = (EndPointController) fxmlLoader.getController();
-							endPointController.setTreeView(treeView);
-							endPointController.setTreeItem(newValue);
-							vBox.getChildren().clear();
-							vBox.getChildren().add(hBox);
-						} catch (final IOException e) {
-							e.printStackTrace();
+						if (endpointHbox == null) {
+							try {
+								final FXMLLoader fxmlLoader = new FXMLLoader();
+								endpointHbox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
+								endPointController = (EndPointController) fxmlLoader.getController();
+							} catch (final IOException e) {
+								e.printStackTrace();
+							}
 						}
+						endPointController.setTreeView(treeView);
+						endPointController.setTreeItem(newValue);
+						vBox.getChildren().clear();
+						vBox.getChildren().add(endpointHbox);
 					}
 				}
 			}
@@ -297,7 +302,7 @@ public class MainController implements Initializable {
 			save(null);
 		}
 
-		final Project project = new Project(null, "New project", "");
+		final Project project = new Project("New project");
 		final TreeItem<Item> projectItem = new TreeItem<>(project);
 		treeView.setRoot(projectItem);
 

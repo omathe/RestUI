@@ -1,16 +1,12 @@
 package restui.controller;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
@@ -19,9 +15,11 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -29,16 +27,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
+import javafx.util.Callback;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
+import restui.controller.cellFactory.RadioButtonCell;
+import restui.model.BaseUrl;
 import restui.model.Endpoint;
-import restui.model.Host;
 import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Project;
-import restui.service.ApplicationService;
 
 public class ProjectController extends AbstractController implements Initializable {
 
@@ -58,13 +57,14 @@ public class ProjectController extends AbstractController implements Initializab
 	private VBox vBox;
 
 	@FXML
-	private TableView<Host> hostsTable;
+	private TableView<BaseUrl> baseUrlTable;
 	@FXML
-	private TableColumn<Host, String> hostNameColumn;
+	private TableColumn<BaseUrl, String> baseUrlNameColumn;
 	@FXML
-	private TableColumn<Host, String> hostUrlColumn;
+	private TableColumn<BaseUrl, String> baseUrlUrlColumn;
+	@FXML
+	private TableColumn<BaseUrl, Boolean> baseUrlEnabledColumn;
 
-	private ObservableList<Host> hostsData;
 	private Project project;
 
 	@Override
@@ -75,39 +75,67 @@ public class ProjectController extends AbstractController implements Initializab
 		final Long endpointsCount = project.flattened().filter(item -> item instanceof Endpoint).count();
 		nbEndpoints.setText(endpointsCount.toString());
 
-		// select host in the table
-		FilteredList<Host> filtered = hostsData.filtered(h -> h.getUrl().equalsIgnoreCase(project.getBaseUrl()));
-		if (filtered.isEmpty()) {
-			Host host = new Host(Strings.getNextValue(new ArrayList<String>(), "name"), project.getBaseUrl());
-			hostsData.add(host);
-		} else {
-			hostsTable.getSelectionModel().select(filtered.get(0));
-		}
+		baseUrlTable.setItems((ObservableList<BaseUrl>) project.getBaseUrls());
 	}
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		// hosts
-		hostNameColumn.setCellValueFactory(new PropertyValueFactory<Host, String>("name"));
-		hostNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		// table of Base URL
+		baseUrlNameColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("name"));
+		baseUrlNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
-		hostUrlColumn.setCellValueFactory(new PropertyValueFactory<Host, String>("url"));
-		hostUrlColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		baseUrlUrlColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("url"));
+		baseUrlUrlColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
-		List<Host> hosts = ApplicationService.loadHosts();
-		hostsData = FXCollections.observableArrayList(hosts);
-		hostsTable.setItems(hostsData);
+		baseUrlEnabledColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, Boolean>("enabled"));
+//		baseUrlEnabledColumn.setCellFactory(CheckBoxTableCell.forTableColumn(baseUrlEnabledColumn));
+		ToggleGroup group = new ToggleGroup();
+		baseUrlEnabledColumn.setCellFactory(new Callback<TableColumn<BaseUrl, Boolean>, TableCell<BaseUrl, Boolean>>() {
 
-		final ContextMenu contextMenu = new ContextMenu();
-		hostsTable.setOnKeyPressed(event -> {
-			if (event.getCode().equals(KeyCode.DELETE)) {
-				Host host = hostsTable.getSelectionModel().getSelectedItem();
-				deleteHost(host);
+			@Override
+			public TableCell<BaseUrl, Boolean> call(final TableColumn<BaseUrl, Boolean> param) {
+				return new RadioButtonCell(group);
 			}
 		});
 
-		hostsTable.setOnMousePressed(new EventHandler<MouseEvent>() {
+		final ContextMenu contextMenu = new ContextMenu();
+		baseUrlTable.setOnKeyPressed(event -> {
+			if (event.getCode().equals(KeyCode.DELETE)) {
+				BaseUrl baseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
+				removeBaseUrl(baseUrl);
+			}
+		});
+
+		baseUrlTable.setOnMousePressed(mouseEvent -> {
+			if (mouseEvent.isSecondaryButtonDown()) {
+				final MenuItem duplicate = new MenuItem("Duplicate");
+				final MenuItem delete = new MenuItem("Delete");
+				BaseUrl baseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
+
+				if (baseUrl == null) {
+					duplicate.setDisable(true);
+					delete.setDisable(true);
+				}
+				contextMenu.getItems().clear();
+				final MenuItem add = new MenuItem("Add");
+				contextMenu.getItems().add(add);
+				add.setOnAction(e -> {
+					List<String> baseUrlNames = project.getBaseUrls().stream().map(b -> b.getName()).collect(Collectors.toList());
+					project.addBaseUrl(new BaseUrl(Strings.getNextValue(baseUrlNames, "name"), "url", false));
+				});
+				contextMenu.getItems().addAll(duplicate, new SeparatorMenuItem(), delete);
+				duplicate.setOnAction(e -> {
+					project.addBaseUrl(new BaseUrl("copy of "+ baseUrl.getName(), baseUrl.getUrl(), baseUrl.getEnabled()));
+				});
+				delete.setOnAction(e -> {
+					removeBaseUrl(baseUrl);
+				});
+				baseUrlTable.setContextMenu(contextMenu);
+			}
+		});
+
+		/*baseUrlTable.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(final MouseEvent event) {
@@ -117,28 +145,28 @@ public class ProjectController extends AbstractController implements Initializab
 					final MenuItem add = new MenuItem("Add");
 					contextMenu.getItems().add(add);
 					add.setOnAction(e -> {
-						List<String> hostNames = hostsData.stream().map(h -> h.getName()).collect(Collectors.toList());
-						hostsData.add(new Host(Strings.getNextValue(hostNames, "name"), "url"));
+						List<String> baseUrlNames = baseUrlData.stream().map(b -> b.getName()).collect(Collectors.toList());
+						baseUrlData.add(new BaseUrl(Strings.getNextValue(baseUrlNames, "name"), "url", false));
 					});
 					final MenuItem duplicate = new MenuItem("Duplicate");
 					final MenuItem delete = new MenuItem("Delete");
 					contextMenu.getItems().addAll(duplicate, new SeparatorMenuItem(), delete);
 					duplicate.setOnAction(e -> {
-						Host host = hostsTable.getSelectionModel().getSelectedItem();
-						hostsData.add(new Host(host.getName() + " (copy)", host.getUrl()));
+						BaseUrl baseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
+						baseUrlData.add(new BaseUrl(baseUrl.getName()+ " (copy)", baseUrl.getUrl(), baseUrl.getEnabled()));
 					});
 					delete.setOnAction(e -> {
-						Host host = hostsTable.getSelectionModel().getSelectedItem();
-						deleteHost(host);
+						BaseUrl baseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
+						deleteBaseUrl(baseUrl);
 					});
-					hostsTable.setContextMenu(contextMenu);
+					baseUrlTable.setContextMenu(contextMenu);
 				}
-				else {
-					Host host = hostsTable.getSelectionModel().getSelectedItem();
-					project.setBaseUrl(host.getUrl());
-				}
+//				else {
+//					Host host = hostsTable.getSelectionModel().getSelectedItem();
+//					project.setBaseUrl(host.getAddress());
+//				}
 			}
-		});
+		});*/
 	}
 
 	@FXML
@@ -166,22 +194,22 @@ public class ProjectController extends AbstractController implements Initializab
 		}
 	}
 
-	private void deleteHost(Host host) {
+	private void removeBaseUrl(BaseUrl baseUrl) {
 
-		final ButtonType response = AlertBuilder.confirm("Delete the host", "Do you want to delete\n" + host.getName());
+		final ButtonType response = AlertBuilder.confirm("Delete the base url", "Do you want to delete\n" + baseUrl.getName());
 		if (response.equals(ButtonType.OK)) {
-			hostsData.remove(host);
+			project.removeBaseUrl(baseUrl);
 		}
 	}
 
 	@FXML
 	protected void mouseExited(final MouseEvent event) {
 
-		Host host = hostsTable.getSelectionModel().getSelectedItem();
-		if (host != null) {
-			project.setBaseUrl(host.getUrl());
-		}
-		ApplicationService.writeHosts(hostsData);
+		BaseUrl baseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
+//		if (host != null) {
+//			project.setBaseUrl(host.getAddress());
+//		}
+		//ApplicationService.writeHosts(hostsData);
 	}
 
 }

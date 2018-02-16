@@ -13,6 +13,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import restui.exception.NotFoundException;
+import restui.model.BaseUrl;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
@@ -36,7 +37,7 @@ public class ProjectService {
 			if (!file.exists()) {
 				throw new NotFoundException("file", file.getAbsolutePath());
 			}
-			project = new Project();
+			project = new Project("");
 			final SAXBuilder sxb = new SAXBuilder();
 			try {
 				final Document document = sxb.build(uri);
@@ -95,9 +96,19 @@ public class ProjectService {
 			final Project project = (Project) object;
 			element = new Element("project");
 			final Attribute attributeProjectName = new Attribute("name", project.getName());
-			final Attribute attributeProjectBaseUrl = new Attribute("baseUrl", project.getBaseUrl());
+			// baseUrls
+			if (!project.getBaseUrls().isEmpty()) {
+				final Element elementBaseUrls = new Element("baseUrls");
+				for (final BaseUrl baseUrl : project.getBaseUrls()) {
+					final Element elementBaseUrl = new Element("baseUrl");
+					elementBaseUrl.setAttribute(new Attribute("name", baseUrl.getName()));
+					elementBaseUrl.setAttribute(new Attribute("url", baseUrl.getUrl()));
+					elementBaseUrl.setAttribute(new Attribute("enabled", baseUrl.getEnabled().toString()));
+					elementBaseUrls.addContent(elementBaseUrl);
+				}
+				element.addContent(elementBaseUrls);
+			}
 			element.setAttribute(attributeProjectName);
-			element.setAttribute(attributeProjectBaseUrl);
 			break;
 		case "Path":
 			final Path path = (Path) object;
@@ -183,9 +194,17 @@ public class ProjectService {
 	private static Item buildItem(final Item parent, final Element element) {
 
 		if (element.getName().equalsIgnoreCase(Project.class.getSimpleName())) {
-			final Project project = new Project();
+			final Project project = new Project("");
 			project.setName(element.getAttributeValue("name"));
-			project.setBaseUrl(element.getAttributeValue("baseUrl"));
+			// baseUrls
+			final Element elementBaseUrls = element.getChild("baseUrls");
+			if (elementBaseUrls != null) {
+				for (final Element elementBaseUrl : elementBaseUrls.getChildren()) {
+					// BaseUrl
+					final BaseUrl baseUrl = new BaseUrl(elementBaseUrl.getAttributeValue("name"), elementBaseUrl.getAttributeValue("url"), Boolean.valueOf(elementBaseUrl.getAttributeValue("enabled")));
+					project.addBaseUrl(baseUrl);
+				}
+			}
 			return project;
 		} else if (element.getName().equalsIgnoreCase(Path.class.getSimpleName())) {
 			final Path path = new Path(parent, element.getAttributeValue("name"));

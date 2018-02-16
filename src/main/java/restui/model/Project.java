@@ -1,36 +1,41 @@
 package restui.model;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import java.util.List;
+import java.util.Optional;
+
+import javafx.collections.FXCollections;
 
 public class Project extends Item {
 
 	private static final long serialVersionUID = 1L;
 
-	private StringProperty baseUrl;
+	private List<BaseUrl> baseUrls;
 
-	public Project() {
-		super();
-		this.baseUrl = new SimpleStringProperty();
+	public Project(final String name) {
+		super(null, name);
+		this.baseUrls = FXCollections.observableArrayList();
 	}
 
-	public Project(final Item parent, final String name, final String baseUrl) {
-		super(parent, name);
-		this.baseUrl = new SimpleStringProperty(baseUrl);
+	public void addBaseUrl(final BaseUrl baseUrl) {
+
+		baseUrls.add(baseUrl);
+	}
+
+	public void removeBaseUrl(final BaseUrl baseUrl) {
+
+		baseUrls.remove(baseUrl);
+	}
+
+	public List<BaseUrl> getBaseUrls() {
+		return baseUrls;
 	}
 
 	public String getBaseUrl() {
-		return baseUrl.get();
-	}
-
-	public void setBaseUrl(final String baseUrl) {
-		if (this.baseUrl == null) {
-			this.baseUrl = new SimpleStringProperty(baseUrl);
+		String baseUrl = "";
+		Optional<BaseUrl> optional = baseUrls.stream().filter(b -> b.getEnabled()).findFirst();
+		if (optional.isPresent()) {
+			baseUrl = optional.get().getUrl();
 		}
-		this.baseUrl.set(baseUrl);
-	}
-
-	public StringProperty baseUrlProperty() {
 		return baseUrl;
 	}
 

@@ -13,11 +13,11 @@ public class Host {
 	private static final long serialVersionUID = 1L;
 
 	private final StringProperty name;
-	private final StringProperty url;
+	private final StringProperty address;
 
-	public Host(final String name, final String url) {
+	public Host(final String name, final String address) {
 		this.name = new SimpleStringProperty(name);
-		this.url = new SimpleStringProperty(url);
+		this.address = new SimpleStringProperty(address);
 	}
 
 	public String getName() {
@@ -32,16 +32,16 @@ public class Host {
 		return name;
 	}
 
-	public String getUrl() {
-		return url.get();
+	public String getAddress() {
+		return address.get();
 	}
 
-	public void setUrl(final String url) {
-		this.url.set(url);
+	public void setAddress(final String address) {
+		this.address.set(address);
 	}
 
-	public StringProperty urlProperty() {
-		return url;
+	public StringProperty addressProperty() {
+		return address;
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class Host {
 
 	@Override
 	public String toString() {
-		return "Host [name=" + name.get() + ", url=" + url.get() + "]";
+		return "Host [name=" + name.get() + ", address=" + address.get() + "]";
 	}
 
 }

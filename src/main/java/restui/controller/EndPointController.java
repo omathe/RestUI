@@ -570,6 +570,9 @@ public class EndPointController extends AbstractController implements Initializa
 
 		String valuedUri = baseUrl + path.getText();
 		Set<String> queryParams = new HashSet<String>();
+		if (!valuedUri.toLowerCase().startsWith("http")) {
+			validUri = false;
+		}
 
 		for (Parameter parameter : exchange.getRequest().getParameters()) {
 			if (parameter.isPathParameter()) {
