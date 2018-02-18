@@ -41,6 +41,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
@@ -233,7 +234,11 @@ public class EndPointController extends AbstractController implements Initializa
 				if (event.isSecondaryButtonDown()) {
 					final ContextMenu requestParametersContextMenu = new ContextMenu();
 					requestParametersContextMenu.getItems().clear();
-					final MenuItem add = new MenuItem("Add");
+					final Menu add = new Menu("Add");
+					final MenuItem addHeader = new MenuItem(Parameter.Location.HEADER.name());
+					final MenuItem addQuery = new MenuItem(Parameter.Location.QUERY.name());
+					add.getItems().addAll(addHeader, addQuery);
+
 					final MenuItem copy = new MenuItem("Copy");
 					final MenuItem paste = new MenuItem("Paste");
 					final MenuItem delete = new MenuItem("Delete");
@@ -243,9 +248,13 @@ public class EndPointController extends AbstractController implements Initializa
 					requestParametersContextMenu.getItems().addAll(add, copy, paste, new SeparatorMenuItem(), delete);
 
 					if (exchange.isPresent()) {
-						add.setOnAction(e -> {
+						addHeader.setOnAction(e -> {
 							List<String> parameterNames = parameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
-							addRequestParameter(new Parameter(false, Type.TEXT, Location.QUERY, Strings.getNextValue(parameterNames, "name"), ""));
+							addRequestParameter(new Parameter(true, Type.TEXT, Location.HEADER, Strings.getNextValue(parameterNames, "name"), ""));
+						});
+						addQuery.setOnAction(e -> {
+							List<String> parameterNames = parameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
+							addRequestParameter(new Parameter(true, Type.TEXT, Location.QUERY, Strings.getNextValue(parameterNames, "name"), ""));
 						});
 						paste.setOnAction(e -> {
 							final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
