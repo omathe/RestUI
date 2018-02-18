@@ -42,6 +42,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -62,6 +63,7 @@ import restui.exception.NotFoundException;
 import restui.model.Application;
 import restui.model.Endpoint;
 import restui.model.Item;
+import restui.model.Parameter;
 import restui.model.Project;
 import restui.service.ApplicationService;
 import restui.service.ProjectService;
@@ -101,6 +103,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private ComboBox<String> url;
+
+	@FXML
+	private TextField authorizationHeader;
 
 	private ProjectController projectController;
 	private EndPointController endPointController;
@@ -410,18 +415,19 @@ public class MainController implements Initializable {
 		}
 	}
 
-//	@FXML
-//	protected void openStyle(final ActionEvent event) {
-//
-//		final FileChooser fileChooser = new FileChooser();
-//		fileChooser.setTitle("Select the style sheet file");
-//		fileChooser.setInitialDirectory(new File(ApplicationService.getApplicationHome()));
-//		final File file = fileChooser.showOpenDialog(null);
-//		if (file != null) {
-//			setStyle(file.toURI().toString());
-//			application.setStyleFile(file.toURI().toString());
-//		}
-//	}
+	// @FXML
+	// protected void openStyle(final ActionEvent event) {
+	//
+	// final FileChooser fileChooser = new FileChooser();
+	// fileChooser.setTitle("Select the style sheet file");
+	// fileChooser.setInitialDirectory(new
+	// File(ApplicationService.getApplicationHome()));
+	// final File file = fileChooser.showOpenDialog(null);
+	// if (file != null) {
+	// setStyle(file.toURI().toString());
+	// application.setStyleFile(file.toURI().toString());
+	// }
+	// }
 
 	@FXML
 	protected void delete(final ActionEvent event) {
@@ -559,13 +565,29 @@ public class MainController implements Initializable {
 	}
 
 	@FXML
-	protected void updateParametersValue(final ActionEvent event) {
+	protected void setAuthorizationHeader(final ActionEvent event) {
 
-		System.err.println("ok");
+		final Item item = treeView.getRoot().getValue();
+		if (item != null && !authorizationHeader.getText().isEmpty()) {
+			setItemsAuthorizationHeader(item, authorizationHeader.getText());
+		}
+	}
 
-//		final Parameter parameter = new Parameter(true, Type.TEXT, Location.valueOf(parameterLocation.getValue()), parameterName.getText(), parameterValue.getText());
-//		final Project project = (Project) treeItem.getValue();
-//		browseTree(project, parameter);
+	private void setItemsAuthorizationHeader(final Item parent, String value) {
+
+		for (final Item child : parent.getChildren()) {
+			if (child instanceof Endpoint) {
+				final Endpoint endpoint = (Endpoint) child;
+				endpoint.getExchanges().stream().forEach(exchange -> {
+					final List<Parameter> parameters = exchange.findParameters(Parameter.Location.HEADER.name(), "Authorization");
+					if (parameters != null && !parameters.isEmpty() && parameters.size() == 1) {
+						parameters.get(0).setValue(value);
+					}
+				});
+			} else {
+				setItemsAuthorizationHeader(child, value);
+			}
+		}
 	}
 
 }

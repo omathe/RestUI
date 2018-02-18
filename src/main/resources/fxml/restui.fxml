@@ -9,6 +9,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -28,16 +29,31 @@
                            <content>
                               <HBox spacing="8.0">
                                  <children>
-                                    <Button id="newFileButton" mnemonicParsing="false" onAction="#newProject" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="New" />
+                                    <Button id="newFileButton" mnemonicParsing="false" onAction="#newProject" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="New">
+                                       <tooltip>
+                                          <Tooltip text="Create a new project" />
+                                       </tooltip></Button>
                                     
-                                    <Button id="openFileButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#open" opacity="0.7" prefHeight="32.0" prefWidth="32.0">
+                                    <Button id="openFileButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#open" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Open">
                                        <opaqueInsets>
                                           <Insets />
-                                       </opaqueInsets></Button>
-                                    <Button id="saveFileButton" mnemonicParsing="false" onAction="#save" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Save" />
-                                    <Button id="saveFileAsButton" mnemonicParsing="false" onAction="#saveAs" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Save as" />
+                                       </opaqueInsets>
+                                       <tooltip>
+                                          <Tooltip text="Open a project" />
+                                       </tooltip></Button>
+                                    <Button id="saveFileButton" mnemonicParsing="false" onAction="#save" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Save">
+                                       <tooltip>
+                                          <Tooltip text="Save the project" />
+                                       </tooltip></Button>
+                                    <Button id="saveFileAsButton" mnemonicParsing="false" onAction="#saveAs" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Save as">
+                                       <tooltip>
+                                          <Tooltip text="Save the project as ..." />
+                                       </tooltip></Button>
                                     <Separator orientation="VERTICAL" />
-                                    <Button id="deleteFileButton" mnemonicParsing="false" onAction="#delete" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Delete" />
+                                    <Button id="deleteFileButton" mnemonicParsing="false" onAction="#delete" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Delete">
+                                       <tooltip>
+                                          <Tooltip text="Delete the project" />
+                                       </tooltip></Button>
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Button id="exitButton" mnemonicParsing="false" onAction="#exit" opacity="0.7" prefHeight="32.0" prefWidth="32.0" />
                                  </children>
@@ -65,12 +81,12 @@
                            <content>
                               <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="parameterValue" promptText="Authorization header">
+                                    <TextField fx:id="authorizationHeader" promptText="Authorization header">
                                        <opaqueInsets>
                                           <Insets />
                                        </opaqueInsets>
                                     </TextField>
-                                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#updateParametersValue" text="set" />
+                                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#setAuthorizationHeader" text="set" />
                                  </children>
                                  <padding>
                                     <Insets bottom="5.0" right="5.0" top="5.0" />

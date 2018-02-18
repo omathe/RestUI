@@ -28,7 +28,7 @@ public class Item implements Serializable {
 		this.name = name;
 		this.children = new HashSet<>();
 	}
-	
+
 	public String getId() {
 		return uuid;
 	}
@@ -75,7 +75,7 @@ public class Item implements Serializable {
 				Stream.of(this),
 				children.stream().flatMap(Item::flattened));
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
