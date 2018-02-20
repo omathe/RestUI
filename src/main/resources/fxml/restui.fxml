@@ -16,6 +16,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 
 <BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController">
    <top>
@@ -55,7 +57,10 @@
                                           <Tooltip text="Delete the project" />
                                        </tooltip></Button>
                                     <Region HBox.hgrow="ALWAYS" />
-                                    <Button id="exitButton" mnemonicParsing="false" onAction="#exit" opacity="0.7" prefHeight="32.0" prefWidth="32.0" />
+                                    <Button id="exitButton" mnemonicParsing="false" onAction="#exit" opacity="0.7" prefHeight="32.0" prefWidth="32.0">
+                                       <tooltip>
+                                          <Tooltip text="Quit the application" />
+                                       </tooltip></Button>
                                  </children>
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="8.0" />
@@ -97,7 +102,15 @@
                            <content>
                               <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
-                                    <ComboBox fx:id="url" editable="true" prefHeight="26.0" prefWidth="476.0" />
+                                    <ComboBox fx:id="url" editable="true" prefHeight="26.0" prefWidth="476.0" >
+                                    <items>
+                        														<FXCollections fx:factory="observableArrayList">
+                        															<String fx:value="https://jsoneditoronline.org/" />
+                        															<String fx:value="https://www.google.fr/" />
+                        															<String fx:value="https://jwt.io/" />
+                        														</FXCollections>
+                        													</items>
+                        													</ComboBox>
                                     <Button mnemonicParsing="false" onAction="#launchWebPage" text="OK" />
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Button mnemonicParsing="false" onAction="#closeWebView" text="close" />
