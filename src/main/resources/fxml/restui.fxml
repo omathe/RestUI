@@ -19,167 +19,202 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
-<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController">
-   <top>
-      <VBox BorderPane.alignment="CENTER">
-         <children>
-            <HBox alignment="TOP_RIGHT" spacing="5.0">
-               <children>
-                  <TabPane id="tabPane1" fx:id="topTabPane" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
-                    <tabs>
-                      <Tab fx:id="projectTab" text="Project">
-                           <content>
-                              <HBox spacing="8.0">
-                                 <children>
-                                    <Button id="newFileButton" mnemonicParsing="false" onAction="#newProject" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="New">
-                                       <tooltip>
-                                          <Tooltip text="Create a new project" />
-                                       </tooltip></Button>
-                                    
-                                    <Button id="openFileButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#open" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Open">
-                                       <opaqueInsets>
-                                          <Insets />
-                                       </opaqueInsets>
-                                       <tooltip>
-                                          <Tooltip text="Open a project" />
-                                       </tooltip></Button>
-                                    <Button id="saveFileButton" mnemonicParsing="false" onAction="#save" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Save">
-                                       <tooltip>
-                                          <Tooltip text="Save the project" />
-                                       </tooltip></Button>
-                                    <Button id="saveFileAsButton" mnemonicParsing="false" onAction="#saveAs" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Save as">
-                                       <tooltip>
-                                          <Tooltip text="Save the project as ..." />
-                                       </tooltip></Button>
-                                    <Separator orientation="VERTICAL" />
-                                    <Button id="deleteFileButton" mnemonicParsing="false" onAction="#delete" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Delete">
-                                       <tooltip>
-                                          <Tooltip text="Delete the project" />
-                                       </tooltip></Button>
-                                    <Region HBox.hgrow="ALWAYS" />
-                                    <Button id="exitButton" mnemonicParsing="false" onAction="#exit" opacity="0.7" prefHeight="32.0" prefWidth="32.0">
-                                       <tooltip>
-                                          <Tooltip text="Quit the application" />
-                                       </tooltip></Button>
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="8.0" />
-                                 </padding>
-                              </HBox>
-                           </content>
-                        </Tab>
-                        <Tab fx:id="editTab" text="Edit">
-                           <content>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                 <children>
-                                    <Label text="Search" />
-                                    <ComboBox fx:id="searchItem" editable="true" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="207.0" style="-fx-background-color: pink;" />
-                                    <Label fx:id="searchCount" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </HBox>
-                           </content>
-                        </Tab>
-                      <Tab fx:id="settingsTab" text="Settings">
-                           <content>
-                              <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
-                                 <children>
-                                    <TextField fx:id="authorizationHeader" promptText="Authorization header">
-                                       <opaqueInsets>
-                                          <Insets />
-                                       </opaqueInsets>
-                                    </TextField>
-                                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#setAuthorizationHeader" text="set" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </HBox>
-                           </content></Tab>
-                        <Tab fx:id="webTab" text="Web">
-                           <content>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                 <children>
-                                    <ComboBox fx:id="url" editable="true" prefHeight="26.0" prefWidth="476.0" >
-                                    <items>
-                        														<FXCollections fx:factory="observableArrayList">
-                        															<String fx:value="https://jsoneditoronline.org/" />
-                        															<String fx:value="https://www.google.fr/" />
-                        															<String fx:value="https://jwt.io/" />
-                        														</FXCollections>
-                        													</items>
-                        													</ComboBox>
-                                    <Button mnemonicParsing="false" onAction="#launchWebPage" text="OK" />
-                                    <Region HBox.hgrow="ALWAYS" />
-                                    <Button mnemonicParsing="false" onAction="#closeWebView" text="close" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </HBox>
-                           </content>
-                        </Tab>
-                    </tabs>
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </TabPane>
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </HBox>
-         </children>
-      </VBox>
-   </top>
-   <center>
-      <SplitPane dividerPositions="0.29797979797979796" BorderPane.alignment="CENTER">
-        <items>
-          <AnchorPane prefHeight="705.0" prefWidth="132.0">
-               <children>
-                  <VBox prefHeight="536.0" prefWidth="234.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <HBox alignment="TOP_RIGHT" spacing="3.0">
-                           <children>
-                              <Button mnemonicParsing="false" onAction="#collapse" text="-" />
-                           </children>
-                           <VBox.margin>
-                              <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <TreeView fx:id="treeView" minWidth="200.0" VBox.vgrow="ALWAYS" />
-                     </children>
-                  </VBox>
-               </children>
-            </AnchorPane>
-          <AnchorPane>
-               <children>
-                  <VBox fx:id="vBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="556.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-        </items>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-      </SplitPane>
-   </center>
-   <bottom>
-      <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label fx:id="file" text="file" />
-            <Region HBox.hgrow="ALWAYS" />
-            <Label fx:id="time" text="Label" />
-            <Label text="|" />
-            <Label fx:id="memory" text="0" />
-         </children>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </HBox>
-   </bottom>
+<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0"
+	stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/8.0.111"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController">
+	<top>
+		<VBox BorderPane.alignment="CENTER">
+			<children>
+				<HBox alignment="TOP_RIGHT" spacing="5.0">
+					<children>
+						<TabPane id="tabPane1" fx:id="topTabPane"
+							tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
+							<tabs>
+								<Tab fx:id="projectTab" text="Project">
+									<content>
+										<HBox spacing="8.0">
+											<children>
+												<Button id="newFileButton" mnemonicParsing="false"
+													onAction="#newProject" opacity="0.7" prefHeight="32.0"
+													prefWidth="32.0" text="New">
+													<tooltip>
+														<Tooltip text="Create a new project" />
+													</tooltip>
+												</Button>
+
+												<Button id="openFileButton" contentDisplay="CENTER"
+													mnemonicParsing="false" onAction="#open" opacity="0.7"
+													prefHeight="32.0" prefWidth="32.0" text="Open">
+													<opaqueInsets>
+														<Insets />
+													</opaqueInsets>
+													<tooltip>
+														<Tooltip text="Open a project" />
+													</tooltip>
+												</Button>
+												<Button id="saveFileButton" mnemonicParsing="false"
+													onAction="#save" opacity="0.7" prefHeight="32.0" prefWidth="32.0"
+													text="Save">
+													<tooltip>
+														<Tooltip text="Save the project" />
+													</tooltip>
+												</Button>
+												<Button id="saveFileAsButton" mnemonicParsing="false"
+													onAction="#saveAs" opacity="0.7" prefHeight="32.0"
+													prefWidth="32.0" text="Save as">
+													<tooltip>
+														<Tooltip text="Save the project as ..." />
+													</tooltip>
+												</Button>
+												<Separator orientation="VERTICAL" />
+												<Button id="deleteFileButton" mnemonicParsing="false"
+													onAction="#delete" opacity="0.7" prefHeight="32.0"
+													prefWidth="32.0" text="Delete">
+													<tooltip>
+														<Tooltip text="Delete the project" />
+													</tooltip>
+												</Button>
+												<Region HBox.hgrow="ALWAYS" />
+												<Button id="exitButton" mnemonicParsing="false"
+													onAction="#exit" opacity="0.7" prefHeight="32.0" prefWidth="32.0">
+													<tooltip>
+														<Tooltip text="Quit the application" />
+													</tooltip>
+												</Button>
+											</children>
+											<padding>
+												<Insets bottom="5.0" left="5.0" right="5.0" top="8.0" />
+											</padding>
+										</HBox>
+									</content>
+								</Tab>
+								<Tab fx:id="editTab" text="Edit">
+									<content>
+										<HBox alignment="CENTER_LEFT" spacing="5.0">
+											<children>
+												<Label text="Search" />
+												<ComboBox fx:id="searchItem" editable="true"
+													maxWidth="1.7976931348623157E308" prefHeight="26.0"
+													prefWidth="207.0" style="-fx-background-color: pink;" />
+												<Label fx:id="searchCount" />
+											</children>
+											<padding>
+												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+											</padding>
+										</HBox>
+									</content>
+								</Tab>
+								<Tab fx:id="settingsTab" text="Settings">
+									<content>
+										<HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
+											<children>
+												<TextField fx:id="authorizationHeader" promptText="Authorization header">
+													<opaqueInsets>
+														<Insets />
+													</opaqueInsets>
+												</TextField>
+												<Button minWidth="-Infinity" mnemonicParsing="false"
+													onAction="#setAuthorizationHeader" text="set" />
+											</children>
+											<padding>
+												<Insets bottom="5.0" right="5.0" top="5.0" />
+											</padding>
+										</HBox>
+									</content>
+								</Tab>
+								<Tab fx:id="webTab" text="Web">
+									<content>
+										<HBox alignment="CENTER_LEFT" spacing="5.0">
+											<children>
+												<ComboBox fx:id="url" editable="true" prefHeight="26.0"
+													prefWidth="476.0">
+													<items>
+														<FXCollections fx:factory="observableArrayList">
+															<String fx:value="https://jsoneditoronline.org/" />
+															<String fx:value="https://www.google.fr/" />
+															<String fx:value="https://jwt.io/" />
+														</FXCollections>
+													</items>
+												</ComboBox>
+												<Button mnemonicParsing="false" onAction="#launchWebPage"
+													text="OK" />
+												<Region HBox.hgrow="ALWAYS" />
+												<Button mnemonicParsing="false" onAction="#closeWebView"
+													text="close" />
+											</children>
+											<padding>
+												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+											</padding>
+										</HBox>
+									</content>
+								</Tab>
+							</tabs>
+							<HBox.margin>
+								<Insets />
+							</HBox.margin>
+						</TabPane>
+					</children>
+					<padding>
+						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+					</padding>
+				</HBox>
+			</children>
+		</VBox>
+	</top>
+	<center>
+		<SplitPane dividerPositions="0.29797979797979796"
+			BorderPane.alignment="CENTER">
+			<items>
+				<AnchorPane prefHeight="705.0" prefWidth="132.0">
+					<children>
+						<VBox prefHeight="536.0" prefWidth="234.0"
+							AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+							AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+							<children>
+								<HBox alignment="TOP_RIGHT" spacing="3.0">
+									<children>
+										<Button mnemonicParsing="false" onAction="#collapse"
+											text="-" />
+									</children>
+									<VBox.margin>
+										<Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+									</VBox.margin>
+								</HBox>
+								<TreeView fx:id="treeView" minWidth="200.0" VBox.vgrow="ALWAYS" />
+							</children>
+						</VBox>
+					</children>
+				</AnchorPane>
+				<AnchorPane>
+					<children>
+						<VBox fx:id="vBox" alignment="CENTER" maxHeight="1.7976931348623157E308"
+							maxWidth="1.7976931348623157E308" prefWidth="556.0"
+							AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+							AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+					</children>
+				</AnchorPane>
+			</items>
+			<opaqueInsets>
+				<Insets />
+			</opaqueInsets>
+		</SplitPane>
+	</center>
+	<bottom>
+		<HBox alignment="CENTER_RIGHT" spacing="5.0"
+			BorderPane.alignment="CENTER">
+			<children>
+				<Label fx:id="file" text="file" />
+				<Region HBox.hgrow="ALWAYS" />
+				<Label fx:id="time" text="Label" />
+				<Label text="|" />
+				<Label fx:id="memory" text="0" />
+			</children>
+			<BorderPane.margin>
+				<Insets />
+			</BorderPane.margin>
+			<padding>
+				<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+			</padding>
+		</HBox>
+	</bottom>
 </BorderPane>

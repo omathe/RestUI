@@ -6,16 +6,21 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox fx:id="vBox" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.RequestBodyController">
-   <children>
-      <TableView fx:id="bodyTableView" editable="true" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="bodyEnabledColumn" prefWidth="75.0" text="Enabled" />
-            <TableColumn fx:id="bodyTypeColumn" prefWidth="75.0" text="Type" />
-          <TableColumn fx:id="bodyNameColumn" prefWidth="75.0" text="Name" />
-          <TableColumn fx:id="bodyValueColumn" prefWidth="75.0" text="Value" />
-        </columns>
-      </TableView>
-      <TextArea fx:id="requestBody" VBox.vgrow="ALWAYS" />
-   </children>
+<VBox fx:id="vBox" xmlns="http://javafx.com/javafx/8.0.111"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.RequestBodyController">
+	<children>
+		<TableView fx:id="bodyTableView" editable="true" VBox.vgrow="ALWAYS">
+			<columns>
+				<TableColumn fx:id="bodyEnabledColumn" prefWidth="75.0"
+					text="Enabled" />
+				<TableColumn fx:id="bodyTypeColumn" prefWidth="75.0"
+					text="Type" />
+				<TableColumn fx:id="bodyNameColumn" prefWidth="75.0"
+					text="Name" />
+				<TableColumn fx:id="bodyValueColumn" prefWidth="75.0"
+					text="Value" />
+			</columns>
+		</TableView>
+		<TextArea fx:id="requestBody" VBox.vgrow="ALWAYS" />
+	</children>
 </VBox>
