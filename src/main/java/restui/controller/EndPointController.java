@@ -339,6 +339,7 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		final Endpoint endPoint = (Endpoint) this.treeItem.getValue();
+
 		endpoint.setText(endPoint.getName());
 		endPoint.buildPath();
 		path.setText(endPoint.getPath());
