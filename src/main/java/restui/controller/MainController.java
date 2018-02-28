@@ -167,15 +167,13 @@ public class MainController implements Initializable {
 					} else if (newValue.getValue() instanceof Endpoint) {
 
 						// Endpoint
-//						if (endpointHbox == null) {
-							try {
-								final FXMLLoader fxmlLoader = new FXMLLoader();
-								endpointHbox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
-								endPointController = (EndPointController) fxmlLoader.getController();
-							} catch (final IOException e) {
-								e.printStackTrace();
-							}
-//						}
+						try {
+							final FXMLLoader fxmlLoader = new FXMLLoader();
+							endpointHbox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
+							endPointController = (EndPointController) fxmlLoader.getController();
+						} catch (final IOException e) {
+							e.printStackTrace();
+						}
 						endPointController.setTreeView(treeView);
 						endPointController.setTreeItem(newValue);
 

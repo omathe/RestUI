@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -69,7 +68,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.util.converter.DefaultStringConverter;
-import javafx.util.converter.NumberStringConverter;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
 import restui.model.Endpoint;
@@ -409,14 +407,14 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 
 			// response status
-			Bindings.bindBidirectional(responseStatus.textProperty(), exchange.getResponse().statusProperty(), new NumberStringConverter());
+			responseStatus.setText(exchange.getResponse().getStatus().toString());
 			displayStatusTooltip(exchange);
 
 			// status circle
 			displayStatusCircle(exchange);
 
 			// response duration
-			Bindings.bindBidirectional(responseDuration.textProperty(), exchange.getResponse().durationProperty(), new NumberStringConverter());
+			responseDuration.setText(exchange.getResponse().getDuration().toString());
 		}
 	}
 
@@ -496,6 +494,8 @@ public class EndPointController extends AbstractController implements Initializa
 			if (response == null) {
 				responseBody.setText("");
 				exchange.setResponseStatus(0);
+				responseStatus.setText("0");
+				responseDuration.setText("");
 			} else {
 				// build response headers
 				response.getHeaders().entrySet().stream().forEach(e -> {
@@ -507,6 +507,9 @@ public class EndPointController extends AbstractController implements Initializa
 				// response status
 				exchange.setDate(Instant.now().toEpochMilli());
 				exchange.setResponseStatus(response.getStatus());
+				responseStatus.setText(String.valueOf(response.getStatus()));
+				responseDuration.setText(exchange.getResponse().getDuration().toString());
+
 				displayStatusTooltip(exchange);
 				// status circle
 				displayStatusCircle(exchange);
