@@ -621,8 +621,10 @@ public class EndPointController extends AbstractController implements Initializa
 				final ObjectMapper mapper = new ObjectMapper();
 				try {
 					final String body = exchange.getResponseBody();
-					final Object json = mapper.readValue(body, Object.class);
-					responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
+					if (body != null) {
+						final Object json = mapper.readValue(body, Object.class);
+						responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
+					}
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
