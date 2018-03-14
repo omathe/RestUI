@@ -79,6 +79,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			final Item item = treeItem.getValue();
 
 			final Path path = new Path(item, "New path");
+
 			item.addChild(path);
 			final TreeItem<Item> newItem = new TreeItem<>(path);
 			treeItem.getChildren().add(newItem);
@@ -299,13 +300,24 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			@Override
 			public void handle(final KeyEvent e) {
 				if (e.getCode() == KeyCode.ENTER) {
-					getItem().setName(textField.getText());
 
-					// sort the items
 					if (getTreeItem().getParent() != null) {
-						getTreeItem().getParent().getChildren().sort(comparator);
+						Item parent = getTreeItem().getParent().getValue();
+						if (parent.hasChild(textField.getText())) {
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Error" );
+							alert.setHeaderText("Failed to rename");
+							alert.setContentText("'" + textField.getText() + "' already exists for parent \n'"
+							+ getTreeItem().getParent().getValue().getName() + "'");
+							alert.showAndWait();
+						}
+						else {
+							getItem().setName(textField.getText());
+							commitEdit(getItem());
+							// sort the items
+							getTreeItem().getParent().getChildren().sort(comparator);
+						}
 					}
-					commitEdit(getItem());
 
 					if (getItem() instanceof Path) { // renaming all the endpoints path
 						Item currentItem = getItem();

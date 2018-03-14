@@ -70,10 +70,13 @@ public class Item implements Serializable {
 		return children != null && !children.isEmpty();
 	}
 
+	public boolean hasChild(String name) {
+
+		return children != null && children.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().isPresent();
+	}
+
 	public Stream<Item> flattened() {
-		return Stream.concat(
-				Stream.of(this),
-				children.stream().flatMap(Item::flattened));
+		return Stream.concat(Stream.of(this), children.stream().flatMap(Item::flattened));
 	}
 
 	@Override
