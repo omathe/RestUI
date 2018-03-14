@@ -78,10 +78,16 @@ public class RestClient {
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
 			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
+				body = parameters.stream()
+						.filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText())
+						.map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
-				parameters.clear();
+				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				if (optional.isPresent()) {
+					parameters.remove(optional.get());
+				}
 				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+
 				bos.write(new String(body).getBytes());
 
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
@@ -161,8 +167,12 @@ public class RestClient {
 			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
 				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
-				parameters.clear();
+				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				if (optional.isPresent()) {
+					parameters.remove(optional.get());
+				}
 				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+
 				bos.write(new String(body).getBytes());
 
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
@@ -223,8 +233,12 @@ public class RestClient {
 			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
 				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
-				parameters.clear();
+				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				if (optional.isPresent()) {
+					parameters.remove(optional.get());
+				}
 				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+
 				bos.write(new String(body).getBytes());
 
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
