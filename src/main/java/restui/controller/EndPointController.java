@@ -359,7 +359,8 @@ public class EndPointController extends AbstractController implements Initializa
 						setStyle("");
 					} else {
 						final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-						setText(formater.format(new Date()));
+						// retrieve date from Exchange
+						setText(formater.format(new Date(item)));
 					}
 				}
 			};

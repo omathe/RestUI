@@ -41,9 +41,6 @@ public class Exchange {
 			final Parameter duplicateParameter = new Parameter(parameter);
 			duplicate.addResponseParameter(duplicateParameter);
 		}
-		//duplicate.setRequestBody(this.getRequest().getRawBody());
-		//duplicate.setResponseBody(this.getResponseBody());
-
 		return duplicate;
 	}
 
