@@ -20,13 +20,23 @@ public class Parameter {
 		BODY, HEADER, PATH, QUERY;
 	}
 
+	public enum Direction {
+		REQUEST, RESPONSE;
+	}
+
 	public enum Type {
 		TEXT, FILE;
 	}
 
+	public enum BodyType {
+		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
+	}
+
 	private final BooleanProperty enabled;
 	private final StringProperty type;
+	private BodyType bodyType;
 	private final StringProperty location;
+	private StringProperty direction;
 	private final StringProperty name;
 	private final StringProperty value;
 
@@ -34,7 +44,19 @@ public class Parameter {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
 		this.type = new SimpleStringProperty(type.name());
+		this.bodyType = BodyType.RAW;
 		this.location = new SimpleStringProperty(location.name());
+		this.name = new SimpleStringProperty(name);
+		this.value = new SimpleStringProperty(value);
+	}
+
+	public Parameter(final Boolean enabled, Type type, final Location location, Direction direction, final String name, final String value) {
+		super();
+		this.enabled = new SimpleBooleanProperty(enabled);
+		this.type = new SimpleStringProperty(type.name());
+		this.bodyType = BodyType.RAW;
+		this.location = new SimpleStringProperty(location.name());
+		this.direction = new SimpleStringProperty(direction.name());
 		this.name = new SimpleStringProperty(name);
 		this.value = new SimpleStringProperty(value);
 	}
@@ -64,6 +86,14 @@ public class Parameter {
 		this.type.set(type.name());
 	}
 
+	public BodyType getBodyType() {
+		return bodyType;
+	}
+
+	public void setBodyType(final BodyType bodyType) {
+		this.bodyType = bodyType;
+	}
+
 	public void setEnabled(final Boolean enabled) {
 		if (!isPathParameter()) {
 			this.enabled.set(enabled);
@@ -86,6 +116,18 @@ public class Parameter {
 
 	public StringProperty locationProperty() {
 		return location;
+	}
+
+	public String getDirection() {
+		return direction.get();
+	}
+
+	public void setDirection(final Direction direction) {
+		this.direction.set(direction.name());
+	}
+
+	public StringProperty directionProperty() {
+		return direction;
 	}
 
 	public String getName() {

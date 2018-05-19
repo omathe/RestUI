@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -17,6 +19,8 @@ public class Exchange {
 	private ObjectProperty<Long> date;
 	private Request request;
 	private Response response;
+	private IntegerProperty status; // 2.0
+	private IntegerProperty duration; // 2.0
 
 	public Exchange() {
 		super();
@@ -28,6 +32,8 @@ public class Exchange {
 		this.date = new SimpleObjectProperty<>(date);
 		this.request = new Request();
 		this.response = new Response();
+		this.status = new SimpleIntegerProperty();
+		this.duration = new SimpleIntegerProperty();
 	}
 
 	public Exchange duplicate(final String name) {
@@ -56,9 +62,9 @@ public class Exchange {
 		return name;
 	}
 
-	public Integer getStatus() {
-		return response.getStatus();
-	}
+//	public Integer getStatus() {
+//		return response.getStatus();
+//	}
 
 	public Long getDate() {
 		return date.get();
@@ -154,6 +160,30 @@ public class Exchange {
 
 	public void setResponseDuration(Integer duration) {
 		response.setDuration(duration);
+	}
+
+	public IntegerProperty statusProperty() {
+		return status;
+	}
+
+	public Integer getStatus() {
+		return status.get();
+	}
+
+	public void setStatus(final Integer status) {
+		this.status.set(status);
+	}
+
+	public IntegerProperty durationProperty() {
+		return duration;
+	}
+
+	public Integer getDuration() {
+		return duration.get();
+	}
+
+	public void setDuration(Integer duration) {
+		this.duration.set(duration);
 	}
 
 	@Override
