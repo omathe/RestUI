@@ -11,3 +11,4 @@ Lns.xml
 *vpp~*
 *.lock
 /.gradle/
+/https.txt

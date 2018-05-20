@@ -34,7 +34,6 @@ public class Parameter {
 
 	private final BooleanProperty enabled;
 	private final StringProperty type;
-	private BodyType bodyType;
 	private final StringProperty location;
 	private StringProperty direction;
 	private final StringProperty name;
@@ -44,7 +43,6 @@ public class Parameter {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
 		this.type = new SimpleStringProperty(type.name());
-		this.bodyType = BodyType.RAW;
 		this.location = new SimpleStringProperty(location.name());
 		this.name = new SimpleStringProperty(name);
 		this.value = new SimpleStringProperty(value);
@@ -54,7 +52,6 @@ public class Parameter {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
 		this.type = new SimpleStringProperty(type.name());
-		this.bodyType = BodyType.RAW;
 		this.location = new SimpleStringProperty(location.name());
 		this.direction = new SimpleStringProperty(direction.name());
 		this.name = new SimpleStringProperty(name);
@@ -84,14 +81,6 @@ public class Parameter {
 
 	public void setType(final Type type) {
 		this.type.set(type.name());
-	}
-
-	public BodyType getBodyType() {
-		return bodyType;
-	}
-
-	public void setBodyType(final BodyType bodyType) {
-		this.bodyType = bodyType;
 	}
 
 	public void setEnabled(final Boolean enabled) {

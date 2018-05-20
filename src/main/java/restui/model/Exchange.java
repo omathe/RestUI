@@ -15,12 +15,17 @@ import restui.model.Parameter.Location;
 
 public class Exchange {
 
+	public enum BodyType {
+		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
+	}
+
 	private StringProperty name;
 	private ObjectProperty<Long> date;
 	private Request request;
 	private Response response;
 	private IntegerProperty status; // 2.0
 	private IntegerProperty duration; // 2.0
+	private BodyType requestBodyType;
 
 	public Exchange() {
 		super();
@@ -34,6 +39,7 @@ public class Exchange {
 		this.response = new Response();
 		this.status = new SimpleIntegerProperty();
 		this.duration = new SimpleIntegerProperty();
+		this.requestBodyType = BodyType.RAW;
 	}
 
 	public Exchange duplicate(final String name) {
@@ -61,10 +67,6 @@ public class Exchange {
 	public StringProperty nameProperty() {
 		return name;
 	}
-
-//	public Integer getStatus() {
-//		return response.getStatus();
-//	}
 
 	public Long getDate() {
 		return date.get();
@@ -160,6 +162,14 @@ public class Exchange {
 
 	public void setResponseDuration(Integer duration) {
 		response.setDuration(duration);
+	}
+
+	public BodyType getRequestBodyType() {
+		return requestBodyType;
+	}
+
+	public void setRequestBodyType(BodyType requestBodyType) {
+		this.requestBodyType = requestBodyType;
 	}
 
 	public IntegerProperty statusProperty() {

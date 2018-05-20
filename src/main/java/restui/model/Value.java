@@ -25,6 +25,10 @@ public class Value {
 		return parameter;
 	}
 
+	public Exchange getExchange() {
+		return exchange;
+	}
+
 	public String getValue() {
 		return value.get();
 	}
