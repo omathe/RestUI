@@ -299,7 +299,7 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 
 			@Override
 			public void handle(final KeyEvent e) {
-				if (e.getCode() == KeyCode.ENTER) {
+				if (e.getCode().equals(KeyCode.ENTER)) {
 
 					if (getTreeItem().getParent() != null) {
 						Item parent = getTreeItem().getParent().getValue();
@@ -317,6 +317,10 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 							// sort the items
 							getTreeItem().getParent().getChildren().sort(comparator);
 						}
+					} else {
+						// project item
+						getItem().setName(textField.getText());
+						commitEdit(getItem());
 					}
 
 					if (getItem() instanceof Path) { // renaming all the endpoints path

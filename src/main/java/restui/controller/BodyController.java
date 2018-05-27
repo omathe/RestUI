@@ -84,14 +84,14 @@ public class BodyController extends AbstractController implements Initializable 
 		add.setOnAction(e -> {
 			if (exchange != null) {
 				final Parameter parameter = new Parameter(true, Type.TEXT, Location.BODY, "name", "value");
-				exchange.addRequestParameter(parameter);
+				//exchange.addRequestParameter(parameter); FIXME 2.0
 			}
 		});
 
 		remove.setOnAction(e -> {
 			if (exchange != null) {
 				final Parameter parameter = bodyTableView.getSelectionModel().getSelectedItem();
-				exchange.removeRequestParameter(parameter);
+				//exchange.removeRequestParameter(parameter); FIXME 2.0
 			}
 		});
 	}
@@ -104,7 +104,8 @@ public class BodyController extends AbstractController implements Initializable 
 
 	public void setExchange(final Exchange exchange) {
 		this.exchange = exchange;
-		final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
+		//final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters(); FIXME 2.0
+		final ObservableList<Parameter> parameterData = FXCollections.observableArrayList();
 
 		if (type.equals(BodyType.FORM_DATA)) {
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));

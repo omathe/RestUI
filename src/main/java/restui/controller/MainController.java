@@ -63,7 +63,6 @@ import restui.exception.NotFoundException;
 import restui.model.Application;
 import restui.model.Endpoint;
 import restui.model.Item;
-import restui.model.Parameter;
 import restui.model.Project;
 import restui.service.ApplicationService;
 import restui.service.ProjectService;
@@ -578,10 +577,10 @@ public class MainController implements Initializable {
 			if (child instanceof Endpoint) {
 				final Endpoint endpoint = (Endpoint) child;
 				endpoint.getExchanges().stream().forEach(exchange -> {
-					final List<Parameter> parameters = exchange.findParameters(Parameter.Location.HEADER.name(), "Authorization");
-					if (parameters != null && !parameters.isEmpty() && parameters.size() == 1) {
+					// final List<Parameter> parameters = exchange.findParameters(Parameter.Location.HEADER.name(), "Authorization"); FIXME 2.0
+					/*  FIXME 2.0 if (parameters != null && !parameters.isEmpty() && parameters.size() == 1) {
 						parameters.get(0).setValue(value);
-					}
+					}*/
 				});
 			} else {
 				setItemsAuthorizationHeader(child, value);

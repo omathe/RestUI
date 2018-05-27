@@ -1,10 +1,7 @@
 package restui.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -17,17 +14,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.Response.Status;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -77,7 +64,6 @@ import restui.model.Parameter;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Path;
-import restui.model.Request;
 import restui.model.Request.BodyType;
 import restui.service.RestClient;
 import restui.service.Tools;
@@ -257,7 +243,7 @@ public class EndPointController extends AbstractController implements Initializa
 						paste.setOnAction(e -> {
 							final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
 							for (final Parameter p : parameters) {
-								exchange.get().addRequestParameter(p);
+								//exchange.get().addRequestParameter(p); FIXME 2.0
 							}
 						});
 					}
@@ -291,11 +277,11 @@ public class EndPointController extends AbstractController implements Initializa
 			buildUri();
 			return parameter.getValue().nameProperty();
 		});
-		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		/* FIXME 2.0 parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		parameterValueColumn.setCellValueFactory(parameter -> {
 			buildUri();
 			return parameter.getValue().valueProperty();
-		});
+		});*/
 
 		// response headers
 		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("name"));
@@ -337,6 +323,7 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		final Endpoint endPoint = (Endpoint) this.treeItem.getValue();
+		refreshExchangeData(null);
 
 		endpoint.setText(endPoint.getName());
 		endPoint.buildPath();
@@ -375,27 +362,35 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshExchangeData(final Exchange exchange) {
 
 		if (exchange == null) {
-			parameters.setItems(null);
+			final Endpoint ep = (Endpoint) this.treeItem.getValue();
+			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) ep.getParameters();
+			parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
+
+			/*parameters.setItems(null);
 			responseBody.setText("");
 			responseHeaders.setItems(null);
 			responseStatus.setText("");
-			uri.setText("");
+			uri.setText("");*/
 		} else {
 			// request
-			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
+			// final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters(); FIXME 2.0
+			final ObservableList<Parameter> parameterData = FXCollections.observableArrayList();
 			parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
 			parameters.refresh();
 
 			buildParameters();
 			buildUri();
-			uri.setText(exchange.getRequest().getUri());
+			// uri.setText(exchange.getRequest().getUri()); FIXME 2.0
 
 			// response
-			final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseParameters();
+			//final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseParameters(); FIXME 2.0
+			final ObservableList<Parameter> responseHeadersData = FXCollections.observableArrayList();
 			responseHeaders.setItems(responseHeadersData.filtered(p -> p.isHeaderParameter()));
 
 			// response body
 			displayResponseBody(exchange);
+
+			/* FIXME 2.0
 			if (exchange.getRequest().getBodyType().equals(Request.BodyType.RAW)) {
 				rawBody.setSelected(true);
 				rawBodySelected(null);
@@ -405,17 +400,17 @@ public class EndPointController extends AbstractController implements Initializa
 			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.FORM_DATA)) {
 				formDataBody.setSelected(true);
 				formDataBodySelected(null);
-			}
+			}*/
 
 			// response status
-			responseStatus.setText(exchange.getResponse().getStatus().toString());
+			//responseStatus.setText(exchange.getResponse().getStatus().toString());FIXME 2.0
 			displayStatusTooltip(exchange);
 
 			// status circle
 			displayStatusCircle(exchange);
 
 			// response duration
-			responseDuration.setText(exchange.getResponse().getDuration().toString());
+			//responseDuration.setText(exchange.getResponse().getDuration().toString()); FIXME 2.0
 		}
 	}
 
@@ -427,7 +422,7 @@ public class EndPointController extends AbstractController implements Initializa
 			final Set<String> tokens = extractTokens(endpointUri, Path.ID_PREFIX, Path.ID_SUFFIX);
 			tokens.stream().forEach(token -> {
 				final Parameter parameter = new Parameter(true, Type.TEXT, Location.PATH, token, "");
-				exchange.addRequestParameter(parameter);
+				// exchange.addRequestParameter(parameter); FIXME 2.0
 			});
 		}
 	}
@@ -461,7 +456,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		getSelectedExchange().ifPresent(exchange -> {
 			if (parameter != null) {
-				exchange.addRequestParameter(parameter);
+				//exchange.addRequestParameter(parameter); FIXME 2.0
 			}
 		});
 	}
@@ -473,7 +468,7 @@ public class EndPointController extends AbstractController implements Initializa
 				final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
 				final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
 				if (response.equals(ButtonType.OK)) {
-					exchange.removeRequestParameters(parameters);
+					//exchange.removeRequestParameters(parameters); FIXME 2.0
 				}
 			}
 		});
@@ -486,15 +481,16 @@ public class EndPointController extends AbstractController implements Initializa
 
 		if (exchange != null) {
 			responseBody.setText("");
-			exchange.clearResponseParameters();
+			//exchange.clearResponseParameters(); FIXME 2.0
 
 			final long t0 = System.currentTimeMillis();
 
-			ClientResponse response = RestClient.execute(method.getValue(), exchange.getRequest());
+			//ClientResponse response = RestClient.execute(method.getValue(), exchange.getRequest()); FIXME 2.0
+			ClientResponse response = RestClient.execute(method.getValue(), /*exchange.getRequest()*/ null); // FIXME 2.0
 
 			if (response == null) {
 				responseBody.setText("");
-				exchange.setResponseStatus(0);
+				//exchange.setResponseStatus(0); FIXME 2.0
 				responseStatus.setText("0");
 				responseDuration.setText("");
 			} else {
@@ -502,14 +498,14 @@ public class EndPointController extends AbstractController implements Initializa
 				response.getHeaders().entrySet().stream().forEach(e -> {
 					for (final String value : e.getValue()) {
 						final Parameter header = new Parameter(true, Type.TEXT, Location.HEADER, e.getKey(), value);
-						exchange.addResponseParameter(header);
+						//exchange.addResponseParameter(header); FIXME 2.0
 					}
 				});
 				// response status
 				exchange.setDate(Instant.now().toEpochMilli());
-				exchange.setResponseStatus(response.getStatus());
+				//exchange.setResponseStatus(response.getStatus()); FIXME 2.0
 				responseStatus.setText(String.valueOf(response.getStatus()));
-				responseDuration.setText(exchange.getResponse().getDuration().toString());
+				//responseDuration.setText(exchange.getResponse().getDuration().toString()); FIXME 2.0
 
 				displayStatusTooltip(exchange);
 				// status circle
@@ -526,7 +522,8 @@ public class EndPointController extends AbstractController implements Initializa
 
 							if (output != null && !output.isEmpty()) {
 
-								Optional<Parameter> contentDisposition = exchange.findResponseHeader("Content-Disposition");
+								//Optional<Parameter> contentDisposition = exchange.findResponseHeader("Content-Disposition"); FIXME 2.0
+								Optional<Parameter> contentDisposition = Optional.empty();
 
 								if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
 									// the response contains the Content-Disposition header and attachment key word
@@ -542,7 +539,7 @@ public class EndPointController extends AbstractController implements Initializa
 									final File file = fileChooser.showSaveDialog(null);
 									Tools.writeBytesToFile(file, bytes);
 								} else {
-									exchange.setResponseBody(output);
+									//exchange.setResponseBody(output); FIXME 2.0
 									displayResponseBody(exchange);
 								}
 							}
@@ -551,7 +548,7 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 				response.close();
 			}
-			exchange.setResponseDuration((int) (System.currentTimeMillis() - t0));
+			//exchange.setResponseDuration((int) (System.currentTimeMillis() - t0)); FIXME 2.0
 			// refresh tableView (workaround)
 			exchanges.getColumns().get(0).setVisible(false);
 			exchanges.getColumns().get(0).setVisible(true);
@@ -588,6 +585,7 @@ public class EndPointController extends AbstractController implements Initializa
 			validUri = false;
 		}
 
+		/* FIXME 2.0
 		for (Parameter parameter : exchange.getRequest().getParameters()) {
 			if (parameter.isPathParameter()) {
 				if (!parameter.getEnabled() || !parameter.isValid()) {
@@ -603,20 +601,21 @@ public class EndPointController extends AbstractController implements Initializa
 					queryParams.add(parameter.getName() + "=" + parameter.getValue());
 				}
 			}
-		}
+		}*/
 		if (!queryParams.isEmpty()) {
 			valuedUri += "?" + String.join("&", queryParams);
 		}
 		uri.setText(valuedUri);
 		if (validUri) {
-			exchange.getRequest().setUri(valuedUri);
+			//exchange.getRequest().setUri(valuedUri); FIXME 2.0
 		}
 		execute.setDisable(!validUri);
 	}
 
 	private void displayResponseBody(final Exchange exchange) {
 
-		exchange.findResponseHeader("Content-Type").ifPresent(p -> {
+		/*FIXME 2.0
+		 exchange.findResponseHeader("Content-Type").ifPresent(p -> {
 
 			if (p.getValue().toLowerCase().contains("json")) {
 				final ObjectMapper mapper = new ObjectMapper();
@@ -652,7 +651,7 @@ public class EndPointController extends AbstractController implements Initializa
 			} else {
 				responseBody.setText(exchange.getResponseBody());
 			}
-		});
+		});*/
 	}
 
 	private void displayStatusCircle(final Exchange exchange) {
@@ -692,10 +691,10 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 	private void displayStatusTooltip(Exchange exchange) {
-		Status st = Status.fromStatusCode(exchange.getResponse().getStatus());
+		/*Status st = Status.fromStatusCode(exchange.getResponse().getStatus()); FIXME 2.0
 		if (st != null) {
 			responseStatus.setTooltip(new Tooltip(st.getReasonPhrase()));
-		}
+		}*/
 	}
 
 	public Optional<Exchange> getSelectedExchange() {

@@ -13,7 +13,7 @@ import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 
 /**
- * An web service endpoint
+ * A web service endpoint
  * @author Olivier MATHE
  */
 public class Endpoint extends Item {
@@ -139,12 +139,10 @@ public class Endpoint extends Item {
 		}
 	}
 
-	// 2.0
 	public List<Parameter> getParameters() {
 		return parameters;
 	}
 
-	// 2.0
 	public void addParameter(final Parameter parameter) {
 
 		if (!parameters.contains(parameter)) {

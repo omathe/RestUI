@@ -100,7 +100,7 @@ public class RequestBodyController extends AbstractController implements Initial
 			if (exchange != null) {
 				List<String> parameterNames = bodyTableView.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
 				final Parameter parameter = new Parameter(true, Type.TEXT, Location.BODY, Strings.getNextValue(parameterNames, "name"), "");
-				exchange.addRequestParameter(parameter);
+				//exchange.addRequestParameter(parameter);  FIXME 2.0
 			}
 		});
 
@@ -121,12 +121,13 @@ public class RequestBodyController extends AbstractController implements Initial
 
 		exchange = endPointController.getSelectedExchange().get();
 
-		final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
+		//final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();  FIXME 2.0
+		final ObservableList<Parameter> parameterData = FXCollections.observableArrayList();
 
 		if (type.equals(BodyType.RAW)) {
 			// RAW
-			exchange.getRequest().setBodyType(BodyType.RAW);
-			requestBody.setText(exchange.getRequestBody());
+			// exchange.getRequest().setBodyType(BodyType.RAW); FIXME 2.0
+			//requestBody.setText(exchange.getRequestBody()); FIXME 2.0
 
 			endPointController.getBodyVBox().getChildren().clear();
 			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
@@ -138,12 +139,12 @@ public class RequestBodyController extends AbstractController implements Initial
 			VBox.setVgrow(vBox, Priority.ALWAYS);
 
 			requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-				exchange.setRequestBody(newValue);
+				//exchange.setRequestBody(newValue); FIXME 2.0
 			});
 
 		} else if (type.equals(BodyType.FORM_DATA)) {
 			// FORM_DATA
-			exchange.getRequest().setBodyType(BodyType.FORM_DATA);
+			//exchange.getRequest().setBodyType(BodyType.FORM_DATA); FIXME 2.0
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
 
 			endPointController.getBodyVBox().getChildren().clear();
@@ -157,7 +158,7 @@ public class RequestBodyController extends AbstractController implements Initial
 			VBox.setVgrow(vBox, Priority.ALWAYS);
 
 		} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-			exchange.getRequest().setBodyType(BodyType.X_WWW_FORM_URL_ENCODED);
+			// exchange.getRequest().setBodyType(BodyType.X_WWW_FORM_URL_ENCODED); FIXME 2.0
 			// X_WWW_FORM_URL_ENCODED
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
 
@@ -184,7 +185,7 @@ public class RequestBodyController extends AbstractController implements Initial
 			final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
 			final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
 			if (response.equals(ButtonType.OK)) {
-				exchange.removeRequestParameters(parameters);
+				//exchange.removeRequestParameters(parameters); FIXME 2.0
 			}
 		}
 	}

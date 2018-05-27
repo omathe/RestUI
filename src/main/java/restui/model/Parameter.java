@@ -48,14 +48,14 @@ public class Parameter {
 		this.value = new SimpleStringProperty(value);
 	}
 
-	public Parameter(final Boolean enabled, Type type, final Location location, Direction direction, final String name, final String value) {
+	public Parameter(final Boolean enabled, final Direction direction, final Location location, final Type type, final String name) {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
-		this.type = new SimpleStringProperty(type.name());
-		this.location = new SimpleStringProperty(location.name());
 		this.direction = new SimpleStringProperty(direction.name());
+		this.location = new SimpleStringProperty(location.name());
+		this.type = new SimpleStringProperty(type.name());
 		this.name = new SimpleStringProperty(name);
-		this.value = new SimpleStringProperty(value);
+		this.value = null;
 	}
 
 	public Parameter(final Parameter parameter) {

@@ -18,12 +18,12 @@ import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Item;
 import restui.model.Parameter;
+import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Path;
 import restui.model.Project;
 import restui.model.Request;
-import restui.model.Request.BodyType;
 import restui.model.Response;
 
 public class ProjectService {
@@ -137,7 +137,8 @@ public class ProjectService {
 					elementExchanges.addContent(elementExchange);
 
 					// request
-					final Request request = exchange.getRequest();
+					//final Request request = exchange.getRequest();FIXME 2.0
+					Request request = new Request();
 					final Element elementRequest = new Element("request");
 					elementRequest.setAttribute(new Attribute("uri", request.getUri()));
 					elementRequest.setAttribute(new Attribute("bodyType", request.getBodyType().name()));
@@ -158,7 +159,8 @@ public class ProjectService {
 					}
 
 					// response
-					final Response response = exchange.getResponse();
+					//final Response response = exchange.getResponse(); FIXME 2.0
+					final Response response = new Response();
 					final Element elementResponse = new Element("response");
 					elementResponse.setAttribute(new Attribute("status", response.getStatus() == null ? "" : response.getStatus().toString()));
 					elementResponse.setAttribute(new Attribute("duration", response.getDuration() == null ? "" : response.getDuration().toString()));
@@ -211,10 +213,28 @@ public class ProjectService {
 			parent.getChildren().add(path);
 			return path;
 		} else if (element.getName().equalsIgnoreCase(Endpoint.class.getSimpleName())) {
+			// Endpoint
 			final Endpoint endpoint = new Endpoint(parent, element.getAttributeValue("name"), element.getAttributeValue("method"));
 			parent.getChildren().add(endpoint);
 
-			final Element elementExchanges = element.getChild("exchanges");
+			// parameters
+			final Element elementParameters = element.getChild("parameters");
+			if (elementParameters != null) {
+				for (final Element elementParameter : elementParameters.getChildren()) {
+					if (elementParameter != null) {
+						final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
+						final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
+						final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
+						final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
+						final String name = elementParameter.getAttributeValue("name");
+						final Parameter parameter = new Parameter(enabled, direction, location, type, name);
+						endpoint.addParameter(parameter);
+					}
+				}
+
+			}
+
+			/* FIXME 2.0 final Element elementExchanges = element.getChild("exchanges");
 			if (elementExchanges != null) {
 				for (final Element elementExchange : elementExchanges.getChildren()) {
 					// Exchange
@@ -224,7 +244,7 @@ public class ProjectService {
 					// Request
 					final Element elementRequest = elementExchange.getChild("request");
 					final Request request = new Request(BodyType.valueOf(elementRequest.getAttributeValue("bodyType")), elementRequest.getAttributeValue("uri"));
-					exchange.setRequest(request);
+					//exchange.setRequest(request); FIXME 2.0
 
 					// Request parameters
 					final Element requestParameters = elementRequest.getChild("parameters");
@@ -244,7 +264,7 @@ public class ProjectService {
 					// Response
 					final Element elementResponse = elementExchange.getChild("response");
 					final Response response = new Response(Integer.valueOf(elementResponse.getAttributeValue("status")), Integer.valueOf(elementResponse.getAttributeValue("duration")));
-					exchange.setResponse(response);
+					//exchange.setResponse(response); FIXME 2.0
 
 					// Response parameters
 					final Element responseParameters = elementResponse.getChild("parameters");
@@ -262,7 +282,7 @@ public class ProjectService {
 						}
 					}
 				}
-			}
+			}*/
 			return endpoint;
 		}
 		return null;

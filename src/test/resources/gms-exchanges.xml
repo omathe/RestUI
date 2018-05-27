@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<exchanges>
+	<exchange name="OK" date="1481616772605" status="200"
+		duration=82>
+		<values>
+			<value name="pageNumber" direction="REQUEST" location="QUERY" type="TEXT" value="1" bodyType="RAW" />
+		</values>
+	</exchange>
+</exchanges>
