@@ -65,6 +65,7 @@ import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Path;
 import restui.model.Request.BodyType;
+import restui.model.Value;
 import restui.service.RestClient;
 import restui.service.Tools;
 
@@ -97,7 +98,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private TableColumn<Parameter, String> parameterNameColumn;
 
 	@FXML
-	private TableColumn<Parameter, String> parameterValueColumn;
+	private TableColumn<Value, String> parameterValueColumn;
 
 	@FXML
 	private ComboBox<String> method;
@@ -282,6 +283,9 @@ public class EndPointController extends AbstractController implements Initializa
 			buildUri();
 			return parameter.getValue().valueProperty();
 		});*/
+		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		parameterValueColumn.setCellValueFactory(new PropertyValueFactory<Value, String>("value"));
+
 
 		// response headers
 		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("name"));
@@ -313,7 +317,7 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		// disable request/response area if no exchange selected
-		requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
+		// FIXME 2.0 requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
 		execute.textProperty().bind(method.valueProperty());
 	}
@@ -413,6 +417,17 @@ public class EndPointController extends AbstractController implements Initializa
 			//responseDuration.setText(exchange.getResponse().getDuration().toString()); FIXME 2.0
 		}
 	}
+
+	// if no exchange, parameters values are set to blank, otherwise we search for the values in the exchanges data
+	public void setParameterValues(Exchange exchange) {
+
+		if (exchange == null) {
+			//ProjectService.getExchanges()
+		} else {
+
+		}
+	}
+
 
 	private void buildParameters() {
 

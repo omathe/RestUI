@@ -75,8 +75,8 @@ public class Item implements Serializable {
 		return children != null && children.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().isPresent();
 	}
 
-	public Stream<Item> flattened() {
-		return Stream.concat(Stream.of(this), children.stream().flatMap(Item::flattened));
+	public Stream<Item> getAllChildren() {
+		return Stream.concat(Stream.of(this), children.stream().flatMap(Item::getAllChildren));
 	}
 
 	@Override

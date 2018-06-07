@@ -48,14 +48,14 @@ public class Parameter {
 		this.value = new SimpleStringProperty(value);
 	}
 
-	public Parameter(final Boolean enabled, final Direction direction, final Location location, final Type type, final String name) {
+	public Parameter(final Boolean enabled, final Direction direction, final Location location, final Type type, final String name, String value) {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
 		this.direction = new SimpleStringProperty(direction.name());
 		this.location = new SimpleStringProperty(location.name());
 		this.type = new SimpleStringProperty(type.name());
 		this.name = new SimpleStringProperty(name);
-		this.value = null;
+		this.value = new SimpleStringProperty(value);
 	}
 
 	public Parameter(final Parameter parameter) {
@@ -204,9 +204,10 @@ public class Parameter {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((location == null) ? 0 : location.get().hashCode());
-		result = prime * result + ((name == null) ? 0 : name.get().hashCode());
-		result = prime * result + ((type == null) ? 0 : type.get().hashCode());
+		result = prime * result + ((direction == null) ? 0 : direction.hashCode());
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -219,27 +220,32 @@ public class Parameter {
 		if (getClass() != obj.getClass())
 			return false;
 		Parameter other = (Parameter) obj;
-		if (getLocation() == null) {
-			if (other.getLocation() != null)
+		if (direction == null) {
+			if (other.direction != null)
 				return false;
-		} else if (!getLocation().equals(other.getLocation()))
+		} else if (!direction.equals(other.direction))
 			return false;
-		if (getName() == null) {
-			if (other.getName() != null)
+		if (location == null) {
+			if (other.location != null)
 				return false;
-		} else if (!getName().equals(other.getName()))
+		} else if (!location.equals(other.location))
 			return false;
-		if (getType() == null) {
-			if (other.getType() != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!getType().equals(other.getType()))
+		} else if (!name.equals(other.name))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Parameter [enabled=" + enabled.get() + ", type=" + type.get() + ", location=" + location.get() + ", name=" + name.get() + ", value=" + value.get() + "]";
+		return "Parameter [enabled=" + enabled + ", type=" + type + ", location=" + location + ", direction=" + direction + ", name=" + name + ", value=" + value + "]";
 	}
 
 }

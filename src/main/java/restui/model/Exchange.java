@@ -1,6 +1,7 @@
 package restui.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.beans.property.IntegerProperty;
@@ -25,6 +26,8 @@ public class Exchange {
 	private BodyType requestBodyType;
 	private StringProperty uri;
 	private List<Value> values;
+	//à supprimer private String endpointName;
+	private List<Parameter> parameters;
 
 	public Exchange() {
 		super();
@@ -34,12 +37,22 @@ public class Exchange {
 		super();
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleObjectProperty<>(date);
-		// this.request = new Request();
-//		this.response = new Response();
 		this.status = new SimpleIntegerProperty();
 		this.duration = new SimpleIntegerProperty();
 		this.requestBodyType = BodyType.RAW;
 		this.uri = new SimpleStringProperty("");
+	}
+
+	public Exchange(String endpointName, final String name, final Long date, Integer duration, Integer status, BodyType requestBodyType) {
+		super();
+		//this.endpointName = endpointName;
+		this.name = new SimpleStringProperty(name);
+		this.date = new SimpleObjectProperty<>(date);
+		this.status = new SimpleIntegerProperty(status);
+		this.duration = new SimpleIntegerProperty(duration);
+		this.requestBodyType = requestBodyType;
+		this.uri = new SimpleStringProperty("");
+		this.parameters = new ArrayList<>();
 	}
 
 	public Exchange duplicate(final String name) {
@@ -210,6 +223,26 @@ public class Exchange {
 	public void setDuration(Integer duration) {
 		this.duration.set(duration);
 	}
+
+//	public String getEndpointName() {
+//		return endpointName;
+//	}
+//
+//	public void setEndpointName(String endpointName) {
+//		this.endpointName = endpointName;
+//	}
+
+	public void addParameter(final Parameter parameter) {
+
+		if (!parameters.contains(parameter)) {
+			parameters.add(parameter);
+		}
+	}
+
+	public boolean isEmpty() {
+		return parameters == null || parameters.isEmpty();
+	}
+
 
 //	@Override
 //	public String toString() {

@@ -157,4 +157,10 @@ public class Endpoint extends Item {
 				.filter(p -> p.isHeaderParameter() && p.getName().equalsIgnoreCase(name))
 				.findFirst();
 	}
+
+	public boolean containsParameter(final Parameter parameter) {
+
+		return parameters.contains(parameter);
+	}
+
 }

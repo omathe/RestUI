@@ -64,7 +64,7 @@ public class ProjectController extends AbstractController implements Initializab
 		super.setTreeItem(treeItem);
 
 		project = (Project) treeItem.getValue();
-		final Long endpointsCount = project.flattened().filter(item -> item instanceof Endpoint).count();
+		final Long endpointsCount = project.getAllChildren().filter(item -> item instanceof Endpoint).count();
 		nbEndpoints.setText(endpointsCount.toString());
 
 		baseUrlTable.setItems((ObservableList<BaseUrl>) project.getBaseUrls());
