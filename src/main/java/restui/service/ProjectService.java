@@ -63,7 +63,9 @@ public class ProjectService {
 
 		final SAXBuilder sxb = new SAXBuilder();
 		try {
-			final Document document = sxb.build("file:/media/DATA/dev/workspaceJ9/RestUI/src/test/resources/gms-exchanges.xml");
+
+			final Document document = sxb.build(buildExchangesUri(uri));
+
 			// exchanges
 			final Element exchangesElement = document.getRootElement();
 			if (exchangesElement != null) {
@@ -354,6 +356,34 @@ public class ProjectService {
 			return endpoint;
 		}
 		return null;
+	}
+
+	public static String buildExchangesUri(String projectUri) {
+		String exchangesUri = null;
+
+		if (projectUri != null && !projectUri.isEmpty()) {
+			int index = projectUri.lastIndexOf(File.separator);
+			if (index != -1) {
+				String path = projectUri.substring(0, index);
+				String fileName = projectUri.substring(index + 1, projectUri.length());
+				if (!fileName.isEmpty()) {
+					String name = null;
+					String extension = null;
+					String[] split = fileName.split("\\.");
+					if (split.length == 1) {
+						name = split[0];
+						extension = "";
+
+					} else {
+						name = split[0];
+						extension = split[1];
+					}
+					String exchangeFileName = name + "-exchanges" + (extension.isEmpty() ? "" : "." + extension);
+					exchangesUri = path + File.separator + exchangeFileName;
+				}
+			}
+		}
+		return exchangesUri;
 	}
 
 }
