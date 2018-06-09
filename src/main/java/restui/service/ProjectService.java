@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.jdom2.Attribute;
@@ -89,11 +87,12 @@ public class ProjectService {
 							Exchange exchange = new Exchange(endpointName, name, Long.valueOf(date), Integer.valueOf(duration), Integer.valueOf(status), BodyType.valueOf(requestBodyType));
 							for (final Element parameterElement : exchangeElement.getChildren()) {
 								String enabled = parameterElement.getAttributeValue("enabled");
-								String type = parameterElement.getAttributeValue("type");
+								String direction = parameterElement.getAttributeValue("direction");
 								String location = parameterElement.getAttributeValue("location");
-								String parameterName = parameterElement.getAttributeValue("location");
+								String type = parameterElement.getAttributeValue("type");
+								String parameterName = parameterElement.getAttributeValue("name");
 								String value = parameterElement.getAttributeValue("value");
-								Parameter parameter = new Parameter(Boolean.valueOf(enabled), Type.valueOf(type), Location.valueOf(location), parameterName, value);
+								Parameter parameter = new Parameter(Boolean.valueOf(enabled), Direction.valueOf(direction), Location.valueOf(location), Type.valueOf(type), parameterName, value);
 
 								if (endpoint.containsParameter(parameter)) {
 									exchange.addParameter(parameter);
@@ -106,25 +105,13 @@ public class ProjectService {
 					}
 				}
 			}
-
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
+	}
 
-		List<Exchange> exchanges = new ArrayList<>();
-
-		Exchange e1 = new Exchange("getFleet", "OK", 1481616772605L, 82, 200, BodyType.RAW);
-
-		// TODO Récupérer les paramètres du endpoint et mettre à jour sa value
-
-		Parameter pe1 = new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, "pageSize", "1");
-		e1.addParameter(pe1);
-		exchanges.add(e1);
-
-		Exchange e2 = new Exchange("getCustomer", "OK", 1481616772605L, 82, 200, BodyType.RAW);
-		Parameter pe2 = new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, "fields", "name");
-		e2.addParameter(pe2);
-		exchanges.add(e2);
+	private static void saveExchanges(final Project project, final File file) {
+		// TODO
 	}
 
 	private static void browseXml(final Item item, final Element element) {
@@ -291,7 +278,7 @@ public class ProjectService {
 			final Endpoint endpoint = new Endpoint(parent, element.getAttributeValue("name"), element.getAttributeValue("method"));
 			parent.getChildren().add(endpoint);
 
-			// parameters
+			// Parameters
 			final Element elementParameters = element.getChild("parameters");
 			if (elementParameters != null) {
 				for (final Element elementParameter : elementParameters.getChildren()) {
@@ -305,54 +292,7 @@ public class ProjectService {
 						endpoint.addParameter(parameter);
 					}
 				}
-
 			}
-
-			/*
-			 * FIXME 2.0 final Element elementExchanges = element.getChild("exchanges"); if
-			 * (elementExchanges != null) { for (final Element elementExchange :
-			 * elementExchanges.getChildren()) { // Exchange final Exchange exchange = new
-			 * Exchange(elementExchange.getAttributeValue("name"),
-			 * Long.valueOf(elementExchange.getAttributeValue("date")));
-			 * endpoint.addExchange(exchange);
-			 *
-			 * // Request final Element elementRequest =
-			 * elementExchange.getChild("request"); final Request request = new
-			 * Request(BodyType.valueOf(elementRequest.getAttributeValue("bodyType")),
-			 * elementRequest.getAttributeValue("uri")); //exchange.setRequest(request);
-			 * FIXME 2.0
-			 *
-			 * // Request parameters final Element requestParameters =
-			 * elementRequest.getChild("parameters"); if (requestParameters != null) { for
-			 * (final Element elementParameter : requestParameters.getChildren()) { if
-			 * (elementParameter != null) { final Boolean enabled =
-			 * Boolean.valueOf(elementParameter.getAttributeValue("enabled")); final Type
-			 * type = Type.valueOf(elementParameter.getAttributeValue("type")); final
-			 * Location location =
-			 * Location.valueOf(elementParameter.getAttributeValue("location")); final
-			 * String name = elementParameter.getAttributeValue("name"); final String value
-			 * = elementParameter.getAttributeValue("value"); final Parameter parameter =
-			 * new Parameter(enabled, type, location, name, value);
-			 * request.addParameter(parameter); } } } // Response final Element
-			 * elementResponse = elementExchange.getChild("response"); final Response
-			 * response = new
-			 * Response(Integer.valueOf(elementResponse.getAttributeValue("status")),
-			 * Integer.valueOf(elementResponse.getAttributeValue("duration")));
-			 * //exchange.setResponse(response); FIXME 2.0
-			 *
-			 * // Response parameters final Element responseParameters =
-			 * elementResponse.getChild("parameters"); if (responseParameters != null) { for
-			 * (final Element elementParameter : responseParameters.getChildren()) { if
-			 * (elementParameter != null) { final Boolean enabled =
-			 * Boolean.valueOf(elementParameter.getAttributeValue("enabled")); final Type
-			 * type = Type.valueOf(elementParameter.getAttributeValue("type")); final
-			 * Location location =
-			 * Location.valueOf(elementParameter.getAttributeValue("location")); final
-			 * String name = elementParameter.getAttributeValue("name"); final String value
-			 * = elementParameter.getAttributeValue("value"); final Parameter parameter =
-			 * new Parameter(enabled, type, location, name, value);
-			 * response.addParameter(parameter); } } } } }
-			 */
 			return endpoint;
 		}
 		return null;

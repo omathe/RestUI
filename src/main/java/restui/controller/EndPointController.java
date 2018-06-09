@@ -278,14 +278,13 @@ public class EndPointController extends AbstractController implements Initializa
 			buildUri();
 			return parameter.getValue().nameProperty();
 		});
-		/* FIXME 2.0 parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		parameterValueColumn.setCellValueFactory(parameter -> {
 			buildUri();
 			return parameter.getValue().valueProperty();
-		});*/
+		});
 		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		parameterValueColumn.setCellValueFactory(new PropertyValueFactory<Value, String>("value"));
-
 
 		// response headers
 		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("name"));
@@ -377,8 +376,8 @@ public class EndPointController extends AbstractController implements Initializa
 			uri.setText("");*/
 		} else {
 			// request
-			// final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters(); FIXME 2.0
-			final ObservableList<Parameter> parameterData = FXCollections.observableArrayList();
+			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();
+			//final ObservableList<Parameter> parameterData = FXCollections.observableArrayList();
 			parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
 			parameters.refresh();
 

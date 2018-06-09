@@ -204,10 +204,10 @@ public class Parameter {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((direction == null) ? 0 : direction.hashCode());
-		result = prime * result + ((location == null) ? 0 : location.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((direction == null) ? 0 : direction.get().hashCode());
+		result = prime * result + ((location == null) ? 0 : location.get().hashCode());
+		result = prime * result + ((name == null) ? 0 : name.get().hashCode());
+		result = prime * result + ((type == null) ? 0 : type.get().hashCode());
 		return result;
 	}
 
@@ -223,22 +223,22 @@ public class Parameter {
 		if (direction == null) {
 			if (other.direction != null)
 				return false;
-		} else if (!direction.equals(other.direction))
+		} else if (!direction.get().equals(other.direction.get()))
 			return false;
 		if (location == null) {
 			if (other.location != null)
 				return false;
-		} else if (!location.equals(other.location))
+		} else if (!location.get().equals(other.location.get()))
 			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!name.get().equals(other.name.get()))
 			return false;
 		if (type == null) {
 			if (other.type != null)
 				return false;
-		} else if (!type.equals(other.type))
+		} else if (!type.get().equals(other.type.get()))
 			return false;
 		return true;
 	}

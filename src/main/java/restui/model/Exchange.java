@@ -1,8 +1,8 @@
 package restui.model;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -10,6 +10,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import restui.model.Parameter.Direction;
 
 public class Exchange {
 
@@ -52,7 +54,7 @@ public class Exchange {
 		this.duration = new SimpleIntegerProperty(duration);
 		this.requestBodyType = requestBodyType;
 		this.uri = new SimpleStringProperty("");
-		this.parameters = new ArrayList<>();
+		this.parameters = FXCollections.observableArrayList();
 	}
 
 	public Exchange duplicate(final String name) {
@@ -101,9 +103,12 @@ public class Exchange {
 	// this.request = request;
 	// }
 
-	// public List<Parameter> getRequestParameters() {
-	// return request.parameters;
-	// }
+	 public List<Parameter> getRequestParameters() {
+
+		 return FXCollections.observableArrayList(parameters.stream()
+				 .filter(p -> p.getDirection().equals(Direction.REQUEST.name()))
+				 .collect(Collectors.toList()));
+	 }
 
 	// public void addRequestParameter(final Parameter parameter) {
 	// request.addParameter(parameter);

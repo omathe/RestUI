@@ -20,18 +20,11 @@ public class ApplicationService {
 	private static final String APPLICATION_XML = "application.xml";
 	private static final String APPLICATION_DEFAULT_STYLE_DIRECTORY = "style/default";
 	private static final String APPLICATION_DEFAULT_STYLE_SHEET = "stylesheet.css";
-	private static final String EXCHANGES_HOME = ApplicationService.APPLICATION_HOME + "/exchanges";
 
 	public static String getApplicationHome() {
 
 		final String userHome = System.getProperty("user.home");
 		return userHome + File.separator + getPrefix() + APPLICATION_HOME;
-	}
-
-	public static String getExchangesHome() {
-
-		final String userHome = System.getProperty("user.home");
-		return userHome + File.separator + getPrefix() + EXCHANGES_HOME;
 	}
 
 	public static Application openApplication() {
@@ -98,12 +91,6 @@ public class ApplicationService {
 		final File applicationDirectory = new File(getApplicationHome());
 		if (!applicationDirectory.exists()) {
 			applicationDirectory.mkdir();
-		}
-
-		// create exchanges directory
-		final File exchangesDirectory = new File(getExchangesHome());
-		if (!exchangesDirectory.exists()) {
-			exchangesDirectory.mkdir();
 		}
 
 		// copy stylesheet.css if not exists
