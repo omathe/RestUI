@@ -2,7 +2,8 @@ package restui.model;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -27,13 +28,12 @@ public class Exchange {
 	private IntegerProperty duration; // 2.0
 	private BodyType requestBodyType;
 	private StringProperty uri;
-	private List<Value> values;
 	//à supprimer private String endpointName;
 	private List<Parameter> parameters;
 
-	public Exchange() {
+	/*public Exchange() {
 		super();
-	}
+	}*/
 
 	public Exchange(final String name, final Long date) {
 		super();
@@ -43,6 +43,7 @@ public class Exchange {
 		this.duration = new SimpleIntegerProperty();
 		this.requestBodyType = BodyType.RAW;
 		this.uri = new SimpleStringProperty("");
+		this.parameters = FXCollections.observableArrayList();
 	}
 
 	public Exchange(String endpointName, final String name, final Long date, Integer duration, Integer status, BodyType requestBodyType) {
@@ -103,12 +104,16 @@ public class Exchange {
 	// this.request = request;
 	// }
 
-	 public List<Parameter> getRequestParameters() {
+	 public Stream<Parameter> getRequestParameters() {
 
-		 return FXCollections.observableArrayList(parameters.stream()
-				 .filter(p -> p.getDirection().equals(Direction.REQUEST.name()))
-				 .collect(Collectors.toList()));
+		 return parameters.stream()
+				 .filter(p -> p.getDirection().equals(Direction.REQUEST.name()));
 	 }
+
+	 public Optional<Parameter> findParameter(final Parameter parameter) {
+
+			return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
+		}
 
 	// public void addRequestParameter(final Parameter parameter) {
 	// request.addParameter(parameter);

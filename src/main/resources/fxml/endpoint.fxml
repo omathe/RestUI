@@ -33,7 +33,7 @@
 									<children>
 										<HBox alignment="CENTER" spacing="5.0" style="-fx-background-color: gray;">
 											<children>
-												<Label fx:id="endpoint" text="Label" textFill="#15d025">
+												<Label fx:id="endpointName" text="Label" textFill="#15d025">
 													<font>
 														<Font name="System Bold" size="16.0" />
 													</font>

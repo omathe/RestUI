@@ -25,8 +25,6 @@ import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Path;
 import restui.model.Project;
-import restui.model.Request;
-import restui.model.Response;
 
 public class ProjectService {
 
@@ -188,61 +186,20 @@ public class ProjectService {
 			element.setAttribute(attributeEndpointPath);
 			element.setAttribute(attributeEndpointMethod);
 
-			// exchanges
-			if (endpoint.hasExchanges()) {
-				final Element elementExchanges = new Element("exchanges");
-				for (final Exchange exchange : endpoint.getExchanges()) {
-					final Element elementExchange = new Element("exchange");
-					elementExchange.setAttribute(new Attribute("name", exchange.getName()));
-					elementExchange.setAttribute(new Attribute("date", exchange.getDate().toString()));
-					elementExchanges.addContent(elementExchange);
+			// parameters
+			if (endpoint.hasParameters()) {
+				final Element elementParameters = new Element("parameters");
+				for (final Parameter parameter : endpoint.getParameters()) {
+					final Element elementParameter = new Element("parameter");
+					elementParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
+					elementParameter.setAttribute(new Attribute("direction", parameter.getDirection()));
+					elementParameter.setAttribute(new Attribute("location", parameter.getLocation()));
+					elementParameter.setAttribute(new Attribute("type", parameter.getType()));
+					elementParameter.setAttribute(new Attribute("name", parameter.getName()));
 
-					// request
-					// final Request request = exchange.getRequest();FIXME 2.0
-					Request request = new Request();
-					final Element elementRequest = new Element("request");
-					elementRequest.setAttribute(new Attribute("uri", request.getUri()));
-					elementRequest.setAttribute(new Attribute("bodyType", request.getBodyType().name()));
-					elementExchange.addContent(elementRequest);
-
-					final Element elementRequestParameters = new Element("parameters");
-					elementRequest.addContent(elementRequestParameters);
-					for (final Parameter parameter : request.getParameters()) {
-						final Element elementRequestParameter = new Element("parameter");
-						if (parameter.getName() != null) {
-							elementRequestParameter.setAttribute(new Attribute("name", parameter.getName()));
-						}
-						elementRequestParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
-						elementRequestParameter.setAttribute(new Attribute("type", parameter.getType()));
-						elementRequestParameter.setAttribute(new Attribute("location", parameter.getLocation()));
-						elementRequestParameter.setAttribute(new Attribute("value", parameter.getValue()));
-						elementRequestParameters.addContent(elementRequestParameter);
-					}
-
-					// response
-					// final Response response = exchange.getResponse(); FIXME 2.0
-					final Response response = new Response();
-					final Element elementResponse = new Element("response");
-					elementResponse.setAttribute(new Attribute("status", response.getStatus() == null ? "" : response.getStatus().toString()));
-					elementResponse.setAttribute(new Attribute("duration", response.getDuration() == null ? "" : response.getDuration().toString()));
-					elementExchange.addContent(elementResponse);
-
-					final Element elementResponseParameters = new Element("parameters");
-					elementResponse.addContent(elementResponseParameters);
-					// response parameters
-					for (final Parameter parameter : response.getParameters()) {
-						final Element elementResponseParameter = new Element("parameter");
-						elementResponseParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
-						elementResponseParameter.setAttribute(new Attribute("type", parameter.getType()));
-						elementResponseParameter.setAttribute(new Attribute("location", parameter.getLocation()));
-						if (parameter.getName() != null) {
-							elementResponseParameter.setAttribute(new Attribute("name", parameter.getName()));
-						}
-						elementResponseParameter.setAttribute(new Attribute("value", parameter.getValue()));
-						elementResponseParameters.addContent(elementResponseParameter);
-					}
+					elementParameters.addContent(elementParameter);
 				}
-				element.addContent(elementExchanges);
+				element.addContent(elementParameters);
 			}
 			parent.addContent(element);
 			break;

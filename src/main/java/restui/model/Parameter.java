@@ -39,6 +39,7 @@ public class Parameter {
 	private final StringProperty name;
 	private final StringProperty value;
 
+	@Deprecated
 	public Parameter(final Boolean enabled, Type type, final Location location, final String name, final String value) {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
@@ -65,6 +66,11 @@ public class Parameter {
 		this.location = new SimpleStringProperty(parameter.getLocation());
 		this.name = new SimpleStringProperty(parameter.getName());
 		this.value = new SimpleStringProperty(parameter.getValue());
+	}
+
+	public Parameter duplicate() {
+
+		return new Parameter(enabled.get(), Direction.valueOf(direction.get()), Location.valueOf(location.get()), Type.valueOf(type.get()), name.get(), value.get());
 	}
 
 	public Boolean getEnabled() {
@@ -143,32 +149,40 @@ public class Parameter {
 		return value;
 	}
 
+	public boolean isRequestParameter() {
+		return direction != null && direction.get().equals(Direction.REQUEST.name());
+	}
+
+	public boolean isResponseParameter() {
+		return direction != null && direction.get().equals(Direction.RESPONSE.name());
+	}
+
 	public boolean isPathParameter() {
-		return location.get().equals(Location.PATH.name());
+		return location != null && location.get().equals(Location.PATH.name());
 	}
 
 	public boolean isQueryParameter() {
-		return location.get().equals(Location.QUERY.name());
+		return location != null && location.get().equals(Location.QUERY.name());
 	}
 
 	public boolean isBodyParameter() {
-		return location.get().equals(Location.BODY.name()) && getName() != null && !getName().trim().isEmpty();
+		return location != null && location.get().equals(Location.BODY.name()) && getName() != null && !getName().trim().isEmpty();
 	}
 
 	public boolean isRawBodyParameter() {
-		return location.get().equals(Location.BODY.name()) && getName() == null;
+		return location != null && location.get().equals(Location.BODY.name()) && getName() == null;
 	}
 
 	public boolean isHeaderParameter() {
-		return location.get().equals(Location.HEADER.name());
+		return location != null && location.get().equals(Location.HEADER.name());
 	}
 
 	public boolean isTypeText() {
-		return type.get().equals(Type.TEXT.name());
+		return type != null && type.get().equals(Type.TEXT.name());
 	}
 
 	public boolean isTypeFile() {
-		return type.get().equals(Type.FILE.name());
+		return type != null && type.get().equals(Type.FILE.name());
 	}
 
 	public boolean hasNameNullOrEmpty() {
@@ -245,7 +259,7 @@ public class Parameter {
 
 	@Override
 	public String toString() {
-		return "Parameter [enabled=" + enabled + ", type=" + type + ", location=" + location + ", direction=" + direction + ", name=" + name + ", value=" + value + "]";
+		return "Parameter [enabled=" + enabled.get() + ", direction=" + direction.get() + ", location=" + location.get() + ", type=" + type.get() + ", name=" + name.get() + ", value=" + value.get() + "]";
 	}
 
 }

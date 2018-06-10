@@ -80,6 +80,10 @@ public class Endpoint extends Item {
 		return exchanges != null && !exchanges.isEmpty();
 	}
 
+	public boolean hasParameters() {
+		return parameters != null && !parameters.isEmpty();
+	}
+
 	public void buildPath() {
 
 		final List<String> names = new ArrayList<>();
@@ -115,25 +119,17 @@ public class Endpoint extends Item {
 	// 2.0
 	public String getRawBody() {
 
-		final Optional<String> body = parameters.stream()
-				.filter(p -> p.getLocation().equals(Location.BODY.name()) && p.getName() == null)
-				.map(p -> p.getValue())
-				.findFirst();
+		final Optional<String> body = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name()) && p.getName() == null).map(p -> p.getValue()).findFirst();
 
 		return body.orElse(null);
 	}
 
 	public void setRawBody(final String value) {
 
-		final Optional<Parameter> rawBody = parameters.stream()
-				.filter(p -> p.getLocation().equals(Location.BODY.name()))
-				.filter(p -> p.getType().equals(Type.TEXT.name()))
-				.filter(p -> p.getName() == null)
-				.findFirst();
+		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name())).filter(p -> p.getType().equals(Type.TEXT.name())).filter(p -> p.getName() == null).findFirst();
 		if (rawBody.isPresent()) {
 			rawBody.get().setValue(value);
-		}
-		else {
+		} else {
 			final Parameter parameter = new Parameter(Boolean.TRUE, Type.TEXT, Location.BODY, null, value);
 			addParameter(parameter);
 		}
@@ -150,12 +146,15 @@ public class Endpoint extends Item {
 		}
 	}
 
-	// 2.0
-	public Optional<Parameter> findParameter(final Location location, final String name) {
+//	// à supprimer
+//	public Optional<Parameter> findParameter(final Location location, final String name) {
+//
+//		return parameters.stream().filter(p -> p.isHeaderParameter() && p.getName().equalsIgnoreCase(name)).findFirst();
+//	}
 
-		return parameters.stream()
-				.filter(p -> p.isHeaderParameter() && p.getName().equalsIgnoreCase(name))
-				.findFirst();
+	public Optional<Parameter> findParameter(final Parameter parameter) {
+
+		return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
 	}
 
 	public boolean containsParameter(final Parameter parameter) {
