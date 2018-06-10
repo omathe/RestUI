@@ -3,7 +3,6 @@ package restui.model;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -12,7 +11,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import restui.model.Parameter.Direction;
 
 public class Exchange {
 
@@ -104,10 +102,9 @@ public class Exchange {
 	// this.request = request;
 	// }
 
-	 public Stream<Parameter> getRequestParameters() {
+	 public List<Parameter> getParameters() {
 
-		 return parameters.stream()
-				 .filter(p -> p.getDirection().equals(Direction.REQUEST.name()));
+		 return parameters;
 	 }
 
 	 public Optional<Parameter> findParameter(final Parameter parameter) {

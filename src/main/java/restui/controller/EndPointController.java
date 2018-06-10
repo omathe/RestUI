@@ -87,7 +87,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private TableColumn<Exchange, Long> exchangeDateColumn;
 
 	@FXML
-	private TableView<Parameter> parameters;
+	private TableView<Parameter> requestParameters;
 
 	@FXML
 	private TableColumn<Parameter, Boolean> parameterEnabledColumn;
@@ -201,15 +201,15 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		// request parameters
-		parameters.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		requestParameters.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-		parameters.setOnKeyPressed(event -> {
+		requestParameters.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.DELETE)) {
-				deleteRequestParameters(parameters.getSelectionModel().getSelectedItems());
+				deleteRequestParameters(requestParameters.getSelectionModel().getSelectedItems());
 			}
 		});
 
-		parameters.setOnMousePressed(new EventHandler<MouseEvent>() {
+		requestParameters.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(final MouseEvent event) {
@@ -235,11 +235,11 @@ public class EndPointController extends AbstractController implements Initializa
 
 					if (exchange.isPresent()) {
 						addHeader.setOnAction(e -> {
-							List<String> parameterNames = parameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
+							List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
 							addRequestParameter(new Parameter(true, Direction.REQUEST, Location.HEADER, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
 						});
 						addQuery.setOnAction(e -> {
-							List<String> parameterNames = parameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
+							List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
 							addRequestParameter(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
 						});
 						paste.setOnAction(e -> {
@@ -251,14 +251,14 @@ public class EndPointController extends AbstractController implements Initializa
 					}
 					if (exchange.isPresent() && parameter.isPresent()) {
 						delete.setOnAction(e -> {
-							deleteRequestParameters(parameters.getSelectionModel().getSelectedItems());
+							deleteRequestParameters(requestParameters.getSelectionModel().getSelectedItems());
 						});
 						copy.setOnAction(e -> {
-							final List<Parameter> selectedParameters = parameters.getSelectionModel().getSelectedItems();
+							final List<Parameter> selectedParameters = requestParameters.getSelectionModel().getSelectedItems();
 							ObjectClipboard.getInstance().setParameters(selectedParameters);
 						});
 					}
-					parameters.setContextMenu(requestParametersContextMenu);
+					requestParameters.setContextMenu(requestParametersContextMenu);
 				}
 			}
 		});
@@ -283,7 +283,7 @@ public class EndPointController extends AbstractController implements Initializa
 		parameterValueColumn.setCellValueFactory(parameter -> {
 			buildUri();
 
-			System.err.println(">>> " + parameter.getValue());
+			/*System.err.println(">>> " + parameter.getValue());
 			// set exchange parameter value
 			Optional<Exchange> selectedExchange = getSelectedExchange();
 			if (selectedExchange.isPresent()) {
@@ -293,7 +293,7 @@ public class EndPointController extends AbstractController implements Initializa
 					System.err.println(">>> FOUND");
 				}
 				System.err.println(">>> " + selectedExchange.get().getName());
-			}
+			}*/
 			return parameter.getValue().valueProperty();
 		});
 		//parameterValueColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("value"));
@@ -328,7 +328,7 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		// disable request/response area if no exchange selected
-		// FIXME 2.0 requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
+		requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
 		execute.textProperty().bind(method.valueProperty());
 	}
@@ -372,10 +372,6 @@ public class EndPointController extends AbstractController implements Initializa
 		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
 
 		exchanges.getSelectionModel().select(0);
-
-		// request parameters table
-		final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) endpoint.getParameters();
-		parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
 	}
 
 	private void refreshExchangeData(final Exchange exchange) {
@@ -383,7 +379,7 @@ public class EndPointController extends AbstractController implements Initializa
 		if (exchange == null) {
 			final Endpoint ep = (Endpoint) this.treeItem.getValue();
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) ep.getParameters();
-			parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
+			requestParameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
 
 			/*parameters.setItems(null);
 			responseBody.setText("");
@@ -391,26 +387,13 @@ public class EndPointController extends AbstractController implements Initializa
 			responseStatus.setText("");
 			uri.setText("");*/
 		} else {
-			// set request parameter value to the exchange value
-			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) endpoint.getParameters();
-			parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
+			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getParameters();
+			requestParameters.setItems(parameterData.filtered(p -> p.getDirection().equals(Direction.REQUEST.name()) && !p.getLocation().equals(Location.BODY.name())));
 
-			exchange.getRequestParameters().forEach(exchangeParameter -> {
-				Optional<Parameter> endpointParameter = endpoint.findParameter(exchangeParameter);
-				if (endpointParameter.isPresent()) {
-					endpointParameter.get().setValue(exchangeParameter.getValue());
-				}
-			});
-
-			// retrieve the values of the parameters in the exchange
-
-			//final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) ep.getParameters();
-			//parameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
-			//parameters.refresh();
-
-			buildParameters();
+			buildPathParameters();
+			requestParameters.refresh();
 			buildUri();
-			// uri.setText(exchange.getRequest().getUri()); FIXME 2.0
+			uri.setText(exchange.getUri());
 
 			// response
 			//final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseParameters(); FIXME 2.0
@@ -455,15 +438,15 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 
-	private void buildParameters() {
+	private void buildPathParameters() {
 
-		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		if (exchange != null) {
+		final Optional<Exchange> exchange = getSelectedExchange();
+		if (exchange.isPresent()) {
 			final String endpointUri = path.getText();
 			final Set<String> tokens = extractTokens(endpointUri, Path.ID_PREFIX, Path.ID_SUFFIX);
 			tokens.stream().forEach(token -> {
-				final Parameter parameter = new Parameter(true, Type.TEXT, Location.PATH, token, "");
-				// exchange.addRequestParameter(parameter); FIXME 2.0
+				final Parameter parameter = new Parameter(true, Direction.REQUEST, Location.PATH, Type.TEXT, token, "");
+				exchange.get().addParameter(parameter);
 			});
 		}
 	}
@@ -494,13 +477,14 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void addRequestParameter(final Parameter parameter) {
 
-		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
-		endpoint.addParameter(parameter);
+		//final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
+		//endpoint.addParameter(parameter);
 
 		// add the parameter to the selected  exchange
 		Optional<Exchange> selectedExchange = getSelectedExchange();
 		if (selectedExchange.isPresent()) {
-			selectedExchange.get().addParameter(parameter.duplicate());
+//			selectedExchange.get().addParameter(parameter.duplicate());
+			selectedExchange.get().addParameter(parameter);
 		}
 	}
 
@@ -619,40 +603,40 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void buildUri() {
 
-		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-		boolean validUri = true;
+		final Optional<Exchange> exchange = getSelectedExchange();
+		if (exchange.isPresent()) {
+			boolean validUri = true;
 
-		String valuedUri = baseUrl + path.getText();
-		Set<String> queryParams = new HashSet<String>();
-		if (!valuedUri.toLowerCase().startsWith("http")) {
-			validUri = false;
-		}
-
-		/* FIXME 2.0
-		for (Parameter parameter : exchange.getRequest().getParameters()) {
-			if (parameter.isPathParameter()) {
-				if (!parameter.getEnabled() || !parameter.isValid()) {
-					validUri = false;
-					continue;
-				} else {
-					valuedUri = valuedUri.replace(Path.ID_PREFIX + parameter.getName() + Path.ID_SUFFIX, parameter.getValue());
-				}
-			} else if (parameter.isQueryParameter()) {
-				if (!parameter.isValid()) {
-					validUri = false;
-				} else if (parameter.getEnabled()) {
-					queryParams.add(parameter.getName() + "=" + parameter.getValue());
+			String valuedUri = baseUrl + path.getText();
+			Set<String> queryParams = new HashSet<String>();
+			if (!valuedUri.toLowerCase().startsWith("http")) {
+				validUri = false;
+			}
+			for (Parameter parameter : exchange.get().getParameters()) {
+				if (parameter.isRequestParameter() && parameter.isPathParameter()) {
+					if (!parameter.getEnabled() || !parameter.isValid()) {
+						validUri = false;
+						continue;
+					} else {
+						valuedUri = valuedUri.replace(Path.ID_PREFIX + parameter.getName() + Path.ID_SUFFIX, parameter.getValue());
+					}
+				} else if (parameter.isQueryParameter()) {
+					if (!parameter.isValid()) {
+						validUri = false;
+					} else if (parameter.getEnabled()) {
+						queryParams.add(parameter.getName() + "=" + parameter.getValue());
+					}
 				}
 			}
-		}*/
-		if (!queryParams.isEmpty()) {
-			valuedUri += "?" + String.join("&", queryParams);
+			if (!queryParams.isEmpty()) {
+				valuedUri += "?" + String.join("&", queryParams);
+			}
+			uri.setText(valuedUri);
+			if (validUri) {
+				exchange.get().setUri(valuedUri);
+			}
+			execute.setDisable(!validUri);
 		}
-		uri.setText(valuedUri);
-		if (validUri) {
-			//exchange.getRequest().setUri(valuedUri); FIXME 2.0
-		}
-		execute.setDisable(!validUri);
 	}
 
 	private void displayResponseBody(final Exchange exchange) {
@@ -752,8 +736,8 @@ public class EndPointController extends AbstractController implements Initializa
 	private Optional<Parameter> getSelectedRequestParameter() {
 
 		Optional<Parameter> optional = Optional.empty();
-		if (parameters != null && parameters.getSelectionModel().getSelectedItem() != null) {
-			optional = Optional.of(parameters.getSelectionModel().getSelectedItem());
+		if (requestParameters != null && requestParameters.getSelectionModel().getSelectedItem() != null) {
+			optional = Optional.of(requestParameters.getSelectionModel().getSelectedItem());
 		}
 		return optional;
 	}

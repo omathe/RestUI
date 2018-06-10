@@ -6,6 +6,12 @@
   </baseUrls>
   <path name="application">
     <path name="customers">
+    	<endpoint name="getCustomers" path="/application/customers" method="GET">
+    	          <parameters>
+    	            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
+    	            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
+    	          </parameters>
+    	        </endpoint>
       <path name="{customerId}">
         <endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
           <parameters>

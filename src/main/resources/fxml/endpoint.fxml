@@ -105,7 +105,7 @@
 																								<Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
 																							</padding>
 																						</Label>
-																						<TableView fx:id="parameters" editable="true" VBox.vgrow="ALWAYS">
+																						<TableView fx:id="requestParameters" editable="true" VBox.vgrow="ALWAYS">
 																							<columns>
 																								<TableColumn fx:id="parameterEnabledColumn" prefWidth="75.0" text="Enabled" />
 																								<TableColumn fx:id="parameterLocationColumn" prefWidth="75.0" text="Location" />
