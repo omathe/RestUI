@@ -455,6 +455,11 @@ public class EndPointController extends AbstractController implements Initializa
 
 		List<String> exchangeNames = exchanges.getItems().stream().map(ex -> ex.getName()).collect(Collectors.toList());
 		final Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames, "echange"), Instant.now().toEpochMilli());
+
+		// retrieve the endpoint parameters and put them in the exchange
+		List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
+		exchange.addParameters(endpointRequestParameters);
+
 		endpoint.addExchange(exchange);
 	}
 

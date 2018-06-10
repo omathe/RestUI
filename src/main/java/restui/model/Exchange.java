@@ -246,6 +246,15 @@ public class Exchange {
 		}
 	}
 
+	public void addParameters(final List<Parameter> parameterList) {
+
+		parameterList.stream().forEach(p -> {
+			if (!parameters.contains(p)) {
+				parameters.add(p);
+			}
+		});
+	}
+
 	public boolean isEmpty() {
 		return parameters == null || parameters.isEmpty();
 	}

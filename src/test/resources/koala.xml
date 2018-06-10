@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="KOALA">
-  <baseUrls>
-    <baseUrl name="Local" url="http://192.168.5.11:8080/gms" enabled="true" />
-    <baseUrl name="https" url="https://lorawan.italks.eu/oss" enabled="false" />
-  </baseUrls>
-  <path name="application">
-    <path name="customers">
-    	<endpoint name="getCustomers" path="/application/customers" method="GET">
-    	          <parameters>
-    	            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
-    	            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
-    	          </parameters>
-    	        </endpoint>
-      <path name="{customerId}">
-        <endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
-          <parameters>
-            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="fields" />
-          </parameters>
-        </endpoint>
-      </path>
-    </path>
-  </path>
+	<baseUrls>
+		<baseUrl name="Local" url="http://192.168.5.11:8080/gms" enabled="true" />
+		<baseUrl name="https" url="https://lorawan.italks.eu/oss" enabled="false" />
+	</baseUrls>
+	<path name="application">
+		<path name="customers">
+			<endpoint name="getCustomers" path="/application/customers" method="GET">
+				<parameters>
+					<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
+					<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
+				</parameters>
+			</endpoint>
+			<path name="{customerId}">
+				<endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
+					<parameters>
+						<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="fields" />
+					</parameters>
+				</endpoint>
+			</path>
+		</path>
+		<path name="fleets">
+			<path name="{fleetId}">
+				<endpoint name="getFleet" path="/application/fleets/{fleetId}" method="GET">
+					<parameters>
+						<parameter enabled="true" direction="REQUEST" location="PATH" type="TEXT" name="fleetId" />
+					</parameters>
+				</endpoint>
+			</path>
+			<endpoint name="getFleets" path="/application/fleets" method="GET">
+				<parameters>
+					<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
+					<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
+				</parameters>
+			</endpoint>
+		</path>
+	</path>
 </project>

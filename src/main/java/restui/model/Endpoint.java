@@ -146,6 +146,8 @@ public class Endpoint extends Item {
 		}
 	}
 
+
+
 //	// à supprimer
 //	public Optional<Parameter> findParameter(final Location location, final String name) {
 //
