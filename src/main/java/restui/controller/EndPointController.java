@@ -377,20 +377,16 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshExchangeData(final Exchange exchange) {
 
 		if (exchange == null) {
-			final Endpoint ep = (Endpoint) this.treeItem.getValue();
-			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) ep.getParameters();
-			requestParameters.setItems(parameterData.filtered(p -> !p.getLocation().equals(Location.BODY.name())));
-
-			/*parameters.setItems(null);
+			requestParameters.setItems(null);
 			responseBody.setText("");
 			responseHeaders.setItems(null);
 			responseStatus.setText("");
-			uri.setText("");*/
+			uri.setText("");
 		} else {
 			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getParameters();
 			requestParameters.setItems(parameterData.filtered(p -> p.getDirection().equals(Direction.REQUEST.name()) && !p.getLocation().equals(Location.BODY.name())));
 
-			buildPathParameters();
+			// buildPathParameters(); plus utile
 			requestParameters.refresh();
 			buildUri();
 			uri.setText(exchange.getUri());
@@ -438,7 +434,7 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 
-	private void buildPathParameters() {
+	/*private void buildPathParameters() {
 
 		final Optional<Exchange> exchange = getSelectedExchange();
 		if (exchange.isPresent()) {
@@ -449,7 +445,7 @@ public class EndPointController extends AbstractController implements Initializa
 				exchange.get().addParameter(parameter);
 			});
 		}
-	}
+	}*/
 
 	private void addExchange() {
 

@@ -18,6 +18,7 @@
 						<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="fields" />
 						<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Authorization" />
 						<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json"/>
+						<parameter enabled="true" direction="REQUEST" location="PATH" type="TEXT" name="customerId" />
 					</parameters>
 				</endpoint>
 			</path>
