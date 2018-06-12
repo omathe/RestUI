@@ -68,11 +68,9 @@ public class Parameter {
 		this.value = new SimpleStringProperty(parameter.getValue());
 	}
 
-	// à supprimer
-//	public Parameter duplicate() {
-//
-//		return new Parameter(enabled.get(), Direction.valueOf(direction.get()), Location.valueOf(location.get()), Type.valueOf(type.get()), name.get(), value.get());
-//	}
+	public Parameter duplicate() {
+		return new Parameter(enabled.get(), Direction.valueOf(direction.get()), Location.valueOf(location.get()), Type.valueOf(type.get()), name.get(), value.get());
+	}
 
 	public Boolean getEnabled() {
 		return enabled.get();

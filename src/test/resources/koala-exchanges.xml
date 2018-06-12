@@ -13,6 +13,7 @@
 	<endpoint name="getFleet">
 		<exchange name="OK" date="1481616772605" requestBodyType="RAW" status="200" duration="82">
 			<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageNumber" value="1" />
+			<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json-kerlink"/>
 		</exchange>
 	</endpoint>
 </exchanges>

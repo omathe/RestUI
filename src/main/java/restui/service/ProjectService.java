@@ -98,7 +98,7 @@ public class ProjectService {
 								}
 							}
 							// retrieve the endpoint parameters that are not in the exchange
-							endpoint.getParameters().stream().filter(p -> !exchange.containsParameter(p)).forEach(p -> exchange.addParameter(p));
+							endpoint.getParameters().stream().filter(p -> !exchange.containsParameter(p)).forEach(p -> exchange.addParameter(p.duplicate()));
 
 							if (!exchange.isEmpty()) {
 								endpoint.addExchange(exchange);
@@ -200,6 +200,7 @@ public class ProjectService {
 					elementParameter.setAttribute(new Attribute("location", parameter.getLocation()));
 					elementParameter.setAttribute(new Attribute("type", parameter.getType()));
 					elementParameter.setAttribute(new Attribute("name", parameter.getName()));
+					elementParameter.setAttribute(new Attribute("value", parameter.getValue()));
 
 					elementParameters.addContent(elementParameter);
 				}
@@ -249,7 +250,8 @@ public class ProjectService {
 						final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
 						final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
 						final String name = elementParameter.getAttributeValue("name");
-						final Parameter parameter = new Parameter(enabled, direction, location, type, name, null);
+						final String value = elementParameter.getAttributeValue("value");
+						final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
 						endpoint.addParameter(parameter);
 					}
 				}
