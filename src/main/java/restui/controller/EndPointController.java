@@ -381,6 +381,7 @@ public class EndPointController extends AbstractController implements Initializa
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
 			requestParameters.setItems(FXCollections.observableArrayList(endpointRequestParameters));
 
+			requestParameters.setItems(null);
 			responseBody.setText("");
 			responseHeaders.setItems(null);
 			responseStatus.setText("");
