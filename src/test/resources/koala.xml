@@ -16,6 +16,8 @@
 				<endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
 					<parameters>
 						<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="fields" />
+						<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Authorization" />
+						<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json"/>
 					</parameters>
 				</endpoint>
 			</path>

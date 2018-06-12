@@ -92,10 +92,14 @@ public class ProjectService {
 								String value = parameterElement.getAttributeValue("value");
 								Parameter parameter = new Parameter(Boolean.valueOf(enabled), Direction.valueOf(direction), Location.valueOf(location), Type.valueOf(type), parameterName, value);
 
+								// add parameter to exchange only if endpoint contains it
 								if (endpoint.containsParameter(parameter)) {
 									exchange.addParameter(parameter);
 								}
 							}
+							// retrieve the endpoint parameters that are not in the exchange
+							endpoint.getParameters().stream().filter(p -> !exchange.containsParameter(p)).forEach(p -> exchange.addParameter(p));
+
 							if (!exchange.isEmpty()) {
 								endpoint.addExchange(exchange);
 							}

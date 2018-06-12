@@ -259,6 +259,10 @@ public class Exchange {
 		return parameters == null || parameters.isEmpty();
 	}
 
+	public boolean containsParameter(final Parameter parameter) {
+
+		return parameters.contains(parameter);
+	}
 
 //	@Override
 //	public String toString() {
