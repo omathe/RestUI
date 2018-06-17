@@ -12,3 +12,6 @@ Lns.xml
 *.lock
 /.gradle/
 /https.txt
+/**/*.vpp.bak*
+/**/*.vpp.vbak*
+/**/*.vux.vbak*

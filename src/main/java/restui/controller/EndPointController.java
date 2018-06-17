@@ -73,6 +73,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private String baseUrl;
 	private Endpoint endpoint;
+	private Exchange currentExchange;
 
 	@FXML
 	private SplitPane requestResponseSplitPane;
@@ -217,7 +218,7 @@ public class EndPointController extends AbstractController implements Initializa
 				final Optional<Exchange> exchange = getSelectedExchange();
 				final Optional<Parameter> parameter = getSelectedRequestParameter();
 
-				if (event.isSecondaryButtonDown()) {
+				if (event.isSecondaryButtonDown()) { // right clic
 					final ContextMenu requestParametersContextMenu = new ContextMenu();
 					requestParametersContextMenu.getItems().clear();
 					final Menu add = new Menu("Add");
@@ -282,21 +283,8 @@ public class EndPointController extends AbstractController implements Initializa
 		parameterValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		parameterValueColumn.setCellValueFactory(parameter -> {
 			buildUri();
-
-			/*System.err.println(">>> " + parameter.getValue());
-			// set exchange parameter value
-			Optional<Exchange> selectedExchange = getSelectedExchange();
-			if (selectedExchange.isPresent()) {
-				Optional<Parameter> exchangeParameter = selectedExchange.get().findParameter(parameter.getValue());
-				if (exchangeParameter.isPresent()) {
-					exchangeParameter.get().setValue(parameter.getValue().getValue());
-					System.err.println(">>> FOUND");
-				}
-				System.err.println(">>> " + selectedExchange.get().getName());
-			}*/
 			return parameter.getValue().valueProperty();
 		});
-		//parameterValueColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("value"));
 
 		// response headers
 		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("name"));
@@ -324,7 +312,8 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			refreshExchangeData(newSelection);
+			currentExchange = getSelectedExchange().get();
+			refreshEndpointParameters();
 		});
 
 		// disable request/response area if no exchange selected
@@ -338,7 +327,6 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		endpoint = (Endpoint) this.treeItem.getValue();
-		refreshExchangeData(null);
 
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
@@ -369,74 +357,88 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 		exchangeDateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 
-		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
+		List<Exchange> endpointExchanges = endpoint.getExchanges();
+		exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
 
-		exchanges.getSelectionModel().select(0);
-	}
-
-	private void refreshExchangeData(final Exchange exchange) {
-
-		if (exchange == null) {
-			// copie endpoint parameters to exchange parameters
+		if (endpointExchanges.isEmpty()) {
+			currentExchange = new Exchange("current", 1L);
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
-			requestParameters.setItems(FXCollections.observableArrayList(endpointRequestParameters));
-
-			requestParameters.setItems(null);
-			responseBody.setText("");
-			responseHeaders.setItems(null);
-			responseStatus.setText("");
-			uri.setText("");
+			currentExchange.addParameters(endpointRequestParameters);
 		} else {
-			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getParameters();
-			requestParameters.setItems(parameterData.filtered(p -> p.getDirection().equals(Direction.REQUEST.name()) && !p.getLocation().equals(Location.BODY.name())));
-
-			// buildPathParameters(); plus utile
-			requestParameters.refresh();
-			buildUri();
-			uri.setText(exchange.getUri());
-
-			// response
-			//final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseParameters(); FIXME 2.0
-			final ObservableList<Parameter> responseHeadersData = FXCollections.observableArrayList();
-			responseHeaders.setItems(responseHeadersData.filtered(p -> p.isHeaderParameter()));
-
-			// response body
-			displayResponseBody(exchange);
-
-			/* FIXME 2.0
-			if (exchange.getRequest().getBodyType().equals(Request.BodyType.RAW)) {
-				rawBody.setSelected(true);
-				rawBodySelected(null);
-			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.X_WWW_FORM_URL_ENCODED)) {
-				formEncodedBody.setSelected(true);
-				formEncodedBodySelected(null);
-			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.FORM_DATA)) {
-				formDataBody.setSelected(true);
-				formDataBodySelected(null);
-			}*/
-
-			// response status
-			//responseStatus.setText(exchange.getResponse().getStatus().toString());FIXME 2.0
-			displayStatusTooltip(exchange);
-
-			// status circle
-			displayStatusCircle(exchange);
-
-			// response duration
-			//responseDuration.setText(exchange.getResponse().getDuration().toString()); FIXME 2.0
+			exchanges.getSelectionModel().select(0); // select first exchange
 		}
+		refreshEndpointParameters();
 	}
 
-	// if no exchange, parameters values are set to blank, otherwise we search for the values in the exchanges data
-	public void setParameterValues(Exchange exchange) {
+	private void refreshEndpointParameters() {
 
-		if (exchange == null) {
-			//ProjectService.getExchanges()
-		} else {
+		// refresh request and response parameters from current exchange
+		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isRequestParameter()));
+		requestParameters.refresh();
 
-		}
+		displayResponseBody(currentExchange);
+
+		// response status
+		displayStatusTooltip(currentExchange);
+
+		// status circle
+		displayStatusCircle(currentExchange);
+
+		buildUri();
 	}
 
+//	private void refreshEndpointParameters(final Exchange exchange) {
+//
+//		if (exchange == null) {
+//			// copie endpoint parameters to exchange parameters
+//			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
+//			requestParameters.setItems(FXCollections.observableArrayList(endpointRequestParameters));
+//
+//			requestParameters.setItems(null);
+//			responseBody.setText("");
+//			responseHeaders.setItems(null);
+//			responseStatus.setText("");
+//			uri.setText("");
+//		} else {
+//			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getParameters();
+//			requestParameters.setItems(parameterData.filtered(p -> p.getDirection().equals(Direction.REQUEST.name()) && !p.getLocation().equals(Location.BODY.name())));
+//
+//			// buildPathParameters(); plus utile
+//			requestParameters.refresh();
+//			buildUri();
+//			uri.setText(exchange.getUri());
+//
+//			// response
+//			//final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseParameters(); FIXME 2.0
+//			final ObservableList<Parameter> responseHeadersData = FXCollections.observableArrayList();
+//			responseHeaders.setItems(responseHeadersData.filtered(p -> p.isHeaderParameter()));
+//
+//			// response body
+//			displayResponseBody(exchange);
+//
+//			/* FIXME 2.0
+//			if (exchange.getRequest().getBodyType().equals(Request.BodyType.RAW)) {
+//				rawBody.setSelected(true);
+//				rawBodySelected(null);
+//			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.X_WWW_FORM_URL_ENCODED)) {
+//				formEncodedBody.setSelected(true);
+//				formEncodedBodySelected(null);
+//			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.FORM_DATA)) {
+//				formDataBody.setSelected(true);
+//				formDataBodySelected(null);
+//			}*/
+//
+//			// response status
+//			//responseStatus.setText(exchange.getResponse().getStatus().toString());FIXME 2.0
+//			displayStatusTooltip(exchange);
+//
+//			// status circle
+//			displayStatusCircle(exchange);
+//
+//			// response duration
+//			//responseDuration.setText(exchange.getResponse().getDuration().toString()); FIXME 2.0
+//		}
+//	}
 
 	/*private void buildPathParameters() {
 
@@ -467,7 +469,7 @@ public class EndPointController extends AbstractController implements Initializa
 		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 		final Exchange duplicate = exchange.duplicate(exchange.getName() + " (copy)");
 		endpoint.addExchange(duplicate);
-		refreshExchangeData(null);
+		refreshEndpointParameters();
 	}
 
 	private void deleteExchange(final Exchange exchange) {
@@ -476,7 +478,7 @@ public class EndPointController extends AbstractController implements Initializa
 		if (response.equals(ButtonType.OK)) {
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
-			refreshExchangeData(getSelectedExchange().orElse(null));
+			refreshEndpointParameters();
 		}
 	}
 

@@ -2,6 +2,7 @@ package restui.controller;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -119,58 +120,61 @@ public class RequestBodyController extends AbstractController implements Initial
 
 	public void display(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
 
-		exchange = endPointController.getSelectedExchange().get();
+		Optional<Exchange> optionalExchange = endPointController.getSelectedExchange();
+		if (optionalExchange.isPresent()) {
+			exchange = endPointController.getSelectedExchange().get();
 
-		//final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();  FIXME 2.0
-		final ObservableList<Parameter> parameterData = FXCollections.observableArrayList();
+			//final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();  FIXME 2.0
+			final ObservableList<Parameter> parameterData = FXCollections.observableArrayList();
 
-		if (type.equals(BodyType.RAW)) {
-			// RAW
-			// exchange.getRequest().setBodyType(BodyType.RAW); FIXME 2.0
-			//requestBody.setText(exchange.getRequestBody()); FIXME 2.0
+			if (type.equals(BodyType.RAW)) {
+				// RAW
+				// exchange.getRequest().setBodyType(BodyType.RAW); FIXME 2.0
+				//requestBody.setText(exchange.getRequestBody()); FIXME 2.0
 
-			endPointController.getBodyVBox().getChildren().clear();
-			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+				endPointController.getBodyVBox().getChildren().clear();
+				endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+				if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+					endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+				}
+				vBox.getChildren().clear();
+				vBox.getChildren().add(requestBody);
+				VBox.setVgrow(vBox, Priority.ALWAYS);
+
+				requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
+					//exchange.setRequestBody(newValue); FIXME 2.0
+				});
+
+			} else if (type.equals(BodyType.FORM_DATA)) {
+				// FORM_DATA
+				//exchange.getRequest().setBodyType(BodyType.FORM_DATA); FIXME 2.0
+				bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
+
+				endPointController.getBodyVBox().getChildren().clear();
+				endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+				if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+					endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+				}
+				bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
+				vBox.getChildren().clear();
+				vBox.getChildren().add(bodyTableView);
+				VBox.setVgrow(vBox, Priority.ALWAYS);
+
+			} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+				// exchange.getRequest().setBodyType(BodyType.X_WWW_FORM_URL_ENCODED); FIXME 2.0
+				// X_WWW_FORM_URL_ENCODED
+				bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
+
+				endPointController.getBodyVBox().getChildren().clear();
+				endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+				if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+					endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+				}
+				bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
+				vBox.getChildren().clear();
+				vBox.getChildren().add(bodyTableView);
+				VBox.setVgrow(vBox, Priority.ALWAYS);
 			}
-			vBox.getChildren().clear();
-			vBox.getChildren().add(requestBody);
-			VBox.setVgrow(vBox, Priority.ALWAYS);
-
-			requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-				//exchange.setRequestBody(newValue); FIXME 2.0
-			});
-
-		} else if (type.equals(BodyType.FORM_DATA)) {
-			// FORM_DATA
-			//exchange.getRequest().setBodyType(BodyType.FORM_DATA); FIXME 2.0
-			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
-
-			endPointController.getBodyVBox().getChildren().clear();
-			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
-			}
-			bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-			vBox.getChildren().clear();
-			vBox.getChildren().add(bodyTableView);
-			VBox.setVgrow(vBox, Priority.ALWAYS);
-
-		} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-			// exchange.getRequest().setBodyType(BodyType.X_WWW_FORM_URL_ENCODED); FIXME 2.0
-			// X_WWW_FORM_URL_ENCODED
-			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
-
-			endPointController.getBodyVBox().getChildren().clear();
-			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
-			}
-			bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-			vBox.getChildren().clear();
-			vBox.getChildren().add(bodyTableView);
-			VBox.setVgrow(vBox, Priority.ALWAYS);
 		}
 	}
 
