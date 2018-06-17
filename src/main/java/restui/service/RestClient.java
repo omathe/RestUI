@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -18,15 +17,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import restui.model.Exchange;
 import restui.model.Parameter;
-import restui.model.Parameter.Location;
-import restui.model.Parameter.Type;
-import restui.model.Request;
-import restui.model.Request.BodyType;
 
 public class RestClient {
 
@@ -37,24 +31,24 @@ public class RestClient {
 
 	private static final Client client = Client.create();
 
-	public static ClientResponse execute(String method, final Request request) {
+	public static ClientResponse execute(String method, final Exchange exchange) {
 		ClientResponse response = null;
 
 		switch (method) {
 		case "POST":
-			response = post(request);
+			response = post(exchange);
 			break;
 		case "GET":
-			response = get(request);
+			response = get(exchange);
 			break;
 		case "PUT":
-			response = put(request);
+			response = put(exchange);
 			break;
 		case "PATCH":
-			response = patch(request);
+			response = patch(exchange);
 			break;
 		case "DELETE":
-			response = delete(request);
+			response = delete(exchange);
 			break;
 
 		default:
@@ -63,9 +57,10 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse post(final Request request) {
+	private static ClientResponse post(final Exchange exchange) {
+		return null;
 
-		ClientResponse response = null;
+		/*ClientResponse response = null;
 
 		String body = null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -125,16 +120,16 @@ public class RestClient {
 				}
 			}
 		}
-		return response;
+		return response;*/
 	}
 
-	private static ClientResponse get(final Request request) {
+	private static ClientResponse get(final Exchange exchange) {
 
 		ClientResponse response = null;
 
 		try {
-			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
-			String uri = request.getUri();
+			List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+			String uri = exchange.getUri();
 
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
@@ -150,9 +145,10 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse put(final Request request) {
+	private static ClientResponse put(final Exchange exchange) {
+		return null;
 
-		ClientResponse response = null;
+		/*ClientResponse response = null;
 
 		String body = null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -210,12 +206,13 @@ public class RestClient {
 				}
 			}
 		}
-		return response;
+		return response;*/
 	}
 
-	private static ClientResponse patch(final Request request) {
+	private static ClientResponse patch(final Exchange exchange) {
+		return null;
 
-		ClientResponse response = null;
+/*		ClientResponse response = null;
 		final DefaultClientConfig config = new DefaultClientConfig();
 		config.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
 
@@ -276,12 +273,13 @@ public class RestClient {
 				}
 			}
 		}
-		return response;
+		return response;*/
 	}
 
-	private static ClientResponse delete(final Request request) {
+	private static ClientResponse delete(final Exchange exchange) {
+		return null;
 
-		ClientResponse response = null;
+		/*ClientResponse response = null;
 		final Client client = Client.create();
 
 		try {
@@ -299,7 +297,7 @@ public class RestClient {
 		} finally {
 			client.destroy();
 		}
-		return response;
+		return response;*/
 	}
 
 	private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {

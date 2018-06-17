@@ -11,6 +11,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import restui.model.Parameter.Direction;
+import restui.model.Parameter.Location;
+import restui.model.Parameter.Type;
 
 public class Exchange {
 
@@ -21,17 +24,17 @@ public class Exchange {
 	private StringProperty name;
 	private ObjectProperty<Long> date;
 	// private Request request;
-	//private Response response;
+	// private Response response;
 	private IntegerProperty status; // 2.0
 	private IntegerProperty duration; // 2.0
 	private BodyType requestBodyType;
 	private StringProperty uri;
-	//à supprimer private String endpointName;
+	// à supprimer private String endpointName;
 	private List<Parameter> parameters;
 
-	/*public Exchange() {
-		super();
-	}*/
+	/*
+	 * public Exchange() { super(); }
+	 */
 
 	public Exchange(final String name, final Long date) {
 		super();
@@ -46,7 +49,7 @@ public class Exchange {
 
 	public Exchange(String endpointName, final String name, final Long date, Integer duration, Integer status, BodyType requestBodyType) {
 		super();
-		//this.endpointName = endpointName;
+		// this.endpointName = endpointName;
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleObjectProperty<>(date);
 		this.status = new SimpleIntegerProperty(status);
@@ -102,15 +105,15 @@ public class Exchange {
 	// this.request = request;
 	// }
 
-	 public List<Parameter> getParameters() {
+	public List<Parameter> getParameters() {
 
-		 return parameters;
-	 }
+		return parameters;
+	}
 
-	 public Optional<Parameter> findParameter(final Parameter parameter) {
+	public Optional<Parameter> findParameter(final Parameter parameter) {
 
-			return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
-		}
+		return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
+	}
 
 	// public void addRequestParameter(final Parameter parameter) {
 	// request.addParameter(parameter);
@@ -139,25 +142,25 @@ public class Exchange {
 	// parameter.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
 	// }
 
-//	public Response getResponse() {
-//		return response;
-//	}
-//
-//	public void setResponse(final Response response) {
-//		this.response = response;
-//	}
-//
-//	public List<Parameter> getResponseParameters() {
-//		return response.parameters;
-//	}
-//
-//	public void addResponseParameter(final Parameter parameter) {
-//		response.parameters.add(parameter);
-//	}
-//
-//	public void clearResponseParameters() {
-//		response.parameters.clear();
-//	}
+	// public Response getResponse() {
+	// return response;
+	// }
+	//
+	// public void setResponse(final Response response) {
+	// this.response = response;
+	// }
+	//
+	// public List<Parameter> getResponseParameters() {
+	// return response.parameters;
+	// }
+	//
+	// public void addResponseParameter(final Parameter parameter) {
+	// response.parameters.add(parameter);
+	// }
+	//
+	// public void clearResponseParameters() {
+	// response.parameters.clear();
+	// }
 
 	// public String getRequestBody() {
 	// return request.getRawBody();
@@ -167,25 +170,38 @@ public class Exchange {
 	// request.setRawBody(body);
 	// }
 
-//	public String getResponseBody() {
-//		return response.getRawBody();
-//	}
-//
-//	public void setResponseBody(final String body) {
-//		response.setRawBody(body);
-//	}
-//
-//	public Optional<Parameter> findResponseHeader(final String name) {
-//		return response.findParameter(Location.HEADER, name);
-//	}
-//
-//	public void setResponseStatus(Integer status) {
-//		response.setStatus(status);
-//	}
-//
-//	public void setResponseDuration(Integer duration) {
-//		response.setDuration(duration);
-//	}
+	// public String getResponseBody() {
+	// return response.getRawBody();
+	// }
+	//
+
+	public void setResponseBody(final String body) {
+
+		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name())).filter(p -> p.getType().equals(Type.TEXT.name())).filter(p -> p.getName() == null).findFirst();
+		if (rawBody.isPresent()) {
+			rawBody.get().setValue(body);
+		} else {
+			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.BODY, Type.TEXT, null, body);
+			addParameter(parameter);
+		}
+	}
+
+	public void clearResponseParameters() {
+		parameters.removeIf(p -> p.isResponseParameter());
+	}
+
+	//
+	// public Optional<Parameter> findResponseHeader(final String name) {
+	// return response.findParameter(Location.HEADER, name);
+	// }
+	//
+	// public void setResponseStatus(Integer status) {
+	// response.setStatus(status);
+	// }
+	//
+	// public void setResponseDuration(Integer duration) {
+	// response.setDuration(duration);
+	// }
 
 	public BodyType getRequestBodyType() {
 		return requestBodyType;
@@ -231,13 +247,13 @@ public class Exchange {
 		this.duration.set(duration);
 	}
 
-//	public String getEndpointName() {
-//		return endpointName;
-//	}
-//
-//	public void setEndpointName(String endpointName) {
-//		this.endpointName = endpointName;
-//	}
+	// public String getEndpointName() {
+	// return endpointName;
+	// }
+	//
+	// public void setEndpointName(String endpointName) {
+	// this.endpointName = endpointName;
+	// }
 
 	public void addParameter(final Parameter parameter) {
 
@@ -264,9 +280,11 @@ public class Exchange {
 		return parameters.contains(parameter);
 	}
 
-//	@Override
-//	public String toString() {
-//		return "Exchange [name=" + name + ", date=" + date + ", response=" + response + ", status=" + status + ", duration=" + duration + ", requestBodyType=" + requestBodyType + ", uri=" + uri + "]";
-//	}
+	// @Override
+	// public String toString() {
+	// return "Exchange [name=" + name + ", date=" + date + ", response=" + response
+	// + ", status=" + status + ", duration=" + duration + ", requestBodyType=" +
+	// requestBodyType + ", uri=" + uri + "]";
+	// }
 
 }

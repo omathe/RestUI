@@ -88,6 +88,12 @@ public class EndPointController extends AbstractController implements Initializa
 	private TableColumn<Exchange, Long> exchangeDateColumn;
 
 	@FXML
+	private TableColumn<Exchange, Integer> exchangeDurationColumn;
+
+	@FXML
+	private TableColumn<Exchange, Integer> exchangeStatusColumn;
+
+	@FXML
 	private TableView<Parameter> requestParameters;
 
 	@FXML
@@ -246,7 +252,7 @@ public class EndPointController extends AbstractController implements Initializa
 						paste.setOnAction(e -> {
 							final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
 							for (final Parameter p : parameters) {
-								//exchange.get().addRequestParameter(p); FIXME 2.0
+								// exchange.get().addRequestParameter(p); FIXME 2.0
 							}
 						});
 					}
@@ -317,7 +323,7 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		// disable request/response area if no exchange selected
-		//requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
+		// requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
 		execute.textProperty().bind(method.valueProperty());
 	}
@@ -357,6 +363,9 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 		exchangeDateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 
+		exchangeDurationColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("duration"));
+		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
+
 		List<Exchange> endpointExchanges = endpoint.getExchanges();
 		exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
 
@@ -373,8 +382,14 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshEndpointParameters() {
 
 		// refresh request and response parameters from current exchange
-		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isRequestParameter()));
+		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
+				.filtered(p -> p.isRequestParameter()));
 		requestParameters.refresh();
+
+		// response parameters
+		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
+				.filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
+		responseHeaders.refresh();
 
 		displayResponseBody(currentExchange);
 
@@ -387,71 +402,82 @@ public class EndPointController extends AbstractController implements Initializa
 		buildUri();
 	}
 
-//	private void refreshEndpointParameters(final Exchange exchange) {
-//
-//		if (exchange == null) {
-//			// copie endpoint parameters to exchange parameters
-//			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
-//			requestParameters.setItems(FXCollections.observableArrayList(endpointRequestParameters));
-//
-//			requestParameters.setItems(null);
-//			responseBody.setText("");
-//			responseHeaders.setItems(null);
-//			responseStatus.setText("");
-//			uri.setText("");
-//		} else {
-//			final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getParameters();
-//			requestParameters.setItems(parameterData.filtered(p -> p.getDirection().equals(Direction.REQUEST.name()) && !p.getLocation().equals(Location.BODY.name())));
-//
-//			// buildPathParameters(); plus utile
-//			requestParameters.refresh();
-//			buildUri();
-//			uri.setText(exchange.getUri());
-//
-//			// response
-//			//final ObservableList<Parameter> responseHeadersData = (ObservableList<Parameter>) exchange.getResponseParameters(); FIXME 2.0
-//			final ObservableList<Parameter> responseHeadersData = FXCollections.observableArrayList();
-//			responseHeaders.setItems(responseHeadersData.filtered(p -> p.isHeaderParameter()));
-//
-//			// response body
-//			displayResponseBody(exchange);
-//
-//			/* FIXME 2.0
-//			if (exchange.getRequest().getBodyType().equals(Request.BodyType.RAW)) {
-//				rawBody.setSelected(true);
-//				rawBodySelected(null);
-//			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.X_WWW_FORM_URL_ENCODED)) {
-//				formEncodedBody.setSelected(true);
-//				formEncodedBodySelected(null);
-//			} else if (exchange.getRequest().getBodyType().equals(Request.BodyType.FORM_DATA)) {
-//				formDataBody.setSelected(true);
-//				formDataBodySelected(null);
-//			}*/
-//
-//			// response status
-//			//responseStatus.setText(exchange.getResponse().getStatus().toString());FIXME 2.0
-//			displayStatusTooltip(exchange);
-//
-//			// status circle
-//			displayStatusCircle(exchange);
-//
-//			// response duration
-//			//responseDuration.setText(exchange.getResponse().getDuration().toString()); FIXME 2.0
-//		}
-//	}
+	// private void refreshEndpointParameters(final Exchange exchange) {
+	//
+	// if (exchange == null) {
+	// // copie endpoint parameters to exchange parameters
+	// List<Parameter> endpointRequestParameters =
+	// endpoint.getParameters().stream().filter(p ->
+	// p.isRequestParameter()).collect(Collectors.toList());
+	// requestParameters.setItems(FXCollections.observableArrayList(endpointRequestParameters));
+	//
+	// requestParameters.setItems(null);
+	// responseBody.setText("");
+	// responseHeaders.setItems(null);
+	// responseStatus.setText("");
+	// uri.setText("");
+	// } else {
+	// final ObservableList<Parameter> parameterData = (ObservableList<Parameter>)
+	// exchange.getParameters();
+	// requestParameters.setItems(parameterData.filtered(p ->
+	// p.getDirection().equals(Direction.REQUEST.name()) &&
+	// !p.getLocation().equals(Location.BODY.name())));
+	//
+	// // buildPathParameters(); plus utile
+	// requestParameters.refresh();
+	// buildUri();
+	// uri.setText(exchange.getUri());
+	//
+	// // response
+	// //final ObservableList<Parameter> responseHeadersData =
+	// (ObservableList<Parameter>) exchange.getResponseParameters(); FIXME 2.0
+	// final ObservableList<Parameter> responseHeadersData =
+	// FXCollections.observableArrayList();
+	// responseHeaders.setItems(responseHeadersData.filtered(p ->
+	// p.isHeaderParameter()));
+	//
+	// // response body
+	// displayResponseBody(exchange);
+	//
+	// /* FIXME 2.0
+	// if (exchange.getRequest().getBodyType().equals(Request.BodyType.RAW)) {
+	// rawBody.setSelected(true);
+	// rawBodySelected(null);
+	// } else if
+	// (exchange.getRequest().getBodyType().equals(Request.BodyType.X_WWW_FORM_URL_ENCODED))
+	// {
+	// formEncodedBody.setSelected(true);
+	// formEncodedBodySelected(null);
+	// } else if
+	// (exchange.getRequest().getBodyType().equals(Request.BodyType.FORM_DATA)) {
+	// formDataBody.setSelected(true);
+	// formDataBodySelected(null);
+	// }*/
+	//
+	// // response status
+	// //responseStatus.setText(exchange.getResponse().getStatus().toString());FIXME
+	// 2.0
+	// displayStatusTooltip(exchange);
+	//
+	// // status circle
+	// displayStatusCircle(exchange);
+	//
+	// // response duration
+	// //responseDuration.setText(exchange.getResponse().getDuration().toString());
+	// FIXME 2.0
+	// }
+	// }
 
-	/*private void buildPathParameters() {
-
-		final Optional<Exchange> exchange = getSelectedExchange();
-		if (exchange.isPresent()) {
-			final String endpointUri = path.getText();
-			final Set<String> tokens = extractTokens(endpointUri, Path.ID_PREFIX, Path.ID_SUFFIX);
-			tokens.stream().forEach(token -> {
-				final Parameter parameter = new Parameter(true, Direction.REQUEST, Location.PATH, Type.TEXT, token, "");
-				exchange.get().addParameter(parameter);
-			});
-		}
-	}*/
+	/*
+	 * private void buildPathParameters() {
+	 *
+	 * final Optional<Exchange> exchange = getSelectedExchange(); if
+	 * (exchange.isPresent()) { final String endpointUri = path.getText(); final
+	 * Set<String> tokens = extractTokens(endpointUri, Path.ID_PREFIX,
+	 * Path.ID_SUFFIX); tokens.stream().forEach(token -> { final Parameter parameter
+	 * = new Parameter(true, Direction.REQUEST, Location.PATH, Type.TEXT, token,
+	 * ""); exchange.get().addParameter(parameter); }); } }
+	 */
 
 	private void addExchange() {
 
@@ -484,13 +510,13 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void addRequestParameter(final Parameter parameter) {
 
-		//final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
-		//endpoint.addParameter(parameter);
+		// final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
+		// endpoint.addParameter(parameter);
 
-		// add the parameter to the selected  exchange
+		// add the parameter to the selected exchange
 		Optional<Exchange> selectedExchange = getSelectedExchange();
 		if (selectedExchange.isPresent()) {
-//			selectedExchange.get().addParameter(parameter.duplicate());
+			// selectedExchange.get().addParameter(parameter.duplicate());
 			selectedExchange.get().addParameter(parameter);
 		}
 	}
@@ -502,7 +528,7 @@ public class EndPointController extends AbstractController implements Initializa
 				final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
 				final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
 				if (response.equals(ButtonType.OK)) {
-					//exchange.removeRequestParameters(parameters); FIXME 2.0
+					// exchange.removeRequestParameters(parameters); FIXME 2.0
 				}
 			}
 		});
@@ -511,82 +537,81 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void execute(final ActionEvent event) {
 
-		final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+		responseBody.setText("");
+		// exchange.clearResponseParameters(); FIXME 2.0 utile ?
 
-		if (exchange != null) {
+		final long t0 = System.currentTimeMillis();
+
+		ClientResponse response = RestClient.execute(method.getValue(), currentExchange);
+
+		if (response == null) {
 			responseBody.setText("");
-			//exchange.clearResponseParameters(); FIXME 2.0
+			currentExchange.setStatus(0);
+			responseStatus.setText("0");
+			responseDuration.setText("");
+		} else {
+			// build response headers
+			currentExchange.clearResponseParameters();
+			response.getHeaders().entrySet().stream().forEach(e -> {
+				for (final String value : e.getValue()) {
+					final Parameter header = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.HEADER, Type.TEXT, e.getKey(), value);
+					currentExchange.addParameter(header);
+				}
+			});
+			refreshEndpointParameters();
 
-			final long t0 = System.currentTimeMillis();
+			// response status
+			currentExchange.setDate(Instant.now().toEpochMilli());
+			// exchange.setResponseStatus(response.getStatus()); FIXME 2.0
+			responseStatus.setText(String.valueOf(response.getStatus()));
+			responseDuration.setText(currentExchange.getDuration().toString());
 
-			//ClientResponse response = RestClient.execute(method.getValue(), exchange.getRequest()); FIXME 2.0
-			ClientResponse response = RestClient.execute(method.getValue(), /*exchange.getRequest()*/ null); // FIXME 2.0
+			displayStatusTooltip(currentExchange);
+			// status circle
+			displayStatusCircle(currentExchange);
 
-			if (response == null) {
-				responseBody.setText("");
-				//exchange.setResponseStatus(0); FIXME 2.0
-				responseStatus.setText("0");
-				responseDuration.setText("");
-			} else {
-				// build response headers
-				response.getHeaders().entrySet().stream().forEach(e -> {
-					for (final String value : e.getValue()) {
-						final Parameter header = new Parameter(true, Type.TEXT, Location.HEADER, e.getKey(), value);
-						//exchange.addResponseParameter(header); FIXME 2.0
-					}
-				});
-				// response status
-				exchange.setDate(Instant.now().toEpochMilli());
-				//exchange.setResponseStatus(response.getStatus()); FIXME 2.0
-				responseStatus.setText(String.valueOf(response.getStatus()));
-				//responseDuration.setText(exchange.getResponse().getDuration().toString()); FIXME 2.0
+			if (response.getStatus() != 204) {
 
-				displayStatusTooltip(exchange);
-				// status circle
-				displayStatusCircle(exchange);
+				final InputStream inputStream = response.getEntityInputStream();
+				if (inputStream != null) {
+					byte[] bytes = Tools.getBytes(inputStream);
 
-				if (response.getStatus() != 204) {
+					if (bytes != null && bytes.length > 0) {
+						final String output = new String(bytes, StandardCharsets.UTF_8);
 
-					final InputStream inputStream = response.getEntityInputStream();
-					if (inputStream != null) {
-						byte[] bytes = Tools.getBytes(inputStream);
+						if (output != null && !output.isEmpty()) {
 
-						if (bytes != null && bytes.length > 0) {
-							final String output = new String(bytes, StandardCharsets.UTF_8);
+							// Optional<Parameter> contentDisposition =
+							// exchange.findResponseHeader("Content-Disposition"); FIXME 2.0
+							Optional<Parameter> contentDisposition = Optional.empty();
 
-							if (output != null && !output.isEmpty()) {
+							if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
+								// the response contains the Content-Disposition header and attachment key word
 
-								//Optional<Parameter> contentDisposition = exchange.findResponseHeader("Content-Disposition"); FIXME 2.0
-								Optional<Parameter> contentDisposition = Optional.empty();
+								final FileChooser fileChooser = new FileChooser();
+								fileChooser.setTitle("Save the file");
 
-								if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
-									// the response contains the Content-Disposition header and attachment key word
+								final File initialDirectory = new File(System.getProperty("user.home"));
+								fileChooser.setInitialDirectory(initialDirectory);
 
-									final FileChooser fileChooser = new FileChooser();
-									fileChooser.setTitle("Save the file");
-
-									final File initialDirectory = new File(System.getProperty("user.home"));
-									fileChooser.setInitialDirectory(initialDirectory);
-
-									String fileName = Tools.findFileName(contentDisposition.get().getValue());
-									fileChooser.setInitialFileName(fileName);
-									final File file = fileChooser.showSaveDialog(null);
-									Tools.writeBytesToFile(file, bytes);
-								} else {
-									//exchange.setResponseBody(output); FIXME 2.0
-									displayResponseBody(exchange);
-								}
+								String fileName = Tools.findFileName(contentDisposition.get().getValue());
+								fileChooser.setInitialFileName(fileName);
+								final File file = fileChooser.showSaveDialog(null);
+								Tools.writeBytesToFile(file, bytes);
+							} else {
+								currentExchange.setResponseBody(output);
+								displayResponseBody(currentExchange);
 							}
 						}
 					}
 				}
-				response.close();
 			}
-			//exchange.setResponseDuration((int) (System.currentTimeMillis() - t0)); FIXME 2.0
-			// refresh tableView (workaround)
-			exchanges.getColumns().get(0).setVisible(false);
-			exchanges.getColumns().get(0).setVisible(true);
+			response.close();
 		}
+		currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
+		// refresh tableView (workaround)
+		exchanges.getColumns().get(0).setVisible(false);
+		exchanges.getColumns().get(0).setVisible(true);
 	}
 
 	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {
@@ -648,44 +673,28 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void displayResponseBody(final Exchange exchange) {
 
-		/*FIXME 2.0
-		 exchange.findResponseHeader("Content-Type").ifPresent(p -> {
-
-			if (p.getValue().toLowerCase().contains("json")) {
-				final ObjectMapper mapper = new ObjectMapper();
-				try {
-					final String body = exchange.getResponseBody();
-					if (body != null) {
-						final Object json = mapper.readValue(body, Object.class);
-						responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
-					}
-				} catch (final IOException e1) {
-					e1.printStackTrace();
-				}
-			} else if (p.getValue().contains("xml")) {
-				final StringWriter stringWriter = new StringWriter();
-				try {
-					final Source xmlInput = new StreamSource(new StringReader(exchange.getResponseBody()));
-					final StreamResult xmlOutput = new StreamResult(stringWriter);
-					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-					final Transformer transformer = transformerFactory.newTransformer();
-					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-					transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
-					transformer.transform(xmlInput, xmlOutput);
-					responseBody.setText(xmlOutput.getWriter().toString());
-				} catch (final Exception e) {
-					e.printStackTrace();
-				} finally {
-					try {
-						stringWriter.close();
-					} catch (final IOException e) {
-						e.printStackTrace();
-					}
-				}
-			} else {
-				responseBody.setText(exchange.getResponseBody());
-			}
-		});*/
+		/*
+		 * FIXME 2.0 exchange.findResponseHeader("Content-Type").ifPresent(p -> {
+		 *
+		 * if (p.getValue().toLowerCase().contains("json")) { final ObjectMapper mapper
+		 * = new ObjectMapper(); try { final String body = exchange.getResponseBody();
+		 * if (body != null) { final Object json = mapper.readValue(body, Object.class);
+		 * responseBody.setText(mapper.writerWithDefaultPrettyPrinter().
+		 * writeValueAsString(json)); } } catch (final IOException e1) {
+		 * e1.printStackTrace(); } } else if (p.getValue().contains("xml")) { final
+		 * StringWriter stringWriter = new StringWriter(); try { final Source xmlInput =
+		 * new StreamSource(new StringReader(exchange.getResponseBody())); final
+		 * StreamResult xmlOutput = new StreamResult(stringWriter); final
+		 * TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		 * final Transformer transformer = transformerFactory.newTransformer();
+		 * transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		 * transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT,
+		 * "6"); transformer.transform(xmlInput, xmlOutput);
+		 * responseBody.setText(xmlOutput.getWriter().toString()); } catch (final
+		 * Exception e) { e.printStackTrace(); } finally { try { stringWriter.close(); }
+		 * catch (final IOException e) { e.printStackTrace(); } } } else {
+		 * responseBody.setText(exchange.getResponseBody()); } });
+		 */
 	}
 
 	private void displayStatusCircle(final Exchange exchange) {
@@ -725,10 +734,11 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 	private void displayStatusTooltip(Exchange exchange) {
-		/*Status st = Status.fromStatusCode(exchange.getResponse().getStatus()); FIXME 2.0
-		if (st != null) {
-			responseStatus.setTooltip(new Tooltip(st.getReasonPhrase()));
-		}*/
+		/*
+		 * Status st = Status.fromStatusCode(exchange.getResponse().getStatus()); FIXME
+		 * 2.0 if (st != null) { responseStatus.setTooltip(new
+		 * Tooltip(st.getReasonPhrase())); }
+		 */
 	}
 
 	public Optional<Exchange> getSelectedExchange() {
