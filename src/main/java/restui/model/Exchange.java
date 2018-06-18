@@ -186,8 +186,28 @@ public class Exchange {
 		}
 	}
 
+	public String getResponseBody() {
+
+		String responseBody = "";
+		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name()))
+				.filter(p -> p.getType().equals(Type.TEXT.name()))
+				.filter(p -> p.getName() == null).findFirst();
+		if (rawBody.isPresent()) {
+			responseBody = rawBody.get().getValue();
+		}
+		return responseBody;
+
+	}
+
 	public void clearResponseParameters() {
 		parameters.removeIf(p -> p.isResponseParameter());
+	}
+
+	public Optional<Parameter> findParameter(Direction direction, final Location location, final String name) {
+
+		return parameters.stream()
+				.filter(p -> p.getDirection().equals(direction.name()) && p.getLocation().equals(location.name()) && p.getName().equalsIgnoreCase(name))
+				.findFirst();
 	}
 
 	//

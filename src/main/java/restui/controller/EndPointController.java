@@ -1,7 +1,10 @@
 package restui.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -14,7 +17,16 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -381,17 +393,16 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void refreshEndpointParameters() {
 
-		// refresh request and response parameters from current exchange
-		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-				.filtered(p -> p.isRequestParameter()));
+		// request parameters
+		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isRequestParameter()));
 		requestParameters.refresh();
 
 		// response parameters
-		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-				.filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
+		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
 		responseHeaders.refresh();
 
-		displayResponseBody(currentExchange);
+		// response body
+		displayResponseBody();
 
 		// response status
 		displayStatusTooltip(currentExchange);
@@ -537,19 +548,21 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void execute(final ActionEvent event) {
 
-		responseBody.setText("");
-		// exchange.clearResponseParameters(); FIXME 2.0 utile ?
-
 		final long t0 = System.currentTimeMillis();
 
 		ClientResponse response = RestClient.execute(method.getValue(), currentExchange);
 
+		currentExchange.setDate(Instant.now().toEpochMilli());
+
 		if (response == null) {
-			responseBody.setText("");
 			currentExchange.setStatus(0);
+
 			responseStatus.setText("0");
+			responseBody.setText("");
 			responseDuration.setText("");
 		} else {
+			currentExchange.setStatus(response.getStatus());
+
 			// build response headers
 			currentExchange.clearResponseParameters();
 			response.getHeaders().entrySet().stream().forEach(e -> {
@@ -558,11 +571,7 @@ public class EndPointController extends AbstractController implements Initializa
 					currentExchange.addParameter(header);
 				}
 			});
-			refreshEndpointParameters();
-
 			// response status
-			currentExchange.setDate(Instant.now().toEpochMilli());
-			// exchange.setResponseStatus(response.getStatus()); FIXME 2.0
 			responseStatus.setText(String.valueOf(response.getStatus()));
 			responseDuration.setText(currentExchange.getDuration().toString());
 
@@ -581,9 +590,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 						if (output != null && !output.isEmpty()) {
 
-							// Optional<Parameter> contentDisposition =
-							// exchange.findResponseHeader("Content-Disposition"); FIXME 2.0
-							Optional<Parameter> contentDisposition = Optional.empty();
+							Optional<Parameter> contentDisposition = currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Disposition");
 
 							if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
 								// the response contains the Content-Disposition header and attachment key word
@@ -599,8 +606,10 @@ public class EndPointController extends AbstractController implements Initializa
 								final File file = fileChooser.showSaveDialog(null);
 								Tools.writeBytesToFile(file, bytes);
 							} else {
-								currentExchange.setResponseBody(output);
-								displayResponseBody(currentExchange);
+								// currentExchange.setResponseBody(output); à supprimer
+								// response body
+								final Parameter responseBody = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.BODY, Type.TEXT, null, output);
+								currentExchange.addParameter(responseBody);
 							}
 						}
 					}
@@ -609,6 +618,9 @@ public class EndPointController extends AbstractController implements Initializa
 			response.close();
 		}
 		currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
+
+		refreshEndpointParameters();
+
 		// refresh tableView (workaround)
 		exchanges.getColumns().get(0).setVisible(false);
 		exchanges.getColumns().get(0).setVisible(true);
@@ -671,30 +683,48 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
-	private void displayResponseBody(final Exchange exchange) {
+	private void displayResponseBody() {
 
-		/*
-		 * FIXME 2.0 exchange.findResponseHeader("Content-Type").ifPresent(p -> {
-		 *
-		 * if (p.getValue().toLowerCase().contains("json")) { final ObjectMapper mapper
-		 * = new ObjectMapper(); try { final String body = exchange.getResponseBody();
-		 * if (body != null) { final Object json = mapper.readValue(body, Object.class);
-		 * responseBody.setText(mapper.writerWithDefaultPrettyPrinter().
-		 * writeValueAsString(json)); } } catch (final IOException e1) {
-		 * e1.printStackTrace(); } } else if (p.getValue().contains("xml")) { final
-		 * StringWriter stringWriter = new StringWriter(); try { final Source xmlInput =
-		 * new StreamSource(new StringReader(exchange.getResponseBody())); final
-		 * StreamResult xmlOutput = new StreamResult(stringWriter); final
-		 * TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		 * final Transformer transformer = transformerFactory.newTransformer();
-		 * transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		 * transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT,
-		 * "6"); transformer.transform(xmlInput, xmlOutput);
-		 * responseBody.setText(xmlOutput.getWriter().toString()); } catch (final
-		 * Exception e) { e.printStackTrace(); } finally { try { stringWriter.close(); }
-		 * catch (final IOException e) { e.printStackTrace(); } } } else {
-		 * responseBody.setText(exchange.getResponseBody()); } });
-		 */
+		responseBody.clear();
+
+		currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Type").ifPresent(p -> {
+
+			String body = "";
+			if (p.getValue().toLowerCase().contains("json")) {
+				final ObjectMapper mapper = new ObjectMapper();
+				try {
+					body = currentExchange.getResponseBody();
+					if (body != null) {
+						final Object json = mapper.readValue(body, Object.class);
+						responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
+					}
+				} catch (final IOException e1) {
+					e1.printStackTrace();
+				}
+			} else if (p.getValue().contains("xml")) {
+				final StringWriter stringWriter = new StringWriter();
+				try {
+					final Source xmlInput = new StreamSource(new StringReader(body));
+					final StreamResult xmlOutput = new StreamResult(stringWriter);
+					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+					final Transformer transformer = transformerFactory.newTransformer();
+					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+					transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
+					transformer.transform(xmlInput, xmlOutput);
+					responseBody.setText(xmlOutput.getWriter().toString());
+				} catch (final Exception e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						stringWriter.close();
+					} catch (final IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} else {
+				responseBody.setText(body);
+			}
+		});
 	}
 
 	private void displayStatusCircle(final Exchange exchange) {
