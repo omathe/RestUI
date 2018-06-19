@@ -71,13 +71,13 @@ import restui.commons.AlertBuilder;
 import restui.commons.Strings;
 import restui.model.Endpoint;
 import restui.model.Exchange;
+import restui.model.Exchange.BodyType;
 import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Path;
-import restui.model.Request.BodyType;
 import restui.service.RestClient;
 import restui.service.Tools;
 
@@ -337,7 +337,7 @@ public class EndPointController extends AbstractController implements Initializa
 		// disable request/response area if no exchange selected
 		// requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
-		execute.textProperty().bind(method.valueProperty());
+		// execute.textProperty().bind(method.valueProperty()); TO BE DELETED
 	}
 
 	@Override
@@ -391,6 +391,10 @@ public class EndPointController extends AbstractController implements Initializa
 		refreshEndpointParameters();
 	}
 
+	public Exchange getCurrentExchange() {
+		return currentExchange;
+	}
+
 	private void refreshEndpointParameters() {
 
 		// request parameters
@@ -401,11 +405,17 @@ public class EndPointController extends AbstractController implements Initializa
 		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
 		responseHeaders.refresh();
 
+		// request body
+		displayRequestBody();
+
 		// response body
 		displayResponseBody();
 
 		// response status
 		displayStatusTooltip(currentExchange);
+
+		// response duration
+		responseDuration.setText(currentExchange.getDuration().toString());
 
 		// status circle
 		displayStatusCircle(currentExchange);
@@ -681,6 +691,21 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 			execute.setDisable(!validUri);
 		}
+	}
+
+	private void displayRequestBody() {
+
+		if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
+			rawBody.setSelected(true);
+			rawBodySelected(null);
+		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
+			formEncodedBody.setSelected(true);
+			formEncodedBodySelected(null);
+		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.FORM_DATA)) {
+			formDataBody.setSelected(true);
+			formDataBodySelected(null);
+		}
+
 	}
 
 	private void displayResponseBody() {

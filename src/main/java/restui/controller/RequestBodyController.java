@@ -2,7 +2,6 @@ package restui.controller;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -31,11 +30,12 @@ import restui.commons.AlertBuilder;
 import restui.commons.Strings;
 import restui.controller.cellFactory.BodyParameterValueCellFactory;
 import restui.model.Exchange;
+import restui.model.Exchange.BodyType;
 import restui.model.Item;
 import restui.model.Parameter;
+import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
-import restui.model.Request.BodyType;
 
 public class RequestBodyController extends AbstractController implements Initializable {
 
@@ -100,8 +100,8 @@ public class RequestBodyController extends AbstractController implements Initial
 		add.setOnAction(e -> {
 			if (exchange != null) {
 				List<String> parameterNames = bodyTableView.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
-				final Parameter parameter = new Parameter(true, Type.TEXT, Location.BODY, Strings.getNextValue(parameterNames, "name"), "");
-				//exchange.addRequestParameter(parameter);  FIXME 2.0
+				final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), "");
+				exchange.addParameter(parameter);
 			}
 		});
 
@@ -120,17 +120,15 @@ public class RequestBodyController extends AbstractController implements Initial
 
 	public void display(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
 
-		Optional<Exchange> optionalExchange = endPointController.getSelectedExchange();
-		if (optionalExchange.isPresent()) {
-			exchange = endPointController.getSelectedExchange().get();
+		exchange = endPointController.getCurrentExchange();
+		if (exchange != null) {
 
-			//final ObservableList<Parameter> parameterData = (ObservableList<Parameter>) exchange.getRequestParameters();  FIXME 2.0
-			final ObservableList<Parameter> parameterData = FXCollections.observableArrayList();
+			final ObservableList<Parameter> parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
 
 			if (type.equals(BodyType.RAW)) {
 				// RAW
-				// exchange.getRequest().setBodyType(BodyType.RAW); FIXME 2.0
-				//requestBody.setText(exchange.getRequestBody()); FIXME 2.0
+				exchange.setRequestBodyType(BodyType.RAW);
+				requestBody.setText(exchange.getRequestRawBody());
 
 				endPointController.getBodyVBox().getChildren().clear();
 				endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
@@ -142,12 +140,12 @@ public class RequestBodyController extends AbstractController implements Initial
 				VBox.setVgrow(vBox, Priority.ALWAYS);
 
 				requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-					//exchange.setRequestBody(newValue); FIXME 2.0
+					exchange.setRequestRawBody(newValue);
 				});
 
 			} else if (type.equals(BodyType.FORM_DATA)) {
 				// FORM_DATA
-				//exchange.getRequest().setBodyType(BodyType.FORM_DATA); FIXME 2.0
+				exchange.setRequestBodyType(BodyType.FORM_DATA);
 				bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
 
 				endPointController.getBodyVBox().getChildren().clear();
@@ -161,7 +159,7 @@ public class RequestBodyController extends AbstractController implements Initial
 				VBox.setVgrow(vBox, Priority.ALWAYS);
 
 			} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-				// exchange.getRequest().setBodyType(BodyType.X_WWW_FORM_URL_ENCODED); FIXME 2.0
+				exchange.setRequestBodyType(BodyType.X_WWW_FORM_URL_ENCODED);
 				// X_WWW_FORM_URL_ENCODED
 				bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
 
@@ -189,7 +187,7 @@ public class RequestBodyController extends AbstractController implements Initial
 			final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
 			final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
 			if (response.equals(ButtonType.OK)) {
-				//exchange.removeRequestParameters(parameters); FIXME 2.0
+				exchange.removeParameters(parameters);
 			}
 		}
 	}

@@ -125,11 +125,11 @@ public class Exchange {
 	// }
 	// }
 
-	// public void removeRequestParameters(final List<Parameter> parameters) {
-	// if (parameters != null) {
-	// request.parameters.removeAll(parameters);
-	// }
-	// }
+	public void removeParameters(final List<Parameter> parameters) {
+		if (parameters != null) {
+			parameters.removeAll(parameters);
+		}
+	}
 
 	// public void clearRequestParameters() {
 	// request.parameters.clear();
@@ -175,6 +175,24 @@ public class Exchange {
 	// }
 	//
 
+	public void setRequestRawBody(final String body) {
+
+		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.isRequestParameter()).filter(p -> p.isRawBodyParameter()).filter(p -> p.isTypeText()).filter(p -> p.getName() == null).findFirst();
+		if (rawBody.isPresent()) {
+			rawBody.get().setValue(body);
+		} else {
+			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, null, body);
+			addParameter(parameter);
+		}
+	}
+
+	public String getRequestRawBody() {
+
+		final Optional<String> body = parameters.stream().filter(p -> p.isRequestParameter() && p.isRawBodyParameter() && p.getName() == null).map(p -> p.getValue()).findFirst();
+
+		return body.orElse(null);
+	}
+
 	public void setResponseBody(final String body) {
 
 		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name())).filter(p -> p.getType().equals(Type.TEXT.name())).filter(p -> p.getName() == null).findFirst();
@@ -189,14 +207,11 @@ public class Exchange {
 	public String getResponseBody() {
 
 		String responseBody = "";
-		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name()))
-				.filter(p -> p.getType().equals(Type.TEXT.name()))
-				.filter(p -> p.getName() == null).findFirst();
+		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name())).filter(p -> p.getType().equals(Type.TEXT.name())).filter(p -> p.getName() == null).findFirst();
 		if (rawBody.isPresent()) {
 			responseBody = rawBody.get().getValue();
 		}
 		return responseBody;
-
 	}
 
 	public void clearResponseParameters() {
@@ -205,9 +220,7 @@ public class Exchange {
 
 	public Optional<Parameter> findParameter(Direction direction, final Location location, final String name) {
 
-		return parameters.stream()
-				.filter(p -> p.getDirection().equals(direction.name()) && p.getLocation().equals(location.name()) && p.getName().equalsIgnoreCase(name))
-				.findFirst();
+		return parameters.stream().filter(p -> p.getDirection().equals(direction.name()) && p.getLocation().equals(location.name()) && p.getName().equalsIgnoreCase(name)).findFirst();
 	}
 
 	//
