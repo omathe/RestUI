@@ -62,14 +62,11 @@ public class Exchange {
 	public Exchange duplicate(final String name) {
 		final Exchange duplicate = new Exchange(name, Instant.now().toEpochMilli());
 
-		/*
-		 * for (final Parameter parameter : this.getRequestParameters()) { final
-		 * Parameter duplicateParameter = new Parameter(parameter);
-		 * duplicate.addRequestParameter(duplicateParameter); } for (final Parameter
-		 * parameter : this.getResponseParameters()) { final Parameter
-		 * duplicateParameter = new Parameter(parameter);
-		 * duplicate.addResponseParameter(duplicateParameter); }
-		 */
+		duplicate.addParameters(parameters);
+		duplicate.setUri(uri.get());
+		duplicate.setDuration(duration.get());
+		duplicate.setStatus(status.get());
+
 		return duplicate;
 	}
 

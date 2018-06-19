@@ -330,7 +330,7 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			currentExchange = getSelectedExchange().get();
+			currentExchange = getSelectedExchange().get().duplicate("current");
 			refreshEndpointParameters();
 		});
 
@@ -422,72 +422,6 @@ public class EndPointController extends AbstractController implements Initializa
 
 		buildUri();
 	}
-
-	// private void refreshEndpointParameters(final Exchange exchange) {
-	//
-	// if (exchange == null) {
-	// // copie endpoint parameters to exchange parameters
-	// List<Parameter> endpointRequestParameters =
-	// endpoint.getParameters().stream().filter(p ->
-	// p.isRequestParameter()).collect(Collectors.toList());
-	// requestParameters.setItems(FXCollections.observableArrayList(endpointRequestParameters));
-	//
-	// requestParameters.setItems(null);
-	// responseBody.setText("");
-	// responseHeaders.setItems(null);
-	// responseStatus.setText("");
-	// uri.setText("");
-	// } else {
-	// final ObservableList<Parameter> parameterData = (ObservableList<Parameter>)
-	// exchange.getParameters();
-	// requestParameters.setItems(parameterData.filtered(p ->
-	// p.getDirection().equals(Direction.REQUEST.name()) &&
-	// !p.getLocation().equals(Location.BODY.name())));
-	//
-	// // buildPathParameters(); plus utile
-	// requestParameters.refresh();
-	// buildUri();
-	// uri.setText(exchange.getUri());
-	//
-	// // response
-	// //final ObservableList<Parameter> responseHeadersData =
-	// (ObservableList<Parameter>) exchange.getResponseParameters(); FIXME 2.0
-	// final ObservableList<Parameter> responseHeadersData =
-	// FXCollections.observableArrayList();
-	// responseHeaders.setItems(responseHeadersData.filtered(p ->
-	// p.isHeaderParameter()));
-	//
-	// // response body
-	// displayResponseBody(exchange);
-	//
-	// /* FIXME 2.0
-	// if (exchange.getRequest().getBodyType().equals(Request.BodyType.RAW)) {
-	// rawBody.setSelected(true);
-	// rawBodySelected(null);
-	// } else if
-	// (exchange.getRequest().getBodyType().equals(Request.BodyType.X_WWW_FORM_URL_ENCODED))
-	// {
-	// formEncodedBody.setSelected(true);
-	// formEncodedBodySelected(null);
-	// } else if
-	// (exchange.getRequest().getBodyType().equals(Request.BodyType.FORM_DATA)) {
-	// formDataBody.setSelected(true);
-	// formDataBodySelected(null);
-	// }*/
-	//
-	// // response status
-	// //responseStatus.setText(exchange.getResponse().getStatus().toString());FIXME
-	// 2.0
-	// displayStatusTooltip(exchange);
-	//
-	// // status circle
-	// displayStatusCircle(exchange);
-	//
-	// // response duration
-	// //responseDuration.setText(exchange.getResponse().getDuration().toString());
-	// FIXME 2.0
-	// }
-	// }
 
 	/*
 	 * private void buildPathParameters() {
@@ -657,40 +591,37 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void buildUri() {
 
-		final Optional<Exchange> exchange = getSelectedExchange();
-		if (exchange.isPresent()) {
-			boolean validUri = true;
+		boolean validUri = true;
 
-			String valuedUri = baseUrl + path.getText();
-			Set<String> queryParams = new HashSet<String>();
-			if (!valuedUri.toLowerCase().startsWith("http")) {
-				validUri = false;
-			}
-			for (Parameter parameter : exchange.get().getParameters()) {
-				if (parameter.isRequestParameter() && parameter.isPathParameter()) {
-					if (!parameter.getEnabled() || !parameter.isValid()) {
-						validUri = false;
-						continue;
-					} else {
-						valuedUri = valuedUri.replace(Path.ID_PREFIX + parameter.getName() + Path.ID_SUFFIX, parameter.getValue());
-					}
-				} else if (parameter.isQueryParameter()) {
-					if (!parameter.isValid()) {
-						validUri = false;
-					} else if (parameter.getEnabled()) {
-						queryParams.add(parameter.getName() + "=" + parameter.getValue());
-					}
+		String valuedUri = baseUrl + path.getText();
+		Set<String> queryParams = new HashSet<String>();
+		if (!valuedUri.toLowerCase().startsWith("http")) {
+			validUri = false;
+		}
+		for (Parameter parameter : currentExchange.getParameters()) {
+			if (parameter.isRequestParameter() && parameter.isPathParameter()) {
+				if (!parameter.getEnabled() || !parameter.isValid()) {
+					validUri = false;
+					continue;
+				} else {
+					valuedUri = valuedUri.replace(Path.ID_PREFIX + parameter.getName() + Path.ID_SUFFIX, parameter.getValue());
+				}
+			} else if (parameter.isQueryParameter()) {
+				if (!parameter.isValid()) {
+					validUri = false;
+				} else if (parameter.getEnabled()) {
+					queryParams.add(parameter.getName() + "=" + parameter.getValue());
 				}
 			}
-			if (!queryParams.isEmpty()) {
-				valuedUri += "?" + String.join("&", queryParams);
-			}
-			uri.setText(valuedUri);
-			if (validUri) {
-				exchange.get().setUri(valuedUri);
-			}
-			execute.setDisable(!validUri);
 		}
+		if (!queryParams.isEmpty()) {
+			valuedUri += "?" + String.join("&", queryParams);
+		}
+		uri.setText(valuedUri);
+		if (validUri) {
+			currentExchange.setUri(valuedUri);
+		}
+		execute.setDisable(!validUri);
 	}
 
 	private void displayRequestBody() {
@@ -820,6 +751,13 @@ public class EndPointController extends AbstractController implements Initializa
 
 	public VBox getBodyVBox() {
 		return bodyVBox;
+	}
+
+	@FXML
+	protected void saveCurrentExchange(final ActionEvent event) {
+
+		endpoint.addExchange(currentExchange);
+		currentExchange = currentExchange.duplicate("current2");
 	}
 
 }
