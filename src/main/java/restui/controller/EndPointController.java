@@ -412,6 +412,7 @@ public class EndPointController extends AbstractController implements Initializa
 		displayResponseBody();
 
 		// response status
+		responseStatus.setText(currentExchange.getStatus().toString());
 		displayStatusTooltip(currentExchange);
 
 		// response duration
