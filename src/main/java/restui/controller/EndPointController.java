@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -60,6 +62,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -174,6 +177,9 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	private ComboBox<String> exchangeName;
+
+	@FXML
+	private Button saveExchange;
 
 	public EndPointController() {
 		super();
@@ -340,6 +346,27 @@ public class EndPointController extends AbstractController implements Initializa
 		// requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
 		// execute.textProperty().bind(method.valueProperty()); TO BE DELETED
+
+		// exchange name
+		exchangeName.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				System.out.println("newValue = " + newValue);
+				// if (getEndpointExchangeNames().contains(newValue)) {
+				// saveExchange.setText("Update");
+				// Optional<Exchange> optionalExchange = getExchangeByName(newValue);
+				// if (optionalExchange.isPresent()) {
+				// exchanges.getSelectionModel().select(optionalExchange.get());
+				// }
+				// } else {
+				// Platform.runLater(new Runnable() {
+				// @Override public void run() {
+				// saveExchange.setText("Save");
+				// }
+				// });
+				// }
+			}
+		});
 	}
 
 	@Override
@@ -382,6 +409,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		List<Exchange> endpointExchanges = endpoint.getExchanges();
 		exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
+		populateExchangeNames();
 
 		if (endpointExchanges.isEmpty()) {
 			currentExchange = new Exchange("current", 1L);
@@ -463,6 +491,7 @@ public class EndPointController extends AbstractController implements Initializa
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
 			refreshEndpointParameters();
+			populateExchangeNames();
 		}
 	}
 
@@ -735,6 +764,10 @@ public class EndPointController extends AbstractController implements Initializa
 		Optional<Exchange> optional = Optional.empty();
 		if (exchanges != null && exchanges.getSelectionModel().getSelectedItem() != null) {
 			optional = Optional.of(exchanges.getSelectionModel().getSelectedItem());
+			if (optional.isPresent()) {
+				// select exchange name in comboBox
+				exchangeName.getSelectionModel().select(optional.get().getName());
+			}
 		}
 		return optional;
 	}
@@ -763,6 +796,48 @@ public class EndPointController extends AbstractController implements Initializa
 
 		currentExchange = currentExchange.duplicate(name);
 		endpoint.addExchange(currentExchange);
+
+		// select the saved exchanged
+		exchanges.getSelectionModel().select(currentExchange);
+
+		populateExchangeNames();
+	}
+
+	@FXML
+	protected void exchangeNameReleased(final KeyEvent event) {
+
+		System.err.println("exchangeNameReleased");
+
+		String value = exchangeName.getValue();
+		if (getEndpointExchangeNames().contains(value)) {
+			saveExchange.setText("Update");
+			Optional<Exchange> optionalExchange = getExchangeByName(value);
+			if (optionalExchange.isPresent()) {
+				exchanges.getSelectionModel().select(optionalExchange.get());
+			}
+		} else {
+			saveExchange.setText("Save");
+		}
+	}
+
+	private void populateExchangeNames() {
+
+		exchangeName.getItems().clear();
+		exchangeName.setValue("");
+		// populate list of exchange names in comboBox
+		List<String> exchangeNames = getEndpointExchangeNames();
+		exchangeName.getItems().addAll(exchangeNames);
+	}
+
+	List<String> getEndpointExchangeNames() {
+		return endpoint.getExchanges().stream().map(e -> e.getName()).collect(Collectors.toList());
+
+	}
+
+	private Optional<Exchange> getExchangeByName(final String name) {
+
+		Optional<Exchange> optionalExchange = exchanges.getItems().stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
+		return optionalExchange;
 	}
 
 }
