@@ -87,7 +87,9 @@ public class RestClient {
 
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
 				body = request.getRawBody();
-				bos.write(new String(body).getBytes());
+				if (body != null) {
+    				bos.write(new String(body).getBytes());
+				}
 
 			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
 				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
@@ -169,7 +171,9 @@ public class RestClient {
 				}
 				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
 
-				bos.write(new String(body).getBytes());
+				if (body != null) {
+    				bos.write(new String(body).getBytes());
+				}
 
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
 				body = request.getRawBody();
@@ -236,7 +240,9 @@ public class RestClient {
 				}
 				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
 
-				bos.write(new String(body).getBytes());
+				if (body != null) {
+    				bos.write(new String(body).getBytes());
+				}
 
 			} else if (request.getBodyType().equals(BodyType.RAW)) {
 				body = request.getRawBody();

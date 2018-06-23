@@ -172,6 +172,9 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	private Circle statusCircle;
 
+	@FXML
+	private ComboBox<String> exchangeName;
+
 	public EndPointController() {
 		super();
 	}
@@ -198,11 +201,7 @@ public class EndPointController extends AbstractController implements Initializa
 				final Optional<Exchange> exchange = getSelectedExchange();
 				if (event.isSecondaryButtonDown()) {
 					exchangesContextMenu.getItems().clear();
-					final MenuItem add = new MenuItem("Add");
-					exchangesContextMenu.getItems().add(add);
-					add.setOnAction(e -> {
-						addExchange();
-					});
+
 					if (exchange.isPresent()) {
 						final MenuItem duplicate = new MenuItem("Duplicate");
 						final MenuItem delete = new MenuItem("Delete");
@@ -330,7 +329,10 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			currentExchange = getSelectedExchange().get().duplicate("current");
+			Optional<Exchange> optionalExchange = getSelectedExchange();
+			if (optionalExchange.isPresent()) {
+				currentExchange = optionalExchange.get().duplicate("current");
+			}
 			refreshEndpointParameters();
 		});
 
@@ -757,8 +759,10 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void saveCurrentExchange(final ActionEvent event) {
 
+		String name = exchangeName.getValue();
+
+		currentExchange = currentExchange.duplicate(name);
 		endpoint.addExchange(currentExchange);
-		currentExchange = currentExchange.duplicate("current2");
 	}
 
 }

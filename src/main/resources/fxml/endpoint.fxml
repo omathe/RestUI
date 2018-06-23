@@ -211,6 +211,7 @@
 																								<Button fx:id="execute" mnemonicParsing="false" onAction="#execute" text="Execute" />
 																								<TextField fx:id="uri" editable="false" HBox.hgrow="ALWAYS" />
                                     <Button mnemonicParsing="false" onAction="#saveCurrentExchange" text="Save" />
+                                    <ComboBox fx:id="exchangeName" editable="true" prefWidth="150.0" />
 																<HBox alignment="CENTER" spacing="5.0">
 																	<children>
 																		<Circle fx:id="statusCircle" fill="#dbe0e4" radius="7.0" stroke="#dbe0e4" strokeType="INSIDE" strokeWidth="0.0">
@@ -241,6 +242,9 @@
                                     <TableColumn fx:id="exchangeDurationColumn" prefWidth="75.0" text="Duration" />
                                     <TableColumn fx:id="exchangeStatusColumn" prefWidth="75.0" text="Status" />
 											</columns>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
 										</TableView>
 									</children>
 								</VBox>
