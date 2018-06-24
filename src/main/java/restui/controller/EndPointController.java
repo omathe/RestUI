@@ -36,6 +36,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -62,7 +64,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -89,6 +90,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private String baseUrl;
 	private Endpoint endpoint;
 	private Exchange currentExchange;
+	private boolean currentExchangeHasChanged;
 
 	@FXML
 	private SplitPane requestResponseSplitPane;
@@ -200,7 +202,6 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		exchanges.setOnMousePressed(new EventHandler<MouseEvent>() {
-
 			@Override
 			public void handle(final MouseEvent event) {
 
@@ -336,6 +337,28 @@ public class EndPointController extends AbstractController implements Initializa
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			Optional<Exchange> optionalExchange = getSelectedExchange();
+
+			if (currentExchangeHasChanged) {
+
+				final Alert alert = new Alert(AlertType.CONFIRMATION);
+
+				alert.setTitle("Save the current exchange");
+				alert.setHeaderText("Do you want to save the current exchange ?\n\n");
+				alert.setContentText("Confirm your choice");
+				final ButtonType yesButton = new ButtonType("Yes");
+				final ButtonType noButton = new ButtonType("No");
+
+				alert.getButtonTypes().setAll(noButton, yesButton);
+
+				final Optional<ButtonType> result = alert.showAndWait();
+				if (result.get() == yesButton) {
+					List<String> exchangeNames = getEndpointExchangeNames();
+					final Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames, "exchange"), Instant.now().toEpochMilli());
+					endpoint.addExchange(exchange);
+				}
+				currentExchangeHasChanged = false;
+			}
+
 			if (optionalExchange.isPresent()) {
 				currentExchange = optionalExchange.get().duplicate("current");
 			}
@@ -351,20 +374,30 @@ public class EndPointController extends AbstractController implements Initializa
 		exchangeName.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				System.out.println("newValue = " + newValue);
-				// if (getEndpointExchangeNames().contains(newValue)) {
-				// saveExchange.setText("Update");
-				// Optional<Exchange> optionalExchange = getExchangeByName(newValue);
-				// if (optionalExchange.isPresent()) {
-				// exchanges.getSelectionModel().select(optionalExchange.get());
-				// }
-				// } else {
-				// Platform.runLater(new Runnable() {
-				// @Override public void run() {
-				// saveExchange.setText("Save");
-				// }
-				// });
-				// }
+				Optional<Exchange> optionalExchange = getExchangeByName(newValue);
+				if (optionalExchange.isPresent()) {
+					saveExchange.setText("Update");
+					saveExchange.setUserData("UPDATE");
+					saveExchange.setDisable(false);
+				}
+			}
+		});
+		exchangeName.getEditor().textProperty().addListener((observable, oldvalue, newValue) -> {
+			// user entered a value
+
+			Optional<Exchange> optionalExchange = getExchangeByName(newValue);
+			if (optionalExchange.isPresent()) {
+				saveExchange.setUserData("UPDATE");
+				saveExchange.setText("Update");
+			} else {
+				saveExchange.setUserData("CREATE");
+				// no exchanges
+				if (newValue.isEmpty()) {
+					saveExchange.setDisable(true);
+				} else {
+					saveExchange.setDisable(false);
+					saveExchange.setText("Save");
+				}
 			}
 		});
 	}
@@ -419,6 +452,8 @@ public class EndPointController extends AbstractController implements Initializa
 			exchanges.getSelectionModel().select(0); // select first exchange
 		}
 		refreshEndpointParameters();
+
+		currentExchangeHasChanged = false;
 	}
 
 	public Exchange getCurrentExchange() {
@@ -525,6 +560,7 @@ public class EndPointController extends AbstractController implements Initializa
 	protected void execute(final ActionEvent event) {
 
 		final long t0 = System.currentTimeMillis();
+		currentExchangeHasChanged = true;
 
 		ClientResponse response = RestClient.execute(method.getValue(), currentExchange);
 
@@ -594,6 +630,7 @@ public class EndPointController extends AbstractController implements Initializa
 			response.close();
 		}
 		currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
+		currentExchange.setDate(Instant.now().toEpochMilli());
 
 		refreshEndpointParameters();
 
@@ -793,31 +830,20 @@ public class EndPointController extends AbstractController implements Initializa
 	protected void saveCurrentExchange(final ActionEvent event) {
 
 		String name = exchangeName.getValue();
-
-		currentExchange = currentExchange.duplicate(name);
+		if (saveExchange.getUserData().equals("CREATE")) {
+			currentExchange = currentExchange.duplicate(name);
+		} else if (saveExchange.getUserData().equals("UPDATE")) {
+			Optional<Exchange> ex = endpoint.findExchangeByName(name);
+			if (ex.isPresent()) {
+				endpoint.removeExchange(ex.get());
+				currentExchange = currentExchange.duplicate(name);
+			}
+		}
 		endpoint.addExchange(currentExchange);
-
 		// select the saved exchanged
 		exchanges.getSelectionModel().select(currentExchange);
 
 		populateExchangeNames();
-	}
-
-	@FXML
-	protected void exchangeNameReleased(final KeyEvent event) {
-
-		System.err.println("exchangeNameReleased");
-
-		String value = exchangeName.getValue();
-		if (getEndpointExchangeNames().contains(value)) {
-			saveExchange.setText("Update");
-			Optional<Exchange> optionalExchange = getExchangeByName(value);
-			if (optionalExchange.isPresent()) {
-				exchanges.getSelectionModel().select(optionalExchange.get());
-			}
-		} else {
-			saveExchange.setText("Save");
-		}
 	}
 
 	private void populateExchangeNames() {

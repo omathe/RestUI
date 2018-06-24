@@ -164,4 +164,8 @@ public class Endpoint extends Item {
 		return parameters.contains(parameter);
 	}
 
+	public Optional<Exchange> findExchangeByName(String name) {
+		return exchanges.stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
+	}
+
 }
