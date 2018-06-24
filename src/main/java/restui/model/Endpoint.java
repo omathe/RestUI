@@ -23,7 +23,7 @@ public class Endpoint extends Item {
 	private final StringProperty method;
 	private final StringProperty path;
 	private List<Exchange> exchanges;
-	private List<Parameter> parameters; // 2.0
+	private List<Parameter> parameters;
 
 	public Endpoint(final Item parent, final String name, final String method) {
 		super(parent, name);

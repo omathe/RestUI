@@ -70,6 +70,15 @@ public class Exchange {
 		return duplicate;
 	}
 
+	public void updateValues(Exchange source) {
+		setDate(source.getDate());
+		setStatus(source.getStatus());
+		setDuration(source.getDuration());
+		setRequestBodyType(source.getRequestBodyType());
+		setUri(source.getUri());
+		setParameters(source.getParameters());
+	}
+
 	public String getName() {
 		return name.get();
 	}
@@ -103,8 +112,11 @@ public class Exchange {
 	// }
 
 	public List<Parameter> getParameters() {
-
 		return parameters;
+	}
+
+	public void setParameters(List<Parameter> parameters) {
+		this.parameters = parameters;
 	}
 
 	public Optional<Parameter> findParameter(final Parameter parameter) {
