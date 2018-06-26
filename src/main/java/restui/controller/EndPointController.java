@@ -397,7 +397,8 @@ public class EndPointController extends AbstractController implements Initializa
 
 		if (endpointExchanges.isEmpty()) {
 			currentExchange = new Exchange("", 1L);
-			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
+			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
+					.filter(p -> p.isRequestParameter()).collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
 		} else {
 			exchanges.getSelectionModel().select(0); // select first exchange
@@ -414,7 +415,8 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshEndpointParameters() {
 
 		// request parameters
-		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isRequestParameter()));
+		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
+				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter()) ));
 		requestParameters.refresh();
 
 		// response parameters
