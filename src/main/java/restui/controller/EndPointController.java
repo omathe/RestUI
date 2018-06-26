@@ -28,8 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -88,7 +86,6 @@ public class EndPointController extends AbstractController implements Initializa
 	private String baseUrl;
 	private Endpoint endpoint;
 	private Exchange currentExchange;
-	private Exchange lastExecutedExchange;
 
 	@FXML
 	private SplitPane requestResponseSplitPane;
@@ -175,15 +172,6 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	private Circle statusCircle;
 
-	@FXML
-	private ComboBox<String> exchangeName;
-
-	@FXML
-	private Button saveExchange;
-
-	@FXML
-	private Button lastExecution;
-
 	public EndPointController() {
 		super();
 	}
@@ -211,12 +199,8 @@ public class EndPointController extends AbstractController implements Initializa
 					exchangesContextMenu.getItems().clear();
 
 					if (exchange.isPresent()) {
-						//final MenuItem duplicate = new MenuItem("Duplicate");
 						final MenuItem delete = new MenuItem("Delete");
-						exchangesContextMenu.getItems().addAll(/*duplicate, new SeparatorMenuItem(),*/ delete);
-//						duplicate.setOnAction(e -> {
-//							duplicateExchange(exchange.get());
-//						});
+						exchangesContextMenu.getItems().add(delete);
 						delete.setOnAction(e -> {
 							deleteExchange(exchange.get());
 						});
@@ -231,7 +215,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		requestParameters.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.DELETE)) {
-				deleteRequestParameters(requestParameters.getSelectionModel().getSelectedItems());
+				deleteParameters(requestParameters.getSelectionModel().getSelectedItems());
 			}
 		});
 
@@ -258,15 +242,16 @@ public class EndPointController extends AbstractController implements Initializa
 					paste.setDisable(ObjectClipboard.getInstance().getParameters().isEmpty());
 					delete.setDisable(!parameter.isPresent());
 					requestParametersContextMenu.getItems().addAll(add, copy, paste, new SeparatorMenuItem(), delete);
+					requestParameters.setContextMenu(requestParametersContextMenu);
 
 					if (exchange.isPresent()) {
 						addHeader.setOnAction(e -> {
 							List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
-							addRequestParameter(new Parameter(true, Direction.REQUEST, Location.HEADER, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
+							addParameter(new Parameter(true, Direction.REQUEST, Location.HEADER, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
 						});
 						addQuery.setOnAction(e -> {
 							List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
-							addRequestParameter(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
+							addParameter(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
 						});
 						paste.setOnAction(e -> {
 							final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
@@ -277,14 +262,13 @@ public class EndPointController extends AbstractController implements Initializa
 					}
 					if (exchange.isPresent() && parameter.isPresent()) {
 						delete.setOnAction(e -> {
-							deleteRequestParameters(requestParameters.getSelectionModel().getSelectedItems());
+							deleteParameters(requestParameters.getSelectionModel().getSelectedItems());
 						});
 						copy.setOnAction(e -> {
 							final List<Parameter> selectedParameters = requestParameters.getSelectionModel().getSelectedItems();
 							ObjectClipboard.getInstance().setParameters(selectedParameters);
 						});
 					}
-					requestParameters.setContextMenu(requestParametersContextMenu);
 				}
 			}
 		});
@@ -339,68 +323,36 @@ public class EndPointController extends AbstractController implements Initializa
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			Optional<Exchange> optionalExchange = getSelectedExchange();
 
-			/*if (currentExchangeHasChanged) {
-
-				final Alert alert = new Alert(AlertType.CONFIRMATION);
-
-				alert.setTitle("Save the current exchange");
-				alert.setHeaderText("Do you want to save the current exchange ?\n\n");
-				alert.setContentText("Confirm your choice");
-				final ButtonType yesButton = new ButtonType("Yes");
-				final ButtonType noButton = new ButtonType("No");
-
-				alert.getButtonTypes().setAll(noButton, yesButton);
-
-				final Optional<ButtonType> result = alert.showAndWait();
-				if (result.get() == yesButton) {
-					List<String> exchangeNames = getEndpointExchangeNames();
-					final Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames, "Exchange"), Instant.now().toEpochMilli());
-					endpoint.addExchange(exchange);
-				}
-				currentExchangeHasChanged = false;
-			}*/
+			/*
+			 * if (currentExchangeHasChanged) {
+			 *
+			 * final Alert alert = new Alert(AlertType.CONFIRMATION);
+			 *
+			 * alert.setTitle("Save the current exchange");
+			 * alert.setHeaderText("Do you want to save the current exchange ?\n\n");
+			 * alert.setContentText("Confirm your choice"); final ButtonType yesButton = new
+			 * ButtonType("Yes"); final ButtonType noButton = new ButtonType("No");
+			 *
+			 * alert.getButtonTypes().setAll(noButton, yesButton);
+			 *
+			 * final Optional<ButtonType> result = alert.showAndWait(); if (result.get() ==
+			 * yesButton) { List<String> exchangeNames = getEndpointExchangeNames(); final
+			 * Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames,
+			 * "Exchange"), Instant.now().toEpochMilli()); endpoint.addExchange(exchange); }
+			 * currentExchangeHasChanged = false; }
+			 */
 
 			if (optionalExchange.isPresent()) {
-				currentExchange = optionalExchange.get().duplicate("current");
+				currentExchange = optionalExchange.get().duplicate("");
 				refreshEndpointParameters();
 			}
 		});
 
+		execute.textProperty().bind(method.valueProperty());
+
 		// disable request/response area if no exchange selected
 		// requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
 
-		// exchange name
-		exchangeName.valueProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				Optional<Exchange> optionalExchange = getExchangeByName(newValue);
-				if (optionalExchange.isPresent()) {
-					saveExchange.setText("Update");
-					saveExchange.setUserData("UPDATE");
-					saveExchange.setDisable(false);
-				}
-			}
-		});
-		exchangeName.getEditor().textProperty().addListener((observable, oldvalue, newValue) -> {
-			// user entered a value
-
-			Optional<Exchange> optionalExchange = getExchangeByName(newValue);
-			if (optionalExchange.isPresent()) {
-				saveExchange.setUserData("UPDATE");
-				saveExchange.setText("Update");
-			} else {
-				saveExchange.setUserData("CREATE");
-				// no exchanges
-				if (newValue.isEmpty()) {
-					saveExchange.setDisable(true);
-				} else {
-					saveExchange.setDisable(false);
-					saveExchange.setText("Save");
-				}
-			}
-		});
-
-		lastExecution.setDisable(true);
 	}
 
 	@Override
@@ -408,7 +360,6 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		endpoint = (Endpoint) this.treeItem.getValue();
-
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
@@ -416,18 +367,8 @@ public class EndPointController extends AbstractController implements Initializa
 		method.valueProperty().bindBidirectional(endpoint.methodProperty());
 
 		// exchanges
-		//exchangeNameColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("name"));
-		//exchangeNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		exchangeNameColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("name"));
 		exchangeNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		exchangeNameColumn.setCellValueFactory(exchange -> {
-
-			List<String> exchangeNames = getEndpointExchangeNames();
-			exchangeName.getItems().clear();
-			exchangeName.getItems().addAll(exchangeNames);
-
-			return exchange.getValue().nameProperty();
-		});
-
 
 		exchangeDateColumn.setCellFactory(column -> {
 			return new TableCell<Exchange, Long>() {
@@ -453,15 +394,15 @@ public class EndPointController extends AbstractController implements Initializa
 
 		List<Exchange> endpointExchanges = endpoint.getExchanges();
 		exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
-		populateExchangeNames();
 
 		if (endpointExchanges.isEmpty()) {
-			currentExchange = new Exchange("current", 1L);
-			lastExecutedExchange = currentExchange.duplicate(currentExchange.getName());
+			currentExchange = new Exchange("", 1L);
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
 		} else {
 			exchanges.getSelectionModel().select(0); // select first exchange
+			Exchange firstExchange = exchanges.getSelectionModel().getSelectedItem();
+			currentExchange = firstExchange;
 		}
 		refreshEndpointParameters();
 	}
@@ -536,34 +477,7 @@ public class EndPointController extends AbstractController implements Initializa
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
 			refreshEndpointParameters();
-			populateExchangeNames();
 		}
-	}
-
-	private void addRequestParameter(final Parameter parameter) {
-
-		// final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
-		// endpoint.addParameter(parameter);
-
-		// add the parameter to the selected exchange
-		Optional<Exchange> selectedExchange = getSelectedExchange();
-		if (selectedExchange.isPresent()) {
-			// selectedExchange.get().addParameter(parameter.duplicate());
-			selectedExchange.get().addParameter(parameter);
-		}
-	}
-
-	private void deleteRequestParameters(final List<Parameter> parameters) {
-
-		getSelectedExchange().ifPresent(exchange -> {
-			if (parameters != null && !parameters.isEmpty()) {
-				final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
-				final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
-				if (response.equals(ButtonType.OK)) {
-					// exchange.removeRequestParameters(parameters); FIXME 2.0
-				}
-			}
-		});
 	}
 
 	@FXML
@@ -641,13 +555,13 @@ public class EndPointController extends AbstractController implements Initializa
 		currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
 		currentExchange.setDate(Instant.now().toEpochMilli());
 
-		lastExecutedExchange = currentExchange.duplicate(currentExchange.getName());
 		refreshEndpointParameters();
-		lastExecution.setDisable(false);
+
+		saveCurrentExchange();
 
 		// refresh tableView (workaround)
-//		exchanges.getColumns().get(0).setVisible(false);
-//		exchanges.getColumns().get(0).setVisible(true);
+		// exchanges.getColumns().get(0).setVisible(false);
+		// exchanges.getColumns().get(0).setVisible(true);
 	}
 
 	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {
@@ -814,7 +728,6 @@ public class EndPointController extends AbstractController implements Initializa
 			optional = Optional.of(exchanges.getSelectionModel().getSelectedItem());
 			if (optional.isPresent()) {
 				// select exchange name in comboBox
-				exchangeName.getSelectionModel().select(optional.get().getName());
 			}
 		}
 		return optional;
@@ -837,42 +750,27 @@ public class EndPointController extends AbstractController implements Initializa
 		return bodyVBox;
 	}
 
-	@FXML
-	protected void saveCurrentExchange(final ActionEvent event) {
+	private void saveCurrentExchange() {
 
-		String name = exchangeName.getValue();
-		if (saveExchange.getUserData().equals("CREATE")) {
-			currentExchange = currentExchange.duplicate(name);
+		/*
+		 * String name = exchangeName.getValue(); if
+		 * (saveExchange.getUserData().equals("CREATE")) { currentExchange =
+		 * currentExchange.duplicate(name); endpoint.addExchange(currentExchange); }
+		 * else if (saveExchange.getUserData().equals("UPDATE")) { Optional<Exchange>
+		 * optionalExchange = endpoint.findExchangeByName(name); if
+		 * (optionalExchange.isPresent()) { currentExchange =
+		 * currentExchange.duplicate(name);
+		 * optionalExchange.get().updateValues(currentExchange); } }
+		 */
+		Optional<Exchange> optionalExchange = endpoint.findExchangeByName("");
+		if (optionalExchange.isPresent()) {
+			optionalExchange.get().updateValues(currentExchange);
+		} else {
 			endpoint.addExchange(currentExchange);
-		} else if (saveExchange.getUserData().equals("UPDATE")) {
-			Optional<Exchange> optionalExchange = endpoint.findExchangeByName(name);
-			if (optionalExchange.isPresent()) {
-				currentExchange = currentExchange.duplicate(name);
-				optionalExchange.get().updateValues(currentExchange);
-			}
 		}
 
 		// select the saved exchanged
 		exchanges.getSelectionModel().select(currentExchange);
-
-		populateExchangeNames();
-	}
-
-	@FXML
-	protected void displayLastExecutedExchange(final ActionEvent event) {
-		if (lastExecutedExchange != null) {
-			currentExchange = lastExecutedExchange.duplicate(lastExecutedExchange.getName());
-			refreshEndpointParameters();
-		}
-	}
-
-	private void populateExchangeNames() {
-
-		exchangeName.getItems().clear();
-		exchangeName.setValue("");
-		// populate list of exchange names in comboBox
-		List<String> exchangeNames = getEndpointExchangeNames();
-		exchangeName.getItems().addAll(exchangeNames);
 	}
 
 	List<String> getEndpointExchangeNames() {
@@ -884,6 +782,31 @@ public class EndPointController extends AbstractController implements Initializa
 
 		Optional<Exchange> optionalExchange = exchanges.getItems().stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
 		return optionalExchange;
+	}
+
+	// **************************************************************************************************************************
+
+	private void addParameter(final Parameter parameter) {
+
+		// add the parameter to the endpoint
+		endpoint.addParameter(parameter);
+
+		// add the parameter to the selected exchange if it exists
+		currentExchange.addParameter(parameter);
+
+		refreshEndpointParameters();
+	}
+
+	private void deleteParameters(final List<Parameter> parameters) {
+
+		if (parameters != null && !parameters.isEmpty()) {
+			final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
+			final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
+			if (response.equals(ButtonType.OK)) {
+				currentExchange.removeParameters(parameters);
+				refreshEndpointParameters();
+			}
+		}
 	}
 
 }

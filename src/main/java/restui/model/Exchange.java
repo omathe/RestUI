@@ -23,18 +23,11 @@ public class Exchange {
 
 	private StringProperty name;
 	private ObjectProperty<Long> date;
-	// private Request request;
-	// private Response response;
-	private IntegerProperty status; // 2.0
-	private IntegerProperty duration; // 2.0
+	private IntegerProperty status;
+	private IntegerProperty duration;
 	private BodyType requestBodyType;
 	private StringProperty uri;
-	// à supprimer private String endpointName;
 	private List<Parameter> parameters;
-
-	/*
-	 * public Exchange() { super(); }
-	 */
 
 	public Exchange(final String name, final Long date) {
 		super();
@@ -49,7 +42,6 @@ public class Exchange {
 
 	public Exchange(String endpointName, final String name, final Long date, Integer duration, Integer status, BodyType requestBodyType) {
 		super();
-		// this.endpointName = endpointName;
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleObjectProperty<>(date);
 		this.status = new SimpleIntegerProperty(status);
@@ -103,14 +95,6 @@ public class Exchange {
 		return date;
 	}
 
-	// public Request getRequest() {
-	// return request;
-	// }
-
-	// public void setRequest(final Request request) {
-	// this.request = request;
-	// }
-
 	public List<Parameter> getParameters() {
 		return parameters;
 	}
@@ -124,19 +108,9 @@ public class Exchange {
 		return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
 	}
 
-	// public void addRequestParameter(final Parameter parameter) {
-	// request.addParameter(parameter);
-	// }
-
-	// public void removeRequestParameter(final Parameter parameter) {
-	// if (parameter != null) {
-	// request.parameters.remove(parameter);
-	// }
-	// }
-
 	public void removeParameters(final List<Parameter> parameters) {
 		if (parameters != null) {
-			parameters.removeAll(parameters);
+			this.parameters.removeAll(parameters);
 		}
 	}
 

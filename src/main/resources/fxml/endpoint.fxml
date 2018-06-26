@@ -90,8 +90,8 @@
 																							<columns>
 																								<TableColumn fx:id="parameterEnabledColumn" prefWidth="75.0" text="Enabled" />
 																								<TableColumn fx:id="parameterLocationColumn" prefWidth="75.0" text="Location" />
-																								<TableColumn fx:id="parameterNameColumn" prefWidth="75.0" text="Name" />
-																								<TableColumn fx:id="parameterValueColumn" prefWidth="75.0" text="Value" />
+																								<TableColumn fx:id="parameterNameColumn" prefWidth="150.0" text="Name" />
+																								<TableColumn fx:id="parameterValueColumn" minWidth="8.0" text="Value" />
 																							</columns>
 																						</TableView>
 																					</children>
@@ -159,8 +159,8 @@
 																						</Label>
 																						<TableView fx:id="responseHeaders" VBox.vgrow="ALWAYS">
 																							<columns>
-																								<TableColumn fx:id="headerNameColumn" editable="false" prefWidth="75.0" text="Name" />
-																								<TableColumn fx:id="headerValueColumn" editable="false" prefWidth="75.0" text="Value" />
+																								<TableColumn fx:id="headerNameColumn" editable="false" prefWidth="130.0" text="Name" />
+																								<TableColumn fx:id="headerValueColumn" editable="false" prefWidth="250.0" text="Value" />
 																							</columns>
 																							<VBox.margin>
 																								<Insets />
@@ -208,7 +208,6 @@
 									<children>
 																						<HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
 																							<children>
-                                    <Button fx:id="lastExecution" mnemonicParsing="false" onAction="#displayLastExecutedExchange" text="Last execution" />
 																								<Button fx:id="execute" mnemonicParsing="false" onAction="#execute" text="Execute" />
 																								<TextField fx:id="uri" editable="false" HBox.hgrow="ALWAYS" />
 																<HBox alignment="CENTER" spacing="5.0">
@@ -234,20 +233,6 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
 																						</HBox>
-                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                                 <children>
-                                    <Label text="Exchanges">
-                                       <font>
-                                          <Font size="16.0" />
-                                       </font>
-                                    </Label>
-                                    <ComboBox fx:id="exchangeName" editable="true" prefWidth="150.0" promptText="Exchange name" />
-                                    <Button fx:id="saveExchange" mnemonicParsing="false" onAction="#saveCurrentExchange" text="Save" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </HBox>
 										<TableView fx:id="exchanges" editable="true" VBox.vgrow="ALWAYS">
 											<columns>
 												<TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="300.0" text="Name" />
