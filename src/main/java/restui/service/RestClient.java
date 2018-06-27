@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -20,7 +21,11 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import restui.model.Exchange;
+import restui.model.Exchange.BodyType;
 import restui.model.Parameter;
+import restui.model.Parameter.Direction;
+import restui.model.Parameter.Location;
+import restui.model.Parameter.Type;
 
 public class RestClient {
 
@@ -58,45 +63,44 @@ public class RestClient {
 	}
 
 	private static ClientResponse post(final Exchange exchange) {
-		return null;
 
-		/*ClientResponse response = null;
+		ClientResponse response = null;
 
 		String body = null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 		try {
-			String uri = request.getUri();
-			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+			String uri = exchange.getUri();
+			List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
 
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+			if (exchange.getRequestBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
 				body = parameters.stream()
 						.filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText())
 						.map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
-				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
 				if (optional.isPresent()) {
 					parameters.remove(optional.get());
 				}
-				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "application/x-www-form-urlencoded"));
 
 				bos.write(new String(body).getBytes());
 
-			} else if (request.getBodyType().equals(BodyType.RAW)) {
-				body = request.getRawBody();
+			} else if (exchange.getRequestBodyType().equals(BodyType.RAW)) {
+				body = exchange.getRequestRawBody();
 				if (body != null) {
     				bos.write(new String(body).getBytes());
 				}
 
-			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
-				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+			} else if (exchange.getRequestBodyType().equals(BodyType.FORM_DATA)) {
+				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
 				if (optional.isPresent()) {
 					parameters.remove(optional.get());
 				}
-				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
+				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
 
 				for (Parameter parameter : parameters) {
 					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
@@ -122,7 +126,7 @@ public class RestClient {
 				}
 			}
 		}
-		return response;*/
+		return response;
 	}
 
 	private static ClientResponse get(final Exchange exchange) {
