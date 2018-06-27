@@ -224,7 +224,6 @@ public class EndPointController extends AbstractController implements Initializa
 			@Override
 			public void handle(final MouseEvent event) {
 
-				final Optional<Exchange> exchange = getSelectedExchange();
 				final Optional<Parameter> parameter = getSelectedRequestParameter();
 
 				if (event.isSecondaryButtonDown()) { // right clic
@@ -244,23 +243,21 @@ public class EndPointController extends AbstractController implements Initializa
 					requestParametersContextMenu.getItems().addAll(add, copy, paste, new SeparatorMenuItem(), delete);
 					requestParameters.setContextMenu(requestParametersContextMenu);
 
-					if (exchange.isPresent()) {
-						addHeader.setOnAction(e -> {
-							List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
-							addParameter(new Parameter(true, Direction.REQUEST, Location.HEADER, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
-						});
-						addQuery.setOnAction(e -> {
-							List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
-							addParameter(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
-						});
-						paste.setOnAction(e -> {
-							final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
-							for (final Parameter p : parameters) {
-								// exchange.get().addRequestParameter(p); FIXME 2.0
-							}
-						});
-					}
-					if (exchange.isPresent() && parameter.isPresent()) {
+					addHeader.setOnAction(e -> {
+						List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
+						addParameter(new Parameter(true, Direction.REQUEST, Location.HEADER, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
+					});
+					addQuery.setOnAction(e -> {
+						List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
+						addParameter(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
+					});
+					paste.setOnAction(e -> {
+						final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
+						for (final Parameter p : parameters) {
+							addParameter(p);
+						}
+					});
+					if (parameter.isPresent()) {
 						delete.setOnAction(e -> {
 							deleteParameters(requestParameters.getSelectionModel().getSelectedItems());
 						});
@@ -396,10 +393,10 @@ public class EndPointController extends AbstractController implements Initializa
 		exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
 
 		if (endpointExchanges.isEmpty()) {
-			currentExchange = new Exchange("", 1L);
-			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
-					.filter(p -> p.isRequestParameter()).collect(Collectors.toList());
+			currentExchange = new Exchange("", Instant.now().toEpochMilli());
+			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
+			endpoint.addExchange(currentExchange);
 		} else {
 			exchanges.getSelectionModel().select(0); // select first exchange
 			Exchange firstExchange = exchanges.getSelectionModel().getSelectedItem();
@@ -416,11 +413,12 @@ public class EndPointController extends AbstractController implements Initializa
 
 		// request parameters
 		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter()) ));
+				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
 		requestParameters.refresh();
 
 		// response parameters
-		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
+		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
+				.filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
 		responseHeaders.refresh();
 
 		// request body
