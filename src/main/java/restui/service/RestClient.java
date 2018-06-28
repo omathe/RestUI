@@ -18,6 +18,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import restui.model.Exchange;
@@ -62,6 +64,28 @@ public class RestClient {
 		return response;
 	}
 
+	private static ClientResponse get(final Exchange exchange) {
+
+		ClientResponse response = null;
+
+		try {
+			List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+			String uri = exchange.getUri();
+
+			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
+			final WebResource.Builder builder = webResource.getRequestBuilder();
+
+			addHeaders(builder, parameters);
+
+			response = builder.get(ClientResponse.class);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			client.destroy();
+		}
+		return response;
+	}
+
 	private static ClientResponse post(final Exchange exchange) {
 
 		ClientResponse response = null;
@@ -77,9 +101,7 @@ public class RestClient {
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
 			if (exchange.getRequestBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-				body = parameters.stream()
-						.filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText())
-						.map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
+				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
 				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
 				if (optional.isPresent()) {
@@ -92,7 +114,7 @@ public class RestClient {
 			} else if (exchange.getRequestBodyType().equals(BodyType.RAW)) {
 				body = exchange.getRequestRawBody();
 				if (body != null) {
-    				bos.write(new String(body).getBytes());
+					bos.write(new String(body).getBytes());
 				}
 
 			} else if (exchange.getRequestBodyType().equals(BodyType.FORM_DATA)) {
@@ -129,66 +151,43 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse get(final Exchange exchange) {
+	private static ClientResponse put(final Exchange exchange) {
 
 		ClientResponse response = null;
-
-		try {
-			List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
-			String uri = exchange.getUri();
-
-			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-			final WebResource.Builder builder = webResource.getRequestBuilder();
-
-			addHeaders(builder, parameters);
-
-			response = builder.get(ClientResponse.class);
-		} catch (final Exception e) {
-			e.printStackTrace();
-		} finally {
-			client.destroy();
-		}
-		return response;
-	}
-
-	private static ClientResponse put(final Exchange exchange) {
-		return null;
-
-		/*ClientResponse response = null;
 
 		String body = null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 		try {
-			String uri = request.getUri();
-			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+			String uri = exchange.getUri();
+			List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
 
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+			if (exchange.getRequestBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
 				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
-				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
 				if (optional.isPresent()) {
 					parameters.remove(optional.get());
 				}
-				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "application/x-www-form-urlencoded"));
 
 				if (body != null) {
-    				bos.write(new String(body).getBytes());
+					bos.write(new String(body).getBytes());
 				}
 
-			} else if (request.getBodyType().equals(BodyType.RAW)) {
-				body = request.getRawBody();
+			} else if (exchange.getRequestBodyType().equals(BodyType.RAW)) {
+				body = exchange.getRequestRawBody();
 				bos.write(new String(body).getBytes());
 
-			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
-				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+			} else if (exchange.getRequestBodyType().equals(BodyType.FORM_DATA)) {
+				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
 				if (optional.isPresent()) {
 					parameters.remove(optional.get());
 				}
-				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
+				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
 
 				for (Parameter parameter : parameters) {
 					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
@@ -214,13 +213,12 @@ public class RestClient {
 				}
 			}
 		}
-		return response;*/
+		return response;
 	}
 
 	private static ClientResponse patch(final Exchange exchange) {
-		return null;
 
-/*		ClientResponse response = null;
+		ClientResponse response = null;
 		final DefaultClientConfig config = new DefaultClientConfig();
 		config.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
 
@@ -229,35 +227,35 @@ public class RestClient {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 		try {
-			String uri = request.getUri();
-			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+			String uri = exchange.getUri();
+			List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
 
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
 
-			if (request.getBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+			if (exchange.getRequestBodyType().equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
 				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
 
-				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
 				if (optional.isPresent()) {
 					parameters.remove(optional.get());
 				}
-				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "application/x-www-form-urlencoded"));
+				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "application/x-www-form-urlencoded"));
 
 				if (body != null) {
-    				bos.write(new String(body).getBytes());
+					bos.write(new String(body).getBytes());
 				}
 
-			} else if (request.getBodyType().equals(BodyType.RAW)) {
-				body = request.getRawBody();
+			} else if (exchange.getRequestBodyType().equals(BodyType.RAW)) {
+				body = exchange.getRequestRawBody();
 				bos.write(new String(body).getBytes());
 
-			} else if (request.getBodyType().equals(BodyType.FORM_DATA)) {
-				Optional<Parameter> optional = request.findParameter(Location.HEADER, "Content-Type");
+			} else if (exchange.getRequestBodyType().equals(BodyType.FORM_DATA)) {
+				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
 				if (optional.isPresent()) {
 					parameters.remove(optional.get());
 				}
-				parameters.add(new Parameter(true, Type.TEXT, Location.HEADER, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
+				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
 
 				for (Parameter parameter : parameters) {
 					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
@@ -283,18 +281,17 @@ public class RestClient {
 				}
 			}
 		}
-		return response;*/
+		return response;
 	}
 
 	private static ClientResponse delete(final Exchange exchange) {
-		return null;
 
-		/*ClientResponse response = null;
+		ClientResponse response = null;
 		final Client client = Client.create();
 
 		try {
-			List<Parameter> parameters = request.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
-			String uri = request.getUri();
+			List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+			String uri = exchange.getUri();
 
 			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
 			final WebResource.Builder builder = webResource.getRequestBuilder();
@@ -307,7 +304,7 @@ public class RestClient {
 		} finally {
 			client.destroy();
 		}
-		return response;*/
+		return response;
 	}
 
 	private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {

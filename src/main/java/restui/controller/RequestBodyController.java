@@ -39,6 +39,8 @@ import restui.model.Parameter.Type;
 
 public class RequestBodyController extends AbstractController implements Initializable {
 
+	private EndPointController endPointController;
+
 	@FXML
 	private VBox vBox;
 
@@ -101,7 +103,8 @@ public class RequestBodyController extends AbstractController implements Initial
 			if (exchange != null) {
 				List<String> parameterNames = bodyTableView.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
 				final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), "");
-				exchange.addParameter(parameter);
+				//exchange.addParameter(parameter);
+				endPointController.addParameter(parameter);
 			}
 		});
 
@@ -119,6 +122,8 @@ public class RequestBodyController extends AbstractController implements Initial
 	}
 
 	public void display(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
+
+		this.endPointController = endPointController;
 
 		exchange = endPointController.getCurrentExchange();
 		if (exchange != null) {

@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.Response.Status;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -412,13 +413,11 @@ public class EndPointController extends AbstractController implements Initializa
 	private void refreshEndpointParameters() {
 
 		// request parameters
-		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
+		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
 		requestParameters.refresh();
 
 		// response parameters
-		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-				.filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
+		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
 		responseHeaders.refresh();
 
 		// request body
@@ -429,7 +428,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		// response status
 		responseStatus.setText(currentExchange.getStatus().toString());
-		displayStatusTooltip(currentExchange);
+		displayStatusTooltip();
 
 		// response duration
 		responseDuration.setText(currentExchange.getDuration().toString());
@@ -510,7 +509,7 @@ public class EndPointController extends AbstractController implements Initializa
 			responseStatus.setText(String.valueOf(response.getStatus()));
 			responseDuration.setText(currentExchange.getDuration().toString());
 
-			displayStatusTooltip(currentExchange);
+			displayStatusTooltip();
 			// status circle
 			displayStatusCircle(currentExchange);
 
@@ -713,12 +712,12 @@ public class EndPointController extends AbstractController implements Initializa
 		requestBodyController.display(this, fxmlRequestBody, bodyType);
 	}
 
-	private void displayStatusTooltip(Exchange exchange) {
-		/*
-		 * Status st = Status.fromStatusCode(exchange.getResponse().getStatus()); FIXME
-		 * 2.0 if (st != null) { responseStatus.setTooltip(new
-		 * Tooltip(st.getReasonPhrase())); }
-		 */
+	private void displayStatusTooltip() {
+
+		Status st = Status.fromStatusCode(currentExchange.getStatus());
+		if (st != null) {
+			responseStatus.setTooltip(new Tooltip(st.getReasonPhrase()));
+		}
 	}
 
 	public Optional<Exchange> getSelectedExchange() {
@@ -786,7 +785,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 	// **************************************************************************************************************************
 
-	private void addParameter(final Parameter parameter) {
+	public void addParameter(final Parameter parameter) {
 
 		// add the parameter to the endpoint
 		endpoint.addParameter(parameter);
@@ -797,7 +796,7 @@ public class EndPointController extends AbstractController implements Initializa
 		refreshEndpointParameters();
 	}
 
-	private void deleteParameters(final List<Parameter> parameters) {
+	public void deleteParameters(final List<Parameter> parameters) {
 
 		if (parameters != null && !parameters.isEmpty()) {
 			final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";

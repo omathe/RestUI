@@ -200,8 +200,9 @@ public class ProjectService {
 					elementParameter.setAttribute(new Attribute("location", parameter.getLocation()));
 					elementParameter.setAttribute(new Attribute("type", parameter.getType()));
 					elementParameter.setAttribute(new Attribute("name", parameter.getName()));
-					elementParameter.setAttribute(new Attribute("value", parameter.getValue()));
-
+					if (parameter.getValue() != null) {
+						elementParameter.setAttribute(new Attribute("value", parameter.getValue()));
+					}
 					elementParameters.addContent(elementParameter);
 				}
 				element.addContent(elementParameters);

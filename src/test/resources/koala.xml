@@ -1,50 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="KOALA">
-	<baseUrls>
-		<baseUrl name="Local" url="http://localhost:8080" enabled="true" />
-		<baseUrl name="https" url="https://lorawan.italks.eu/oss" enabled="false" />
-	</baseUrls>
-	<path name="application">
-		<path name="customers">
-			<endpoint name="getCustomers" path="/application/customers" method="GET">
-				<parameters>
-					<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
-					<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
-				</parameters>
-			</endpoint>
-			<path name="raw">
-				<endpoint name="createRawCustomer" path="/application/customers/raw" method="POST">
-					<parameters>
-						<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Content-Type" value="application/json" />
-					</parameters>
-				</endpoint>
-			</path>
-			<path name="{customerId}">
-				<endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
-					<parameters>
-						<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="fields" />
-						<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Authorization" />
-						<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json" />
-						<parameter enabled="true" direction="REQUEST" location="PATH" type="TEXT" name="customerId" />
-					</parameters>
-				</endpoint>
-			</path>
-		</path>
-		<path name="fleets">
-			<path name="{fleetId}">
-				<endpoint name="getFleet" path="/application/fleets/{fleetId}" method="GET">
-					<parameters>
-						<parameter enabled="true" direction="REQUEST" location="PATH" type="TEXT" name="fleetId" />
-						<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json" />
-					</parameters>
-				</endpoint>
-			</path>
-			<endpoint name="getFleets" path="/application/fleets" method="GET">
-				<parameters>
-					<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
-					<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
-				</parameters>
-			</endpoint>
-		</path>
-	</path>
+  <baseUrls>
+    <baseUrl name="Local" url="http://localhost:8080" enabled="true" />
+    <baseUrl name="https" url="https://lorawan.italks.eu/oss" enabled="false" />
+  </baseUrls>
+  <path name="application">
+    <path name="fleets">
+      <path name="{fleetId}">
+        <endpoint name="getFleet" path="/application/fleets/{fleetId}" method="GET">
+          <parameters>
+            <parameter enabled="true" direction="REQUEST" location="PATH" type="TEXT" name="fleetId" />
+            <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json" />
+          </parameters>
+        </endpoint>
+      </path>
+      <endpoint name="getFleets" path="/application/fleets" method="GET">
+        <parameters>
+          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
+          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
+        </parameters>
+      </endpoint>
+    </path>
+    <path name="customers">
+      <path name="formData">
+        <endpoint name="createCustomerformData" path="/application/customers/formData" method="POST">
+          <parameters>
+            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="name" value="toto" />
+            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="age" value="10" />
+            <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Content-Type" value="multipart/form-data" />
+            <parameter enabled="true" direction="REQUEST" location="BODY" type="TEXT" name="name" value="toto" />
+            <parameter enabled="true" direction="REQUEST" location="BODY" type="TEXT" name="age" value="10" />
+          </parameters>
+        </endpoint>
+      </path>
+      <path name="raw">
+        <endpoint name="createRawCustomer" path="/application/customers/raw" method="POST">
+          <parameters>
+            <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Content-Type" value="application/json" />
+          </parameters>
+        </endpoint>
+      </path>
+      <path name="{customerId}">
+        <endpoint name="getCustomer" path="/application/customers/{customerId}" method="GET">
+          <parameters>
+            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="fields" />
+            <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Authorization" />
+            <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json" />
+            <parameter enabled="true" direction="REQUEST" location="PATH" type="TEXT" name="customerId" />
+          </parameters>
+        </endpoint>
+      </path>
+      <endpoint name="getCustomers" path="/application/customers" method="GET">
+        <parameters>
+          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
+          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
+        </parameters>
+      </endpoint>
+    </path>
+  </path>
 </project>
