@@ -123,7 +123,7 @@ public class MainController implements Initializable {
 		application = ApplicationService.openApplication();
 		bookmarks = new HashSet<>();
 
-		loadProject(application.getLastProjectUri());
+		loadProject(URI.create(application.getLastProjectUri()));
 
 		if (application.getStyleFile() != null) {
 			setStyle(application.getStyleFile());
@@ -330,11 +330,11 @@ public class MainController implements Initializable {
 
 		final File file = fileChooser.showOpenDialog(null);
 		if (file != null) {
-			loadProject(file.toURI().toString());
+			loadProject(file.toURI());
 		}
 	}
 
-	private void loadProject(final String uri) {
+	private void loadProject(final URI uri) {
 
 		try {
 			final Project project = ProjectService.openProject(uri);
@@ -346,7 +346,7 @@ public class MainController implements Initializable {
 				sort(projectItem);
 
 				projectItem.setExpanded(true);
-				projectFile = new File(URI.create(uri));
+				projectFile = new File(uri);
 				file.setText(projectFile.getAbsolutePath());
 				application.setLastProjectUri(uri.toString());
 			}
@@ -379,7 +379,7 @@ public class MainController implements Initializable {
 				}
 			}
 			if (projectFile != null) {
-				ProjectService.saveProject(project, projectFile);
+				ProjectService.saveProject(project, projectFile.toURI());
 				application.setLastProjectUri(projectFile.toURI().toString());
 				file.setText(projectFile.getAbsolutePath());
 			}
@@ -401,7 +401,7 @@ public class MainController implements Initializable {
 			if (file != null) {
 				try {
 					Files.copy(projectFile.toPath(), file.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
-					loadProject(file.toURI().toString());
+					loadProject(file.toURI());
 				} catch (final IOException e) {
 					final Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Save as project");

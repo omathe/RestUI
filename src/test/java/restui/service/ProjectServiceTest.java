@@ -3,7 +3,6 @@ package restui.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import restui.model.Parameter;
@@ -13,40 +12,40 @@ import restui.model.Parameter.Type;
 
 public class ProjectServiceTest {
 
-	@Test
-	public void buildExchangesUri() {
-
-		String projectUri = "file:/home/olivier/.restui/project.xml";
-		String exchangesUri = ProjectService.buildExchangesUri(projectUri);
-		System.out.println(exchangesUri);
-		Assert.assertEquals("file:/home/olivier/.restui/project-exchanges.xml", exchangesUri);
-
-		projectUri = null;
-		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-		System.out.println(exchangesUri);
-		Assert.assertNull(exchangesUri);
-
-		projectUri = "";
-		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-		System.out.println(exchangesUri);
-		Assert.assertNull(exchangesUri);
-
-		projectUri = "no file separator";
-		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-		System.out.println(exchangesUri);
-		Assert.assertNull(exchangesUri);
-
-		projectUri = "file:/home/olivier/.restui/project";
-		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-		System.out.println(exchangesUri);
-		Assert.assertEquals("file:/home/olivier/.restui/project-exchanges", exchangesUri);
-
-		projectUri = "file:/home/olivier/.restui/";
-		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-		System.out.println(exchangesUri);
-		Assert.assertNull(exchangesUri);
-
-	}
+//	@Test
+//	public void buildExchangesUri() {
+//
+//		String projectUri = "file:/home/olivier/.restui/project.xml";
+//		String exchangesUri = ProjectService.buildExchangesUri(projectUri);
+//		System.out.println(exchangesUri);
+//		Assert.assertEquals("file:/home/olivier/.restui/project-exchanges.xml", exchangesUri);
+//
+//		projectUri = null;
+//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
+//		System.out.println(exchangesUri);
+//		Assert.assertNull(exchangesUri);
+//
+//		projectUri = "";
+//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
+//		System.out.println(exchangesUri);
+//		Assert.assertNull(exchangesUri);
+//
+//		projectUri = "no file separator";
+//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
+//		System.out.println(exchangesUri);
+//		Assert.assertNull(exchangesUri);
+//
+//		projectUri = "file:/home/olivier/.restui/project";
+//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
+//		System.out.println(exchangesUri);
+//		Assert.assertEquals("file:/home/olivier/.restui/project-exchanges", exchangesUri);
+//
+//		projectUri = "file:/home/olivier/.restui/";
+//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
+//		System.out.println(exchangesUri);
+//		Assert.assertNull(exchangesUri);
+//
+//	}
 
 	@Test
 	public void intersection() {

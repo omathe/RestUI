@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<exchanges>
+	<endpoint name="getCustomer">
+		<exchange name="OK" date="1481616772605" requestBodyType="RAW" status="200" duration="82">
+			<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="fields" value="name" />
+			<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Authorization" value="Bearer Aycuno156844==" />
+			<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="to_be_removed" value="toto" />
+		</exchange>
+		<exchange name="KO" date="1481616772999" requestBodyType="RAW" status="400" duration="23">
+			<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="fields" value="unknown" />
+		</exchange>
+	</endpoint>
+	<endpoint name="getFleet">
+		<exchange name="OK" date="1481616772605" requestBodyType="RAW" status="200" duration="82">
+			<parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageNumber" value="1" />
+			<parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json-kerlink"/>
+		</exchange>
+	</endpoint>
+</exchanges>

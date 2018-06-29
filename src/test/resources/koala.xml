@@ -6,6 +6,12 @@
   </baseUrls>
   <path name="application">
     <path name="fleets">
+      <endpoint name="getFleets" path="/application/fleets" method="GET">
+        <parameters>
+          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
+          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
+        </parameters>
+      </endpoint>
       <path name="{fleetId}">
         <endpoint name="getFleet" path="/application/fleets/{fleetId}" method="GET">
           <parameters>
@@ -14,12 +20,6 @@
           </parameters>
         </endpoint>
       </path>
-      <endpoint name="getFleets" path="/application/fleets" method="GET">
-        <parameters>
-          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
-          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
-        </parameters>
-      </endpoint>
     </path>
     <path name="customers">
       <path name="formData">
@@ -28,8 +28,21 @@
             <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="name" value="toto" />
             <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="age" value="10" />
             <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Content-Type" value="multipart/form-data" />
-            <parameter enabled="true" direction="REQUEST" location="BODY" type="TEXT" name="name" value="toto" />
-            <parameter enabled="true" direction="REQUEST" location="BODY" type="TEXT" name="age" value="10" />
+          </parameters>
+        </endpoint>
+      </path>
+      <endpoint name="getCustomers" path="/application/customers" method="GET">
+        <parameters>
+          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
+          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
+        </parameters>
+      </endpoint>
+      <path name="formData2">
+        <endpoint name="createCustomerformData2" path="/application/customers/formData2" method="POST">
+          <parameters>
+            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="name" value="toto" />
+            <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="age" value="10" />
+            <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Content-Type" value="multipart/form-data" />
           </parameters>
         </endpoint>
       </path>
@@ -50,12 +63,6 @@
           </parameters>
         </endpoint>
       </path>
-      <endpoint name="getCustomers" path="/application/customers" method="GET">
-        <parameters>
-          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="page" />
-          <parameter enabled="true" direction="REQUEST" location="QUERY" type="TEXT" name="pageSize" />
-        </parameters>
-      </endpoint>
     </path>
   </path>
 </project>

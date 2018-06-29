@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -16,8 +16,6 @@ import org.jdom2.output.XMLOutputter;
 import restui.exception.NotFoundException;
 import restui.model.BaseUrl;
 import restui.model.Endpoint;
-import restui.model.Exchange;
-import restui.model.Exchange.BodyType;
 import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
@@ -28,19 +26,19 @@ import restui.model.Project;
 
 public class ProjectService {
 
-	public static Project openProject(final String uri) throws NotFoundException {
+	public static Project openProject(final URI uri) throws NotFoundException {
 
 		Project project = null;
-		if (uri != null && !uri.isEmpty()) {
 
-			final File file = new File(URI.create(uri));
+			final File file = new File(uri);
 			if (!file.exists()) {
 				throw new NotFoundException("file", file.getAbsolutePath());
 			}
 			project = new Project("");
 			final SAXBuilder sxb = new SAXBuilder();
 			try {
-				final Document document = sxb.build(uri);
+				System.err.println(uri.toString());
+				final Document document = sxb.build(uri.toString());
 				// project
 				final Element element = document.getRootElement();
 				project = (Project) buildItem(null, element);
@@ -49,71 +47,10 @@ public class ProjectService {
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
-			// load exchanges file
-			loadExchanges(uri, project);
-		}
+
+			// load exchanges
+			ExchangesService.loadExchanges(buildExchangesUri(uri), project);
 		return project;
-	}
-
-	private static void loadExchanges(String uri, Project project) {
-
-		final SAXBuilder sxb = new SAXBuilder();
-		try {
-
-			final Document document = sxb.build(buildExchangesUri(uri));
-
-			// exchanges
-			final Element exchangesElement = document.getRootElement();
-			if (exchangesElement != null) {
-				for (final Element endpointElement : exchangesElement.getChildren()) {
-					// endpoints
-					String endpointName = endpointElement.getAttributeValue("name");
-
-					// searching the endpoint in the project
-					Optional<Endpoint> optionalEndpoint = project.getAllChildren().filter(item -> item instanceof Endpoint && item.getName().equalsIgnoreCase(endpointName)).map(item -> (Endpoint) item).findFirst();
-
-					if (optionalEndpoint.isPresent()) {
-						Endpoint endpoint = optionalEndpoint.get();
-
-						// exchanges of the enpoint
-						for (final Element exchangeElement : endpointElement.getChildren()) {
-							String name = exchangeElement.getAttributeValue("name");
-							String date = exchangeElement.getAttributeValue("date");
-							String requestBodyType = exchangeElement.getAttributeValue("requestBodyType");
-							String status = exchangeElement.getAttributeValue("status");
-							String duration = exchangeElement.getAttributeValue("duration");
-							Exchange exchange = new Exchange(endpointName, name, Long.valueOf(date), Integer.valueOf(duration), Integer.valueOf(status), BodyType.valueOf(requestBodyType));
-							for (final Element parameterElement : exchangeElement.getChildren()) {
-								String enabled = parameterElement.getAttributeValue("enabled");
-								String direction = parameterElement.getAttributeValue("direction");
-								String location = parameterElement.getAttributeValue("location");
-								String type = parameterElement.getAttributeValue("type");
-								String parameterName = parameterElement.getAttributeValue("name");
-								String value = parameterElement.getAttributeValue("value");
-								Parameter parameter = new Parameter(Boolean.valueOf(enabled), Direction.valueOf(direction), Location.valueOf(location), Type.valueOf(type), parameterName, value);
-
-								// add parameter to exchange only if endpoint contains it
-								if (endpoint.containsParameter(parameter)) {
-									exchange.addParameter(parameter);
-								}
-							}
-							// retrieve the endpoint parameters that are not in the exchange
-							endpoint.getParameters().stream().filter(p -> !exchange.containsParameter(p)).forEach(p -> exchange.addParameter(p.duplicate()));
-
-							if (!exchange.isEmpty()) {
-								endpoint.addExchange(exchange);
-							}
-						}
-					}
-				}
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void saveExchanges(final Project project, final File file) {
-		// TODO
 	}
 
 	private static void browseXml(final Item item, final Element element) {
@@ -124,7 +61,7 @@ public class ProjectService {
 		}
 	}
 
-	public static void saveProject(final Project project, final File file) {
+	public static void saveProject(final Project project, final URI uri) {
 
 		if (project != null) {
 			final Element projectElement = buildElement(null, project);
@@ -134,7 +71,13 @@ public class ProjectService {
 			final Document document = new Document(projectElement);
 
 			try {
-				xmlOutputter.output(document, new FileOutputStream(file));
+				xmlOutputter.output(document, new FileOutputStream(new File(uri)));
+
+				// save the exchanges
+				System.out.println(uri);
+//				ExchangesService.saveExchanges(project, new File("/media/DATA/dev/workspaceJ9/RestUI/src/test/resources/exc.xml"));
+				ExchangesService.saveExchanges(project, buildExchangesUri(uri));
+
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
@@ -149,7 +92,7 @@ public class ProjectService {
 		}
 	}
 
-	// Object to XML
+	// Project to XML
 	private static Element buildElement(final Element parent, final Object object) {
 
 		Element element = null;
@@ -193,7 +136,9 @@ public class ProjectService {
 			// parameters
 			if (endpoint.hasParameters()) {
 				final Element elementParameters = new Element("parameters");
-				for (final Parameter parameter : endpoint.getParameters()) {
+				// for (final Parameter parameter : endpoint.getParameters()) {
+				for (final Parameter parameter : endpoint.getParameters().stream()
+						.filter(p -> p.isRequestParameter() && (p.isHeaderParameter() || p.isPathParameter() || p.isQueryParameter())).collect(Collectors.toList())) {
 					final Element elementParameter = new Element("parameter");
 					elementParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
 					elementParameter.setAttribute(new Attribute("direction", parameter.getDirection()));
@@ -216,7 +161,7 @@ public class ProjectService {
 		return element;
 	}
 
-	// XML to object
+	// XML to Project
 	private static Item buildItem(final Item parent, final Element element) {
 
 		if (element.getName().equalsIgnoreCase(Project.class.getSimpleName())) {
@@ -262,14 +207,14 @@ public class ProjectService {
 		return null;
 	}
 
-	public static String buildExchangesUri(String projectUri) {
+	public static URI buildExchangesUri(URI projectUri) {
 		String exchangesUri = null;
 
-		if (projectUri != null && !projectUri.isEmpty()) {
-			int index = projectUri.lastIndexOf(File.separator);
+			String uri = projectUri.toString();
+			int index = uri.lastIndexOf(File.separator);
 			if (index != -1) {
-				String path = projectUri.substring(0, index);
-				String fileName = projectUri.substring(index + 1, projectUri.length());
+				String path = uri.substring(0, index);
+				String fileName = uri.substring(index + 1, uri.length());
 				if (!fileName.isEmpty()) {
 					String name = null;
 					String extension = null;
@@ -286,8 +231,8 @@ public class ProjectService {
 					exchangesUri = path + File.separator + exchangeFileName;
 				}
 			}
-		}
-		return exchangesUri;
+		return URI.create(exchangesUri);
 	}
+
 
 }
