@@ -62,6 +62,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -83,10 +84,6 @@ import restui.service.RestClient;
 import restui.service.Tools;
 
 public class EndPointController extends AbstractController implements Initializable {
-
-	private String baseUrl;
-	private Endpoint endpoint;
-	private Exchange currentExchange;
 
 	@FXML
 	private SplitPane requestResponseSplitPane;
@@ -172,6 +169,31 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	private Circle statusCircle;
+
+	// **************************************************************************************************************************
+	private String baseUrl;
+	private Endpoint endpoint;
+	private Exchange currentExchange;
+	private int indexOfEndpointSpecificationHBox;
+	private int vBoxExecuteIndex;
+
+	@FXML
+	private HBox endpointSpecificationHBox;
+
+	@FXML
+	private VBox endpointVBox;
+
+	@FXML
+	private RadioButton radioButtonExecutionMode;
+
+	@FXML
+	private AnchorPane anchorPaneExecute;
+
+	@FXML
+	private VBox vBoxExecute;
+
+	@FXML
+	private SplitPane sp;
 
 	public EndPointController() {
 		super();
@@ -358,6 +380,12 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		endpoint = (Endpoint) this.treeItem.getValue();
+		if (endpoint.hasExchanges()) {
+			modeExecution(null);
+		} else {
+			modeSpecification(null);
+		}
+
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
@@ -397,7 +425,7 @@ public class EndPointController extends AbstractController implements Initializa
 			currentExchange = new Exchange("", Instant.now().toEpochMilli());
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
-			endpoint.addExchange(currentExchange);
+			//endpoint.addExchange(currentExchange);
 		} else {
 			exchanges.getSelectionModel().select(0); // select first exchange
 			Exchange firstExchange = exchanges.getSelectionModel().getSelectedItem();
@@ -806,6 +834,36 @@ public class EndPointController extends AbstractController implements Initializa
 				refreshEndpointParameters();
 			}
 		}
+	}
+
+	@FXML
+	protected void modeSpecification(final ActionEvent event) {
+
+		// add specification
+		if (!endpointVBox.getChildren().contains(endpointSpecificationHBox)) {
+			endpointVBox.getChildren().add(indexOfEndpointSpecificationHBox, endpointSpecificationHBox);
+			indexOfEndpointSpecificationHBox = endpointVBox.getChildren().indexOf(endpointSpecificationHBox);
+		}
+		// remove execute
+
+		//vBoxExecuteIndex = anchorPaneExecute.getChildren().indexOf(vBoxExecute);
+		//anchorPaneExecute.getChildren().remove(vBoxExecute);
+	}
+
+	@FXML
+	protected void modeExecution(final ActionEvent event) {
+
+		radioButtonExecutionMode.setSelected(true);
+
+		// add execute
+		if (!anchorPaneExecute.getChildren().contains(vBoxExecute)) {
+			anchorPaneExecute.getChildren().add(vBoxExecuteIndex, vBoxExecute);
+			vBoxExecuteIndex = anchorPaneExecute.getChildren().indexOf(vBoxExecute);
+		}
+		// remove specification
+		indexOfEndpointSpecificationHBox = endpointVBox.getChildren().indexOf(endpointSpecificationHBox);
+		endpointVBox.getChildren().remove(endpointSpecificationHBox);
+
 	}
 
 }

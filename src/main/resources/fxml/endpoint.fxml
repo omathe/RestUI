@@ -25,13 +25,30 @@
 	<children>
 		<VBox HBox.hgrow="ALWAYS">
 			<children>
-				<SplitPane dividerPositions="0.8" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+				<SplitPane fx:id="sp" dividerPositions="0.8" orientation="VERTICAL" VBox.vgrow="ALWAYS">
 					<items>
 						<AnchorPane>
 							<children>
-								<VBox prefHeight="315.0" prefWidth="812.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<VBox fx:id="endpointVBox" prefHeight="315.0" prefWidth="812.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<children>
-                              <HBox alignment="CENTER_LEFT" minHeight="30.0" spacing="5.0" VBox.vgrow="NEVER">
+                              <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+                                 <children>
+                                    <Label text="Mode" />
+                                    <RadioButton mnemonicParsing="false" onAction="#modeSpecification" selected="true" text="Specification">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="endpointMode" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="radioButtonExecutionMode" mnemonicParsing="false" onAction="#modeExecution" text="Execution" toggleGroup="$endpointMode" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox fx:id="endpointSpecificationHBox" alignment="CENTER_LEFT" disable="true" minHeight="30.0" spacing="5.0" VBox.vgrow="NEVER">
                                  <children>
                                     <Label fx:id="endpointName" text="Endpoint name" HBox.hgrow="NEVER">
                                        <font>
@@ -202,9 +219,9 @@
 								</VBox>
 							</children>
 						</AnchorPane>
-						<AnchorPane>
+						<AnchorPane fx:id="anchorPaneExecute">
 							<children>
-								<VBox prefHeight="899.0" prefWidth="812.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<VBox fx:id="vBoxExecute" prefHeight="899.0" prefWidth="812.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<children>
 																						<HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
 																							<children>
