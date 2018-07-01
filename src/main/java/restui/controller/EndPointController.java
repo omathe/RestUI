@@ -181,19 +181,10 @@ public class EndPointController extends AbstractController implements Initializa
 	private HBox endpointSpecificationHBox;
 
 	@FXML
-	private VBox endpointVBox;
-
-	@FXML
 	private RadioButton radioButtonExecutionMode;
 
 	@FXML
 	private AnchorPane anchorPaneExecute;
-
-	@FXML
-	private VBox vBoxExecute;
-
-	@FXML
-	private SplitPane sp;
 
 	public EndPointController() {
 		super();
@@ -839,15 +830,10 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void modeSpecification(final ActionEvent event) {
 
-		// add specification
-		if (!endpointVBox.getChildren().contains(endpointSpecificationHBox)) {
-			endpointVBox.getChildren().add(indexOfEndpointSpecificationHBox, endpointSpecificationHBox);
-			indexOfEndpointSpecificationHBox = endpointVBox.getChildren().indexOf(endpointSpecificationHBox);
-		}
-		// remove execute
-
-		//vBoxExecuteIndex = anchorPaneExecute.getChildren().indexOf(vBoxExecute);
-		//anchorPaneExecute.getChildren().remove(vBoxExecute);
+		// enable specification
+		endpointSpecificationHBox.setDisable(false);
+		// disable execute
+		anchorPaneExecute.setDisable(true);
 	}
 
 	@FXML
@@ -855,15 +841,10 @@ public class EndPointController extends AbstractController implements Initializa
 
 		radioButtonExecutionMode.setSelected(true);
 
-		// add execute
-		if (!anchorPaneExecute.getChildren().contains(vBoxExecute)) {
-			anchorPaneExecute.getChildren().add(vBoxExecuteIndex, vBoxExecute);
-			vBoxExecuteIndex = anchorPaneExecute.getChildren().indexOf(vBoxExecute);
-		}
-		// remove specification
-		indexOfEndpointSpecificationHBox = endpointVBox.getChildren().indexOf(endpointSpecificationHBox);
-		endpointVBox.getChildren().remove(endpointSpecificationHBox);
-
+		// enable execute
+		anchorPaneExecute.setDisable(false);
+		// disable specification
+		endpointSpecificationHBox.setDisable(true);
 	}
 
 }
