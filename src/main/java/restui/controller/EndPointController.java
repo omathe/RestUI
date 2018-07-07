@@ -382,8 +382,13 @@ public class EndPointController extends AbstractController implements Initializa
 		method.valueProperty().bindBidirectional(endpoint.methodProperty());
 
 		// exchanges
-		exchangeNameColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("name"));
 		exchangeNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		exchangeNameColumn.setCellValueFactory(exchange -> {
+
+			// TODO check duplicate name
+
+			return exchange.getValue().nameProperty();
+		});
 
 		exchangeDateColumn.setCellFactory(column -> {
 			return new TableCell<Exchange, Long>() {
@@ -411,10 +416,7 @@ public class EndPointController extends AbstractController implements Initializa
 		exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
 
 		if (endpointExchanges.isEmpty()) {
-			currentExchange = new Exchange("", Instant.now().toEpochMilli());
-			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
-			currentExchange.addParameters(endpointRequestParameters);
-			// endpoint.addExchange(currentExchange);
+			createCurrentExchange();
 		} else {
 			exchanges.getSelectionModel().select(0); // select first exchange
 			Exchange firstExchange = exchanges.getSelectionModel().getSelectedItem();
@@ -470,6 +472,11 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	protected void execute(final ActionEvent event) {
+
+		Optional<Exchange> optionalExchange = endpoint.findExchangeByName("");
+		if (!optionalExchange.isPresent()) {
+			createCurrentExchange();
+		}
 
 		final long t0 = System.currentTimeMillis();
 
@@ -725,7 +732,6 @@ public class EndPointController extends AbstractController implements Initializa
 		endpointSpecificationHBox.setDisable(true);
 
 		if (!endpoint.hasExchanges()) {
-			System.out.println("no exchanges");
 			currentExchange = new Exchange("", Instant.now().toEpochMilli());
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
@@ -874,6 +880,14 @@ public class EndPointController extends AbstractController implements Initializa
 			currentExchange.setUri(valuedUri);
 		}
 		execute.setDisable(!validUri);
+	}
+
+	private void createCurrentExchange() {
+
+		currentExchange = new Exchange("", Instant.now().toEpochMilli());
+		List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
+		currentExchange.addParameters(endpointRequestParameters);
+		display();
 	}
 
 }
