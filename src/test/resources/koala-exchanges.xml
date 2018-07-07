@@ -4,7 +4,7 @@
   <endpoint name="getFleet">
     <exchange name="OK" date="1481616772605" requestBodyType="RAW" status="200" duration="82">
       <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json-kerlink" />
-      <parameter enabled="true" direction="REQUEST" location="PATH" type="TEXT" name="fleetId" />
+      <parameter enabled="true" direction="REQUEST" location="PATH" type="TEXT" name="fleetId"/>
     </exchange>
   </endpoint>
   <endpoint name="createCustomerformData" />

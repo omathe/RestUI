@@ -174,7 +174,7 @@
 																								<Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
 																							</padding>
 																						</Label>
-																						<TableView fx:id="responseHeaders" VBox.vgrow="ALWAYS">
+																						<TableView fx:id="responseParameters" VBox.vgrow="ALWAYS">
 																							<columns>
 																								<TableColumn fx:id="headerNameColumn" editable="false" prefWidth="130.0" text="Name" />
 																								<TableColumn fx:id="headerValueColumn" editable="false" prefWidth="250.0" text="Value" />

@@ -132,7 +132,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 	// Response
 	@FXML
-	private TableView<Parameter> responseHeaders;
+	private TableView<Parameter> responseParameters;
 
 	@FXML
 	private TableColumn<Parameter, String> headerNameColumn;
@@ -174,8 +174,6 @@ public class EndPointController extends AbstractController implements Initializa
 	private String baseUrl;
 	private Endpoint endpoint;
 	private Exchange currentExchange;
-	private int indexOfEndpointSpecificationHBox;
-	private int vBoxExecuteIndex;
 
 	@FXML
 	private HBox endpointSpecificationHBox;
@@ -306,7 +304,7 @@ public class EndPointController extends AbstractController implements Initializa
 			return parameter.getValue().valueProperty();
 		});
 
-		// response headers
+		// response parameters
 		headerNameColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("name"));
 
 		headerValueColumn.setCellValueFactory(new PropertyValueFactory<Parameter, String>("value"));
@@ -315,12 +313,12 @@ public class EndPointController extends AbstractController implements Initializa
 		final ContextMenu responseHeadersContextMenu = new ContextMenu();
 		final MenuItem responseHeadersContextMenuItemCopy = new MenuItem("Copy to clipboard");
 		responseHeadersContextMenu.getItems().add(responseHeadersContextMenuItemCopy);
-		responseHeaders.setContextMenu(responseHeadersContextMenu);
+		responseParameters.setContextMenu(responseHeadersContextMenu);
 
 		responseHeadersContextMenuItemCopy.setOnAction(e -> {
-			final Parameter parameter = responseHeaders.getSelectionModel().getSelectedItem();
+			final Parameter parameter = responseParameters.getSelectionModel().getSelectedItem();
 			@SuppressWarnings("unchecked")
-			final TablePosition<Parameter, ?> position = responseHeaders.getFocusModel().getFocusedCell();
+			final TablePosition<Parameter, ?> position = responseParameters.getFocusModel().getFocusedCell();
 
 			final TableColumn<Parameter, ?> column = position.getTableColumn();
 			final String data = (String) column.getCellObservableValue(parameter).getValue();
@@ -355,7 +353,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 			if (optionalExchange.isPresent()) {
 				currentExchange = optionalExchange.get().duplicate("");
-				refreshEndpointParameters();
+				display();
 			}
 		});
 
@@ -416,47 +414,19 @@ public class EndPointController extends AbstractController implements Initializa
 			currentExchange = new Exchange("", Instant.now().toEpochMilli());
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
-			//endpoint.addExchange(currentExchange);
+			// endpoint.addExchange(currentExchange);
 		} else {
 			exchanges.getSelectionModel().select(0); // select first exchange
 			Exchange firstExchange = exchanges.getSelectionModel().getSelectedItem();
 			currentExchange = firstExchange;
 		}
-		refreshEndpointParameters();
+		display();
 	}
 
 	public Exchange getCurrentExchange() {
 		return currentExchange;
 	}
 
-	private void refreshEndpointParameters() {
-
-		// request parameters
-		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
-		requestParameters.refresh();
-
-		// response parameters
-		responseHeaders.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
-		responseHeaders.refresh();
-
-		// request body
-		displayRequestBody();
-
-		// response body
-		displayResponseBody();
-
-		// response status
-		responseStatus.setText(currentExchange.getStatus().toString());
-		displayStatusTooltip();
-
-		// response duration
-		responseDuration.setText(currentExchange.getDuration().toString());
-
-		// status circle
-		displayStatusCircle(currentExchange);
-
-		buildUri();
-	}
 
 	/*
 	 * private void buildPathParameters() {
@@ -485,7 +455,7 @@ public class EndPointController extends AbstractController implements Initializa
 		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 		final Exchange duplicate = exchange.duplicate(exchange.getName() + " (copy)");
 		endpoint.addExchange(duplicate);
-		refreshEndpointParameters();
+		display();
 	}
 
 	private void deleteExchange(final Exchange exchange) {
@@ -494,7 +464,7 @@ public class EndPointController extends AbstractController implements Initializa
 		if (response.equals(ButtonType.OK)) {
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
-			refreshEndpointParameters();
+			display();
 		}
 	}
 
@@ -573,7 +543,7 @@ public class EndPointController extends AbstractController implements Initializa
 		currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
 		currentExchange.setDate(Instant.now().toEpochMilli());
 
-		refreshEndpointParameters();
+		display();
 
 		saveCurrentExchange();
 
@@ -599,100 +569,6 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 		}
 		return tokens;
-	}
-
-	private void buildUri() {
-
-		boolean validUri = true;
-
-		String valuedUri = baseUrl + path.getText();
-		Set<String> queryParams = new HashSet<String>();
-		if (!valuedUri.toLowerCase().startsWith("http")) {
-			validUri = false;
-		}
-		for (Parameter parameter : currentExchange.getParameters()) {
-			if (parameter.isRequestParameter() && parameter.isPathParameter()) {
-				if (!parameter.getEnabled() || !parameter.isValid()) {
-					validUri = false;
-					continue;
-				} else {
-					valuedUri = valuedUri.replace(Path.ID_PREFIX + parameter.getName() + Path.ID_SUFFIX, parameter.getValue());
-				}
-			} else if (parameter.isQueryParameter()) {
-				if (!parameter.isValid()) {
-					validUri = false;
-				} else if (parameter.getEnabled()) {
-					queryParams.add(parameter.getName() + "=" + parameter.getValue());
-				}
-			}
-		}
-		if (!queryParams.isEmpty()) {
-			valuedUri += "?" + String.join("&", queryParams);
-		}
-		uri.setText(valuedUri);
-		if (validUri) {
-			currentExchange.setUri(valuedUri);
-		}
-		execute.setDisable(!validUri);
-	}
-
-	private void displayRequestBody() {
-
-		if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
-			rawBody.setSelected(true);
-			rawBodySelected(null);
-		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
-			formEncodedBody.setSelected(true);
-			formEncodedBodySelected(null);
-		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.FORM_DATA)) {
-			formDataBody.setSelected(true);
-			formDataBodySelected(null);
-		}
-
-	}
-
-	private void displayResponseBody() {
-
-		responseBody.clear();
-
-		currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Type").ifPresent(p -> {
-
-			String body = "";
-			if (p.getValue().toLowerCase().contains("json")) {
-				final ObjectMapper mapper = new ObjectMapper();
-				try {
-					body = currentExchange.getResponseBody();
-					if (body != null) {
-						final Object json = mapper.readValue(body, Object.class);
-						responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
-					}
-				} catch (final IOException e1) {
-					e1.printStackTrace();
-				}
-			} else if (p.getValue().contains("xml")) {
-				final StringWriter stringWriter = new StringWriter();
-				try {
-					final Source xmlInput = new StreamSource(new StringReader(body));
-					final StreamResult xmlOutput = new StreamResult(stringWriter);
-					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-					final Transformer transformer = transformerFactory.newTransformer();
-					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-					transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
-					transformer.transform(xmlInput, xmlOutput);
-					responseBody.setText(xmlOutput.getWriter().toString());
-				} catch (final Exception e) {
-					e.printStackTrace();
-				} finally {
-					try {
-						stringWriter.close();
-					} catch (final IOException e) {
-						e.printStackTrace();
-					}
-				}
-			} else {
-				responseBody.setText(body);
-			}
-		});
 	}
 
 	private void displayStatusCircle(final Exchange exchange) {
@@ -812,7 +688,7 @@ public class EndPointController extends AbstractController implements Initializa
 		// add the parameter to the selected exchange if it exists
 		currentExchange.addParameter(parameter);
 
-		refreshEndpointParameters();
+		display();
 	}
 
 	public void deleteParameters(final List<Parameter> parameters) {
@@ -822,7 +698,7 @@ public class EndPointController extends AbstractController implements Initializa
 			final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
 			if (response.equals(ButtonType.OK)) {
 				currentExchange.removeParameters(parameters);
-				refreshEndpointParameters();
+				display();
 			}
 		}
 	}
@@ -834,6 +710,8 @@ public class EndPointController extends AbstractController implements Initializa
 		endpointSpecificationHBox.setDisable(false);
 		// disable execute
 		anchorPaneExecute.setDisable(true);
+
+		display();
 	}
 
 	@FXML
@@ -845,6 +723,157 @@ public class EndPointController extends AbstractController implements Initializa
 		anchorPaneExecute.setDisable(false);
 		// disable specification
 		endpointSpecificationHBox.setDisable(true);
+
+		if (!endpoint.hasExchanges()) {
+			System.out.println("no exchanges");
+			currentExchange = new Exchange("", Instant.now().toEpochMilli());
+			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
+			currentExchange.addParameters(endpointRequestParameters);
+			endpoint.addExchange(currentExchange);
+			display();
+		}
+	}
+
+
+	private void display() {
+
+		if (radioButtonExecutionMode.isSelected()) {
+
+			displayExecutionMode();
+
+		} else {
+			displaySpecificationMode();
+		}
+	}
+
+	private void displaySpecificationMode() {
+
+		// request parameters
+		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters()).filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
+		requestParameters.refresh();
+
+		// response body
+		responseBody.clear();
+
+		buildUri();
+	}
+
+	private void displayExecutionMode() {
+
+		// request parameters
+		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
+		requestParameters.refresh();
+
+		// response parameters
+		responseParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
+		responseParameters.refresh();
+
+		// request body
+		if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
+			rawBody.setSelected(true);
+			rawBodySelected(null);
+		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
+			formEncodedBody.setSelected(true);
+			formEncodedBodySelected(null);
+		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.FORM_DATA)) {
+			formDataBody.setSelected(true);
+			formDataBodySelected(null);
+		}
+
+		buildUri();
+
+		// response body
+		displayResponseBody();
+
+		// response status
+		responseStatus.setText(currentExchange.getStatus().toString());
+		displayStatusTooltip();
+
+		// response duration
+		responseDuration.setText(currentExchange.getDuration().toString());
+
+		// status circle
+		displayStatusCircle(currentExchange);
+	}
+
+	private void displayResponseBody() {
+
+		responseBody.clear();
+
+		currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Type").ifPresent(p -> {
+
+			String body = "";
+			if (p.getValue().toLowerCase().contains("json")) {
+				final ObjectMapper mapper = new ObjectMapper();
+				try {
+					body = currentExchange.getResponseBody();
+					if (body != null) {
+						final Object json = mapper.readValue(body, Object.class);
+						responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
+					}
+				} catch (final IOException e1) {
+					e1.printStackTrace();
+				}
+			} else if (p.getValue().contains("xml")) {
+				final StringWriter stringWriter = new StringWriter();
+				try {
+					final Source xmlInput = new StreamSource(new StringReader(body));
+					final StreamResult xmlOutput = new StreamResult(stringWriter);
+					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+					final Transformer transformer = transformerFactory.newTransformer();
+					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+					transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
+					transformer.transform(xmlInput, xmlOutput);
+					responseBody.setText(xmlOutput.getWriter().toString());
+				} catch (final Exception e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						stringWriter.close();
+					} catch (final IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} else {
+				responseBody.setText(body);
+			}
+		});
+	}
+
+	private void buildUri() {
+
+		boolean validUri = true;
+
+		String valuedUri = baseUrl + path.getText();
+		Set<String> queryParams = new HashSet<String>();
+		if (!valuedUri.toLowerCase().startsWith("http")) {
+			validUri = false;
+		}
+
+		for (Parameter parameter : requestParameters.getItems()) {
+			if (parameter.isRequestParameter() && parameter.isPathParameter()) {
+				if (!parameter.getEnabled() || !parameter.isValid()) {
+					validUri = false;
+					continue;
+				} else {
+					valuedUri = valuedUri.replace(Path.ID_PREFIX + parameter.getName() + Path.ID_SUFFIX, parameter.getValue());
+				}
+			} else if (parameter.isQueryParameter()) {
+				if (!parameter.isValid()) {
+					validUri = false;
+				} else if (parameter.getEnabled()) {
+					queryParams.add(parameter.getName() + "=" + parameter.getValue());
+				}
+			}
+		}
+		if (!queryParams.isEmpty()) {
+			valuedUri += "?" + String.join("&", queryParams);
+		}
+		uri.setText(valuedUri);
+		if (validUri && radioButtonExecutionMode.isSelected()) {
+			currentExchange.setUri(valuedUri);
+		}
+		execute.setDisable(!validUri);
 	}
 
 }
