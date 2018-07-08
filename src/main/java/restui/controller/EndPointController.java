@@ -48,6 +48,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -383,11 +384,30 @@ public class EndPointController extends AbstractController implements Initializa
 
 		// exchanges
 		exchangeNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		exchangeNameColumn.setCellValueFactory(exchange -> {
+		exchangeNameColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("name"));
 
-			// TODO check duplicate name
+		exchangeNameColumn.setOnEditCommit(new EventHandler<CellEditEvent<Exchange, String>>() {
 
-			return exchange.getValue().nameProperty();
+			@Override
+			public void handle(CellEditEvent<Exchange, String> event) {
+				Exchange exchange = event.getTableView().getItems().get(event.getTablePosition().getRow());
+
+				Optional<Exchange> optionalExchange = endpoint.findExchangeByName(event.getNewValue());
+				if (optionalExchange.isPresent()) {
+					final ButtonType response = AlertBuilder.yesNo("Exchange already exists", "Replace the existing exchange '" + event.getNewValue() + "' ?");
+					if (response.getButtonData().equals(ButtonType.YES.getButtonData())) {
+						endpoint.removeExchange(optionalExchange.get());
+						exchange.setName(event.getNewValue());
+					} else {
+						exchange.setName(event.getOldValue());
+						// workaround to refresh the table
+						exchanges.getColumns().get(0).setVisible(false);
+						exchanges.getColumns().get(0).setVisible(true);
+					}
+				} else {
+					exchange.setName(event.getNewValue());
+				}
+			}
 		});
 
 		exchangeDateColumn.setCellFactory(column -> {
@@ -428,7 +448,6 @@ public class EndPointController extends AbstractController implements Initializa
 	public Exchange getCurrentExchange() {
 		return currentExchange;
 	}
-
 
 	/*
 	 * private void buildPathParameters() {
@@ -739,7 +758,6 @@ public class EndPointController extends AbstractController implements Initializa
 			display();
 		}
 	}
-
 
 	private void display() {
 
