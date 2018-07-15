@@ -120,14 +120,18 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
+		// initialization of the application
+		ApplicationService.init();
+
 		application = ApplicationService.openApplication();
-		bookmarks = new HashSet<>();
 
 		loadProject(URI.create(application.getLastProjectUri()));
 
 		if (application.getStyleFile() != null) {
 			setStyle(application.getStyleFile());
 		}
+
+		bookmarks = new HashSet<>();
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		treeView.setEditable(true);

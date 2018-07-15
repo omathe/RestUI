@@ -846,7 +846,7 @@ public class EndPointController extends AbstractController implements Initializa
 					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 					final Transformer transformer = transformerFactory.newTransformer();
 					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-					transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
+					//transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
 					transformer.transform(xmlInput, xmlOutput);
 					responseBody.setText(xmlOutput.getWriter().toString());
 				} catch (final Exception e) {

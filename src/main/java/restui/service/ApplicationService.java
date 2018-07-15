@@ -1,7 +1,6 @@
 package restui.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -17,9 +16,8 @@ import restui.model.Application;
 public class ApplicationService {
 
 	private static final String APPLICATION_HOME = "restui";
-	private static final String APPLICATION_XML = "application.xml";
-	private static final String APPLICATION_DEFAULT_STYLE_DIRECTORY = "style/default";
-	private static final String APPLICATION_DEFAULT_STYLE_SHEET = "stylesheet.css";
+	private static final String APPLICATION_FILE = getApplicationHome() + File.separator + "application.xml";
+	private static final String DEFAULT_STYLE_URI = "file://" + getApplicationHome() + "/style/default/stylesheet.css";
 
 	public static String getApplicationHome() {
 
@@ -27,30 +25,45 @@ public class ApplicationService {
 		return userHome + File.separator + getPrefix() + APPLICATION_HOME;
 	}
 
+	public static void init() {
+
+		// create application home directory if not exists
+		File applicationDirectory = new File(getApplicationHome());
+		if (!applicationDirectory.exists()) {
+			applicationDirectory.mkdir();
+		}
+
+		// create default style if not exists
+		try {
+			ResourceHelper.copyResource("/style", getApplicationHome());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// create application.xml if not exists
+		File applicationFile = new File(APPLICATION_FILE);
+		if (!applicationFile.exists()) {
+			createDefaultApplicationFile();
+		}
+	}
+
 	public static Application openApplication() {
 
-		createApplicationDefaultSettings();
+		Application application = new Application();
 
-		final Application application = new Application();
-
-		final SAXBuilder sxb = new SAXBuilder();
+		SAXBuilder saxBuilder = new SAXBuilder();
 
 		try {
-			final Document document = sxb.build(ApplicationService.getApplicationHome() + File.separator + APPLICATION_XML);
-			// application
-			final Element applicationElement = document.getRootElement();
-			final Element currentProjectElement = applicationElement.getChild("lastProjectUri");
-			application.setLastProjectUri(currentProjectElement.getValue());
-
-			final Element styleFileElement = applicationElement.getChild("styleFile");
-			if (styleFileElement.getValue().isEmpty()) {
-				application.setStyleFile("file:" + getApplicationHome() + File.separator + APPLICATION_DEFAULT_STYLE_DIRECTORY + File.separator + APPLICATION_DEFAULT_STYLE_SHEET);
+			Document document = saxBuilder.build(APPLICATION_FILE);
+			Element applicationElement = document.getRootElement();
+			Element lastProjectUriElement = applicationElement.getChild("lastProjectUri");
+			application.setLastProjectUri(lastProjectUriElement.getValue());
+			Element styleFileElement = applicationElement.getChild("styleFile");
+			if (styleFileElement == null || styleFileElement.getValue().isEmpty()) {
+				application.setStyleFile(DEFAULT_STYLE_URI);
 			} else {
 				application.setStyleFile(styleFileElement.getValue());
 			}
-
-		} catch (final FileNotFoundException e) {
-			saveApplication(null);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -59,45 +72,25 @@ public class ApplicationService {
 
 	public static void saveApplication(final Application application) {
 
-		Application app = application;
-		if (application == null) {
-			app = new Application();
-			app.setStyleFile(getApplicationHome() + "/style/default/stylesheet.css");
-		}
+		if (application != null) {
+			Element rootElement = new Element("application");
 
-		final Element rootElement = new Element("application");
+			Element lastProjectUriElement = new Element("lastProjectUri");
+			lastProjectUriElement.addContent(application.getLastProjectUri());
+			rootElement.addContent(lastProjectUriElement);
 
-		final Element currentProjectElement = new Element("lastProjectUri");
-		currentProjectElement.addContent(app.getLastProjectUri());
-		rootElement.addContent(currentProjectElement);
+			Element styleFileElement = new Element("styleFile");
+			styleFileElement.addContent(application.getStyleFile());
+			rootElement.addContent(styleFileElement);
 
-		final Element styleFileElement = new Element("styleFile");
-		styleFileElement.addContent(app.getStyleFile());
-		rootElement.addContent(styleFileElement);
-
-		final XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-		final Document document = new Document(rootElement);
-		final File projectFile = new File(ApplicationService.getApplicationHome() + File.separator + APPLICATION_XML);
-		try {
-			xmlOutputter.output(document, new FileOutputStream(projectFile));
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void createApplicationDefaultSettings() {
-
-		// create application home directory
-		final File applicationDirectory = new File(getApplicationHome());
-		if (!applicationDirectory.exists()) {
-			applicationDirectory.mkdir();
-		}
-
-		// copy stylesheet.css if not exists
-		try {
-			ResourceHelper.copyResource("/style", getApplicationHome());
-		} catch (final Exception e) {
-			e.printStackTrace();
+			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+			Document document = new Document(rootElement);
+			File applicationFile = new File(APPLICATION_FILE);
+			try {
+				xmlOutputter.output(document, new FileOutputStream(applicationFile));
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -111,6 +104,25 @@ public class ApplicationService {
 			prefix = ".";
 		}
 		return prefix;
+	}
+
+	private static void createDefaultApplicationFile() {
+
+		Element rootElement = new Element("application");
+		Element lastProjectUriElement = new Element("lastProjectUri");
+		rootElement.addContent(lastProjectUriElement);
+		Element styleFileElement = new Element("styleFile");
+		styleFileElement.addContent(DEFAULT_STYLE_URI);
+		rootElement.addContent(styleFileElement);
+
+		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+		Document document = new Document(rootElement);
+		File applicationFile = new File(APPLICATION_FILE);
+		try {
+			xmlOutputter.output(document, new FileOutputStream(applicationFile));
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

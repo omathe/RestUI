@@ -30,26 +30,28 @@ public class ProjectService {
 
 		Project project = null;
 
+		try {
 			final File file = new File(uri);
 			if (!file.exists()) {
 				throw new NotFoundException("file", file.getAbsolutePath());
 			}
 			project = new Project("");
 			final SAXBuilder sxb = new SAXBuilder();
-			try {
-				System.err.println(uri.toString());
-				final Document document = sxb.build(uri.toString());
-				// project
-				final Element element = document.getRootElement();
-				project = (Project) buildItem(null, element);
-				browseXml(project, element);
 
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
+			final Document document = sxb.build(uri.toString());
+			// project
+			final Element element = document.getRootElement();
+			project = (Project) buildItem(null, element);
+			browseXml(project, element);
 
 			// load exchanges
 			ExchangesService.loadExchanges(buildExchangesUri(uri), project);
+
+		} catch (final NotFoundException e) {
+			throw e;
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 		return project;
 	}
 
@@ -75,7 +77,6 @@ public class ProjectService {
 
 				// save the exchanges
 				System.out.println(uri);
-//				ExchangesService.saveExchanges(project, new File("/media/DATA/dev/workspaceJ9/RestUI/src/test/resources/exc.xml"));
 				ExchangesService.saveExchanges(project, buildExchangesUri(uri));
 
 			} catch (final IOException e) {
@@ -137,8 +138,7 @@ public class ProjectService {
 			if (endpoint.hasParameters()) {
 				final Element elementParameters = new Element("parameters");
 				// for (final Parameter parameter : endpoint.getParameters()) {
-				for (final Parameter parameter : endpoint.getParameters().stream()
-						.filter(p -> p.isRequestParameter() && (p.isHeaderParameter() || p.isPathParameter() || p.isQueryParameter())).collect(Collectors.toList())) {
+				for (final Parameter parameter : endpoint.getParameters().stream().filter(p -> p.isRequestParameter() && (p.isHeaderParameter() || p.isPathParameter() || p.isQueryParameter())).collect(Collectors.toList())) {
 					final Element elementParameter = new Element("parameter");
 					elementParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
 					elementParameter.setAttribute(new Attribute("direction", parameter.getDirection()));
@@ -210,29 +210,28 @@ public class ProjectService {
 	public static URI buildExchangesUri(URI projectUri) {
 		String exchangesUri = null;
 
-			String uri = projectUri.toString();
-			int index = uri.lastIndexOf(File.separator);
-			if (index != -1) {
-				String path = uri.substring(0, index);
-				String fileName = uri.substring(index + 1, uri.length());
-				if (!fileName.isEmpty()) {
-					String name = null;
-					String extension = null;
-					String[] split = fileName.split("\\.");
-					if (split.length == 1) {
-						name = split[0];
-						extension = "";
+		String uri = projectUri.toString();
+		int index = uri.lastIndexOf(File.separator);
+		if (index != -1) {
+			String path = uri.substring(0, index);
+			String fileName = uri.substring(index + 1, uri.length());
+			if (!fileName.isEmpty()) {
+				String name = null;
+				String extension = null;
+				String[] split = fileName.split("\\.");
+				if (split.length == 1) {
+					name = split[0];
+					extension = "";
 
-					} else {
-						name = split[0];
-						extension = split[1];
-					}
-					String exchangeFileName = name + "-exchanges" + (extension.isEmpty() ? "" : "." + extension);
-					exchangesUri = path + File.separator + exchangeFileName;
+				} else {
+					name = split[0];
+					extension = split[1];
 				}
+				String exchangeFileName = name + "-exchanges" + (extension.isEmpty() ? "" : "." + extension);
+				exchangesUri = path + File.separator + exchangeFileName;
 			}
+		}
 		return URI.create(exchangesUri);
 	}
-
 
 }
