@@ -27,7 +27,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.org.apache.xml.internal.serializer.OutputPropertiesFactory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -194,35 +193,6 @@ public class EndPointController extends AbstractController implements Initializa
 
 		path.setTooltip(new Tooltip("Endpoint path value"));
 
-		// exchanges
-		final ContextMenu exchangesContextMenu = new ContextMenu();
-		exchanges.setOnKeyPressed(event -> {
-			if (event.getCode().equals(KeyCode.DELETE)) {
-				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
-				deleteExchange(exchange);
-			}
-		});
-
-		exchanges.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(final MouseEvent event) {
-
-				final Optional<Exchange> exchange = getSelectedExchange();
-				if (event.isSecondaryButtonDown()) {
-					exchangesContextMenu.getItems().clear();
-
-					if (exchange.isPresent()) {
-						final MenuItem delete = new MenuItem("Delete");
-						exchangesContextMenu.getItems().add(delete);
-						delete.setOnAction(e -> {
-							deleteExchange(exchange.get());
-						});
-					}
-					exchanges.setContextMenu(exchangesContextMenu);
-				}
-			}
-		});
-
 		// request parameters
 		requestParameters.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -330,58 +300,6 @@ public class EndPointController extends AbstractController implements Initializa
 			clipboard.setContent(content);
 		});
 
-		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			Optional<Exchange> optionalExchange = getSelectedExchange();
-
-			/*
-			 * if (currentExchangeHasChanged) {
-			 *
-			 * final Alert alert = new Alert(AlertType.CONFIRMATION);
-			 *
-			 * alert.setTitle("Save the current exchange");
-			 * alert.setHeaderText("Do you want to save the current exchange ?\n\n");
-			 * alert.setContentText("Confirm your choice"); final ButtonType yesButton = new
-			 * ButtonType("Yes"); final ButtonType noButton = new ButtonType("No");
-			 *
-			 * alert.getButtonTypes().setAll(noButton, yesButton);
-			 *
-			 * final Optional<ButtonType> result = alert.showAndWait(); if (result.get() ==
-			 * yesButton) { List<String> exchangeNames = getEndpointExchangeNames(); final
-			 * Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames,
-			 * "Exchange"), Instant.now().toEpochMilli()); endpoint.addExchange(exchange); }
-			 * currentExchangeHasChanged = false; }
-			 */
-
-			if (optionalExchange.isPresent()) {
-				currentExchange = optionalExchange.get().duplicate("");
-				display();
-			}
-		});
-
-		execute.textProperty().bind(method.valueProperty());
-
-		// disable request/response area if no exchange selected
-		// requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
-
-	}
-
-	@Override
-	public void setTreeItem(final TreeItem<Item> treeItem) {
-		super.setTreeItem(treeItem);
-
-		endpoint = (Endpoint) this.treeItem.getValue();
-		if (endpoint.hasExchanges()) {
-			modeExecution(null);
-		} else {
-			modeSpecification(null);
-		}
-
-		endpointName.setText(endpoint.getName());
-		endpoint.buildPath();
-		path.setText(endpoint.getPath());
-		baseUrl = endpoint.getBaseUrl();
-		method.valueProperty().bindBidirectional(endpoint.methodProperty());
-
 		// exchanges
 		exchangeNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		exchangeNameColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("name"));
@@ -427,21 +345,114 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 			};
 		});
-		exchangeDateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 
+		exchangeDateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 		exchangeDurationColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("duration"));
 		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
 
-		List<Exchange> endpointExchanges = endpoint.getExchanges();
+		final ContextMenu exchangesContextMenu = new ContextMenu();
+		exchanges.setOnKeyPressed(event -> {
+			if (event.getCode().equals(KeyCode.DELETE)) {
+				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
+				deleteExchange(exchange);
+			}
+		});
+
+		exchanges.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(final MouseEvent event) {
+
+				final Optional<Exchange> exchange = getSelectedExchange();
+				if (event.isSecondaryButtonDown()) {
+					exchangesContextMenu.getItems().clear();
+
+					if (exchange.isPresent()) {
+						final MenuItem delete = new MenuItem("Delete");
+						exchangesContextMenu.getItems().add(delete);
+						delete.setOnAction(e -> {
+							deleteExchange(exchange.get());
+						});
+					}
+					exchanges.setContextMenu(exchangesContextMenu);
+				}
+			}
+		});
+
+		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			Optional<Exchange> optionalExchange = getSelectedExchange();
+
+			/*
+			 * if (currentExchangeHasChanged) {
+			 *
+			 * final Alert alert = new Alert(AlertType.CONFIRMATION);
+			 *
+			 * alert.setTitle("Save the current exchange");
+			 * alert.setHeaderText("Do you want to save the current exchange ?\n\n");
+			 * alert.setContentText("Confirm your choice"); final ButtonType yesButton = new
+			 * ButtonType("Yes"); final ButtonType noButton = new ButtonType("No");
+			 *
+			 * alert.getButtonTypes().setAll(noButton, yesButton);
+			 *
+			 * final Optional<ButtonType> result = alert.showAndWait(); if (result.get() ==
+			 * yesButton) { List<String> exchangeNames = getEndpointExchangeNames(); final
+			 * Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames,
+			 * "Exchange"), Instant.now().toEpochMilli()); endpoint.addExchange(exchange); }
+			 * currentExchangeHasChanged = false; }
+			 */
+
+			if (optionalExchange.isPresent()) {
+				currentExchange = optionalExchange.get().duplicate("");
+				display();
+			}
+		});
+
+		execute.textProperty().bind(method.valueProperty());
+
+		// disable request/response area if no exchange selected
+		// requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
+
+	}
+
+	@Override
+	public void setTreeItem(final TreeItem<Item> treeItem) {
+		super.setTreeItem(treeItem);
+
+		endpoint = (Endpoint) this.treeItem.getValue();
+		endpointName.setText(endpoint.getName());
+		endpoint.buildPath();
+		path.setText(endpoint.getPath());
+		baseUrl = endpoint.getBaseUrl();
+		method.valueProperty().bindBidirectional(endpoint.methodProperty());
+
+		if (endpoint.hasExchanges()) {
+			modeExecution(null);
+			// select first exchange
+			exchanges.getSelectionModel().select(0);
+			// current exchange = first exchange
+			currentExchange = exchanges.getSelectionModel().getSelectedItem();
+
+		} else {
+			modeSpecification(null);
+		}
+
+		// exchanges
+/*		List<Exchange> endpointExchanges = endpoint.getExchanges();
 		exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
 
 		if (endpointExchanges.isEmpty()) {
 			createCurrentExchange();
 		} else {
-			exchanges.getSelectionModel().select(0); // select first exchange
-			Exchange firstExchange = exchanges.getSelectionModel().getSelectedItem();
-			currentExchange = firstExchange;
-		}
+//			// select blank exchange
+//			Optional<Exchange> blankExchange = exchanges.getItems().stream().filter(exchange -> exchange.getName().isEmpty()).findFirst();
+//			if (blankExchange.isPresent()) {
+//				exchanges.getSelectionModel().select(blankExchange.get());
+//				currentExchange = blankExchange.get();
+//			} else {
+				exchanges.getSelectionModel().select(0);
+				Exchange firstExchange = exchanges.getSelectionModel().getSelectedItem();
+				workingExchange = firstExchange;
+//			}
+		}*/
 		display();
 	}
 
