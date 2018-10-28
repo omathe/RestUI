@@ -851,7 +851,7 @@ public class EndPointController extends AbstractController implements Initializa
 				final ObjectMapper mapper = new ObjectMapper();
 				try {
 					body = currentExchange.getResponseBody();
-					if (body != null) {
+					if (body != null && !body.isEmpty()) {
 						final Object json = mapper.readValue(body, Object.class);
 						responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
 					}
