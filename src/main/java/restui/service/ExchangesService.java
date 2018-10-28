@@ -60,9 +60,14 @@ public class ExchangesService {
 								String parameterName = parameterElement.getAttributeValue("name");
 								String value = parameterElement.getAttributeValue("value");
 								Parameter parameter = new Parameter(Boolean.valueOf(enabled), Direction.valueOf(direction), Location.valueOf(location), Type.valueOf(type), parameterName, value);
-
-								// add parameter to exchange only if endpoint contains it
-								if (endpoint.containsParameter(parameter)) {
+								// add request parameter to exchange only if the endpoint contains it
+								if (direction.equalsIgnoreCase(Direction.REQUEST.name())) {
+									if (endpoint.containsParameter(parameter)) {
+										exchange.addParameter(parameter);
+									}
+								}
+								else {
+									// Response parameter
 									exchange.addParameter(parameter);
 								}
 							}
@@ -72,6 +77,7 @@ public class ExchangesService {
 							if (!exchange.isEmpty()) {
 								endpoint.addExchange(exchange);
 							}
+							exchange.getParameters().stream().forEach(System.err::println);
 						}
 					}
 				}

@@ -7,9 +7,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -436,23 +436,20 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 
 		// exchanges
-/*		List<Exchange> endpointExchanges = endpoint.getExchanges();
-		exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
-
-		if (endpointExchanges.isEmpty()) {
-			createCurrentExchange();
-		} else {
-//			// select blank exchange
-//			Optional<Exchange> blankExchange = exchanges.getItems().stream().filter(exchange -> exchange.getName().isEmpty()).findFirst();
-//			if (blankExchange.isPresent()) {
-//				exchanges.getSelectionModel().select(blankExchange.get());
-//				currentExchange = blankExchange.get();
-//			} else {
-				exchanges.getSelectionModel().select(0);
-				Exchange firstExchange = exchanges.getSelectionModel().getSelectedItem();
-				workingExchange = firstExchange;
-//			}
-		}*/
+		/*
+		 * List<Exchange> endpointExchanges = endpoint.getExchanges();
+		 * exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
+		 *
+		 * if (endpointExchanges.isEmpty()) { createCurrentExchange(); } else { // //
+		 * select blank exchange // Optional<Exchange> blankExchange =
+		 * exchanges.getItems().stream().filter(exchange ->
+		 * exchange.getName().isEmpty()).findFirst(); // if (blankExchange.isPresent())
+		 * { // exchanges.getSelectionModel().select(blankExchange.get()); //
+		 * currentExchange = blankExchange.get(); // } else {
+		 * exchanges.getSelectionModel().select(0); Exchange firstExchange =
+		 * exchanges.getSelectionModel().getSelectedItem(); workingExchange =
+		 * firstExchange; // } }
+		 */
 		display();
 	}
 
@@ -761,7 +758,16 @@ public class EndPointController extends AbstractController implements Initializa
 		// disable specification
 		endpointSpecificationHBox.setDisable(true);
 
-		if (!endpoint.hasExchanges()) {
+		// exchanges
+		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
+
+		if (endpoint.hasExchanges()) {
+			currentExchange = exchanges.getItems().get(0);
+
+			//currentExchange.getParameters().stream().forEach(System.err::println);
+
+		}
+		else {
 			currentExchange = new Exchange("", Instant.now().toEpochMilli());
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
@@ -784,7 +790,8 @@ public class EndPointController extends AbstractController implements Initializa
 	private void displaySpecificationMode() {
 
 		// request parameters
-		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters()).filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
+		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters())
+				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
 		requestParameters.refresh();
 
 		// response body
@@ -800,6 +807,8 @@ public class EndPointController extends AbstractController implements Initializa
 		requestParameters.refresh();
 
 		// response parameters
+		//currentExchange.getParameters().stream().forEach(System.err::println);
+
 		responseParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
 		responseParameters.refresh();
 
@@ -857,7 +866,8 @@ public class EndPointController extends AbstractController implements Initializa
 					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 					final Transformer transformer = transformerFactory.newTransformer();
 					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-					//transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
+					// transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT,
+					// "6");
 					transformer.transform(xmlInput, xmlOutput);
 					responseBody.setText(xmlOutput.getWriter().toString());
 				} catch (final Exception e) {
