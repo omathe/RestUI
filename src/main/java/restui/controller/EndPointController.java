@@ -382,9 +382,8 @@ public class EndPointController extends AbstractController implements Initializa
 
 			Optional<Exchange> optionalExchange = getSelectedExchange();
 			if (optionalExchange.isPresent()) {
-				currentExchange = optionalExchange.get().duplicate("");
+				currentExchange = getSelectedExchange().get();
 				display();
-				System.err.println("///////////////////");
 			}
 
 			/*
@@ -477,6 +476,9 @@ public class EndPointController extends AbstractController implements Initializa
 		if (response.equals(ButtonType.OK)) {
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
+			if (!endpoint.hasExchanges()) {
+				currentExchange = getWorkingExchange();
+			}
 			display();
 		}
 	}
@@ -906,7 +908,7 @@ public class EndPointController extends AbstractController implements Initializa
 		if (endpoint.hasExchanges()) {
 			Optional<Exchange> optionalWorkingExchange = workingExchangePresent();
 			if (optionalWorkingExchange.isPresent()) {
-				workingExchange = optionalWorkingExchange.get();
+				workingExchange = optionalWorkingExchange.get().duplicate("");
 			} else {
 				workingExchange = getSelectedExchange().get().duplicate("");
 			}

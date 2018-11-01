@@ -3,6 +3,7 @@ package restui.model;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -54,7 +55,7 @@ public class Exchange {
 	public Exchange duplicate(final String name) {
 		final Exchange duplicate = new Exchange(name, Instant.now().toEpochMilli());
 
-		duplicate.addParameters(parameters);
+		duplicate.addParameters(parameters.stream().map(p -> p.duplicate()).collect(Collectors.toList()));
 		duplicate.setUri(uri.get());
 		duplicate.setDuration(duration.get());
 		duplicate.setStatus(status.get());
