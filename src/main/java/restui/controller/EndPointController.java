@@ -379,7 +379,13 @@ public class EndPointController extends AbstractController implements Initializa
 		});
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+
 			Optional<Exchange> optionalExchange = getSelectedExchange();
+			if (optionalExchange.isPresent()) {
+				currentExchange = optionalExchange.get().duplicate("");
+				display();
+				System.err.println("///////////////////");
+			}
 
 			/*
 			 * if (currentExchangeHasChanged) {
@@ -400,10 +406,6 @@ public class EndPointController extends AbstractController implements Initializa
 			 * currentExchangeHasChanged = false; }
 			 */
 
-			if (optionalExchange.isPresent()) {
-				currentExchange = optionalExchange.get().duplicate("");
-				display();
-			}
 		});
 
 		execute.textProperty().bind(method.valueProperty());
@@ -428,28 +430,10 @@ public class EndPointController extends AbstractController implements Initializa
 			modeExecution(null);
 			// select first exchange
 			exchanges.getSelectionModel().select(0);
-			// current exchange = first exchange
-			currentExchange = exchanges.getSelectionModel().getSelectedItem();
-
+			currentExchange = getSelectedExchange().get();
 		} else {
 			modeSpecification(null);
 		}
-
-		// exchanges
-		/*
-		 * List<Exchange> endpointExchanges = endpoint.getExchanges();
-		 * exchanges.setItems((ObservableList<Exchange>) endpointExchanges);
-		 *
-		 * if (endpointExchanges.isEmpty()) { createCurrentExchange(); } else { // //
-		 * select blank exchange // Optional<Exchange> blankExchange =
-		 * exchanges.getItems().stream().filter(exchange ->
-		 * exchange.getName().isEmpty()).findFirst(); // if (blankExchange.isPresent())
-		 * { // exchanges.getSelectionModel().select(blankExchange.get()); //
-		 * currentExchange = blankExchange.get(); // } else {
-		 * exchanges.getSelectionModel().select(0); Exchange firstExchange =
-		 * exchanges.getSelectionModel().getSelectedItem(); workingExchange =
-		 * firstExchange; // } }
-		 */
 		display();
 	}
 
@@ -500,12 +484,18 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void execute(final ActionEvent event) {
 
-		Optional<Exchange> optionalExchange = endpoint.findExchangeByName("");
-		if (!optionalExchange.isPresent()) {
-			createCurrentExchange();
-		}
+		currentExchange = getWorkingExchange();
+
+//		if (endpoint.hasExchanges()) {
+//			currentExchange = getSelectedExchange().get().duplicate("");
+//		} else {
+//			currentExchange = getWorkingExchange();
+//			endpoint.addExchange(currentExchange);
+//		}
 
 		final long t0 = System.currentTimeMillis();
+
+		System.err.println(currentExchange.getName() + " URI = " + currentExchange.getUri());
 
 		ClientResponse response = RestClient.execute(method.getValue(), currentExchange);
 
@@ -649,14 +639,11 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 	}
 
-	public Optional<Exchange> getSelectedExchange() {
+	private Optional<Exchange> getSelectedExchange() {
 
 		Optional<Exchange> optional = Optional.empty();
 		if (exchanges != null && exchanges.getSelectionModel().getSelectedItem() != null) {
 			optional = Optional.of(exchanges.getSelectionModel().getSelectedItem());
-			if (optional.isPresent()) {
-				// select exchange name in comboBox
-			}
 		}
 		return optional;
 	}
@@ -761,33 +748,23 @@ public class EndPointController extends AbstractController implements Initializa
 		// exchanges
 		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
 
-		if (endpoint.hasExchanges()) {
-			currentExchange = exchanges.getItems().get(0);
+		currentExchange = getWorkingExchange();
 
-			//currentExchange.getParameters().stream().forEach(System.err::println);
-
-		}
-		else {
-			currentExchange = new Exchange("", Instant.now().toEpochMilli());
-			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
-			currentExchange.addParameters(endpointRequestParameters);
-			endpoint.addExchange(currentExchange);
-			display();
-		}
+		display();
 	}
 
 	private void display() {
 
 		if (radioButtonExecutionMode.isSelected()) {
-
 			displayExecutionMode();
-
 		} else {
 			displaySpecificationMode();
 		}
 	}
 
 	private void displaySpecificationMode() {
+
+		endpoint.getParameters().stream().forEach(System.out::println);
 
 		// request parameters
 		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters())
@@ -803,11 +780,12 @@ public class EndPointController extends AbstractController implements Initializa
 	private void displayExecutionMode() {
 
 		// request parameters
-		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
+		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
+				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
 		requestParameters.refresh();
 
 		// response parameters
-		//currentExchange.getParameters().stream().forEach(System.err::println);
+		// currentExchange.getParameters().stream().forEach(System.err::println);
 
 		responseParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters()).filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
 		responseParameters.refresh();
@@ -921,12 +899,32 @@ public class EndPointController extends AbstractController implements Initializa
 		execute.setDisable(!validUri);
 	}
 
-	private void createCurrentExchange() {
+	private Exchange getWorkingExchange() {
 
-		currentExchange = new Exchange("", Instant.now().toEpochMilli());
-		List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
-		currentExchange.addParameters(endpointRequestParameters);
-		display();
+		Exchange workingExchange = null;
+
+		if (endpoint.hasExchanges()) {
+			Optional<Exchange> optionalWorkingExchange = workingExchangePresent();
+			if (optionalWorkingExchange.isPresent()) {
+				workingExchange = optionalWorkingExchange.get();
+			} else {
+				workingExchange = getSelectedExchange().get().duplicate("");
+			}
+		} else {
+			workingExchange = new Exchange("", Instant.now().toEpochMilli());
+			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
+					.filter(p -> p.isRequestParameter())
+					.map(p -> p.duplicate())
+					.collect(Collectors.toList());
+			workingExchange.addParameters(endpointRequestParameters);
+			endpoint.addExchange(workingExchange);
+		}
+		return workingExchange;
+	}
+
+	private Optional<Exchange> workingExchangePresent() {
+
+		return endpoint.findExchangeByName("");
 	}
 
 }

@@ -77,7 +77,6 @@ public class ExchangesService {
 							if (!exchange.isEmpty()) {
 								endpoint.addExchange(exchange);
 							}
-							exchange.getParameters().stream().forEach(System.err::println);
 						}
 					}
 				}
