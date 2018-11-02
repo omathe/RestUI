@@ -427,9 +427,6 @@ public class EndPointController extends AbstractController implements Initializa
 
 		if (endpoint.hasExchanges()) {
 			modeExecution(null);
-			// select first exchange
-			exchanges.getSelectionModel().select(0);
-			currentExchange = getSelectedExchange().get();
 		} else {
 			modeSpecification(null);
 		}
@@ -487,13 +484,6 @@ public class EndPointController extends AbstractController implements Initializa
 	protected void execute(final ActionEvent event) {
 
 		currentExchange = getWorkingExchange();
-
-//		if (endpoint.hasExchanges()) {
-//			currentExchange = getSelectedExchange().get().duplicate("");
-//		} else {
-//			currentExchange = getWorkingExchange();
-//			endpoint.addExchange(currentExchange);
-//		}
 
 		final long t0 = System.currentTimeMillis();
 
@@ -644,6 +634,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private Optional<Exchange> getSelectedExchange() {
 
 		Optional<Exchange> optional = Optional.empty();
+
 		if (exchanges != null && exchanges.getSelectionModel().getSelectedItem() != null) {
 			optional = Optional.of(exchanges.getSelectionModel().getSelectedItem());
 		}
@@ -749,6 +740,9 @@ public class EndPointController extends AbstractController implements Initializa
 
 		// exchanges
 		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
+
+		// select first exchange
+		exchanges.getSelectionModel().select(0);
 
 		currentExchange = getWorkingExchange();
 
@@ -908,9 +902,12 @@ public class EndPointController extends AbstractController implements Initializa
 		if (endpoint.hasExchanges()) {
 			Optional<Exchange> optionalWorkingExchange = workingExchangePresent();
 			if (optionalWorkingExchange.isPresent()) {
-				workingExchange = optionalWorkingExchange.get().duplicate("");
+				workingExchange = optionalWorkingExchange.get();
 			} else {
-				workingExchange = getSelectedExchange().get().duplicate("");
+				Optional<Exchange> selectedExchange = getSelectedExchange();
+				if (selectedExchange.isPresent()) {
+					workingExchange = getSelectedExchange().get().duplicate("");
+				}
 			}
 		} else {
 			workingExchange = new Exchange("", Instant.now().toEpochMilli());
