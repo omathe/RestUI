@@ -126,7 +126,19 @@ public class RequestBodyController extends AbstractController implements Initial
 		this.endPointController = endPointController;
 
 		exchange = endPointController.getCurrentExchange();
-		if (exchange != null) {
+		if (exchange == null) {
+			requestBody.setText("");
+
+			endPointController.getBodyVBox().getChildren().clear();
+			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+			}
+			vBox.getChildren().clear();
+			vBox.getChildren().add(requestBody);
+			VBox.setVgrow(vBox, Priority.ALWAYS);
+		}
+		else {
 
 			final ObservableList<Parameter> parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
 
