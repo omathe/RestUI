@@ -20,5 +20,4 @@ public class FxmlNode {
 	public Object getController() {
 		return controller;
 	}
-
 }

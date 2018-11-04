@@ -103,7 +103,6 @@ public class RequestBodyController extends AbstractController implements Initial
 			if (exchange != null) {
 				List<String> parameterNames = bodyTableView.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
 				final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), "");
-				//exchange.addParameter(parameter);
 				endPointController.addParameter(parameter);
 			}
 		});
@@ -126,7 +125,8 @@ public class RequestBodyController extends AbstractController implements Initial
 		this.endPointController = endPointController;
 
 		exchange = endPointController.getCurrentExchange();
-		if (exchange == null) {
+
+		/*if (exchange == null) {
 			requestBody.setText("");
 
 			endPointController.getBodyVBox().getChildren().clear();
@@ -137,9 +137,8 @@ public class RequestBodyController extends AbstractController implements Initial
 			vBox.getChildren().clear();
 			vBox.getChildren().add(requestBody);
 			VBox.setVgrow(vBox, Priority.ALWAYS);
-		}
-		else {
-
+		} else {*/
+		if (exchange != null) {
 			final ObservableList<Parameter> parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
 
 			if (type.equals(BodyType.RAW)) {

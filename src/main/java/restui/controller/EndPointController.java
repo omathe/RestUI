@@ -494,6 +494,7 @@ public class EndPointController extends AbstractController implements Initializa
 			}
 		}
 
+		currentExchange.setUri(uri.getText());
 		final long t0 = System.currentTimeMillis();
 
 		System.err.println(currentExchange.getName() + "URI = " + currentExchange.getUri());
@@ -709,7 +710,9 @@ public class EndPointController extends AbstractController implements Initializa
 		endpoint.addParameter(parameter);
 
 		// add the parameter to the selected exchange if it exists
-		currentExchange.addParameter(parameter);
+		if (currentExchange != null) {
+			currentExchange.addParameter(parameter);
+		}
 
 		display();
 	}
@@ -770,15 +773,21 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void displaySpecificationMode() {
 
-		endpoint.getParameters().stream().forEach(System.out::println);
-
 		// request parameters
 		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters())
 				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
 		requestParameters.refresh();
 
+		// response parameters
+		responseParameters.setItems(null);
+
 		// response body
 		responseBody.clear();
+
+		responseStatus.setText("0");
+		responseDuration.setText("0");
+
+		rawBodySelected(null);
 
 		buildUri();
 	}
@@ -786,11 +795,16 @@ public class EndPointController extends AbstractController implements Initializa
 	private void displayExecutionMode() {
 
 		if (currentExchange == null) {
+			// response parameters
 			responseParameters.setItems(null);
+
+			// response body
 			responseBody.clear();
+
 			responseStatus.setText("0");
 			responseDuration.setText("0");
-			rawBodySelected(null);
+
+			buildUri();
 		} else {
 			// request parameters
 			requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
@@ -904,9 +918,9 @@ public class EndPointController extends AbstractController implements Initializa
 			valuedUri += "?" + String.join("&", queryParams);
 		}
 		uri.setText(valuedUri);
-		if (validUri && radioButtonExecutionMode.isSelected()) {
-			currentExchange.setUri(valuedUri);
-		}
+//		if (validUri && radioButtonExecutionMode.isSelected()) {
+//			currentExchange.setUri(valuedUri);
+//		}
 		execute.setDisable(!validUri);
 	}
 
