@@ -177,9 +177,13 @@ public class Exchange {
 		return body.orElse(null);
 	}
 
+	@Deprecated // TODO à vérifier
 	public void setResponseBody(final String body) {
 
-		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name())).filter(p -> p.getType().equals(Type.TEXT.name())).filter(p -> p.getName() == null).findFirst();
+		final Optional<Parameter> rawBody = parameters.stream()
+				.filter(p -> p.getLocation().equals(Location.BODY.name()))
+				.filter(p -> p.getType().equals(Type.TEXT.name()))
+				.filter(p -> p.getName() == null).findFirst();
 		if (rawBody.isPresent()) {
 			rawBody.get().setValue(body);
 		} else {
@@ -191,7 +195,12 @@ public class Exchange {
 	public String getResponseBody() {
 
 		String responseBody = "";
-		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name())).filter(p -> p.getType().equals(Type.TEXT.name())).filter(p -> p.getName() == null).findFirst();
+		final Optional<Parameter> rawBody = parameters.stream()
+				.filter(p -> p.getDirection().equals(Direction.RESPONSE.name()))
+				.filter(p -> p.getLocation().equals(Location.BODY.name()))
+				.filter(p -> p.getType().equals(Type.TEXT.name()))
+				.filter(p -> p.getName() == null)
+				.findFirst();
 		if (rawBody.isPresent()) {
 			responseBody = rawBody.get().getValue();
 		}
@@ -264,14 +273,6 @@ public class Exchange {
 		this.duration.set(duration);
 	}
 
-	// public String getEndpointName() {
-	// return endpointName;
-	// }
-	//
-	// public void setEndpointName(String endpointName) {
-	// this.endpointName = endpointName;
-	// }
-
 	public void addParameter(final Parameter parameter) {
 
 		if (!parameters.contains(parameter)) {
@@ -321,8 +322,6 @@ public class Exchange {
 			return false;
 		return true;
 	}
-
-
 
 	// @Override
 	// public String toString() {

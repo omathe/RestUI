@@ -40,6 +40,9 @@ import restui.model.Parameter.Type;
 public class RequestBodyController extends AbstractController implements Initializable {
 
 	private EndPointController endPointController;
+	private FxmlNode fxmlNode;
+	private BodyType type;
+	private Exchange exchange;
 
 	@FXML
 	private VBox vBox;
@@ -58,8 +61,6 @@ public class RequestBodyController extends AbstractController implements Initial
 
 	@FXML
 	private TableColumn<Parameter, String> bodyValueColumn;
-
-	private Exchange exchange;
 
 	@FXML
 	private TextArea requestBody;
@@ -123,23 +124,13 @@ public class RequestBodyController extends AbstractController implements Initial
 	public void display(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
 
 		this.endPointController = endPointController;
+		this.fxmlNode = fxmlNode;
+		this.type = type;
 
 		exchange = endPointController.getCurrentExchange();
 
-		/*if (exchange == null) {
-			requestBody.setText("");
-
-			endPointController.getBodyVBox().getChildren().clear();
-			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
-			}
-			vBox.getChildren().clear();
-			vBox.getChildren().add(requestBody);
-			VBox.setVgrow(vBox, Priority.ALWAYS);
-		} else {*/
 		if (exchange != null) {
-			final ObservableList<Parameter> parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
+			ObservableList<Parameter> parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
 
 			if (type.equals(BodyType.RAW)) {
 				// RAW
@@ -204,6 +195,8 @@ public class RequestBodyController extends AbstractController implements Initial
 			final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
 			if (response.equals(ButtonType.OK)) {
 				exchange.removeParameters(parameters);
+
+				display(endPointController, fxmlNode, type);
 			}
 		}
 	}

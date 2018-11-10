@@ -217,10 +217,10 @@ public class Parameter {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((direction == null) ? 0 : direction.get().hashCode());
-		result = prime * result + ((location == null) ? 0 : location.get().hashCode());
-		result = prime * result + ((name == null) ? 0 : name.get().hashCode());
-		result = prime * result + ((type == null) ? 0 : type.get().hashCode());
+		result = prime * result + ((direction.get() == null) ? 0 : direction.get().hashCode());
+		result = prime * result + ((location.get() == null) ? 0 : location.get().hashCode());
+		result = prime * result + ((name.get() == null) ? 0 : name.get().hashCode());
+		result = prime * result + ((type.get() == null) ? 0 : type.get().hashCode());
 		return result;
 	}
 
@@ -232,24 +232,26 @@ public class Parameter {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+
 		Parameter other = (Parameter) obj;
-		if (direction == null) {
-			if (other.direction != null)
+
+		if (direction.get() == null) {
+			if (other.direction.get() != null)
 				return false;
 		} else if (!direction.get().equals(other.direction.get()))
 			return false;
-		if (location == null) {
-			if (other.location != null)
+		if (location.get() == null) {
+			if (other.location.get() != null)
 				return false;
 		} else if (!location.get().equals(other.location.get()))
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (name.get() == null) {
+			if (other.name.get() != null)
 				return false;
 		} else if (!name.get().equals(other.name.get()))
 			return false;
-		if (type == null) {
-			if (other.type != null)
+		if (type.get() == null) {
+			if (other.type.get() != null)
 				return false;
 		} else if (!type.get().equals(other.type.get()))
 			return false;
