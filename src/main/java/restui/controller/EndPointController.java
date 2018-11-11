@@ -706,14 +706,14 @@ public class EndPointController extends AbstractController implements Initializa
 
 	public void addParameter(final Parameter parameter) {
 
-		// add the parameter to the endpoint
-		endpoint.addParameter(parameter);
-
+		if (isSpecificationMode()) {
+			// add the parameter to the endpoint
+			endpoint.addParameter(parameter);
+		}
 		// add the parameter to the selected exchange if it exists
 		if (currentExchange != null) {
 			currentExchange.addParameter(parameter);
 		}
-
 		display();
 	}
 
@@ -781,6 +781,9 @@ public class EndPointController extends AbstractController implements Initializa
 		// response parameters
 		responseParameters.setItems(null);
 
+		// request body
+		displayRequestBody();
+
 		// response body
 		responseBody.clear();
 
@@ -805,16 +808,7 @@ public class EndPointController extends AbstractController implements Initializa
 		responseParameters.refresh();
 
 		// request body
-		if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
-			rawBody.setSelected(true);
-			rawBodySelected(null);
-		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
-			formEncodedBody.setSelected(true);
-			formEncodedBodySelected(null);
-		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.FORM_DATA)) {
-			formDataBody.setSelected(true);
-			formDataBodySelected(null);
-		}
+		displayRequestBody();
 
 		buildUri();
 
@@ -830,6 +824,20 @@ public class EndPointController extends AbstractController implements Initializa
 
 		// status circle
 		displayStatusCircle(currentExchange);
+	}
+
+	private void displayRequestBody() {
+
+		if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
+			rawBody.setSelected(true);
+			rawBodySelected(null);
+		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
+			formEncodedBody.setSelected(true);
+			formEncodedBodySelected(null);
+		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.FORM_DATA)) {
+			formDataBody.setSelected(true);
+			formDataBodySelected(null);
+		}
 	}
 
 	private void displayResponseBody() {
@@ -967,4 +975,17 @@ public class EndPointController extends AbstractController implements Initializa
 
 		return duplicatedExchange;
 	}
+
+	public boolean isExecutionMode() {
+		return radioButtonExecutionMode.isSelected();
+	}
+
+	public boolean isSpecificationMode() {
+		return !radioButtonExecutionMode.isSelected();
+	}
+
+	public Endpoint getEndpoint() {
+		return endpoint;
+	}
+
 }

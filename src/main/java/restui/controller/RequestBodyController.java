@@ -29,6 +29,7 @@ import javafx.util.converter.DefaultStringConverter;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
 import restui.controller.cellFactory.BodyParameterValueCellFactory;
+import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
 import restui.model.Item;
@@ -129,13 +130,68 @@ public class RequestBodyController extends AbstractController implements Initial
 
 		exchange = endPointController.getCurrentExchange();
 
-		if (exchange != null) {
-			ObservableList<Parameter> parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
+		ObservableList<Parameter> parameterData = null;
 
+		if (endPointController.isExecutionMode()) {
+			parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
+			if (exchange != null) {
+				if (type.equals(BodyType.RAW)) {
+					// RAW
+					exchange.setRequestBodyType(BodyType.RAW);
+					requestBody.setText(exchange.getRequestRawBody());
+
+					endPointController.getBodyVBox().getChildren().clear();
+					endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+					if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+						endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+					}
+					vBox.getChildren().clear();
+					vBox.getChildren().add(requestBody);
+					VBox.setVgrow(vBox, Priority.ALWAYS);
+
+					requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
+						exchange.setRequestRawBody(newValue);
+					});
+
+				} else if (type.equals(BodyType.FORM_DATA)) {
+					// FORM_DATA
+					exchange.setRequestBodyType(BodyType.FORM_DATA);
+					bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
+
+					endPointController.getBodyVBox().getChildren().clear();
+					endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+					if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+						endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+					}
+					bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
+					vBox.getChildren().clear();
+					vBox.getChildren().add(bodyTableView);
+					VBox.setVgrow(vBox, Priority.ALWAYS);
+
+				} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+					exchange.setRequestBodyType(BodyType.X_WWW_FORM_URL_ENCODED);
+					// X_WWW_FORM_URL_ENCODED
+					bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
+
+					endPointController.getBodyVBox().getChildren().clear();
+					endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
+					if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
+						endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+					}
+					bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
+					vBox.getChildren().clear();
+					vBox.getChildren().add(bodyTableView);
+					VBox.setVgrow(vBox, Priority.ALWAYS);
+				}
+			}
+
+		} else {
+			parameterData = FXCollections.observableArrayList(endPointController.getEndpoint().getParameters()).filtered(p -> p.isRequestParameter());
+
+			Endpoint endpoint = endPointController.getEndpoint();
 			if (type.equals(BodyType.RAW)) {
 				// RAW
-				exchange.setRequestBodyType(BodyType.RAW);
-				requestBody.setText(exchange.getRequestRawBody());
+				requestBody.setText(endpoint.getRawBody());
 
 				endPointController.getBodyVBox().getChildren().clear();
 				endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
@@ -147,12 +203,11 @@ public class RequestBodyController extends AbstractController implements Initial
 				VBox.setVgrow(vBox, Priority.ALWAYS);
 
 				requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-					exchange.setRequestRawBody(newValue);
+					endpoint.setRawBody(newValue);
 				});
 
 			} else if (type.equals(BodyType.FORM_DATA)) {
 				// FORM_DATA
-				exchange.setRequestBodyType(BodyType.FORM_DATA);
 				bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
 
 				endPointController.getBodyVBox().getChildren().clear();
@@ -166,7 +221,6 @@ public class RequestBodyController extends AbstractController implements Initial
 				VBox.setVgrow(vBox, Priority.ALWAYS);
 
 			} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-				exchange.setRequestBodyType(BodyType.X_WWW_FORM_URL_ENCODED);
 				// X_WWW_FORM_URL_ENCODED
 				bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
 
