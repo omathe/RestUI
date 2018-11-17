@@ -110,6 +110,7 @@ public class Exchange {
 	}
 
 	public void removeParameters(final List<Parameter> parameters) {
+
 		if (parameters != null) {
 			this.parameters.removeAll(parameters);
 		}
@@ -287,6 +288,10 @@ public class Exchange {
 				parameters.add(p);
 			}
 		});
+	}
+
+	public void addParameters2(final List<Parameter> parameterList) {
+
 	}
 
 	public boolean isEmpty() {

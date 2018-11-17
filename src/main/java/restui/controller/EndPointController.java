@@ -174,6 +174,7 @@ public class EndPointController extends AbstractController implements Initializa
 	private String baseUrl;
 	private Endpoint endpoint;
 	private Exchange currentExchange;
+	private BodyType specificationBodyType;
 
 	@FXML
 	private HBox endpointSpecificationHBox;
@@ -486,7 +487,11 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void execute(final ActionEvent event) {
 
-		if (!workingExchangeExists()) {
+		if (workingExchangeExists()) {
+			currentExchange = getWorkingExchange();
+			exchanges.getSelectionModel().select(currentExchange);
+		}
+		else {
 			if (currentExchange == null) {
 				currentExchange = createWorkingExchange();
 			} else {
@@ -615,22 +620,35 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	protected void rawBodySelected(final MouseEvent event) {
 		requestBody(BodyType.RAW);
+		if (isSpecificationMode()) {
+			specificationBodyType = Exchange.BodyType.RAW;
+		}
 	}
 
 	@FXML
 	protected void formEncodedBodySelected(final MouseEvent event) {
 		requestBody(BodyType.X_WWW_FORM_URL_ENCODED);
+		if (isSpecificationMode()) {
+			specificationBodyType = Exchange.BodyType.X_WWW_FORM_URL_ENCODED;
+		}
 	}
 
 	@FXML
 	protected void formDataBodySelected(final MouseEvent event) {
 		requestBody(BodyType.FORM_DATA);
+		if (isSpecificationMode()) {
+			specificationBodyType = Exchange.BodyType.FORM_DATA;
+		}
 	}
 
 	private void requestBody(BodyType bodyType) {
 		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
 		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
-		requestBodyController.display(this, fxmlRequestBody, bodyType);
+		if (isSpecificationMode()) {
+			requestBodyController.displaySpecificationMode(this, fxmlRequestBody, bodyType);
+		} else {
+			requestBodyController.displayExecutionMode(this, fxmlRequestBody, bodyType);
+		}
 	}
 
 	private void displayStatusTooltip() {
@@ -709,10 +727,9 @@ public class EndPointController extends AbstractController implements Initializa
 		if (isSpecificationMode()) {
 			// add the parameter to the endpoint
 			endpoint.addParameter(parameter);
-		}
-		// add the parameter to the selected exchange if it exists
-		if (currentExchange != null) {
-			currentExchange.addParameter(parameter);
+		} else {
+			// add the parameter to the selected exchange if it exists
+			currentExchange.addParameter(parameter.duplicateValue());
 		}
 		display();
 	}
@@ -722,8 +739,16 @@ public class EndPointController extends AbstractController implements Initializa
 		if (parameters != null && !parameters.isEmpty()) {
 			final String message = parameters.size() == 1 ? "Do you want to delete the parameter " + parameters.get(0).getName() + " ?" : "Do you want to delete the " + parameters.size() + " selected parameters ?";
 			final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
+
 			if (response.equals(ButtonType.OK)) {
-				currentExchange.removeParameters(parameters);
+				if (isSpecificationMode()) {
+					// remove the parameters from the endpoint
+					endpoint.removeParameters(parameters);
+				}
+				// remove the parameters from the exchange
+				if (currentExchange != null) {
+					currentExchange.removeParameters(parameters);
+				}
 				display();
 			}
 		}
@@ -754,11 +779,15 @@ public class EndPointController extends AbstractController implements Initializa
 		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
 
 		if (endpoint.hasExchanges()) {
-			// select first exchange
-			exchanges.getSelectionModel().select(0);
-			currentExchange = getSelectedExchange().get();
+			if (workingExchangeExists()) {
+				currentExchange = getWorkingExchange();
+				exchanges.getSelectionModel().select(currentExchange);
+			} else {
+				// select first exchange
+				exchanges.getSelectionModel().select(0);
+				currentExchange = getSelectedExchange().get();
+			}
 		}
-
 		display();
 	}
 
@@ -790,53 +819,76 @@ public class EndPointController extends AbstractController implements Initializa
 		responseStatus.setText("0");
 		responseDuration.setText("0");
 
-		rawBodySelected(null);
-
 		buildUri();
 	}
 
 	private void displayExecutionMode() {
 
-		// request parameters
-		requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
-		requestParameters.refresh();
+		if (currentExchange != null) {
+			// request parameters
+			// add endpoint new parameters
+			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
+					.filter(p -> p.isRequestParameter())
+					.map(p -> p.duplicate())
+					.collect(Collectors.toList());
+			currentExchange.addParameters(endpointRequestParameters);
 
-		// response parameters
-		responseParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-				.filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
-		responseParameters.refresh();
+			requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
+					.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
+			requestParameters.refresh();
 
-		// request body
-		displayRequestBody();
+			// response parameters
+			responseParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
+					.filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
+			responseParameters.refresh();
 
-		buildUri();
+			// request body
+			displayRequestBody();
 
-		// response body
-		displayResponseBody();
+			buildUri();
 
-		// response status
-		responseStatus.setText(currentExchange.getStatus().toString());
-		displayStatusTooltip();
+			// response body
+			displayResponseBody();
 
-		// response duration
-		responseDuration.setText(currentExchange.getDuration().toString());
+			// response status
+			responseStatus.setText(currentExchange.getStatus().toString());
+			displayStatusTooltip();
 
-		// status circle
-		displayStatusCircle(currentExchange);
+			// response duration
+			responseDuration.setText(currentExchange.getDuration().toString());
+
+			// status circle
+			displayStatusCircle(currentExchange);
+		}
 	}
 
 	private void displayRequestBody() {
 
-		if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
-			rawBody.setSelected(true);
-			rawBodySelected(null);
-		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
-			formEncodedBody.setSelected(true);
-			formEncodedBodySelected(null);
-		} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.FORM_DATA)) {
-			formDataBody.setSelected(true);
-			formDataBodySelected(null);
+		if (isSpecificationMode()) {
+			if (specificationBodyType == null) {
+				specificationBodyType = Exchange.BodyType.RAW;
+			}
+			if (specificationBodyType.equals(Exchange.BodyType.RAW)) {
+				rawBody.setSelected(true);
+				rawBodySelected(null);
+			} else if (specificationBodyType.equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
+				formEncodedBody.setSelected(true);
+				formEncodedBodySelected(null);
+			} else if (specificationBodyType.equals(Exchange.BodyType.FORM_DATA)) {
+				formDataBody.setSelected(true);
+				formDataBodySelected(null);
+			}
+		} else {
+			if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
+				rawBody.setSelected(true);
+				rawBodySelected(null);
+			} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
+				formEncodedBody.setSelected(true);
+				formEncodedBodySelected(null);
+			} else if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.FORM_DATA)) {
+				formDataBody.setSelected(true);
+				formDataBodySelected(null);
+			}
 		}
 	}
 

@@ -37,7 +37,7 @@ public class Parameter {
 	private final StringProperty location;
 	private StringProperty direction;
 	private final StringProperty name;
-	private final StringProperty value;
+	private StringProperty value;
 
 	@Deprecated
 	public Parameter(final Boolean enabled, Type type, final Location location, final String name, final String value) {
@@ -70,6 +70,12 @@ public class Parameter {
 
 	public Parameter duplicate() {
 		return new Parameter(enabled.get(), Direction.valueOf(direction.get()), Location.valueOf(location.get()), Type.valueOf(type.get()), name.get(), value.get());
+	}
+
+	public Parameter duplicateValue() {
+		Parameter parameter = this;
+		parameter.value = new SimpleStringProperty(parameter.getValue());
+		return this;
 	}
 
 	public Boolean getEnabled() {

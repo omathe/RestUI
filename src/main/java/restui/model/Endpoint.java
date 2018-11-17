@@ -146,7 +146,12 @@ public class Endpoint extends Item {
 		}
 	}
 
+	public void removeParameters(final List<Parameter> parameters) {
 
+		if (parameters != null) {
+			this.parameters.removeAll(parameters);
+		}
+	}
 
 //	// à supprimer
 //	public Optional<Parameter> findParameter(final Location location, final String name) {
