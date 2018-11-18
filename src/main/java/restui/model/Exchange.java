@@ -162,10 +162,19 @@ public class Exchange {
 
 	public void setRequestRawBody(final String body) {
 
-		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.isRequestParameter()).filter(p -> p.isRawBodyParameter()).filter(p -> p.isTypeText()).filter(p -> p.getName() == null).findFirst();
+		final Optional<Parameter> rawBody = parameters.stream()
+				.filter(p -> p.isRequestParameter())
+				.filter(p -> p.isRawBodyParameter())
+				.filter(p -> p.isTypeText())
+				.filter(p -> p.getName() == null)
+				.findFirst();
 		if (rawBody.isPresent()) {
-			rawBody.get().setValue(body);
-		} else {
+			if (body == null || body.isEmpty()) {
+				parameters.remove(rawBody.get());
+			} else {
+				rawBody.get().setValue(body);
+			}
+		} else if (body != null && !body.isEmpty()) {
 			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, null, body);
 			addParameter(parameter);
 		}
@@ -173,7 +182,10 @@ public class Exchange {
 
 	public String getRequestRawBody() {
 
-		final Optional<String> body = parameters.stream().filter(p -> p.isRequestParameter() && p.isRawBodyParameter() && p.getName() == null).map(p -> p.getValue()).findFirst();
+		final Optional<String> body = parameters.stream()
+				.filter(p -> p.isRequestParameter() && p.isRawBodyParameter() && p.getName() == null)
+				.map(p -> p.getValue())
+				.findFirst();
 
 		return body.orElse(null);
 	}

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javafx.collections.FXCollections;
+import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 
@@ -14,12 +15,6 @@ public class Message {
 	public Message() {
 		super();
 		this.parameters = FXCollections.observableArrayList();
-	}
-
-	public Message(final String body, final String bodyType) {
-		super();
-		this.parameters = FXCollections.observableArrayList();
-		setRawBody(body);
 	}
 
 	public String getRawBody() {
@@ -43,7 +38,8 @@ public class Message {
 			rawBody.get().setValue(value);
 		}
 		else {
-			final Parameter parameter = new Parameter(Boolean.TRUE, Type.TEXT, Location.BODY, null, value);
+//			final Parameter parameter = new Parameter(Boolean.TRUE, Type.TEXT, Location.BODY, null, value);
+			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, null, value);
 			addParameter(parameter);
 		}
 	}

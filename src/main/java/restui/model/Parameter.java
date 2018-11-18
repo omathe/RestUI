@@ -39,16 +39,6 @@ public class Parameter {
 	private final StringProperty name;
 	private StringProperty value;
 
-	@Deprecated
-	public Parameter(final Boolean enabled, Type type, final Location location, final String name, final String value) {
-		super();
-		this.enabled = new SimpleBooleanProperty(enabled);
-		this.type = new SimpleStringProperty(type.name());
-		this.location = new SimpleStringProperty(location.name());
-		this.name = new SimpleStringProperty(name);
-		this.value = new SimpleStringProperty(value);
-	}
-
 	public Parameter(final Boolean enabled, final Direction direction, final Location location, final Type type, final String name, String value) {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);

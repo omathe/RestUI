@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 
@@ -116,21 +117,33 @@ public class Endpoint extends Item {
 		return baseUrl;
 	}
 
-	// 2.0
-	public String getRawBody() {
+	public String getRequestRawBody() {
 
-		final Optional<String> body = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name()) && p.getName() == null).map(p -> p.getValue()).findFirst();
+		final Optional<String> body = parameters.stream()
+				.filter(p -> p.isRequestParameter())
+				.filter(p -> p.isRawBodyParameter())
+				.filter(p -> p.getName() == null)
+				.map(p -> p.getValue()).findFirst();
 
 		return body.orElse(null);
 	}
 
-	public void setRawBody(final String value) {
+	public void setRequestRawBody(final String value) {
 
-		final Optional<Parameter> rawBody = parameters.stream().filter(p -> p.getLocation().equals(Location.BODY.name())).filter(p -> p.getType().equals(Type.TEXT.name())).filter(p -> p.getName() == null).findFirst();
+		final Optional<Parameter> rawBody = parameters.stream()
+				.filter(p -> p.isRequestParameter())
+				.filter(p -> p.isRawBodyParameter())
+				.filter(p -> p.isTypeText())
+				.filter(p -> p.getName() == null)
+				.findFirst();
 		if (rawBody.isPresent()) {
-			rawBody.get().setValue(value);
-		} else {
-			final Parameter parameter = new Parameter(Boolean.TRUE, Type.TEXT, Location.BODY, null, value);
+			if (value == null || value.isEmpty()) {
+				parameters.remove(rawBody.get());
+			} else {
+				rawBody.get().setValue(value);
+			}
+		} else if (value != null && !value.isEmpty()) {
+			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, null, value);
 			addParameter(parameter);
 		}
 	}
@@ -153,11 +166,13 @@ public class Endpoint extends Item {
 		}
 	}
 
-//	// à supprimer
-//	public Optional<Parameter> findParameter(final Location location, final String name) {
-//
-//		return parameters.stream().filter(p -> p.isHeaderParameter() && p.getName().equalsIgnoreCase(name)).findFirst();
-//	}
+	// // à supprimer
+	// public Optional<Parameter> findParameter(final Location location, final
+	// String name) {
+	//
+	// return parameters.stream().filter(p -> p.isHeaderParameter() &&
+	// p.getName().equalsIgnoreCase(name)).findFirst();
+	// }
 
 	public Optional<Parameter> findParameter(final Parameter parameter) {
 

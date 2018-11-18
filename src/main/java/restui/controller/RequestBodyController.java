@@ -39,9 +39,8 @@ import restui.model.Parameter.Type;
 public class RequestBodyController extends AbstractController implements Initializable {
 
 	private EndPointController endPointController;
-	private FxmlNode fxmlNode;
-	private BodyType type;
 	private Exchange exchange;
+	private Endpoint endpoint;
 
 	@FXML
 	private VBox vBox;
@@ -120,20 +119,24 @@ public class RequestBodyController extends AbstractController implements Initial
 		});
 	}
 
-	public void displaySpecificationMode(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
+	public void display(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
 
 		this.endPointController = endPointController;
-		this.fxmlNode = fxmlNode;
-		this.type = type;
 
 		ObservableList<Parameter> parameterData = null;
 
-		parameterData = FXCollections.observableArrayList(endPointController.getEndpoint().getParameters()).filtered(p -> p.isRequestParameter());
+		if (endPointController.isSpecificationMode()) {
+			endpoint = endPointController.getEndpoint();
+			parameterData = FXCollections.observableArrayList(endpoint.getParameters()).filtered(p -> p.isRequestParameter());
+		}
+		if (endPointController.isExecutionMode()) {
+			exchange = endPointController.getCurrentExchange();
+			parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
+		}
 
-		Endpoint endpoint = endPointController.getEndpoint();
 		if (type.equals(BodyType.RAW)) {
 			// RAW
-			requestBody.setText(endpoint.getRawBody());
+			requestBody.setText(endPointController.isSpecificationMode() ? endpoint.getRequestRawBody() : exchange.getRequestRawBody());
 
 			endPointController.getBodyVBox().getChildren().clear();
 			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
@@ -145,7 +148,11 @@ public class RequestBodyController extends AbstractController implements Initial
 			VBox.setVgrow(vBox, Priority.ALWAYS);
 
 			requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-				endpoint.setRawBody(newValue);
+				if (endPointController.isSpecificationMode()) {
+					endpoint.setRequestRawBody(newValue);
+				} else {
+					exchange.setRequestRawBody(newValue);
+				}
 			});
 		} else if (type.equals(BodyType.FORM_DATA)) {
 			// FORM_DATA
@@ -178,68 +185,59 @@ public class RequestBodyController extends AbstractController implements Initial
 		}
 	}
 
-	public void displayExecutionMode(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
-
-		this.endPointController = endPointController;
-		this.fxmlNode = fxmlNode;
-		this.type = type;
-
-		exchange = endPointController.getCurrentExchange();
-
-		ObservableList<Parameter> parameterData = null;
-
-		parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
-		if (exchange != null) {
-			if (type.equals(BodyType.RAW)) {
-				// RAW
-				exchange.setRequestBodyType(BodyType.RAW);
-				requestBody.setText(exchange.getRequestRawBody());
-
-				endPointController.getBodyVBox().getChildren().clear();
-				endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-				if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-					endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
-				}
-				vBox.getChildren().clear();
-				vBox.getChildren().add(requestBody);
-				VBox.setVgrow(vBox, Priority.ALWAYS);
-
-				requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-					exchange.setRequestRawBody(newValue);
-				});
-			} else if (type.equals(BodyType.FORM_DATA)) {
-				// FORM_DATA
-				exchange.setRequestBodyType(BodyType.FORM_DATA);
-				bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
-
-				endPointController.getBodyVBox().getChildren().clear();
-				endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-				if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-					endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
-				}
-				bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-				vBox.getChildren().clear();
-				vBox.getChildren().add(bodyTableView);
-				VBox.setVgrow(vBox, Priority.ALWAYS);
-				bodyTableView.refresh();
-			} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-				exchange.setRequestBodyType(BodyType.X_WWW_FORM_URL_ENCODED);
-				// X_WWW_FORM_URL_ENCODED
-				bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter() && p.isTypeText()));
-
-				endPointController.getBodyVBox().getChildren().clear();
-				endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-				if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-					endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
-				}
-				bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-				vBox.getChildren().clear();
-				vBox.getChildren().add(bodyTableView);
-				VBox.setVgrow(vBox, Priority.ALWAYS);
-				bodyTableView.refresh();
-			}
-		}
-	}
+	/*
+	 * public void displayExecutionMode(EndPointController endPointController,
+	 * FxmlNode fxmlNode, BodyType type) {
+	 *
+	 * this.endPointController = endPointController;
+	 *
+	 * exchange = endPointController.getCurrentExchange();
+	 *
+	 * ObservableList<Parameter> parameterData = null;
+	 *
+	 * parameterData =
+	 * FXCollections.observableArrayList(exchange.getParameters()).filtered(p ->
+	 * p.isRequestParameter()); if (exchange != null) { if
+	 * (type.equals(BodyType.RAW)) { // RAW
+	 * exchange.setRequestBodyType(BodyType.RAW);
+	 * requestBody.setText(exchange.getRequestRawBody());
+	 *
+	 * endPointController.getBodyVBox().getChildren().clear();
+	 * endPointController.getBodyVBox().getChildren().add(endPointController.
+	 * getBodyHBox()); if
+	 * (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())
+	 * ) { endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode()); }
+	 * vBox.getChildren().clear(); vBox.getChildren().add(requestBody);
+	 * VBox.setVgrow(vBox, Priority.ALWAYS);
+	 *
+	 * requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
+	 * exchange.setRequestRawBody(newValue); }); } else if
+	 * (type.equals(BodyType.FORM_DATA)) { // FORM_DATA
+	 * exchange.setRequestBodyType(BodyType.FORM_DATA);
+	 * bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
+	 *
+	 * endPointController.getBodyVBox().getChildren().clear();
+	 * endPointController.getBodyVBox().getChildren().add(endPointController.
+	 * getBodyHBox()); if
+	 * (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())
+	 * ) { endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode()); }
+	 * bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
+	 * vBox.getChildren().clear(); vBox.getChildren().add(bodyTableView);
+	 * VBox.setVgrow(vBox, Priority.ALWAYS); bodyTableView.refresh(); } else if
+	 * (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
+	 * exchange.setRequestBodyType(BodyType.X_WWW_FORM_URL_ENCODED); //
+	 * X_WWW_FORM_URL_ENCODED bodyTableView.setItems(parameterData.filtered(p ->
+	 * p.isBodyParameter() && p.isTypeText()));
+	 *
+	 * endPointController.getBodyVBox().getChildren().clear();
+	 * endPointController.getBodyVBox().getChildren().add(endPointController.
+	 * getBodyHBox()); if
+	 * (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())
+	 * ) { endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode()); }
+	 * bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
+	 * vBox.getChildren().clear(); vBox.getChildren().add(bodyTableView);
+	 * VBox.setVgrow(vBox, Priority.ALWAYS); bodyTableView.refresh(); } } }
+	 */
 
 	@Override
 	public void setTreeItem(final TreeItem<Item> treeItem) {

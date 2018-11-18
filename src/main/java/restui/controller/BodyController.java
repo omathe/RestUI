@@ -23,6 +23,7 @@ import restui.controller.cellFactory.BodyParameterValueCellFactory;
 import restui.model.Exchange;
 import restui.model.Item;
 import restui.model.Parameter;
+import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 import restui.model.Request.BodyType;
@@ -83,7 +84,8 @@ public class BodyController extends AbstractController implements Initializable 
 
 		add.setOnAction(e -> {
 			if (exchange != null) {
-				final Parameter parameter = new Parameter(true, Type.TEXT, Location.BODY, "name", "value");
+//				final Parameter parameter = new Parameter(true, Type.TEXT, Location.BODY, "name", "value");
+				final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, "name", "value");
 				//exchange.addRequestParameter(parameter); FIXME 2.0
 			}
 		});

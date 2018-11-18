@@ -644,11 +644,11 @@ public class EndPointController extends AbstractController implements Initializa
 	private void requestBody(BodyType bodyType) {
 		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
 		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
+
 		if (isSpecificationMode()) {
-			requestBodyController.displaySpecificationMode(this, fxmlRequestBody, bodyType);
-		} else {
-			requestBodyController.displayExecutionMode(this, fxmlRequestBody, bodyType);
+			bodyType = specificationBodyType;
 		}
+		requestBodyController.display(this, fxmlRequestBody, bodyType);
 	}
 
 	private void displayStatusTooltip() {
