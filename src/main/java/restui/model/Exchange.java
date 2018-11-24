@@ -302,10 +302,6 @@ public class Exchange {
 		});
 	}
 
-	public void addParameters2(final List<Parameter> parameterList) {
-
-	}
-
 	public boolean isEmpty() {
 		return parameters == null || parameters.isEmpty();
 	}

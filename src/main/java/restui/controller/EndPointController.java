@@ -498,6 +498,8 @@ public class EndPointController extends AbstractController implements Initializa
 				currentExchange = duplicateWorkingExchange(currentExchange);
 			}
 		}
+		// clear response parameter
+		currentExchange.clearResponseParameters();
 
 		currentExchange.setUri(uri.getText());
 		final long t0 = System.currentTimeMillis();
@@ -518,7 +520,6 @@ public class EndPointController extends AbstractController implements Initializa
 			currentExchange.setStatus(response.getStatus());
 
 			// build response headers
-			currentExchange.clearResponseParameters();
 			response.getHeaders().entrySet().stream().forEach(e -> {
 				for (final String value : e.getValue()) {
 					final Parameter header = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.HEADER, Type.TEXT, e.getKey(), value);
@@ -723,11 +724,14 @@ public class EndPointController extends AbstractController implements Initializa
 	// **************************************************************************************************************************
 
 	public void addParameter(final Parameter parameter) {
+		System.out.println("currentExchange = " + currentExchange);
+		System.out.println("parameter = " + parameter);
 
 		if (isSpecificationMode()) {
 			// add the parameter to the endpoint
 			endpoint.addParameter(parameter);
 		} else {
+
 			// add the parameter to the selected exchange if it exists
 			currentExchange.addParameter(parameter.duplicateValue());
 		}
@@ -778,7 +782,8 @@ public class EndPointController extends AbstractController implements Initializa
 		// exchanges
 		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
 
-		if (endpoint.hasExchanges()) {
+		currentExchange = getWorkingExchange();
+		/*if (endpoint.hasExchanges()) {
 			if (workingExchangeExists()) {
 				currentExchange = getWorkingExchange();
 				exchanges.getSelectionModel().select(currentExchange);
@@ -787,7 +792,7 @@ public class EndPointController extends AbstractController implements Initializa
 				exchanges.getSelectionModel().select(0);
 				currentExchange = getSelectedExchange().get();
 			}
-		}
+		}*/
 		display();
 	}
 
@@ -898,7 +903,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Type").ifPresent(p -> {
 
-			String body = "";
+			String body = currentExchange.getResponseBody();
 			if (p.getValue().toLowerCase().contains("json")) {
 				final ObjectMapper mapper = new ObjectMapper();
 				try {
@@ -931,7 +936,12 @@ public class EndPointController extends AbstractController implements Initializa
 						e.printStackTrace();
 					}
 				}
-			} else {
+			} else if (p.getValue().toLowerCase().contains("html")) {
+				// TODO afficher le contenu HTML
+				System.err.println("html");
+				responseBody.setText(body);
+			}
+			else {
 				responseBody.setText(body);
 			}
 		});

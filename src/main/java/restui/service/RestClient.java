@@ -310,7 +310,8 @@ public class RestClient {
 	private static WebResource.Builder addHeaders(final WebResource.Builder builder, final List<Parameter> parameters) {
 
 		// add query parameters
-		parameters.stream().filter(p -> p.getEnabled() && p.isHeaderParameter()).forEach(p -> builder.header(p.getName(), p.getValue()));
+		parameters.stream()
+				.filter(p -> p.getEnabled() && p.isHeaderParameter()).forEach(p -> builder.header(p.getName(), p.getValue()));
 
 		return builder;
 	}
