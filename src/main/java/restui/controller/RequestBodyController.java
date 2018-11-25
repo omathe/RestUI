@@ -41,6 +41,9 @@ public class RequestBodyController extends AbstractController implements Initial
 	private EndPointController endPointController;
 	private Exchange exchange;
 	private Endpoint endpoint;
+	private ContextMenu contextMenu;
+	private MenuItem add;
+	private MenuItem remove;
 
 	@FXML
 	private VBox vBox;
@@ -63,6 +66,7 @@ public class RequestBodyController extends AbstractController implements Initial
 	@FXML
 	private TextArea requestBody;
 
+
 	public RequestBodyController() {
 		super();
 	}
@@ -70,10 +74,9 @@ public class RequestBodyController extends AbstractController implements Initial
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		final ContextMenu contextMenu = new ContextMenu();
-		final MenuItem add = new MenuItem("Add");
-		final MenuItem remove = new MenuItem("Remove");
-		contextMenu.getItems().addAll(add, remove);
+		contextMenu = new ContextMenu();
+		add = new MenuItem("Add");
+		remove = new MenuItem("Remove");
 
 		bodyTableView.setContextMenu(contextMenu);
 		bodyTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -128,13 +131,25 @@ public class RequestBodyController extends AbstractController implements Initial
 		if (endPointController.isSpecificationMode()) {
 			endpoint = endPointController.getEndpoint();
 			parameterData = FXCollections.observableArrayList(endpoint.getParameters()).filtered(p -> p.isRequestParameter());
+			requestBody.setEditable(true);
+			bodyTableView.setEditable(true);
 		}
 		if (endPointController.isExecutionMode()) {
 			exchange = endPointController.getCurrentExchange();
 			parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
+
+			// a finalized exchange is not editable
+			requestBody.setEditable(!endPointController.exchangeFinalized(exchange));
+			bodyTableView.setEditable(!endPointController.exchangeFinalized(exchange));
+
+			contextMenu.getItems().clear();
+			if (!endPointController.exchangeFinalized(exchange)) {
+				contextMenu.getItems().addAll(add, remove);
+			}
 		}
 
 		if (type.equals(BodyType.RAW)) {
+
 			// RAW
 			requestBody.setText(endPointController.isSpecificationMode() ? endpoint.getRequestRawBody() : exchange.getRequestRawBody());
 
@@ -184,60 +199,6 @@ public class RequestBodyController extends AbstractController implements Initial
 			bodyTableView.refresh();
 		}
 	}
-
-	/*
-	 * public void displayExecutionMode(EndPointController endPointController,
-	 * FxmlNode fxmlNode, BodyType type) {
-	 *
-	 * this.endPointController = endPointController;
-	 *
-	 * exchange = endPointController.getCurrentExchange();
-	 *
-	 * ObservableList<Parameter> parameterData = null;
-	 *
-	 * parameterData =
-	 * FXCollections.observableArrayList(exchange.getParameters()).filtered(p ->
-	 * p.isRequestParameter()); if (exchange != null) { if
-	 * (type.equals(BodyType.RAW)) { // RAW
-	 * exchange.setRequestBodyType(BodyType.RAW);
-	 * requestBody.setText(exchange.getRequestRawBody());
-	 *
-	 * endPointController.getBodyVBox().getChildren().clear();
-	 * endPointController.getBodyVBox().getChildren().add(endPointController.
-	 * getBodyHBox()); if
-	 * (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())
-	 * ) { endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode()); }
-	 * vBox.getChildren().clear(); vBox.getChildren().add(requestBody);
-	 * VBox.setVgrow(vBox, Priority.ALWAYS);
-	 *
-	 * requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-	 * exchange.setRequestRawBody(newValue); }); } else if
-	 * (type.equals(BodyType.FORM_DATA)) { // FORM_DATA
-	 * exchange.setRequestBodyType(BodyType.FORM_DATA);
-	 * bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
-	 *
-	 * endPointController.getBodyVBox().getChildren().clear();
-	 * endPointController.getBodyVBox().getChildren().add(endPointController.
-	 * getBodyHBox()); if
-	 * (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())
-	 * ) { endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode()); }
-	 * bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-	 * vBox.getChildren().clear(); vBox.getChildren().add(bodyTableView);
-	 * VBox.setVgrow(vBox, Priority.ALWAYS); bodyTableView.refresh(); } else if
-	 * (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
-	 * exchange.setRequestBodyType(BodyType.X_WWW_FORM_URL_ENCODED); //
-	 * X_WWW_FORM_URL_ENCODED bodyTableView.setItems(parameterData.filtered(p ->
-	 * p.isBodyParameter() && p.isTypeText()));
-	 *
-	 * endPointController.getBodyVBox().getChildren().clear();
-	 * endPointController.getBodyVBox().getChildren().add(endPointController.
-	 * getBodyHBox()); if
-	 * (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())
-	 * ) { endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode()); }
-	 * bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-	 * vBox.getChildren().clear(); vBox.getChildren().add(bodyTableView);
-	 * VBox.setVgrow(vBox, Priority.ALWAYS); bodyTableView.refresh(); } } }
-	 */
 
 	@Override
 	public void setTreeItem(final TreeItem<Item> treeItem) {

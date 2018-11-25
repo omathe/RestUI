@@ -224,7 +224,13 @@ public class EndPointController extends AbstractController implements Initializa
 					copy.setDisable(!parameter.isPresent());
 					paste.setDisable(ObjectClipboard.getInstance().getParameters().isEmpty());
 					delete.setDisable(!parameter.isPresent());
-					requestParametersContextMenu.getItems().addAll(add, copy, paste, new SeparatorMenuItem(), delete);
+
+					requestParametersContextMenu.getItems().clear();
+					if (exchangeFinalized(currentExchange)) {
+						requestParametersContextMenu.getItems().addAll(copy);
+					} else {
+						requestParametersContextMenu.getItems().addAll(add, copy, paste, new SeparatorMenuItem(), delete);
+					}
 					requestParameters.setContextMenu(requestParametersContextMenu);
 
 					addHeader.setOnAction(e -> {
@@ -385,7 +391,7 @@ public class EndPointController extends AbstractController implements Initializa
 			if (optionalExchange.isPresent()) {
 				currentExchange = getSelectedExchange().get();
 
-				System.err.println("current exchange has name " + currentExchange.getName());
+				System.out.println("current exchange : " + currentExchange.getName());
 				display();
 			}
 
@@ -422,6 +428,8 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		endpoint = (Endpoint) this.treeItem.getValue();
+		endpoint.getExchanges().stream().forEach(e -> e.getParameters().forEach(p -> System.out.println(p)));
+
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
@@ -490,8 +498,7 @@ public class EndPointController extends AbstractController implements Initializa
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
 			exchanges.getSelectionModel().select(currentExchange);
-		}
-		else {
+		} else {
 			if (currentExchange == null) {
 				currentExchange = createWorkingExchange();
 			} else {
@@ -620,26 +627,32 @@ public class EndPointController extends AbstractController implements Initializa
 
 	@FXML
 	protected void rawBodySelected(final MouseEvent event) {
-		requestBody(BodyType.RAW);
 		if (isSpecificationMode()) {
 			specificationBodyType = Exchange.BodyType.RAW;
+		} else {
+			currentExchange.setRequestBodyType(Exchange.BodyType.RAW);
 		}
+		requestBody(BodyType.RAW);
 	}
 
 	@FXML
 	protected void formEncodedBodySelected(final MouseEvent event) {
-		requestBody(BodyType.X_WWW_FORM_URL_ENCODED);
 		if (isSpecificationMode()) {
 			specificationBodyType = Exchange.BodyType.X_WWW_FORM_URL_ENCODED;
+		} else {
+			currentExchange.setRequestBodyType(Exchange.BodyType.X_WWW_FORM_URL_ENCODED);
 		}
+		requestBody(BodyType.X_WWW_FORM_URL_ENCODED);
 	}
 
 	@FXML
 	protected void formDataBodySelected(final MouseEvent event) {
-		requestBody(BodyType.FORM_DATA);
 		if (isSpecificationMode()) {
 			specificationBodyType = Exchange.BodyType.FORM_DATA;
+		} else {
+			currentExchange.setRequestBodyType(Exchange.BodyType.FORM_DATA);
 		}
+		requestBody(BodyType.FORM_DATA);
 	}
 
 	private void requestBody(BodyType bodyType) {
@@ -724,8 +737,6 @@ public class EndPointController extends AbstractController implements Initializa
 	// **************************************************************************************************************************
 
 	public void addParameter(final Parameter parameter) {
-		System.out.println("currentExchange = " + currentExchange);
-		System.out.println("parameter = " + parameter);
 
 		if (isSpecificationMode()) {
 			// add the parameter to the endpoint
@@ -783,16 +794,7 @@ public class EndPointController extends AbstractController implements Initializa
 		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
 
 		currentExchange = getWorkingExchange();
-		/*if (endpoint.hasExchanges()) {
-			if (workingExchangeExists()) {
-				currentExchange = getWorkingExchange();
-				exchanges.getSelectionModel().select(currentExchange);
-			} else {
-				// select first exchange
-				exchanges.getSelectionModel().select(0);
-				currentExchange = getSelectedExchange().get();
-			}
-		}*/
+
 		display();
 	}
 
@@ -831,7 +833,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		if (currentExchange != null) {
 			// request parameters
-			// add endpoint new parameters
+			// add endpoint new parameters if any
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
 					.filter(p -> p.isRequestParameter())
 					.map(p -> p.duplicate())
@@ -849,6 +851,9 @@ public class EndPointController extends AbstractController implements Initializa
 
 			// request body
 			displayRequestBody();
+
+			// request parameters are not editable for a finalized exchange
+			requestParameters.setEditable(!exchangeFinalized(currentExchange));
 
 			buildUri();
 
@@ -938,10 +943,8 @@ public class EndPointController extends AbstractController implements Initializa
 				}
 			} else if (p.getValue().toLowerCase().contains("html")) {
 				// TODO afficher le contenu HTML
-				System.err.println("html");
 				responseBody.setText(body);
-			}
-			else {
+			} else {
 				responseBody.setText(body);
 			}
 		});
@@ -1050,4 +1053,8 @@ public class EndPointController extends AbstractController implements Initializa
 		return endpoint;
 	}
 
+	public boolean exchangeFinalized(Exchange exchange) {
+
+		return exchange != null && exchange.getStatus() != 0 && !exchange.getName().isEmpty();
+	}
 }

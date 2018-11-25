@@ -24,6 +24,11 @@ import restui.model.Project;
 
 public class ExchangesService {
 
+	/**
+	 * Loads exchanges from the exchanges file
+	 * @param uri - The exchanges file
+	 * @param project - The project to populate
+	 */
 	public static void loadExchanges(URI uri, Project project) {
 
 		final SAXBuilder sxb = new SAXBuilder();
@@ -39,7 +44,10 @@ public class ExchangesService {
 					String endpointName = endpointElement.getAttributeValue("name");
 
 					// searching the endpoint in the project
-					Optional<Endpoint> optionalEndpoint = project.getAllChildren().filter(item -> item instanceof Endpoint && item.getName().equalsIgnoreCase(endpointName)).map(item -> (Endpoint) item).findFirst();
+					Optional<Endpoint> optionalEndpoint = project.getAllChildren()
+							.filter(item -> item instanceof Endpoint && item.getName().equalsIgnoreCase(endpointName))
+							.map(item -> (Endpoint) item)
+							.findFirst();
 
 					if (optionalEndpoint.isPresent()) {
 						Endpoint endpoint = optionalEndpoint.get();
@@ -60,19 +68,14 @@ public class ExchangesService {
 								String parameterName = parameterElement.getAttributeValue("name");
 								String value = parameterElement.getAttributeValue("value");
 								Parameter parameter = new Parameter(Boolean.valueOf(enabled), Direction.valueOf(direction), Location.valueOf(location), Type.valueOf(type), parameterName, value);
-								// add request parameter to exchange only if the endpoint contains it
-								if (direction.equalsIgnoreCase(Direction.REQUEST.name())) {
-									if (endpoint.containsParameter(parameter)) {
-										exchange.addParameter(parameter);
-									}
-								}
-								else {
-									// Response parameter
-									exchange.addParameter(parameter);
-								}
+
+								// add parameter to the exchange
+								exchange.addParameter(parameter);
 							}
 							// retrieve the endpoint parameters that are not in the exchange
-							endpoint.getParameters().stream().filter(p -> !exchange.containsParameter(p)).forEach(p -> exchange.addParameter(p.duplicate()));
+							endpoint.getParameters().stream()
+									.filter(p -> !exchange.containsParameter(p))
+									.forEach(p -> exchange.addParameter(p.duplicate()));
 
 							if (!exchange.isEmpty()) {
 								endpoint.addExchange(exchange);
@@ -91,45 +94,45 @@ public class ExchangesService {
 		if (project != null) {
 			Element root = new Element("exchanges");
 			project.getAllChildren().filter(item -> item instanceof Endpoint)
-				.map(item -> (Endpoint) item)
-				.forEach(endpoint -> {
+					.map(item -> (Endpoint) item)
+					.forEach(endpoint -> {
 
-					// endpoint
-					Element elementEndpoint = new Element("endpoint");
-					elementEndpoint.setAttribute(new Attribute("name", endpoint.getName()));
+						// endpoint
+						Element elementEndpoint = new Element("endpoint");
+						elementEndpoint.setAttribute(new Attribute("name", endpoint.getName()));
 
-					root.addContent(elementEndpoint);
+						root.addContent(elementEndpoint);
 
-					// exchanges
-					endpoint.getExchanges().stream().forEach(exchange -> {
-						Element elementExchange = new Element("exchange");
-						elementExchange.setAttribute(new Attribute("name", exchange.getName()));
-						elementExchange.setAttribute(new Attribute("date", exchange.getDate().toString()));
-						elementExchange.setAttribute(new Attribute("requestBodyType", exchange.getRequestBodyType().name()));
-						elementExchange.setAttribute(new Attribute("status", exchange.getStatus() == null ? "" : exchange.getStatus().toString()));
-						elementExchange.setAttribute(new Attribute("duration", exchange.getDuration() == null ? "" : exchange.getDuration().toString()));
+						// exchanges
+						endpoint.getExchanges().stream().forEach(exchange -> {
+							Element elementExchange = new Element("exchange");
+							elementExchange.setAttribute(new Attribute("name", exchange.getName()));
+							elementExchange.setAttribute(new Attribute("date", exchange.getDate().toString()));
+							elementExchange.setAttribute(new Attribute("requestBodyType", exchange.getRequestBodyType().name()));
+							elementExchange.setAttribute(new Attribute("status", exchange.getStatus() == null ? "" : exchange.getStatus().toString()));
+							elementExchange.setAttribute(new Attribute("duration", exchange.getDuration() == null ? "" : exchange.getDuration().toString()));
 
-						elementEndpoint.addContent(elementExchange);
+							elementEndpoint.addContent(elementExchange);
 
-						// parameters
-						exchange.getParameters().forEach(parameter -> {
-							Element elementParameter = new Element("parameter");
-							elementParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
-							elementParameter.setAttribute(new Attribute("direction", parameter.getDirection()));
-							elementParameter.setAttribute(new Attribute("location", parameter.getLocation()));
-							elementParameter.setAttribute(new Attribute("type", parameter.getType()));
-							if (parameter.getName() != null) {
-								elementParameter.setAttribute(new Attribute("name", parameter.getName()));
-							}
-							if (parameter.getValue() != null) {
-								elementParameter.setAttribute(new Attribute("value", parameter.getValue()));
-							}
+							// parameters
+							exchange.getParameters().forEach(parameter -> {
+								Element elementParameter = new Element("parameter");
+								elementParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
+								elementParameter.setAttribute(new Attribute("direction", parameter.getDirection()));
+								elementParameter.setAttribute(new Attribute("location", parameter.getLocation()));
+								elementParameter.setAttribute(new Attribute("type", parameter.getType()));
+								if (parameter.getName() != null) {
+									elementParameter.setAttribute(new Attribute("name", parameter.getName()));
+								}
+								if (parameter.getValue() != null) {
+									elementParameter.setAttribute(new Attribute("value", parameter.getValue()));
+								}
 
-							elementExchange.addContent(elementParameter);
+								elementExchange.addContent(elementParameter);
+							});
+
 						});
-
 					});
-				});
 			final XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			final Document document = new Document(root);
 

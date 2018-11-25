@@ -52,8 +52,9 @@ public class Parameter {
 	public Parameter(final Parameter parameter) {
 		super();
 		this.enabled = new SimpleBooleanProperty(parameter.getEnabled());
-		this.type = new SimpleStringProperty(parameter.getType());
+		this.direction = new SimpleStringProperty(parameter.getDirection());
 		this.location = new SimpleStringProperty(parameter.getLocation());
+		this.type = new SimpleStringProperty(parameter.getType());
 		this.name = new SimpleStringProperty(parameter.getName());
 		this.value = new SimpleStringProperty(parameter.getValue());
 	}
