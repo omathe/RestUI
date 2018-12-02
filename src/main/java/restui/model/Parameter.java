@@ -28,10 +28,6 @@ public class Parameter {
 		TEXT, FILE;
 	}
 
-	public enum BodyType {
-		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
-	}
-
 	private final BooleanProperty enabled;
 	private final StringProperty type;
 	private final StringProperty location;

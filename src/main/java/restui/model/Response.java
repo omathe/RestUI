@@ -1,11 +1,8 @@
 package restui.model;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
 public class Response extends Message {
 
-	private IntegerProperty status;
+	/*private IntegerProperty status;
 	private IntegerProperty duration;
 
 	public Response() {
@@ -48,5 +45,5 @@ public class Response extends Message {
 	public String toString() {
 		return "Response [status=" + status + "]";
 	}
-
+*/
 }

@@ -127,9 +127,9 @@ public class RequestBodyController extends AbstractController implements Initial
 		this.endPointController = endPointController;
 
 		ObservableList<Parameter> parameterData = null;
+		endpoint = endPointController.getEndpoint();
 
 		if (endPointController.isSpecificationMode()) {
-			endpoint = endPointController.getEndpoint();
 			parameterData = FXCollections.observableArrayList(endpoint.getParameters()).filtered(p -> p.isRequestParameter());
 			requestBody.setEditable(true);
 			bodyTableView.setEditable(true);

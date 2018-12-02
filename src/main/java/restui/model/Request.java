@@ -1,11 +1,9 @@
 package restui.model;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
+@Deprecated
 public class Request extends Message {
 
-	public enum BodyType {
+	/*public enum BodyType {
 		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
 	}
 
@@ -58,5 +56,5 @@ public class Request extends Message {
 	public String toString() {
 		return "Request [uri=" + uri.get() + ", bodyType=" + bodyType + "]";
 	}
-
+*/
 }

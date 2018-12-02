@@ -21,12 +21,12 @@ import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
 import restui.controller.cellFactory.BodyParameterValueCellFactory;
 import restui.model.Exchange;
+import restui.model.Exchange.BodyType;
 import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
-import restui.model.Request.BodyType;
 
 public class BodyController extends AbstractController implements Initializable {
 

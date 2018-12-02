@@ -180,7 +180,9 @@ public class RestClient {
 
 			} else if (exchange.getRequestBodyType().equals(BodyType.RAW)) {
 				body = exchange.getRequestRawBody();
-				bos.write(new String(body).getBytes());
+				if (body != null) {
+					bos.write(new String(body).getBytes());
+				}
 
 			} else if (exchange.getRequestBodyType().equals(BodyType.FORM_DATA)) {
 				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
@@ -248,7 +250,9 @@ public class RestClient {
 
 			} else if (exchange.getRequestBodyType().equals(BodyType.RAW)) {
 				body = exchange.getRequestRawBody();
-				bos.write(new String(body).getBytes());
+				if (body != null) {
+					bos.write(new String(body).getBytes());
+				}
 
 			} else if (exchange.getRequestBodyType().equals(BodyType.FORM_DATA)) {
 				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");

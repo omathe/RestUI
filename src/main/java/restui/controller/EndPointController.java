@@ -216,7 +216,8 @@ public class EndPointController extends AbstractController implements Initializa
 					final Menu add = new Menu("Add");
 					final MenuItem addHeader = new MenuItem(Parameter.Location.HEADER.name());
 					final MenuItem addQuery = new MenuItem(Parameter.Location.QUERY.name());
-					add.getItems().addAll(addHeader, addQuery);
+					final MenuItem addPath = new MenuItem(Parameter.Location.PATH.name());
+					add.getItems().addAll(addHeader, addQuery, addPath);
 
 					final MenuItem copy = new MenuItem("Copy");
 					final MenuItem paste = new MenuItem("Paste");
@@ -240,6 +241,10 @@ public class EndPointController extends AbstractController implements Initializa
 					addQuery.setOnAction(e -> {
 						List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
 						addParameter(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
+					});
+					addPath.setOnAction(e -> {
+						List<String> parameterNames = requestParameters.getItems().stream().map(p -> p.getName()).collect(Collectors.toList());
+						addParameter(new Parameter(true, Direction.REQUEST, Location.PATH, Type.TEXT, Strings.getNextValue(parameterNames, "name"), ""));
 					});
 					paste.setOnAction(e -> {
 						final List<Parameter> parameters = ObjectClipboard.getInstance().getParameters();
@@ -428,7 +433,9 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		endpoint = (Endpoint) this.treeItem.getValue();
-		endpoint.getExchanges().stream().forEach(e -> e.getParameters().forEach(p -> System.out.println(p)));
+		System.err.println(endpoint.getName());
+
+		endpoint.getParameters().stream().forEach(p -> System.out.println(">>> " + p));
 
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
@@ -441,7 +448,6 @@ public class EndPointController extends AbstractController implements Initializa
 		} else {
 			modeSpecification(null);
 		}
-		display();
 	}
 
 	public Exchange getCurrentExchange() {
@@ -511,7 +517,7 @@ public class EndPointController extends AbstractController implements Initializa
 		currentExchange.setUri(uri.getText());
 		final long t0 = System.currentTimeMillis();
 
-		System.err.println(currentExchange.getName() + "URI = " + currentExchange.getUri());
+		System.out.println(currentExchange.getName() + "URI = " + currentExchange.getUri());
 
 		ClientResponse response = RestClient.execute(method.getValue(), currentExchange);
 
@@ -743,7 +749,7 @@ public class EndPointController extends AbstractController implements Initializa
 			endpoint.addParameter(parameter);
 		} else {
 
-			// add the parameter to the selected exchange if it exists
+			// add the parameter to the current exchange
 			currentExchange.addParameter(parameter.duplicateValue());
 		}
 		display();
@@ -795,6 +801,9 @@ public class EndPointController extends AbstractController implements Initializa
 
 		currentExchange = getWorkingExchange();
 
+		// select the current exchange
+		exchanges.getSelectionModel().select(currentExchange);
+
 		display();
 	}
 
@@ -812,6 +821,9 @@ public class EndPointController extends AbstractController implements Initializa
 		// request parameters
 		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters())
 				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
+
+		endpoint.getParameters().stream().forEach(p -> System.out.println(">>> " + p));
+
 		requestParameters.refresh();
 
 		// response parameters
@@ -955,6 +967,7 @@ public class EndPointController extends AbstractController implements Initializa
 		boolean validUri = true;
 
 		String valuedUri = baseUrl + path.getText();
+
 		Set<String> queryParams = new HashSet<String>();
 		if (!valuedUri.toLowerCase().startsWith("http")) {
 			validUri = false;
@@ -981,6 +994,10 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 		uri.setText(valuedUri);
 
+		if (valuedUri.contains(Path.ID_PREFIX)) {
+			validUri = false;
+		}
+
 		execute.setDisable(!validUri);
 	}
 
@@ -994,9 +1011,10 @@ public class EndPointController extends AbstractController implements Initializa
 				workingExchange = optionalWorkingExchange.get();
 			} else {
 				Optional<Exchange> selectedExchange = getSelectedExchange();
-				if (selectedExchange.isPresent()) {
-					workingExchange = getSelectedExchange().get().duplicate("");
+				if (!selectedExchange.isPresent()) {
+					exchanges.getSelectionModel().select(0); // select first exchange
 				}
+				workingExchange = getSelectedExchange().get().duplicate("");
 			}
 		} else {
 			workingExchange = new Exchange("", Instant.now().toEpochMilli());
