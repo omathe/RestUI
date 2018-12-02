@@ -395,8 +395,6 @@ public class EndPointController extends AbstractController implements Initializa
 			Optional<Exchange> optionalExchange = getSelectedExchange();
 			if (optionalExchange.isPresent()) {
 				currentExchange = getSelectedExchange().get();
-
-				System.out.println("current exchange : " + currentExchange.getName());
 				display();
 			}
 
@@ -433,10 +431,6 @@ public class EndPointController extends AbstractController implements Initializa
 		super.setTreeItem(treeItem);
 
 		endpoint = (Endpoint) this.treeItem.getValue();
-		System.err.println(endpoint.getName());
-
-		endpoint.getParameters().stream().forEach(p -> System.out.println(">>> " + p));
-
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
@@ -821,9 +815,6 @@ public class EndPointController extends AbstractController implements Initializa
 		// request parameters
 		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters())
 				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
-
-		endpoint.getParameters().stream().forEach(p -> System.out.println(">>> " + p));
-
 		requestParameters.refresh();
 
 		// response parameters
