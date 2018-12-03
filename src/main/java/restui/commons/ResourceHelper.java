@@ -52,7 +52,7 @@ public class ResourceHelper {
 				final String entryName = entry.getName();
 
 				if (entryName.startsWith(jarPath)) {
-					final Path path = Paths.get(destination, File.separator, entryName);
+					final Path path = Paths.get(destination, "/", entryName);
 
 					if (entry.isDirectory()) {
 						path.toFile().mkdirs();
@@ -84,7 +84,7 @@ public class ResourceHelper {
 		final Stream<Path> paths = Files.walk(root).filter(Files::isRegularFile);
 
 		for (final Path sourcePath : paths.collect(Collectors.toList())) {
-			final Path destinationPath = Paths.get(destination, File.separator, source, File.separator, root.relativize(sourcePath).toString());
+			final Path destinationPath = Paths.get(destination, "/", source, "/", root.relativize(sourcePath).toString());
 			if (!destinationPath.getParent().toFile().exists()) {
 				destinationPath.getParent().toFile().mkdirs();
 			}

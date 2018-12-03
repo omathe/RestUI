@@ -207,11 +207,11 @@ public class ProjectService {
 		return null;
 	}
 
-	public static URI buildExchangesUri(URI projectUri) {
+	public static URI buildExchangesUri(final URI projectUri) {
 		String exchangesUri = null;
 
 		String uri = projectUri.toString();
-		int index = uri.lastIndexOf(File.separator);
+		int index = uri.lastIndexOf("/");
 		if (index != -1) {
 			String path = uri.substring(0, index);
 			String fileName = uri.substring(index + 1, uri.length());
@@ -228,7 +228,7 @@ public class ProjectService {
 					extension = split[1];
 				}
 				String exchangeFileName = name + "-exchanges" + (extension.isEmpty() ? "" : "." + extension);
-				exchangesUri = path + File.separator + exchangeFileName;
+				exchangesUri = path + "/" + exchangeFileName;
 			}
 		}
 		return URI.create(exchangesUri);

@@ -16,13 +16,13 @@ import restui.model.Application;
 public class ApplicationService {
 
 	private static final String APPLICATION_HOME = "restui";
-	private static final String APPLICATION_FILE = getApplicationHome() + File.separator + "application.xml";
+	private static final String APPLICATION_FILE = getApplicationHome() + "/" + "application.xml";
 	private static final String DEFAULT_STYLE_URI = "file://" + getApplicationHome() + "/style/default/stylesheet.css";
 
 	public static String getApplicationHome() {
 
 		final String userHome = System.getProperty("user.home");
-		return userHome + File.separator + getPrefix() + APPLICATION_HOME;
+		return userHome + "/" + getPrefix() + APPLICATION_HOME;
 	}
 
 	public static void init() {
