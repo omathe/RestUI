@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jdom2.Attribute;
@@ -137,14 +138,21 @@ public class ProjectService {
 			// parameters
 			if (endpoint.hasParameters()) {
 				final Element elementParameters = new Element("parameters");
-				// for (final Parameter parameter : endpoint.getParameters()) {
-				for (final Parameter parameter : endpoint.getParameters().stream().filter(p -> p.isRequestParameter() && (p.isHeaderParameter() || p.isPathParameter() || p.isQueryParameter())).collect(Collectors.toList())) {
+				List<Parameter> parameters = endpoint.getParameters().stream()
+						.filter(p -> p.isRequestParameter())
+						.collect(Collectors.toList());
+//				List<Parameter> parameters = endpoint.getParameters().stream()
+//						.filter(p -> p.isRequestParameter() && (p.isHeaderParameter() || p.isPathParameter() || p.isQueryParameter()))
+//						.collect(Collectors.toList());
+				for (final Parameter parameter : parameters) {
 					final Element elementParameter = new Element("parameter");
 					elementParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));
 					elementParameter.setAttribute(new Attribute("direction", parameter.getDirection()));
 					elementParameter.setAttribute(new Attribute("location", parameter.getLocation()));
 					elementParameter.setAttribute(new Attribute("type", parameter.getType()));
-					elementParameter.setAttribute(new Attribute("name", parameter.getName()));
+					if (parameter.getName() != null) {
+						elementParameter.setAttribute(new Attribute("name", parameter.getName()));
+					}
 					if (parameter.getValue() != null) {
 						elementParameter.setAttribute(new Attribute("value", parameter.getValue()));
 					}
@@ -195,7 +203,10 @@ public class ProjectService {
 						final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
 						final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
 						final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
-						final String name = elementParameter.getAttributeValue("name");
+						
+						String attributeName = elementParameter.getAttributeValue("name");
+						
+						final String name = attributeName == null ? null : attributeName;
 						final String value = elementParameter.getAttributeValue("value");
 						final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
 						endpoint.addParameter(parameter);

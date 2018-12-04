@@ -66,7 +66,6 @@ public class RequestBodyController extends AbstractController implements Initial
 	@FXML
 	private TextArea requestBody;
 
-
 	public RequestBodyController() {
 		super();
 	}
@@ -120,9 +119,17 @@ public class RequestBodyController extends AbstractController implements Initial
 				deleteRequestParameters(bodyTableView.getSelectionModel().getSelectedItems());
 			}
 		});
+		
+		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (endPointController.isSpecificationMode()) {
+				endpoint.setRequestRawBody(newValue);
+			} else {
+				exchange.setRequestRawBody(newValue);
+			}
+		});
 	}
 
-	public void display(EndPointController endPointController, FxmlNode fxmlNode, BodyType type) {
+	public void display(final EndPointController endPointController, final FxmlNode fxmlNode, final BodyType type) {
 
 		this.endPointController = endPointController;
 
@@ -161,14 +168,15 @@ public class RequestBodyController extends AbstractController implements Initial
 			vBox.getChildren().clear();
 			vBox.getChildren().add(requestBody);
 			VBox.setVgrow(vBox, Priority.ALWAYS);
-
-			requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-				if (endPointController.isSpecificationMode()) {
-					endpoint.setRequestRawBody(newValue);
-				} else {
-					exchange.setRequestRawBody(newValue);
-				}
-			});
+			/*
+						requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
+							if (endPointController.isSpecificationMode()) {
+								endpoint.setRequestRawBody(newValue);
+							} else {
+								exchange.setRequestRawBody(newValue);
+							}
+						});
+			*/
 		} else if (type.equals(BodyType.FORM_DATA)) {
 			// FORM_DATA
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
