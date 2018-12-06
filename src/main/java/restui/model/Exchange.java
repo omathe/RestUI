@@ -22,12 +22,12 @@ public class Exchange {
 		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
 	}
 
-	private StringProperty name;
-	private ObjectProperty<Long> date;
-	private IntegerProperty status;
-	private IntegerProperty duration;
+	private final StringProperty name;
+	private final ObjectProperty<Long> date;
+	private final IntegerProperty status;
+	private final IntegerProperty duration;
 	private BodyType requestBodyType;
-	private StringProperty uri;
+	private final StringProperty uri;
 	private List<Parameter> parameters;
 
 	public Exchange(final String name, final Long date) {
@@ -41,7 +41,7 @@ public class Exchange {
 		this.parameters = FXCollections.observableArrayList();
 	}
 
-	public Exchange(String endpointName, final String name, final Long date, Integer duration, Integer status, BodyType requestBodyType) {
+	public Exchange(final String endpointName, final String name, final Long date, final Integer duration, final Integer status, final BodyType requestBodyType) {
 		super();
 		this.name = new SimpleStringProperty(name);
 		this.date = new SimpleObjectProperty<>(date);
@@ -63,7 +63,7 @@ public class Exchange {
 		return duplicate;
 	}
 
-	public void updateValues(Exchange source) {
+	public void updateValues(final Exchange source) {
 		setDate(source.getDate());
 		setStatus(source.getStatus());
 		setDuration(source.getDuration());
@@ -100,7 +100,7 @@ public class Exchange {
 		return parameters;
 	}
 
-	public void setParameters(List<Parameter> parameters) {
+	public void setParameters(final List<Parameter> parameters) {
 		this.parameters = parameters;
 	}
 
@@ -224,9 +224,11 @@ public class Exchange {
 		parameters.removeIf(p -> p.isResponseParameter());
 	}
 
-	public Optional<Parameter> findParameter(Direction direction, final Location location, final String name) {
+	public Optional<Parameter> findParameter(final Direction direction, final Location location, final String name) {
 
-		return parameters.stream().filter(p -> p.getDirection().equals(direction.name()) && p.getLocation().equals(location.name()) && p.getName().equalsIgnoreCase(name)).findFirst();
+		return parameters.stream()
+				.filter(p -> p.getDirection().equals(direction.name()) && p.getLocation().equals(location.name()) && p.getName().equalsIgnoreCase(name))
+				.findFirst();
 	}
 
 	//
@@ -246,7 +248,7 @@ public class Exchange {
 		return requestBodyType;
 	}
 
-	public void setRequestBodyType(BodyType requestBodyType) {
+	public void setRequestBodyType(final BodyType requestBodyType) {
 		this.requestBodyType = requestBodyType;
 	}
 
@@ -282,7 +284,7 @@ public class Exchange {
 		return duration.get();
 	}
 
-	public void setDuration(Integer duration) {
+	public void setDuration(final Integer duration) {
 		this.duration.set(duration);
 	}
 
@@ -320,19 +322,24 @@ public class Exchange {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		Exchange other = (Exchange) obj;
 		if (name == null) {
-			if (other.name != null)
+			if (other.name != null) {
 				return false;
-		} else if (!name.get().equalsIgnoreCase(other.name.get()))
+			}
+		} else if (!name.get().equalsIgnoreCase(other.name.get())) {
 			return false;
+		}
 		return true;
 	}
 

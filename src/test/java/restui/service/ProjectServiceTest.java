@@ -1,81 +1,43 @@
 package restui.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
 import org.junit.Test;
 
+import restui.model.BaseUrl;
+import restui.model.Endpoint;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
+import restui.model.Path;
+import restui.model.Project;
 
 public class ProjectServiceTest {
 
-//	@Test
-//	public void buildExchangesUri() {
-//
-//		String projectUri = "file:/home/olivier/.restui/project.xml";
-//		String exchangesUri = ProjectService.buildExchangesUri(projectUri);
-//		System.out.println(exchangesUri);
-//		Assert.assertEquals("file:/home/olivier/.restui/project-exchanges.xml", exchangesUri);
-//
-//		projectUri = null;
-//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-//		System.out.println(exchangesUri);
-//		Assert.assertNull(exchangesUri);
-//
-//		projectUri = "";
-//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-//		System.out.println(exchangesUri);
-//		Assert.assertNull(exchangesUri);
-//
-//		projectUri = "no file separator";
-//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-//		System.out.println(exchangesUri);
-//		Assert.assertNull(exchangesUri);
-//
-//		projectUri = "file:/home/olivier/.restui/project";
-//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-//		System.out.println(exchangesUri);
-//		Assert.assertEquals("file:/home/olivier/.restui/project-exchanges", exchangesUri);
-//
-//		projectUri = "file:/home/olivier/.restui/";
-//		exchangesUri = ProjectService.buildExchangesUri(projectUri);
-//		System.out.println(exchangesUri);
-//		Assert.assertNull(exchangesUri);
-//
-//	}
-
 	@Test
-	public void intersection() {
+	public void saveProject() {
 
-		List<Parameter> exchange = new ArrayList<>();
-		exchange.add(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, "page", "1"));
-		exchange.add(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, "pageSize", "50"));
-		exchange.add(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, "to be removed", "50"));
-
-		List<Parameter> endpoint = new ArrayList<>();
-		endpoint.add(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, "page", null));
-		endpoint.add(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, "pageSize", null));
-		endpoint.add(new Parameter(true, Direction.REQUEST, Location.QUERY, Type.TEXT, "fields", null));
-
-		List<Parameter> intersection = new ArrayList<>();
-
-		intersection.addAll(exchange);
-		intersection.stream().forEach(System.out::println);
-
-		System.out.println("---");
-		intersection.retainAll(endpoint);
-		intersection.stream().forEach(System.out::println);
-
-		System.out.println("---");
-
-		endpoint.stream().filter(p -> !intersection.contains(p)).forEach(p -> {
-			intersection.add(p);
-		});
-		intersection.stream().forEach(System.out::println);
-
+		Project project = new Project("test");
+		project.addBaseUrl(new BaseUrl("local", "http://localhost:8080", false));
+		project.addBaseUrl(new BaseUrl("dev", "http://192.168.4.23/rest", true));
+		
+		Path application = new Path(project, "application");
+		project.addChild(application);
+		
+		Endpoint getApplication = new Endpoint(application, "getApplication", "GET");
+		application.addChild(getApplication);
+		
+		Path customers = new Path(project, "customers");
+		application.addChild(customers);
+		
+		Endpoint getCustomers = new Endpoint(customers, "getCustomers", "GET");
+		customers.addChild(getCustomers);
+		Parameter parameter = new Parameter(true, Direction.REQUEST, Location.HEADER, Type.TEXT, "Authorization", "");
+		getCustomers.addParameter(parameter);
+		
+		File projectFile = new File("D:\\oma\\dev\\workspace\\RestUI\\src\\test\\resources\\savedProject.xml");
+		ProjectService.saveProject(project, projectFile.toURI());
 	}
 
 }

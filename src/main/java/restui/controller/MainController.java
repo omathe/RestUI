@@ -63,9 +63,12 @@ import restui.exception.NotFoundException;
 import restui.model.Application;
 import restui.model.Endpoint;
 import restui.model.Item;
+import restui.model.Parameter;
+import restui.model.Parameter.Direction;
+import restui.model.Parameter.Location;
 import restui.model.Project;
 import restui.service.ApplicationService;
-import restui.service.ProjectService2;
+import restui.service.ProjectService;
 
 public class MainController implements Initializable {
 
@@ -341,7 +344,7 @@ public class MainController implements Initializable {
 	private void loadProject(final URI uri) {
 
 		try {
-			final Project project = ProjectService2.openProject(uri);
+			final Project project = ProjectService.openProject(uri);
 			if (project != null) {
 				final TreeItem<Item> projectItem = new TreeItem<>(project);
 				builTree(projectItem);
@@ -362,32 +365,6 @@ public class MainController implements Initializable {
 			alert.showAndWait();
 		}
 	}
-	
-	/* @Deprecated
-	private void loadProject(final URI uri) {
-		
-		try {
-			final Project project = ProjectService.openProject(uri);
-			if (project != null) {
-				final TreeItem<Item> projectItem = new TreeItem<>(project);
-				builTree(projectItem);
-				treeView.setRoot(projectItem);
-				
-				sort(projectItem);
-				
-				projectItem.setExpanded(true);
-				projectFile = new File(uri);
-				file.setText(projectFile.getAbsolutePath());
-				application.setLastProjectUri(uri.toString());
-			}
-		} catch (final NotFoundException e) {
-			final Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Initialization error");
-			alert.setHeaderText("Project not found");
-			alert.setContentText(e.getMessage());
-			alert.showAndWait();
-		}
-	}*/
 
 	@FXML
 	protected void save(final ActionEvent event) {
@@ -409,7 +386,7 @@ public class MainController implements Initializable {
 				}
 			}
 			if (projectFile != null) {
-				ProjectService2.saveProject(project, projectFile.toURI());
+				ProjectService.saveProject(project, projectFile.toURI());
 				application.setLastProjectUri(projectFile.toURI().toString());
 				file.setText(projectFile.getAbsolutePath());
 			}
@@ -534,22 +511,6 @@ public class MainController implements Initializable {
 			builTree(childTreeItem);
 		}
 	}
-	
-	private TreeItem<Item> builTree2(final Project project) {
-		
-		final TreeItem<Item> projectTreeItem = new TreeItem<>(project);
-		
-		for (Endpoint endpoint : project.getEndpoints()) {
-			
-			List<String> paths = endpoint.getPaths();
-			for (String path : paths) {
-				Optional<Item> optionalItem = project.findChild(path);
-				
-			}
-		}
-		
-		return projectTreeItem;
-	}
 
 	public List<TreeItem<Item>> collectEndpoints() {
 
@@ -622,11 +583,12 @@ public class MainController implements Initializable {
 		for (final Item child : parent.getChildren()) {
 			if (child instanceof Endpoint) {
 				final Endpoint endpoint = (Endpoint) child;
+
 				endpoint.getExchanges().stream().forEach(exchange -> {
-					// final List<Parameter> parameters = exchange.findParameters(Parameter.Location.HEADER.name(), "Authorization"); FIXME 2.0
-					/*  FIXME 2.0 if (parameters != null && !parameters.isEmpty() && parameters.size() == 1) {
-						parameters.get(0).setValue(value);
-					}*/
+					Optional<Parameter> authorizationParameter = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Authorization");
+					if (authorizationParameter.isPresent()) {
+						authorizationParameter.get().setValue(value);
+					}
 				});
 			} else {
 				setItemsAuthorizationHeader(child, value);
