@@ -1,6 +1,7 @@
 package restui.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +25,21 @@ public class Endpoint extends Item {
 	private final StringProperty method;
 	private final StringProperty path;
 	private List<Exchange> exchanges;
-	private List<Parameter> parameters;
+	private final List<Parameter> parameters;
 
 	public Endpoint(final Item parent, final String name, final String method) {
 		super(parent, name);
 		this.method = new SimpleStringProperty(method);
 		this.path = new SimpleStringProperty();
 		buildPath();
+		this.exchanges = FXCollections.observableArrayList();
+		this.parameters = FXCollections.observableArrayList();
+	}
+
+	public Endpoint(final String name, final String path, final String method) {
+		super(null, name);
+		this.path = new SimpleStringProperty(path);
+		this.method = new SimpleStringProperty(method);
 		this.exchanges = FXCollections.observableArrayList();
 		this.parameters = FXCollections.observableArrayList();
 	}
@@ -184,8 +193,23 @@ public class Endpoint extends Item {
 		return parameters.contains(parameter);
 	}
 
-	public Optional<Exchange> findExchangeByName(String name) {
+	public Optional<Exchange> findExchangeByName(final String name) {
 		return exchanges.stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
+	}
+
+	public List<String> getPaths() {
+
+		List<String> paths = new ArrayList<>();
+		if (path.get() != null && !path.get().isEmpty()) {
+			String[] split = path.get().split("/");
+			if (split != null && split.length > 0) {
+				paths = Arrays.stream(split)
+						.filter(path -> !path.isEmpty())
+						.collect(Collectors.toList());
+			}
+		}
+		return paths;
+
 	}
 
 }

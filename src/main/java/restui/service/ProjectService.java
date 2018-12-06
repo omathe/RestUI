@@ -25,6 +25,7 @@ import restui.model.Parameter.Type;
 import restui.model.Path;
 import restui.model.Project;
 
+@Deprecated
 public class ProjectService {
 
 	public static Project openProject(final URI uri) throws NotFoundException {
@@ -141,9 +142,7 @@ public class ProjectService {
 				List<Parameter> parameters = endpoint.getParameters().stream()
 						.filter(p -> p.isRequestParameter())
 						.collect(Collectors.toList());
-//				List<Parameter> parameters = endpoint.getParameters().stream()
-//						.filter(p -> p.isRequestParameter() && (p.isHeaderParameter() || p.isPathParameter() || p.isQueryParameter()))
-//						.collect(Collectors.toList());
+
 				for (final Parameter parameter : parameters) {
 					final Element elementParameter = new Element("parameter");
 					elementParameter.setAttribute(new Attribute("enabled", parameter.getEnabled().toString()));

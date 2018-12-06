@@ -65,11 +65,11 @@ import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Project;
 import restui.service.ApplicationService;
-import restui.service.ProjectService;
+import restui.service.ProjectService2;
 
 public class MainController implements Initializable {
 
-	private Map<String, Node> centerNodes = new HashMap<String, Node>();
+	private final Map<String, Node> centerNodes = new HashMap<String, Node>();
 	private WebView webView;
 	private WebEngine webEngine;
 
@@ -260,7 +260,7 @@ public class MainController implements Initializable {
 		// topTabPane
 		topTabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 			@Override
-			public void changed(ObservableValue<? extends Tab> ov, Tab oldValue, Tab newValue) {
+			public void changed(final ObservableValue<? extends Tab> ov, final Tab oldValue, final Tab newValue) {
 				// store previous center node used by borderPane
 				centerNodes.put(oldValue.getId(), borderPane.getCenter());
 
@@ -275,7 +275,7 @@ public class MainController implements Initializable {
 		centerNodes.put("settingsTab", borderPane.getCenter());
 	}
 
-	private Node getCenterNode(String tabId) {
+	private Node getCenterNode(final String tabId) {
 
 		Node center = centerNodes.get(tabId);
 
@@ -341,7 +341,7 @@ public class MainController implements Initializable {
 	private void loadProject(final URI uri) {
 
 		try {
-			final Project project = ProjectService.openProject(uri);
+			final Project project = ProjectService2.openProject(uri);
 			if (project != null) {
 				final TreeItem<Item> projectItem = new TreeItem<>(project);
 				builTree(projectItem);
@@ -362,6 +362,32 @@ public class MainController implements Initializable {
 			alert.showAndWait();
 		}
 	}
+	
+	/* @Deprecated
+	private void loadProject(final URI uri) {
+		
+		try {
+			final Project project = ProjectService.openProject(uri);
+			if (project != null) {
+				final TreeItem<Item> projectItem = new TreeItem<>(project);
+				builTree(projectItem);
+				treeView.setRoot(projectItem);
+				
+				sort(projectItem);
+				
+				projectItem.setExpanded(true);
+				projectFile = new File(uri);
+				file.setText(projectFile.getAbsolutePath());
+				application.setLastProjectUri(uri.toString());
+			}
+		} catch (final NotFoundException e) {
+			final Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Initialization error");
+			alert.setHeaderText("Project not found");
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
+		}
+	}*/
 
 	@FXML
 	protected void save(final ActionEvent event) {
@@ -383,7 +409,7 @@ public class MainController implements Initializable {
 				}
 			}
 			if (projectFile != null) {
-				ProjectService.saveProject(project, projectFile.toURI());
+				ProjectService2.saveProject(project, projectFile.toURI());
 				application.setLastProjectUri(projectFile.toURI().toString());
 				file.setText(projectFile.getAbsolutePath());
 			}
@@ -508,6 +534,22 @@ public class MainController implements Initializable {
 			builTree(childTreeItem);
 		}
 	}
+	
+	private TreeItem<Item> builTree2(final Project project) {
+		
+		final TreeItem<Item> projectTreeItem = new TreeItem<>(project);
+		
+		for (Endpoint endpoint : project.getEndpoints()) {
+			
+			List<String> paths = endpoint.getPaths();
+			for (String path : paths) {
+				Optional<Item> optionalItem = project.findChild(path);
+				
+			}
+		}
+		
+		return projectTreeItem;
+	}
 
 	public List<TreeItem<Item>> collectEndpoints() {
 
@@ -575,7 +617,7 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private void setItemsAuthorizationHeader(final Item parent, String value) {
+	private void setItemsAuthorizationHeader(final Item parent, final String value) {
 
 		for (final Item child : parent.getChildren()) {
 			if (child instanceof Endpoint) {

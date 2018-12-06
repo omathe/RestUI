@@ -2,6 +2,7 @@ package restui.model;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -70,13 +71,20 @@ public class Item implements Serializable {
 		return children != null && !children.isEmpty();
 	}
 
-	public boolean hasChild(String name) {
+	public boolean hasChild(final String name) {
 
 		return children != null && children.stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst().isPresent();
 	}
 
 	public Stream<Item> getAllChildren() {
 		return Stream.concat(Stream.of(this), children.stream().flatMap(Item::getAllChildren));
+	}
+
+	public Optional<Item> findChild(final String name) {
+
+		return children.stream()
+				.filter(item -> item.getName().equalsIgnoreCase(name))
+				.findFirst();
 	}
 
 	@Override

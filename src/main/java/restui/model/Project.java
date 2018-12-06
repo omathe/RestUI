@@ -1,5 +1,6 @@
 package restui.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,11 +10,13 @@ public class Project extends Item {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<BaseUrl> baseUrls;
+	private final List<BaseUrl> baseUrls;
+	private final List<Endpoint> endpoints;
 
 	public Project(final String name) {
 		super(null, name);
 		this.baseUrls = FXCollections.observableArrayList();
+		this.endpoints = new ArrayList<>();
 	}
 
 	public void addBaseUrl(final BaseUrl baseUrl) {
@@ -37,6 +40,14 @@ public class Project extends Item {
 			baseUrl = optional.get().getUrl();
 		}
 		return baseUrl;
+	}
+	
+	public void addEnpoint(final Endpoint endpoint) {
+		this.endpoints.add(endpoint);
+	}
+	
+	public List<Endpoint> getEndpoints() {
+		return endpoints;
 	}
 
 }
