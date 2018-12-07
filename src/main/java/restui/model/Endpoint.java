@@ -26,6 +26,7 @@ public class Endpoint extends Item {
 	private final StringProperty path;
 	private List<Exchange> exchanges;
 	private final List<Parameter> parameters;
+	private String description;
 
 	public Endpoint(final Item parent, final String name, final String method) {
 		super(parent, name);
@@ -34,6 +35,7 @@ public class Endpoint extends Item {
 		buildPath();
 		this.exchanges = FXCollections.observableArrayList();
 		this.parameters = FXCollections.observableArrayList();
+		this.description = "";
 	}
 
 	public Endpoint(final String name, final String path, final String method) {
@@ -42,6 +44,12 @@ public class Endpoint extends Item {
 		this.method = new SimpleStringProperty(method);
 		this.exchanges = FXCollections.observableArrayList();
 		this.parameters = FXCollections.observableArrayList();
+		this.description = "";
+	}
+	
+	public Endpoint(final String name, final String path, final String method, final String description) {
+		this(name, path, method);
+		this.description = description == null ? "" : description;
 	}
 
 	public String getMethod() {
@@ -209,7 +217,10 @@ public class Endpoint extends Item {
 			}
 		}
 		return paths;
-
+	}
+	
+	public String getDescription() {
+		return description;
 	}
 
 }

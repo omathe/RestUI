@@ -62,11 +62,12 @@ public interface ProjectService {
 			final Element elementEndpoints = elementProject.getChild("endpoints");
 			if (elementEndpoints != null) {
 				for (final Element elementEndpoint : elementEndpoints.getChildren()) {
-					final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"));
+					final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"), elementEndpoint.getAttributeValue("description"));
 
 					// Parameters
 					final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
 					if (elementEndpointParameters != null) {
+
 						for (final Element elementParameter : elementEndpointParameters.getChildren()) {
 							if (elementParameter != null) {
 								final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
@@ -135,9 +136,11 @@ public interface ProjectService {
 				final Attribute attributeEndpointName = new Attribute("name", endpoint.getName());
 				final Attribute attributeEndpointPath = new Attribute("path", endpoint.getPath());
 				final Attribute attributeEndpointMethod = new Attribute("method", endpoint.getMethod());
+				final Attribute attributeEndpointDescription = new Attribute("description", endpoint.getDescription());
 				elementEndpoint.setAttribute(attributeEndpointName);
 				elementEndpoint.setAttribute(attributeEndpointPath);
 				elementEndpoint.setAttribute(attributeEndpointMethod);
+				elementEndpoint.setAttribute(attributeEndpointDescription);
 				elementEndpoints.addContent(elementEndpoint);
 
 				// parameters
@@ -194,11 +197,13 @@ public interface ProjectService {
 					// creates path
 					Path path = new Path(parent, pathString);
 					parent.getChildren().add(path);
+					path.setParent(parent);
 					parent = path;
 				}
 			}
 			// add endpoint
 			parent.getChildren().add(endpoint);
+			endpoint.setParent(parent);
 		}
 
 		// clear the list of enddpoints

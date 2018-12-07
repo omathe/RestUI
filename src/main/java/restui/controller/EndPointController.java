@@ -319,7 +319,7 @@ public class EndPointController extends AbstractController implements Initializa
 		exchangeNameColumn.setOnEditCommit(new EventHandler<CellEditEvent<Exchange, String>>() {
 
 			@Override
-			public void handle(CellEditEvent<Exchange, String> event) {
+			public void handle(final CellEditEvent<Exchange, String> event) {
 				Exchange exchange = event.getTableView().getItems().get(event.getTablePosition().getRow());
 
 				Optional<Exchange> optionalExchange = endpoint.findExchangeByName(event.getNewValue());
@@ -436,6 +436,8 @@ public class EndPointController extends AbstractController implements Initializa
 		path.setText(endpoint.getPath());
 		baseUrl = endpoint.getBaseUrl();
 		method.valueProperty().bindBidirectional(endpoint.methodProperty());
+		
+		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
 
 		if (endpoint.hasExchanges()) {
 			modeExecution(null);
@@ -1042,7 +1044,7 @@ public class EndPointController extends AbstractController implements Initializa
 		return workingExchange;
 	}
 
-	private Exchange duplicateWorkingExchange(Exchange exchange) {
+	private Exchange duplicateWorkingExchange(final Exchange exchange) {
 
 		Exchange duplicatedExchange = exchange.duplicate("");
 		endpoint.addExchange(duplicatedExchange);
@@ -1062,7 +1064,7 @@ public class EndPointController extends AbstractController implements Initializa
 		return endpoint;
 	}
 
-	public boolean exchangeFinalized(Exchange exchange) {
+	public boolean exchangeFinalized(final Exchange exchange) {
 
 		return exchange != null && exchange.getStatus() != 0 && !exchange.getName().isEmpty();
 	}
