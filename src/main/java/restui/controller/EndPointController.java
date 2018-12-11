@@ -975,7 +975,7 @@ public class EndPointController extends AbstractController implements Initializa
 					valuedUri = valuedUri.replace(Path.ID_PREFIX + parameter.getName() + Path.ID_SUFFIX, parameter.getValue());
 				}
 			} else if (parameter.isQueryParameter()) {
-				if (!parameter.isValid()) {
+				if (parameter.getEnabled() && !parameter.isValid()) {
 					validUri = false;
 				} else if (parameter.getEnabled()) {
 					queryParams.add(parameter.getName() + "=" + parameter.getValue());
