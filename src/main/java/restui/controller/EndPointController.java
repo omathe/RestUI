@@ -392,6 +392,10 @@ public class EndPointController extends AbstractController implements Initializa
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 
+//			if (newSelection != null) {
+//				System.err.println("new exchange = " + newSelection.getName());
+//			}
+			
 			Optional<Exchange> optionalExchange = getSelectedExchange();
 			if (optionalExchange.isPresent()) {
 				currentExchange = getSelectedExchange().get();
@@ -487,6 +491,10 @@ public class EndPointController extends AbstractController implements Initializa
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
 
+//			if (exchanges.getSelectionModel().isEmpty()) {
+//				currentExchange = null;
+//			}
+			
 			if (exchanges.getSelectionModel().isEmpty()) {
 				currentExchange = createWorkingExchange();
 			}
@@ -499,13 +507,27 @@ public class EndPointController extends AbstractController implements Initializa
 
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
-			exchanges.getSelectionModel().select(currentExchange);
+			//exchanges.getSelectionModel().select(currentExchange);
 		} else {
-			if (currentExchange == null) {
+			if (endpoint.hasExchanges()) {
 				currentExchange = createWorkingExchange();
-			} else {
-				currentExchange = duplicateWorkingExchange(currentExchange);
+				
+				Optional<Exchange> selectedExchange = getSelectedExchange();
+				if (!selectedExchange.isPresent()) {
+					exchanges.getSelectionModel().select(0); // select first exchange
+				}
+				currentExchange = getSelectedExchange().get().duplicate("");
+				
+				
 			}
+//			else {
+//				currentExchange = createWorkingExchange();
+//			}
+//			if (currentExchange == null) {
+//				currentExchange = createWorkingExchange();
+//			} else {
+//				currentExchange = duplicateWorkingExchange(currentExchange);
+//			}
 		}
 		// clear response parameter
 		currentExchange.clearResponseParameters();
@@ -795,7 +817,7 @@ public class EndPointController extends AbstractController implements Initializa
 		// exchanges
 		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
 
-		currentExchange = getWorkingExchange();
+		currentExchange = getWorkingExchangeOrSelectFirstExchange();
 
 		// select the current exchange
 		exchanges.getSelectionModel().select(currentExchange);
@@ -994,6 +1016,26 @@ public class EndPointController extends AbstractController implements Initializa
 		execute.setDisable(!validUri);
 	}
 
+	private Exchange getWorkingExchangeOrSelectFirstExchange() {
+		
+		Exchange exchange = null;
+
+		if (endpoint.hasExchanges()) {
+			Optional<Exchange> workingExchange = workingExchangePresent();
+			if (workingExchange.isPresent()) {
+				exchange = workingExchange.get();
+			} else {
+				Optional<Exchange> selectedExchange = getSelectedExchange();
+				if (!selectedExchange.isPresent()) {
+					exchanges.getSelectionModel().select(0); // select first exchange
+					exchange = exchanges.getSelectionModel().getSelectedItem();
+				}
+			}
+		}
+		return exchange;
+	}
+	
+	
 	private Exchange getWorkingExchange() {
 
 		Exchange workingExchange = null;
@@ -1007,9 +1049,9 @@ public class EndPointController extends AbstractController implements Initializa
 				if (!selectedExchange.isPresent()) {
 					exchanges.getSelectionModel().select(0); // select first exchange
 				}
-				workingExchange = getSelectedExchange().get().duplicate("");
+				//workingExchange = getSelectedExchange().get().duplicate("");
 			}
-		} else {
+		}/* else {
 			workingExchange = new Exchange("", Instant.now().toEpochMilli());
 			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
 					.filter(p -> p.isRequestParameter())
@@ -1017,7 +1059,7 @@ public class EndPointController extends AbstractController implements Initializa
 					.collect(Collectors.toList());
 			workingExchange.addParameters(endpointRequestParameters);
 			endpoint.addExchange(workingExchange);
-		}
+		}*/
 		return workingExchange;
 	}
 
