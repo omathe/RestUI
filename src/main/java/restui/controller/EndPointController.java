@@ -392,42 +392,14 @@ public class EndPointController extends AbstractController implements Initializa
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 
-//			if (newSelection != null) {
-//				System.err.println("new exchange = " + newSelection.getName());
-//			}
-			
 			Optional<Exchange> optionalExchange = getSelectedExchange();
 			if (optionalExchange.isPresent()) {
 				currentExchange = getSelectedExchange().get();
 				display();
 			}
-
-			/*
-			 * if (currentExchangeHasChanged) {
-			 *
-			 * final Alert alert = new Alert(AlertType.CONFIRMATION);
-			 *
-			 * alert.setTitle("Save the current exchange");
-			 * alert.setHeaderText("Do you want to save the current exchange ?\n\n");
-			 * alert.setContentText("Confirm your choice"); final ButtonType yesButton = new
-			 * ButtonType("Yes"); final ButtonType noButton = new ButtonType("No");
-			 *
-			 * alert.getButtonTypes().setAll(noButton, yesButton);
-			 *
-			 * final Optional<ButtonType> result = alert.showAndWait(); if (result.get() ==
-			 * yesButton) { List<String> exchangeNames = getEndpointExchangeNames(); final
-			 * Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames,
-			 * "Exchange"), Instant.now().toEpochMilli()); endpoint.addExchange(exchange); }
-			 * currentExchangeHasChanged = false; }
-			 */
-
 		});
 
 		execute.textProperty().bind(method.valueProperty());
-
-		// disable request/response area if no exchange selected
-		// requestResponseSplitPane.disableProperty().bind(exchanges.selectionModelProperty().get().selectedItemProperty().isNull());
-
 	}
 
 	@Override
@@ -440,7 +412,7 @@ public class EndPointController extends AbstractController implements Initializa
 		path.setText(endpoint.getPath());
 		baseUrl = endpoint.getBaseUrl();
 		method.valueProperty().bindBidirectional(endpoint.methodProperty());
-		
+
 		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
 
 		if (endpoint.hasExchanges()) {
@@ -454,36 +426,6 @@ public class EndPointController extends AbstractController implements Initializa
 		return currentExchange;
 	}
 
-	/*
-	 * private void buildPathParameters() {
-	 *
-	 * final Optional<Exchange> exchange = getSelectedExchange(); if
-	 * (exchange.isPresent()) { final String endpointUri = path.getText(); final
-	 * Set<String> tokens = extractTokens(endpointUri, Path.ID_PREFIX,
-	 * Path.ID_SUFFIX); tokens.stream().forEach(token -> { final Parameter parameter
-	 * = new Parameter(true, Direction.REQUEST, Location.PATH, Type.TEXT, token,
-	 * ""); exchange.get().addParameter(parameter); }); } }
-	 */
-
-	private void addExchange() {
-
-		List<String> exchangeNames = exchanges.getItems().stream().map(ex -> ex.getName()).collect(Collectors.toList());
-		final Exchange exchange = new Exchange(Strings.getNextValue(exchangeNames, "echange"), Instant.now().toEpochMilli());
-
-		// retrieve the endpoint parameters and put them in the exchange
-		List<Parameter> endpointRequestParameters = endpoint.getParameters().stream().filter(p -> p.isRequestParameter()).collect(Collectors.toList());
-		exchange.addParameters(endpointRequestParameters);
-
-		endpoint.addExchange(exchange);
-	}
-
-	private void duplicateExchange(final Exchange exchange) {
-		final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
-		final Exchange duplicate = exchange.duplicate(exchange.getName() + " (copy)");
-		endpoint.addExchange(duplicate);
-		display();
-	}
-
 	private void deleteExchange(final Exchange exchange) {
 
 		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
@@ -491,13 +433,9 @@ public class EndPointController extends AbstractController implements Initializa
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
 
-//			if (exchanges.getSelectionModel().isEmpty()) {
-//				currentExchange = null;
-//			}
-			
-			if (exchanges.getSelectionModel().isEmpty()) {
-				currentExchange = createWorkingExchange();
-			}
+			//			if (exchanges.getSelectionModel().isEmpty()) {
+			//				currentExchange = createWorkingExchange();
+			//			}
 			display();
 		}
 	}
@@ -507,28 +445,20 @@ public class EndPointController extends AbstractController implements Initializa
 
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
-			//exchanges.getSelectionModel().select(currentExchange);
 		} else {
 			if (endpoint.hasExchanges()) {
 				currentExchange = createWorkingExchange();
-				
+
 				Optional<Exchange> selectedExchange = getSelectedExchange();
 				if (!selectedExchange.isPresent()) {
 					exchanges.getSelectionModel().select(0); // select first exchange
 				}
 				currentExchange = getSelectedExchange().get().duplicate("");
-				
-				
+			} else {
+				currentExchange = createWorkingExchange();
 			}
-//			else {
-//				currentExchange = createWorkingExchange();
-//			}
-//			if (currentExchange == null) {
-//				currentExchange = createWorkingExchange();
-//			} else {
-//				currentExchange = duplicateWorkingExchange(currentExchange);
-//			}
 		}
+
 		// clear response parameter
 		currentExchange.clearResponseParameters();
 
@@ -726,16 +656,6 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void saveCurrentExchange() {
 
-		/*
-		 * String name = exchangeName.getValue(); if
-		 * (saveExchange.getUserData().equals("CREATE")) { currentExchange =
-		 * currentExchange.duplicate(name); endpoint.addExchange(currentExchange); }
-		 * else if (saveExchange.getUserData().equals("UPDATE")) { Optional<Exchange>
-		 * optionalExchange = endpoint.findExchangeByName(name); if
-		 * (optionalExchange.isPresent()) { currentExchange =
-		 * currentExchange.duplicate(name);
-		 * optionalExchange.get().updateValues(currentExchange); } }
-		 */
 		Optional<Exchange> optionalExchange = endpoint.findExchangeByName("");
 		if (optionalExchange.isPresent()) {
 			optionalExchange.get().updateValues(currentExchange);
@@ -752,11 +672,11 @@ public class EndPointController extends AbstractController implements Initializa
 
 	}
 
-	private Optional<Exchange> getExchangeByName(final String name) {
-
-		Optional<Exchange> optionalExchange = exchanges.getItems().stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
-		return optionalExchange;
-	}
+	//	private Optional<Exchange> getExchangeByName(final String name) {
+	//
+	//		Optional<Exchange> optionalExchange = exchanges.getItems().stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
+	//		return optionalExchange;
+	//	}
 
 	// **************************************************************************************************************************
 
@@ -1017,7 +937,7 @@ public class EndPointController extends AbstractController implements Initializa
 	}
 
 	private Exchange getWorkingExchangeOrSelectFirstExchange() {
-		
+
 		Exchange exchange = null;
 
 		if (endpoint.hasExchanges()) {
@@ -1034,8 +954,7 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 		return exchange;
 	}
-	
-	
+
 	private Exchange getWorkingExchange() {
 
 		Exchange workingExchange = null;
@@ -1049,17 +968,8 @@ public class EndPointController extends AbstractController implements Initializa
 				if (!selectedExchange.isPresent()) {
 					exchanges.getSelectionModel().select(0); // select first exchange
 				}
-				//workingExchange = getSelectedExchange().get().duplicate("");
 			}
-		}/* else {
-			workingExchange = new Exchange("", Instant.now().toEpochMilli());
-			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
-					.filter(p -> p.isRequestParameter())
-					.map(p -> p.duplicate())
-					.collect(Collectors.toList());
-			workingExchange.addParameters(endpointRequestParameters);
-			endpoint.addExchange(workingExchange);
-		}*/
+		}
 		return workingExchange;
 	}
 
@@ -1084,14 +994,6 @@ public class EndPointController extends AbstractController implements Initializa
 		endpoint.addExchange(workingExchange);
 
 		return workingExchange;
-	}
-
-	private Exchange duplicateWorkingExchange(final Exchange exchange) {
-
-		Exchange duplicatedExchange = exchange.duplicate("");
-		endpoint.addExchange(duplicatedExchange);
-
-		return duplicatedExchange;
 	}
 
 	public boolean isExecutionMode() {
