@@ -171,9 +171,10 @@ public class Endpoint extends Item {
 
 	public void addParameter(final Parameter parameter) {
 
-		if (!parameters.contains(parameter)) {
-			parameters.add(parameter);
+		if (parameters.contains(parameter)) {
+			parameters.remove(parameter);
 		}
+		parameters.add(parameter);
 	}
 
 	public void removeParameters(final List<Parameter> parameters) {
@@ -182,14 +183,6 @@ public class Endpoint extends Item {
 			this.parameters.removeAll(parameters);
 		}
 	}
-
-	// // à supprimer
-	// public Optional<Parameter> findParameter(final Location location, final
-	// String name) {
-	//
-	// return parameters.stream().filter(p -> p.isHeaderParameter() &&
-	// p.getName().equalsIgnoreCase(name)).findFirst();
-	// }
 
 	public Optional<Parameter> findParameter(final Parameter parameter) {
 

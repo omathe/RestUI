@@ -290,9 +290,10 @@ public class Exchange {
 
 	public void addParameter(final Parameter parameter) {
 
-		if (!parameters.contains(parameter)) {
-			parameters.add(parameter);
+		if (parameters.contains(parameter)) {
+			parameters.remove(parameter);
 		}
+		parameters.add(parameter);
 	}
 
 	public void addParameters(final List<Parameter> parameterList) {

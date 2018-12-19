@@ -7,9 +7,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -672,12 +672,6 @@ public class EndPointController extends AbstractController implements Initializa
 
 	}
 
-	//	private Optional<Exchange> getExchangeByName(final String name) {
-	//
-	//		Optional<Exchange> optionalExchange = exchanges.getItems().stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();
-	//		return optionalExchange;
-	//	}
-
 	// **************************************************************************************************************************
 
 	public void addParameter(final Parameter parameter) {
@@ -686,7 +680,9 @@ public class EndPointController extends AbstractController implements Initializa
 			// add the parameter to the endpoint
 			endpoint.addParameter(parameter);
 		} else {
-
+			if (currentExchange == null) {
+				currentExchange = createWorkingExchange();
+			}
 			// add the parameter to the current exchange
 			currentExchange.addParameter(parameter.duplicateValue());
 		}
