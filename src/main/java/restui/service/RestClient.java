@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.MultivaluedMap;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -38,7 +39,7 @@ public class RestClient {
 
 	private static final Client client = Client.create();
 
-	public static ClientResponse execute(String method, final Exchange exchange) {
+	public static ClientResponse execute(final String method, final Exchange exchange) {
 		ClientResponse response = null;
 
 		switch (method) {
@@ -78,9 +79,12 @@ public class RestClient {
 			addHeaders(builder, parameters);
 
 			response = builder.get(ClientResponse.class);
+		} catch (final ClientHandlerException e) {
+			e.printStackTrace();
 		} catch (final Exception e) {
 			e.printStackTrace();
-		} finally {
+		}
+		finally {
 			client.destroy();
 		}
 		return response;
@@ -342,7 +346,7 @@ public class RestClient {
 		return uri.split("[?]")[0];
 	}
 
-	private static String encode(String value) {
+	private static String encode(final String value) {
 
 		String encodedValue = null;
 		try {
@@ -353,7 +357,7 @@ public class RestClient {
 		return encodedValue;
 	}
 
-	private static byte[] getFileContentBytes(String uri) {
+	private static byte[] getFileContentBytes(final String uri) {
 		byte[] bytes = null;
 
 		try {
@@ -365,7 +369,7 @@ public class RestClient {
 		return bytes;
 	}
 
-	private static void addMultiparTextParameter(ByteArrayOutputStream bos, Parameter parameter) {
+	private static void addMultiparTextParameter(final ByteArrayOutputStream bos, final Parameter parameter) {
 
 		try {
 			bos.write(new String(END_BOUNDARY + LINE_FEED).getBytes());
@@ -377,7 +381,7 @@ public class RestClient {
 		}
 	}
 
-	private static void addMultiparFileParameter(ByteArrayOutputStream bos, Parameter parameter) {
+	private static void addMultiparFileParameter(final ByteArrayOutputStream bos, final Parameter parameter) {
 
 		try {
 			Path path = Paths.get(URI.create(parameter.getValue()));
