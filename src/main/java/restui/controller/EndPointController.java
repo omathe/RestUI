@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.Response.Status;
+//import javax.ws.rs.core.Response.Status;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -615,10 +615,10 @@ public class EndPointController extends AbstractController implements Initializa
 
 	private void displayStatusTooltip() {
 
-		Status st = Status.fromStatusCode(currentExchange.getStatus());
+		/*Status st = Status.fromStatusCode(currentExchange.getStatus());
 		if (st != null) {
 			responseStatus.setTooltip(new Tooltip(st.getReasonPhrase()));
-		}
+		}*/
 	}
 
 	private Optional<Exchange> getSelectedExchange() {
