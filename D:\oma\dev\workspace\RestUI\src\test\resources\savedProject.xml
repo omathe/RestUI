@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="test">
+  <baseUrls>
+    <baseUrl name="local" url="http://localhost:8080" enabled="false" />
+    <baseUrl name="dev" url="http://192.168.4.23/rest" enabled="true" />
+  </baseUrls>
+  <endpoints>
+    <endpoint name="getCustomers" path="/application/customers" method="GET" description="">
+      <parameters>
+        <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Authorization" value="" />
+      </parameters>
+    </endpoint>
+    <endpoint name="getApplication" path="/application" method="GET" description="" />
+  </endpoints>
+</project>

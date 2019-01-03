@@ -1,16 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'java-library'
+// apply plugin: 'application'
+
 group 'fr.omathe'
 version '1.0'
 
-apply plugin: 'com.gradle.build-scan'
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'application'
-apply plugin: 'no.tornado.fxlauncher'
-apply plugin: 'com.google.osdetector'
-
-ext.platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
-
-mainClassName = "restui.gui.RestUiApp"
+def jdk = System.getProperty("java.home")
+//def jdk = '/opt/java/jdk-10.0.1'
+def moduleName = 'restui.gui'
+def mainClass = 'restui.gui.RestUiApp'
 
 buildscript {
     repositories {
@@ -18,38 +17,64 @@ buildscript {
     	maven {
       		url "https://plugins.gradle.org/m2/"
     	}
-    	
     }
     dependencies {
-        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.15'
-        classpath "com.gradle:build-scan-plugin:1.8"
-        classpath 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
+//        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.15'
+//       classpath "com.gradle:build-scan-plugin:1.8"
+//        classpath 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
     }
 }
 
-sourceCompatibility = 1.10
-targetCompatibility = 1.10
+sourceCompatibility = 1.9
+//targetCompatibility = 1.9
+compileJava.options.encoding = 'UTF-8'
 
 repositories {
     mavenCentral()
-    maven { url "https://jitpack.io" }
+	jcenter()
 }
 
-task copyLibs(type: Copy) {
+/*task copyLibs(type: Copy) {
 
 	into "lib"
 	from configurations.runtime
-}
+}*/
 
-jar {
-	//include 'fxml/*.xml'
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Quickstart',
-                   'Implementation-Version': version,
-					'Main-class': 'restui.gui.RestUiApp',
-					'Class-Path': '. jdom-2.0.2.jar'
+compileJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+            '--module-path', classpath.asPath,
+        ]
+        classpath = files()
     }
 }
+
+/*compileTestJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+            '--module-path', classpath.asPath,
+            '--add-modules', 'org.junit.jupiter.api',
+            '--add-reads', "$moduleName=org.junit.jupiter.api",
+            '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+        ]
+        classpath = files()
+    }
+}*/
+
+jar {
+	//inputs.property("moduleName", moduleName)
+    manifest {
+        attributes(
+                'Main-Class': mainClass
+                //'Automatic-Module-Name': moduleName
+        )
+    }
+}
+
+
+
 
 dependencies {
     
@@ -60,31 +85,32 @@ dependencies {
     compile "org.openjfx:javafx-fxml:11:$platform"
     compile "org.openjfx:javafx-web:11:$platform"
     */
+    
+    implementation 'com.sun.jersey:jersey-client:1.9.1'
+    
+    //compile group: 'com.sun.jersey', name: 'jersey-client', version: '1.9.1'
+    compile group: 'org.jdom', name: 'jdom', version: '2.0.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.3'
 
     compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.3'
-    compile group: 'com.sun.jersey', name: 'jersey-client', version: '1.9.1'
-    compile group: 'org.jdom', name: 'jdom', version: '2.0.2'
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
-fxlauncher {
-    applicationVendor 'RestUI'
-    applicationUrl 'http://omathe.free.fr/restui/'
-    applicationMainClass 'restui.gui.RestUiApp'
-    acceptDowngrade false
-    deployTarget 'w48839@fxldemo.tornado.no:fxldemo'
-}
-
 task copyToLib(type: Copy) {
-    into "$buildDir/libs"
-    from configurations.runtime
-}
 
-buildScan {
+	doFirst {
+		println 'copy to libs'
+    	into "$buildDir/libs"
+    	from "/media/DATA/dev/workspaceJ9/RestUI/sav_libs"
+	}
+//    from configurations.compile
+}
+jar.dependsOn(copyToLib)
+
+/*buildScan {
     licenseAgreementUrl = 'https://gradle.com/terms-of-service'
     licenseAgree = 'yes'
-}
+}*/
 
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
@@ -103,13 +129,73 @@ task fatJar(type: Jar) {
 }
 
 eclipse {
-    	classpath {
-       		downloadSources=true
-    	}
+	classpath {
+		downloadSources=true
 	}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '4.8'
 }
 
+// creates application bundle (executable + runtime)
+task javaPackager(type: Exec, dependsOn: assemble) {
 
+    workingDir project.projectDir
+    commandLine = [
+            'javapackager',
+            '-deploy',
+            '-nosign',
+            '-native', 'image',
+            '-outdir', "${buildDir}/distribution",
+            '-outfile', project.name,
+            '-name', project.name,
+            '-appclass', mainClass,
+            '-p', "${jdk}/jmods${File.pathSeparator}${buildDir}/libs",
+            '--add-modules', moduleName,
+            '-m', "$moduleName/$mainClass"
+    ]
+    //System.out.println("commandLine : " + commandLine)
+}
+
+// removes bloated runtime created by javapackager
+task cleanPackagerRuntime(dependsOn: javaPackager) {
+    doLast() {
+        File runtimeFile = new File("${buildDir}/distribution/${project.name}/runtime")
+        runtimeFile.deleteDir()
+        System.out.println("deleting bloated runtime in " + runtimeFile)
+    }
+}
+
+// creates a replacement runtime via jlink command (much smaller than jpackager)
+task createFinalAppBundle(type: Exec, dependsOn: [cleanPackagerRuntime]) {
+
+    workingDir project.projectDir
+    commandLine = [
+            'jlink',
+            '-p', "${jdk}/jmods${File.pathSeparator}${buildDir}/libs",
+            '--add-modules', moduleName,
+            '--strip-debug',
+            '--no-header-files',
+            '--no-man-pages',
+            '--strip-native-commands',
+            "--vm=server",
+            "--compress=2",
+            '--output', "${buildDir}/distribution/${project.name}/runtime"
+    ]
+
+    doLast{
+        System.out.println("Application '${project.name}' packaged.")
+        System.out.println(" -> location: ${buildDir}/distribution/${project.name}/")
+    }
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '4.5.1'
+}
+
+task disp {
+	doLast{
+		println "jdk: ${jdk}"
+		println "buildDir: ${buildDir}"
+		println "project.name: ${project.name}"
+		println "project.projectDir: ${project.projectDir}"
+		println "moduleName: ${moduleName}"
+	}
+}
