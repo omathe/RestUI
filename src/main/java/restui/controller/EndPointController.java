@@ -415,11 +415,7 @@ public class EndPointController extends AbstractController implements Initializa
 
 		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
 
-		if (endpoint.hasExchanges()) {
-			modeExecution(null);
-		} else {
-			modeSpecification(null);
-		}
+		modeExecution(null);
 	}
 
 	public Exchange getCurrentExchange() {
@@ -433,9 +429,6 @@ public class EndPointController extends AbstractController implements Initializa
 			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
 
-			//			if (exchanges.getSelectionModel().isEmpty()) {
-			//				currentExchange = createWorkingExchange();
-			//			}
 			display();
 		}
 	}
@@ -446,15 +439,16 @@ public class EndPointController extends AbstractController implements Initializa
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
 		} else {
+			// working exchange does not exist
 			if (endpoint.hasExchanges()) {
-				currentExchange = createWorkingExchange();
-
+				//currentExchange = createWorkingExchange();
 				Optional<Exchange> selectedExchange = getSelectedExchange();
 				if (!selectedExchange.isPresent()) {
 					exchanges.getSelectionModel().select(0); // select first exchange
 				}
 				currentExchange = getSelectedExchange().get().duplicate("");
 			} else {
+				// no exchanges
 				currentExchange = createWorkingExchange();
 			}
 		}
@@ -734,6 +728,9 @@ public class EndPointController extends AbstractController implements Initializa
 		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
 
 		currentExchange = getWorkingExchangeOrSelectFirstExchange();
+		if (currentExchange == null) {
+			currentExchange = createWorkingExchange();
+		}
 
 		// select the current exchange
 		exchanges.getSelectionModel().select(currentExchange);
