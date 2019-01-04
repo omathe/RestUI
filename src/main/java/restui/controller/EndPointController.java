@@ -922,10 +922,6 @@ public class EndPointController extends AbstractController implements Initializa
 		}
 		uri.setText(valuedUri);
 
-		if (valuedUri.contains(Path.ID_PREFIX)) {
-			validUri = false;
-		}
-
 		execute.setDisable(!validUri);
 	}
 
