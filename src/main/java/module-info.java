@@ -6,7 +6,6 @@ module restui.gui {
 	requires javafx.graphics;
 	requires javafx.fxml;
 	requires javafx.web;
-
 	requires java.xml;
 
 	// Automatic modules
