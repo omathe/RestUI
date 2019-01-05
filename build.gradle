@@ -1,23 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'java-library'
+// apply plugin: 'application'
+
 group 'fr.omathe'
 version '1.0'
 
-<<<<<<< HEAD
 def jdk = System.getProperty("java.home")
 //def jdk = '/opt/java/jdk-11.0.1'
 def moduleName = 'restui.gui'
 def mainClass = 'restui.gui.RestUiApp'
-=======
-apply plugin: 'com.gradle.build-scan'
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'application'
-apply plugin: 'no.tornado.fxlauncher'
-apply plugin: 'com.google.osdetector'
-
-ext.platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
-
-mainClassName = "restui.gui.RestUiApp"
->>>>>>> branch 'master' of https://github.com/omathe/RestUI.git
 
 buildscript {
     repositories {
@@ -25,80 +17,85 @@ buildscript {
     	maven {
       		url "https://plugins.gradle.org/m2/"
     	}
-    	
     }
     dependencies {
-        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.15'
-        classpath "com.gradle:build-scan-plugin:1.8"
-        classpath 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
+//        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.15'
+//       classpath "com.gradle:build-scan-plugin:1.8"
+//        classpath 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
     }
 }
 
-sourceCompatibility = 1.10
-targetCompatibility = 1.10
+sourceCompatibility = 1.9
+//targetCompatibility = 1.9
+compileJava.options.encoding = 'UTF-8'
 
 repositories {
     mavenCentral()
-    maven { url "https://jitpack.io" }
+	jcenter()
 }
 
-task copyLibs(type: Copy) {
+/*task copyLibs(type: Copy) {
 
 	into "lib"
 	from configurations.runtime
+}*/
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+            '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
 }
 
+/*compileTestJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+            '--module-path', classpath.asPath,
+            '--add-modules', 'org.junit.jupiter.api',
+            '--add-reads', "$moduleName=org.junit.jupiter.api",
+            '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+        ]
+        classpath = files()
+    }
+}*/
+
 jar {
-	//include 'fxml/*.xml'
+	//inputs.property("moduleName", moduleName)
     manifest {
-        attributes 'Implementation-Title': 'Gradle Quickstart',
-                   'Implementation-Version': version,
-					'Main-class': 'restui.gui.RestUiApp',
-					'Class-Path': '. jdom-2.0.2.jar'
+        attributes(
+                'Main-Class': mainClass
+                //'Automatic-Module-Name': moduleName
+        )
     }
 }
 
 dependencies {
     
-<<<<<<< HEAD
     compile 'com.sun.jersey:jersey-client:1.9.1'
     compile 'org.jdom:jdom:2.0.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.3'
     testCompile 'junit:junit:4.+'
-=======
-    /* for Java 11
-    compile "org.openjfx:javafx-base:11:$platform"
-    compile "org.openjfx:javafx-graphics:11:$platform"
-    compile "org.openjfx:javafx-controls:11:$platform"
-    compile "org.openjfx:javafx-fxml:11:$platform"
-    compile "org.openjfx:javafx-web:11:$platform"
-    */
-
-    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.3'
-    compile group: 'com.sun.jersey', name: 'jersey-client', version: '1.9.1'
-    compile group: 'org.jdom', name: 'jdom', version: '2.0.2'
-    testCompile group: 'junit', name: 'junit', version: '4.+'
->>>>>>> branch 'master' of https://github.com/omathe/RestUI.git
-}
-
-fxlauncher {
-    applicationVendor 'RestUI'
-    applicationUrl 'http://omathe.free.fr/restui/'
-    applicationMainClass 'restui.gui.RestUiApp'
-    acceptDowngrade false
-    deployTarget 'w48839@fxldemo.tornado.no:fxldemo'
 }
 
 task copyToLib(type: Copy) {
-    into "$buildDir/libs"
-    from configurations.runtime
-}
 
-buildScan {
+	doFirst {
+		println 'copy to libs'
+    	into "$buildDir/libs"
+    	from "/media/DATA/dev/workspaceJ9/RestUI/sav_libs"
+	}
+//    from configurations.compile
+}
+jar.dependsOn(copyToLib)
+
+/*buildScan {
     licenseAgreementUrl = 'https://gradle.com/terms-of-service'
     licenseAgree = 'yes'
-}
+}*/
 
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
@@ -117,7 +114,6 @@ task fatJar(type: Jar) {
 }
 
 eclipse {
-<<<<<<< HEAD
 	classpath {
 		downloadSources=true
 		
@@ -127,13 +123,7 @@ eclipse {
                 entries.findAll { it.kind == 'lib' }.each { it.entryAttributes['module'] = 'true' }
             }
         }
-=======
-    	classpath {
-       		downloadSources=true
-    	}
->>>>>>> branch 'master' of https://github.com/omathe/RestUI.git
 	}
-<<<<<<< HEAD
 }
 
 // creates application bundle (executable + runtime)
@@ -187,14 +177,11 @@ task createFinalAppBundle(type: Exec, dependsOn: [cleanPackagerRuntime]) {
         System.out.println(" -> location: ${buildDir}/distribution/${project.name}/")
     }
 }
-=======
->>>>>>> branch 'master' of https://github.com/omathe/RestUI.git
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '4.8'
+	gradleVersion = '4.5.1'
 }
 
-<<<<<<< HEAD
 task disp {
 	Integer i = 20;
 	Integer j = i++;
@@ -209,6 +196,3 @@ task disp {
 		println "j: " + j
 	}
 }
-=======
-
->>>>>>> branch 'master' of https://github.com/omathe/RestUI.git
