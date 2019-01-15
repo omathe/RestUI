@@ -21,7 +21,7 @@ public class RestUiApp extends Application {
 		controller = (MainController) fxmlLoader.getController();
 
 		primaryStage.setTitle("RestUI");
-		primaryStage.getIcons().add(new Image("/style/applicationIcon.png"));
+		primaryStage.getIcons().add(new Image(ControllerManager.class.getResource("/style/applicationIcon.png").toString()));
 		primaryStage.setScene(new Scene(root));
 
 		primaryStage.setOnCloseRequest(e -> {
