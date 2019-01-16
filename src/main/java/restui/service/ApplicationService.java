@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -12,6 +13,7 @@ import org.jdom2.output.XMLOutputter;
 
 import restui.commons.ResourceHelper;
 import restui.model.Application;
+import restui.model.BaseUrl;
 
 public class ApplicationService {
 
@@ -64,6 +66,15 @@ public class ApplicationService {
 			} else {
 				application.setStyleFile(styleFileElement.getValue());
 			}
+			// baseUrls
+			final Element elementBaseUrls = applicationElement.getChild("baseUrls");
+			if (elementBaseUrls != null) {
+				for (final Element elementBaseUrl : elementBaseUrls.getChildren()) {
+					// BaseUrl
+					final BaseUrl baseUrl = new BaseUrl(elementBaseUrl.getAttributeValue("name"), elementBaseUrl.getAttributeValue("url"), Boolean.valueOf(elementBaseUrl.getAttributeValue("enabled")));
+					application.addBaseUrl(baseUrl);
+				}
+			}
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -82,6 +93,19 @@ public class ApplicationService {
 			Element styleFileElement = new Element("styleFile");
 			styleFileElement.addContent(application.getStyleFile());
 			rootElement.addContent(styleFileElement);
+
+			// base URLs
+			if (!application.getBaseUrls().isEmpty()) {
+				final Element elementBaseUrls = new Element("baseUrls");
+				for (final BaseUrl baseUrl : application.getBaseUrls()) {
+					final Element elementBaseUrl = new Element("baseUrl");
+					elementBaseUrl.setAttribute(new Attribute("name", baseUrl.getName()));
+					elementBaseUrl.setAttribute(new Attribute("url", baseUrl.getUrl()));
+					elementBaseUrl.setAttribute(new Attribute("enabled", baseUrl.getEnabled().toString()));
+					elementBaseUrls.addContent(elementBaseUrl);
+				}
+				rootElement.addContent(elementBaseUrls);
+			}
 
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			Document document = new Document(rootElement);

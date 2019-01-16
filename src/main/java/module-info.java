@@ -16,6 +16,7 @@ module restui.gui {
 	requires jackson.core;
 
 	opens restui.controller;
+	opens restui.model;
 
 	exports restui.gui;
 }

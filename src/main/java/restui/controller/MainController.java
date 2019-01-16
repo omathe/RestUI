@@ -26,6 +26,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -38,14 +39,23 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -58,9 +68,11 @@ import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import restui.commons.Strings;
+import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.exception.NotFoundException;
 import restui.model.Application;
+import restui.model.BaseUrl;
 import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Parameter;
@@ -108,6 +120,18 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TextField authorizationHeader;
+
+	@FXML
+	private ComboBox<String> baseUrl;
+
+	@FXML
+	private TableView<BaseUrl> baseUrlTable;
+	@FXML
+	private TableColumn<BaseUrl, String> baseUrlNameColumn;
+	@FXML
+	private TableColumn<BaseUrl, String> baseUrlUrlColumn;
+	@FXML
+	private TableColumn<BaseUrl, Boolean> baseUrlEnabledColumn;
 
 	private ProjectController projectController;
 	private EndPointController endPointController;
@@ -276,6 +300,60 @@ public class MainController implements Initializable {
 		centerNodes.put("editTab", borderPane.getCenter());
 		centerNodes.put("styleTab", borderPane.getCenter());
 		centerNodes.put("settingsTab", borderPane.getCenter());
+
+		// Base URL table
+		baseUrlTable.setItems((ObservableList<BaseUrl>) application.getBaseUrls());
+		
+		baseUrlNameColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("name"));
+		baseUrlNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+		baseUrlUrlColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("url"));
+		baseUrlUrlColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+		baseUrlEnabledColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, Boolean>("enabled"));
+		ToggleGroup group = new ToggleGroup();
+		baseUrlEnabledColumn.setCellFactory(new Callback<TableColumn<BaseUrl, Boolean>, TableCell<BaseUrl, Boolean>>() {
+
+			@Override
+			public TableCell<BaseUrl, Boolean> call(final TableColumn<BaseUrl, Boolean> param) {
+				return new RadioButtonCell(group);
+			}
+		});
+		final ContextMenu contextMenu = new ContextMenu();
+		baseUrlTable.setOnKeyPressed(event -> {
+			if (event.getCode().equals(KeyCode.DELETE)) {
+				BaseUrl baseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
+				removeBaseUrl(baseUrl);
+			}
+		});
+
+		baseUrlTable.setOnMousePressed(mouseEvent -> {
+			if (mouseEvent.isSecondaryButtonDown()) {
+				final MenuItem duplicate = new MenuItem("Duplicate");
+				final MenuItem delete = new MenuItem("Delete");
+				BaseUrl baseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
+
+				if (baseUrl == null) {
+					duplicate.setDisable(true);
+					delete.setDisable(true);
+				}
+				contextMenu.getItems().clear();
+				final MenuItem add = new MenuItem("Add");
+				contextMenu.getItems().add(add);
+				add.setOnAction(e -> {
+					List<String> baseUrlNames = application.getBaseUrls().stream().map(b -> b.getName()).collect(Collectors.toList());
+					application.addBaseUrl(new BaseUrl(Strings.getNextValue(baseUrlNames, "name"), "url", false));
+				});
+				contextMenu.getItems().addAll(duplicate, new SeparatorMenuItem(), delete);
+				duplicate.setOnAction(e -> {
+					application.addBaseUrl(new BaseUrl("copy of "+ baseUrl.getName(), baseUrl.getUrl(), baseUrl.getEnabled()));
+				});
+				delete.setOnAction(e -> {
+					removeBaseUrl(baseUrl);
+				});
+				baseUrlTable.setContextMenu(contextMenu);
+			}
+		});
 	}
 
 	private Node getCenterNode(final String tabId) {
@@ -594,6 +672,14 @@ public class MainController implements Initializable {
 				setItemsAuthorizationHeader(child, value);
 			}
 		}
+	}
+	
+	private void removeBaseUrl(final BaseUrl baseUrl) {
+
+//		final ButtonType response = AlertBuilder.confirm("Delete the base url", "Do you want to delete\n" + baseUrl.getName());
+//		if (response.equals(ButtonType.OK)) {
+//			project.removeBaseUrl(baseUrl);
+//		}
 	}
 
 }
