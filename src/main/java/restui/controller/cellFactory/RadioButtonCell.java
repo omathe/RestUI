@@ -9,16 +9,22 @@ import restui.model.BaseUrl;
 
 public class RadioButtonCell extends TableCell<BaseUrl, Boolean> {
 
-	private RadioButton radioButton;
+	private final RadioButton radioButton;
 
-	public RadioButtonCell(ToggleGroup group) {
+	public RadioButtonCell(final ToggleGroup group) {
 		radioButton = new RadioButton();
+		
+//		radioButton.setOnKeyPressed(event -> {
+//			event.consume();
+//			
+//		});
 
 		radioButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
-			public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) {
+			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean arg1, final Boolean arg2) {
 				if (getTableRow().getItem() != null) {
-					final BaseUrl baseUrl = (BaseUrl) getTableRow().getItem();
+					
+					final BaseUrl baseUrl = getTableRow().getItem();
 					baseUrl.setEnabled(arg2);
 				}
 			}

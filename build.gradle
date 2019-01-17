@@ -4,7 +4,7 @@ apply plugin: 'java-library'
 // apply plugin: 'application'
 
 group 'fr.omathe'
-version '1.0'
+project.version '1.1.0'
 
 def jdk = System.getProperty("java.home")
 //def jdk = '/opt/java/jdk-11.0.1'
@@ -40,6 +40,12 @@ repositories {
 	from configurations.runtime
 }*/
 
+task writeVersion {
+	File file = new File("src/main/resources/version/version.txt")
+	file.write "version=" +	project.version + "\n";
+	file << "date=" +	new Date().getTime() + "\n";
+}
+
 compileJava {
     inputs.property("moduleName", moduleName)
     doFirst {
@@ -49,6 +55,7 @@ compileJava {
         classpath = files()
     }
 }
+//compileJava.dependsOn updateSource
 
 /*compileTestJava {
     inputs.property("moduleName", moduleName)
@@ -78,7 +85,7 @@ dependencies {
     compile 'com.sun.jersey:jersey-client:1.9.1'
     compile 'org.jdom:jdom:2.0.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.3'
-    testCompile 'junit:junit:4.+'
+    testCompile 'junit:junit:4.12'
 }
 
 task copyToLib(type: Copy) {
@@ -178,9 +185,9 @@ task createFinalAppBundle(type: Exec, dependsOn: [cleanPackagerRuntime]) {
     }
 }
 
-task wrapper(type: Wrapper) {
-	gradleVersion = '4.5.1'
-}
+/*task wrapper(type: Wrapper) {
+	gradleVersion = '5.0'
+}*/
 
 task disp {
 	Integer i = 20;

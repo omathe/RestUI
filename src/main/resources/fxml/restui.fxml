@@ -104,7 +104,7 @@
 												</TextField>
 												<Button minWidth="-Infinity" mnemonicParsing="false" onAction="#setAuthorizationHeader" text="set" />
                                     <Accordion />
-                                    <MenuButton mnemonicParsing="false" text="Base URL">
+                                    <MenuButton focusTraversable="false" mnemonicParsing="false" text="Base URL">
                                       <items>
                                         <MenuItem mnemonicParsing="false">
                                              <graphic>
@@ -198,6 +198,8 @@
 			<children>
 				<Label fx:id="file" text="file" />
 				<Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="version" text="version" />
+            <Label text="|" />
 				<Label fx:id="time" text="Label" />
 				<Label text="|" />
 				<Label fx:id="memory" text="0" />

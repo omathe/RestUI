@@ -72,6 +72,8 @@ import restui.commons.Strings;
 import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.exception.NotFoundException;
+import restui.model.App;
+import restui.model.App.DateVersion;
 import restui.model.Application;
 import restui.model.BaseUrl;
 import restui.model.Endpoint;
@@ -133,6 +135,8 @@ public class MainController implements Initializable {
 	private TableColumn<BaseUrl, String> baseUrlUrlColumn;
 	@FXML
 	private TableColumn<BaseUrl, Boolean> baseUrlEnabledColumn;
+	@FXML
+	private Label version;
 
 	private ProjectController projectController;
 	private EndPointController endPointController;
@@ -147,6 +151,9 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
+		
+		DateVersion dateVersion = App.getDateVersion();
+		version.setText(dateVersion.version + " " + App.date("UTC", dateVersion.date));
 
 		// initialization of the application
 		ApplicationService.init();
