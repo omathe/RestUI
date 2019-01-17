@@ -16,7 +16,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import restui.exception.NotFoundException;
-import restui.model.BaseUrl;
 import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Parameter;
@@ -47,16 +46,6 @@ public interface ProjectService {
 			// project
 			final Element elementProject = document.getRootElement();
 			project.setName(elementProject.getAttributeValue("name"));
-
-			// baseUrls
-			final Element elementBaseUrls = elementProject.getChild("baseUrls");
-			if (elementBaseUrls != null) {
-				for (final Element elementBaseUrl : elementBaseUrls.getChildren()) {
-					// BaseUrl
-					final BaseUrl baseUrl = new BaseUrl(elementBaseUrl.getAttributeValue("name"), elementBaseUrl.getAttributeValue("url"), Boolean.valueOf(elementBaseUrl.getAttributeValue("enabled")));
-					project.addBaseUrl(baseUrl);
-				}
-			}
 
 			// endpoints
 			final Element elementEndpoints = elementProject.getChild("endpoints");
@@ -112,19 +101,6 @@ public interface ProjectService {
 			final Element elementProject = new Element("project");
 			final Attribute attributeProjectName = new Attribute("name", project.getName());
 			elementProject.setAttribute(attributeProjectName);
-
-			// baseUrls
-			if (!project.getBaseUrls().isEmpty()) {
-				final Element elementBaseUrls = new Element("baseUrls");
-				for (final BaseUrl baseUrl : project.getBaseUrls()) {
-					final Element elementBaseUrl = new Element("baseUrl");
-					elementBaseUrl.setAttribute(new Attribute("name", baseUrl.getName()));
-					elementBaseUrl.setAttribute(new Attribute("url", baseUrl.getUrl()));
-					elementBaseUrl.setAttribute(new Attribute("enabled", baseUrl.getEnabled().toString()));
-					elementBaseUrls.addContent(elementBaseUrl);
-				}
-				elementProject.addContent(elementBaseUrls);
-			}
 
 			// endpoints
 			final Element elementEndpoints = new Element("endpoints");

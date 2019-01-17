@@ -2,36 +2,14 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111"
-	xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.ProjectController">
+<HBox spacing="5.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.ProjectController">
 	<children>
 		<VBox prefHeight="600.0" prefWidth="607.0" spacing="5.0">
 			<children>
-				<Label text="Base URL">
-					<VBox.margin>
-						<Insets left="5.0" right="5.0" top="10.0" />
-					</VBox.margin>
-				</Label>
-				<TableView fx:id="baseUrlTable" editable="true"
-					prefHeight="155.0" prefWidth="607.0">
-					<columns>
-						<TableColumn fx:id="baseUrlEnabledColumn" prefWidth="75.0"
-							text="Enabled" />
-						<TableColumn fx:id="baseUrlNameColumn" prefWidth="145.0"
-							text="Name" />
-						<TableColumn fx:id="baseUrlUrlColumn" prefWidth="300.0"
-							text="Url" />
-					</columns>
-					<VBox.margin>
-						<Insets bottom="5.0" left="5.0" right="5.0" top="2.0" />
-					</VBox.margin>
-				</TableView>
 				<HBox fillHeight="false" spacing="5.0" VBox.vgrow="NEVER">
 					<children>
 						<Label text="Number of endpoints :" />

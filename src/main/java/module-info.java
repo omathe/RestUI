@@ -14,6 +14,8 @@ module restui.gui {
 	requires jersey.core;
 	requires jackson.databind;
 	requires jackson.core;
+	
+	requires junit;
 
 	opens restui.controller;
 	opens restui.model;

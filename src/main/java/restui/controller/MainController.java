@@ -67,6 +67,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import restui.commons.AlertBuilder;
 import restui.commons.Strings;
 import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
@@ -135,7 +136,7 @@ public class MainController implements Initializable {
 
 	private ProjectController projectController;
 	private EndPointController endPointController;
-	private Application application;
+	public static Application application;
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
@@ -676,10 +677,10 @@ public class MainController implements Initializable {
 	
 	private void removeBaseUrl(final BaseUrl baseUrl) {
 
-//		final ButtonType response = AlertBuilder.confirm("Delete the base url", "Do you want to delete\n" + baseUrl.getName());
-//		if (response.equals(ButtonType.OK)) {
-//			project.removeBaseUrl(baseUrl);
-//		}
+		final ButtonType response = AlertBuilder.confirm("Delete the base url", "Do you want to delete\n" + baseUrl.getName());
+		if (response.equals(ButtonType.OK)) {
+			application.removeBaseUrl(baseUrl);
+		}
 	}
 
 }

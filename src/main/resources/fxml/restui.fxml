@@ -103,8 +103,6 @@
 													</opaqueInsets>
 												</TextField>
 												<Button minWidth="-Infinity" mnemonicParsing="false" onAction="#setAuthorizationHeader" text="set" />
-                                    <Label text="Base URL" />
-                                    <ComboBox fx:id="baseUrl" editable="true" prefWidth="220.0" promptText="http://192.168.5.11:8080/rest" />
                                     <Accordion />
                                     <MenuButton mnemonicParsing="false" text="Base URL">
                                       <items>

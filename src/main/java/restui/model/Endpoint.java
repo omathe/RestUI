@@ -118,22 +118,6 @@ public class Endpoint extends Item {
 		path.set(builtPath);
 	}
 
-	public String getBaseUrl() {
-
-		String baseUrl = null;
-		Item currentItem = this;
-
-		while (currentItem != null) {
-			if (currentItem.getClass().getSimpleName().equals(Project.class.getSimpleName())) {
-				final Project project = (Project) currentItem;
-				baseUrl = project.getBaseUrl();
-				break;
-			}
-			currentItem = currentItem.getParent();
-		}
-		return baseUrl;
-	}
-
 	public String getRequestRawBody() {
 
 		final Optional<String> body = parameters.stream()

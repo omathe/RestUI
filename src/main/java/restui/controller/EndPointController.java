@@ -410,7 +410,7 @@ public class EndPointController extends AbstractController implements Initializa
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
-		baseUrl = endpoint.getBaseUrl();
+		baseUrl = MainController.application.getBaseUrl();
 		method.valueProperty().bindBidirectional(endpoint.methodProperty());
 
 		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
