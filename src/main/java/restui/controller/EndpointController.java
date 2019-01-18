@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -71,6 +72,7 @@ import javafx.stage.FileChooser;
 import javafx.util.converter.DefaultStringConverter;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
+import restui.exception.NotFoundException;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
@@ -83,7 +85,7 @@ import restui.model.Path;
 import restui.service.RestClient;
 import restui.service.Tools;
 
-public class EndPointController extends AbstractController implements Initializable {
+public class EndpointController extends AbstractController implements Initializable {
 
 	@FXML
 	private SplitPane requestResponseSplitPane;
@@ -185,7 +187,7 @@ public class EndPointController extends AbstractController implements Initializa
 	@FXML
 	private AnchorPane anchorPaneExecute;
 
-	public EndPointController() {
+	public EndpointController() {
 		super();
 	}
 
@@ -459,9 +461,16 @@ public class EndPointController extends AbstractController implements Initializa
 		currentExchange.setUri(uri.getText());
 		final long t0 = System.currentTimeMillis();
 
-		System.out.println(currentExchange.getName() + "URI = " + currentExchange.getUri());
-
-		ClientResponse response = RestClient.execute(method.getValue(), currentExchange);
+		ClientResponse response = null;
+		try {
+			response = RestClient.execute(method.getValue(), currentExchange);
+		} catch (NotFoundException e1) {
+			Platform.runLater(new Runnable() {
+	            @Override public void run() {
+	            	responseBody.setText(e1.getMessage() + "\n");
+	            }
+	        });
+		}
 
 		currentExchange.setDate(Instant.now().toEpochMilli());
 
@@ -516,7 +525,6 @@ public class EndPointController extends AbstractController implements Initializa
 								final File file = fileChooser.showSaveDialog(null);
 								Tools.writeBytesToFile(file, bytes);
 							} else {
-								// currentExchange.setResponseBody(output); à supprimer
 								// response body
 								final Parameter responseBody = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.BODY, Type.TEXT, null, output);
 								currentExchange.addParameter(responseBody);
@@ -533,10 +541,6 @@ public class EndPointController extends AbstractController implements Initializa
 		display();
 
 		saveCurrentExchange();
-
-		// refresh tableView (workaround)
-		// exchanges.getColumns().get(0).setVisible(false);
-		// exchanges.getColumns().get(0).setVisible(true);
 	}
 
 	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {

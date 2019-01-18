@@ -139,7 +139,7 @@ public class MainController implements Initializable {
 	private Label version;
 
 	private ProjectController projectController;
-	private EndPointController endPointController;
+	private EndpointController endPointController;
 	public static Application application;
 	private File projectFile;
 	private Set<String> bookmarks;
@@ -208,7 +208,7 @@ public class MainController implements Initializable {
 						try {
 							final FXMLLoader fxmlLoader = new FXMLLoader();
 							endpointHbox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
-							endPointController = (EndPointController) fxmlLoader.getController();
+							endPointController = (EndpointController) fxmlLoader.getController();
 						} catch (final IOException e) {
 							e.printStackTrace();
 						}

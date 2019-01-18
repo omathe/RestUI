@@ -38,7 +38,7 @@ import restui.model.Parameter.Type;
 
 public class RequestBodyController extends AbstractController implements Initializable {
 
-	private EndPointController endPointController;
+	private EndpointController endPointController;
 	private Exchange exchange;
 	private Endpoint endpoint;
 	private ContextMenu contextMenu;
@@ -129,7 +129,7 @@ public class RequestBodyController extends AbstractController implements Initial
 		});
 	}
 
-	public void display(final EndPointController endPointController, final FxmlNode fxmlNode, final BodyType type) {
+	public void display(final EndpointController endPointController, final FxmlNode fxmlNode, final BodyType type) {
 
 		this.endPointController = endPointController;
 

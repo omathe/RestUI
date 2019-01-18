@@ -23,6 +23,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import restui.exception.NotFoundException;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
 import restui.model.Parameter;
@@ -39,7 +40,7 @@ public class RestClient {
 
 	private static final Client client = Client.create();
 
-	public static ClientResponse execute(final String method, final Exchange exchange) {
+	public static ClientResponse execute(final String method, final Exchange exchange) throws NotFoundException {
 		ClientResponse response = null;
 
 		switch (method) {
@@ -65,7 +66,7 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse get(final Exchange exchange) {
+	private static ClientResponse get(final Exchange exchange) throws NotFoundException {
 
 		ClientResponse response = null;
 
@@ -81,8 +82,7 @@ public class RestClient {
 			response = builder.get(ClientResponse.class);
 		} catch (final ClientHandlerException e) {
 			e.printStackTrace();
-		} catch (final Exception e) {
-			e.printStackTrace();
+			throw new NotFoundException(e.getMessage());
 		}
 		finally {
 			client.destroy();
