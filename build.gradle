@@ -43,7 +43,7 @@ repositories {
 task writeVersion {
 	File file = new File("src/main/resources/version/version.txt")
 	file.write "version=" +	project.version + "\n";
-	file << "date=" +	new Date().getTime() + "\n";
+	file << "date=" + new Date().getTime() + "\n";
 }
 
 compileJava {
