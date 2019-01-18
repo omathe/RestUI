@@ -72,7 +72,7 @@ import javafx.stage.FileChooser;
 import javafx.util.converter.DefaultStringConverter;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
-import restui.exception.NotFoundException;
+import restui.exception.ClientException;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
@@ -464,10 +464,10 @@ public class EndpointController extends AbstractController implements Initializa
 		ClientResponse response = null;
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
-		} catch (NotFoundException e1) {
+		} catch (ClientException e) {
 			Platform.runLater(new Runnable() {
 	            @Override public void run() {
-	            	responseBody.setText(e1.getMessage() + "\n");
+	            	responseBody.setText(e.getMessage());
 	            }
 	        });
 		}

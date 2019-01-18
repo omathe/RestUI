@@ -23,7 +23,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import restui.exception.NotFoundException;
+import restui.exception.ClientException;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
 import restui.model.Parameter;
@@ -40,7 +40,7 @@ public class RestClient {
 
 	private static final Client client = Client.create();
 
-	public static ClientResponse execute(final String method, final Exchange exchange) throws NotFoundException {
+	public static ClientResponse execute(final String method, final Exchange exchange) throws ClientException {
 		ClientResponse response = null;
 
 		switch (method) {
@@ -66,7 +66,7 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse get(final Exchange exchange) throws NotFoundException {
+	private static ClientResponse get(final Exchange exchange) throws ClientException {
 
 		ClientResponse response = null;
 
@@ -82,7 +82,7 @@ public class RestClient {
 			response = builder.get(ClientResponse.class);
 		} catch (final ClientHandlerException e) {
 			e.printStackTrace();
-			throw new NotFoundException(e.getMessage());
+			throw new ClientException(e.getMessage());
 		}
 		finally {
 			client.destroy();
@@ -90,7 +90,7 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse post(final Exchange exchange) {
+	private static ClientResponse post(final Exchange exchange) throws ClientException {
 
 		ClientResponse response = null;
 
@@ -142,7 +142,9 @@ public class RestClient {
 			response = builder.post(ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
 			e.printStackTrace();
-		} finally {
+			throw new ClientException(e.getMessage());
+		}
+		finally {
 			client.destroy();
 			if (bos != null) {
 				try {
@@ -155,7 +157,7 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse put(final Exchange exchange) {
+	private static ClientResponse put(final Exchange exchange) throws ClientException {
 
 		ClientResponse response = null;
 
@@ -209,6 +211,7 @@ public class RestClient {
 			response = builder.put(ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
 			e.printStackTrace();
+			throw new ClientException(e.getMessage());
 		} finally {
 			client.destroy();
 			if (bos != null) {
@@ -222,7 +225,7 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse patch(final Exchange exchange) {
+	private static ClientResponse patch(final Exchange exchange) throws ClientException {
 
 		ClientResponse response = null;
 		final DefaultClientConfig config = new DefaultClientConfig();
@@ -279,6 +282,7 @@ public class RestClient {
 			response = builder.method("PATCH", ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
 			e.printStackTrace();
+			throw new ClientException(e.getMessage());
 		} finally {
 			client.destroy();
 			if (bos != null) {
@@ -292,7 +296,7 @@ public class RestClient {
 		return response;
 	}
 
-	private static ClientResponse delete(final Exchange exchange) {
+	private static ClientResponse delete(final Exchange exchange) throws ClientException {
 
 		ClientResponse response = null;
 		final Client client = Client.create();
@@ -309,6 +313,7 @@ public class RestClient {
 			response = builder.delete(ClientResponse.class);
 		} catch (final Exception e) {
 			e.printStackTrace();
+			throw new ClientException(e.getMessage());
 		} finally {
 			client.destroy();
 		}
