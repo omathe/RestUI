@@ -10,7 +10,7 @@ module restui.gui {
 
 	// Automatic modules
 	requires jdom;
-	requires jersey.client;
+	requires transitive jersey.client;
 	requires jersey.core;
 	requires jackson.databind;
 	requires jackson.core;
@@ -19,4 +19,5 @@ module restui.gui {
 	opens restui.model;
 
 	exports restui.gui;
+
 }

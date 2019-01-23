@@ -26,7 +26,8 @@ buildscript {
 }
 
 sourceCompatibility = 1.9
-//targetCompatibility = 1.9
+targetCompatibility = 1.9
+
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
@@ -34,11 +35,11 @@ repositories {
 	jcenter()
 }
 
-/*task copyLibs(type: Copy) {
+task copyLibs(type: Copy) {
 
 	into "lib"
 	from configurations.runtime
-}*/
+}
 
 task writeVersion {
 	File file = new File("src/main/resources/version/version.txt")
@@ -46,6 +47,7 @@ task writeVersion {
 	file << "date=" + new Date().getTime() + "\n";
 }
 
+/* useful for java9
 compileJava {
     inputs.property("moduleName", moduleName)
     doFirst {
@@ -55,6 +57,7 @@ compileJava {
         classpath = files()
     }
 }
+*/
 //compileJava.dependsOn updateSource
 
 /*compileTestJava {
@@ -150,7 +153,7 @@ task javaPackager(type: Exec, dependsOn: assemble) {
             '--add-modules', moduleName,
             '-m', "$moduleName/$mainClass"
     ]
-    System.out.println("commandLine : " + commandLine)
+    //System.out.println("commandLine : " + commandLine)
 }
 
 // removes bloated runtime created by javapackager
