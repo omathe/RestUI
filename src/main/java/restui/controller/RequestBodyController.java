@@ -1,9 +1,12 @@
 package restui.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -47,7 +50,7 @@ public class RequestBodyController extends AbstractController implements Initial
 
 	@FXML
 	private VBox vBox;
-
+	
 	@FXML
 	private TableView<Parameter> bodyTableView;
 
@@ -156,27 +159,28 @@ public class RequestBodyController extends AbstractController implements Initial
 		}
 
 		if (type.equals(BodyType.RAW)) {
-
 			// RAW
-			requestBody.setText(endPointController.isSpecificationMode() ? endpoint.getRequestRawBody() : exchange.getRequestRawBody());
-
+			String body = endPointController.isSpecificationMode() ? endpoint.getRequestRawBody() : exchange.getRequestRawBody();
+			requestBody.setText(body);
+			if (body != null) {
+				final ObjectMapper mapper = new ObjectMapper();
+				try {
+					Object json = mapper.readValue(body, Object.class);
+					requestBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			endPointController.getBodyVBox().getChildren().clear();
 			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
 			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
 				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
 			}
 			vBox.getChildren().clear();
-			vBox.getChildren().add(requestBody);
+			vBox.getChildren().addAll(requestBody);
 			VBox.setVgrow(vBox, Priority.ALWAYS);
-			/*
-						requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-							if (endPointController.isSpecificationMode()) {
-								endpoint.setRequestRawBody(newValue);
-							} else {
-								exchange.setRequestRawBody(newValue);
-							}
-						});
-			*/
+			
 		} else if (type.equals(BodyType.FORM_DATA)) {
 			// FORM_DATA
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));
