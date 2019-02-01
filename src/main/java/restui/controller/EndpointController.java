@@ -29,6 +29,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -173,7 +177,7 @@ public class EndpointController extends AbstractController implements Initializa
 	private Circle statusCircle;
 
 	// **************************************************************************************************************************
-	private String baseUrl;
+	private final StringProperty baseUrl;
 	private Endpoint endpoint;
 	private Exchange currentExchange;
 	private BodyType specificationBodyType;
@@ -189,10 +193,20 @@ public class EndpointController extends AbstractController implements Initializa
 
 	public EndpointController() {
 		super();
+		baseUrl = new SimpleStringProperty();
 	}
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
+
+		baseUrl.bind(MainController.baseUrl);
+
+		baseUrl.addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+				buildUri();
+			}
+		});
 
 		path.setTooltip(new Tooltip("Endpoint path value"));
 
@@ -412,11 +426,8 @@ public class EndpointController extends AbstractController implements Initializa
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
-		baseUrl = MainController.application.getBaseUrl();
 		method.valueProperty().bindBidirectional(endpoint.methodProperty());
-
 		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
-
 		modeExecution(null);
 	}
 
@@ -466,10 +477,11 @@ public class EndpointController extends AbstractController implements Initializa
 			response = RestClient.execute(method.getValue(), currentExchange);
 		} catch (ClientException e) {
 			Platform.runLater(new Runnable() {
-	            @Override public void run() {
-	            	responseBody.setText(e.getMessage());
-	            }
-	        });
+				@Override
+				public void run() {
+					responseBody.setText(e.getMessage());
+				}
+			});
 		}
 
 		currentExchange.setDate(Instant.now().toEpochMilli());
@@ -898,7 +910,7 @@ public class EndpointController extends AbstractController implements Initializa
 
 		boolean validUri = true;
 
-		String valuedUri = baseUrl + path.getText();
+		String valuedUri = baseUrl.get() + path.getText();
 
 		Set<String> queryParams = new HashSet<String>();
 		if (!valuedUri.toLowerCase().startsWith("http")) {

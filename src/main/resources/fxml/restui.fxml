@@ -130,7 +130,7 @@
 									<content>
 										<HBox alignment="CENTER_LEFT" spacing="5.0">
 											<children>
-												<ComboBox fx:id="url" editable="true" prefHeight="26.0" prefWidth="476.0">
+												<ComboBox fx:id="webUrl" editable="true" prefHeight="26.0" prefWidth="476.0">
 													<items>
 														<FXCollections fx:factory="observableArrayList">
 															<String fx:value="https://jsoneditoronline.org/" />

@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.ToggleGroup;
+import restui.controller.MainController;
 import restui.model.BaseUrl;
 
 public class RadioButtonCell extends TableCell<BaseUrl, Boolean> {
@@ -13,22 +14,22 @@ public class RadioButtonCell extends TableCell<BaseUrl, Boolean> {
 
 	public RadioButtonCell(final ToggleGroup group) {
 		radioButton = new RadioButton();
-		
-//		radioButton.setOnKeyPressed(event -> {
-//			event.consume();
-//			
-//		});
 
 		radioButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			
 			@Override
-			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean arg1, final Boolean arg2) {
+			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
+
 				if (getTableRow().getItem() != null) {
-					
 					final BaseUrl baseUrl = getTableRow().getItem();
-					baseUrl.setEnabled(arg2);
+					baseUrl.setEnabled(newValue);
+					
+					// Update the baseUrl used in MainController
+					MainController.baseUrl.set(baseUrl.getUrl());
 				}
 			}
 		});
+		
 		radioButton.setToggleGroup(group);
 	}
 

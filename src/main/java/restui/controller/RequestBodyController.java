@@ -50,7 +50,7 @@ public class RequestBodyController extends AbstractController implements Initial
 
 	@FXML
 	private VBox vBox;
-	
+
 	@FXML
 	private TableView<Parameter> bodyTableView;
 
@@ -122,7 +122,7 @@ public class RequestBodyController extends AbstractController implements Initial
 				deleteRequestParameters(bodyTableView.getSelectionModel().getSelectedItems());
 			}
 		});
-		
+
 		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (endPointController.isSpecificationMode()) {
 				endpoint.setRequestRawBody(newValue);
@@ -171,7 +171,7 @@ public class RequestBodyController extends AbstractController implements Initial
 					e.printStackTrace();
 				}
 			}
-			
+
 			endPointController.getBodyVBox().getChildren().clear();
 			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
 			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
@@ -180,7 +180,7 @@ public class RequestBodyController extends AbstractController implements Initial
 			vBox.getChildren().clear();
 			vBox.getChildren().addAll(requestBody);
 			VBox.setVgrow(vBox, Priority.ALWAYS);
-			
+
 		} else if (type.equals(BodyType.FORM_DATA)) {
 			// FORM_DATA
 			bodyTableView.setItems(parameterData.filtered(p -> p.isBodyParameter()));

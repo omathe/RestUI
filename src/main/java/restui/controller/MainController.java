@@ -24,6 +24,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -69,6 +71,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
+import restui.controller.cellFactory.BaseUrlUrlCellFactory;
 import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.exception.NotFoundException;
@@ -90,6 +93,8 @@ public class MainController implements Initializable {
 	private final Map<String, Node> centerNodes = new HashMap<String, Node>();
 	private WebView webView;
 	private WebEngine webEngine;
+
+	public static StringProperty baseUrl = new SimpleStringProperty(); // selected base url
 
 	@FXML
 	private TreeView<Item> treeView;
@@ -118,14 +123,12 @@ public class MainController implements Initializable {
 	@FXML
 	private TabPane topTabPane;
 
+	// Web tab
 	@FXML
-	private ComboBox<String> url;
+	private ComboBox<String> webUrl;
 
 	@FXML
 	private TextField authorizationHeader;
-
-	@FXML
-	private ComboBox<String> baseUrl;
 
 	@FXML
 	private TableView<BaseUrl> baseUrlTable;
@@ -151,7 +154,7 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		
+
 		DateVersion dateVersion = App.getDateVersion();
 		version.setText(dateVersion.version + " " + App.date("UTC", dateVersion.date));
 
@@ -159,6 +162,7 @@ public class MainController implements Initializable {
 		ApplicationService.init();
 
 		application = ApplicationService.openApplication();
+		baseUrl.set(application.getBaseUrl());
 
 		loadProject(URI.create(application.getLastProjectUri()));
 
@@ -311,15 +315,21 @@ public class MainController implements Initializable {
 
 		// Base URL table
 		baseUrlTable.setItems((ObservableList<BaseUrl>) application.getBaseUrls());
-		
+
 		baseUrlNameColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("name"));
 		baseUrlNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
 		baseUrlUrlColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("url"));
-		baseUrlUrlColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		baseUrlUrlColumn.setCellFactory(new Callback<TableColumn<BaseUrl, String>, TableCell<BaseUrl, String>>() {
+			@Override
+			public TableCell<BaseUrl, String> call(final TableColumn<BaseUrl, String> param) {
+				return new BaseUrlUrlCellFactory();
+			}
+		});
 
 		baseUrlEnabledColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, Boolean>("enabled"));
 		ToggleGroup group = new ToggleGroup();
+
 		baseUrlEnabledColumn.setCellFactory(new Callback<TableColumn<BaseUrl, Boolean>, TableCell<BaseUrl, Boolean>>() {
 
 			@Override
@@ -327,6 +337,7 @@ public class MainController implements Initializable {
 				return new RadioButtonCell(group);
 			}
 		});
+		
 		final ContextMenu contextMenu = new ContextMenu();
 		baseUrlTable.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.DELETE)) {
@@ -348,20 +359,27 @@ public class MainController implements Initializable {
 				contextMenu.getItems().clear();
 				final MenuItem add = new MenuItem("Add");
 				contextMenu.getItems().add(add);
+				// add
 				add.setOnAction(e -> {
 					List<String> baseUrlNames = application.getBaseUrls().stream().map(b -> b.getName()).collect(Collectors.toList());
 					application.addBaseUrl(new BaseUrl(Strings.getNextValue(baseUrlNames, "name"), "url", false));
 				});
 				contextMenu.getItems().addAll(duplicate, new SeparatorMenuItem(), delete);
+				// duplicate
 				duplicate.setOnAction(e -> {
-					application.addBaseUrl(new BaseUrl("copy of "+ baseUrl.getName(), baseUrl.getUrl(), baseUrl.getEnabled()));
+					application.addBaseUrl(new BaseUrl("copy of " + baseUrl.getName(), baseUrl.getUrl(), baseUrl.getEnabled()));
 				});
+				// delete
 				delete.setOnAction(e -> {
 					removeBaseUrl(baseUrl);
 				});
 				baseUrlTable.setContextMenu(contextMenu);
 			}
 		});
+	}
+
+	public TableColumn<BaseUrl, String> getBaseUrlNameColumn() {
+		return baseUrlNameColumn;
 	}
 
 	private Node getCenterNode(final String tabId) {
@@ -561,7 +579,7 @@ public class MainController implements Initializable {
 	@FXML
 	public void launchWebPage(final ActionEvent event) {
 
-		getWebEngine().load(url.getValue());
+		getWebEngine().load(webUrl.getValue());
 		borderPane.setCenter(webView);
 	}
 
@@ -681,7 +699,7 @@ public class MainController implements Initializable {
 			}
 		}
 	}
-	
+
 	private void removeBaseUrl(final BaseUrl baseUrl) {
 
 		final ButtonType response = AlertBuilder.confirm("Delete the base url", "Do you want to delete\n" + baseUrl.getName());
