@@ -9,11 +9,11 @@ import javafx.scene.input.KeyCode;
 import restui.controller.MainController;
 import restui.model.BaseUrl;
 
-public class BaseUrlUrlCellFactory extends TableCell<BaseUrl, String> {
+public class BaseUrlCellFactory extends TableCell<BaseUrl, String> {
 
 	private TextField textField;
 
-	public BaseUrlUrlCellFactory() {
+	public BaseUrlCellFactory() {
 		super();
 	}
 
@@ -63,7 +63,7 @@ public class BaseUrlUrlCellFactory extends TableCell<BaseUrl, String> {
 					TableRow<BaseUrl> tableRow = (TableRow<BaseUrl>) parent;
 					BaseUrl baseUrl = tableRow.getItem();
 					if (baseUrl != null && baseUrl.getEnabled()) {
-						MainController.baseUrl.set(item);
+						MainController.updateBaseUrlProperty(baseUrl);
 					}
 				}
 			}

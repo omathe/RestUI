@@ -24,8 +24,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -57,7 +57,6 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -71,7 +70,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
-import restui.controller.cellFactory.BaseUrlUrlCellFactory;
+import restui.controller.cellFactory.BaseUrlCellFactory;
 import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.exception.NotFoundException;
@@ -94,7 +93,7 @@ public class MainController implements Initializable {
 	private WebView webView;
 	private WebEngine webEngine;
 
-	public static StringProperty baseUrl = new SimpleStringProperty(); // selected base url
+	public static ObjectProperty<BaseUrl> baseUrlProperty = new SimpleObjectProperty<BaseUrl>(new BaseUrl("", "", false)); // selected base url
 
 	@FXML
 	private TreeView<Item> treeView;
@@ -132,14 +131,21 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TableView<BaseUrl> baseUrlTable;
+	
 	@FXML
 	private TableColumn<BaseUrl, String> baseUrlNameColumn;
+	
 	@FXML
 	private TableColumn<BaseUrl, String> baseUrlUrlColumn;
+	
 	@FXML
 	private TableColumn<BaseUrl, Boolean> baseUrlEnabledColumn;
+	
 	@FXML
 	private Label version;
+	
+	@FXML
+	private Label baseURL;
 
 	private ProjectController projectController;
 	private EndpointController endPointController;
@@ -157,13 +163,21 @@ public class MainController implements Initializable {
 
 		DateVersion dateVersion = App.getDateVersion();
 		version.setText(dateVersion.version + " " + App.date("UTC", dateVersion.date));
-
+		
 		// initialization of the application
 		ApplicationService.init();
-
 		application = ApplicationService.openApplication();
-		baseUrl.set(application.getBaseUrl());
+		
+		Optional<BaseUrl> baseUrl2 = application.getEnabledBaseUrl();
+		if (baseUrl2.isPresent()) {
+			baseUrlProperty.get().enabledProperty().set(baseUrl2.get().getEnabled());
+			baseUrlProperty.get().nameProperty().set(baseUrl2.get().getName());
+			baseUrlProperty.get().urlProperty().set(baseUrl2.get().getUrl());
+		}
+		
+		baseURL.textProperty().bind(baseUrlProperty.get().nameProperty());
 
+		// load las project
 		loadProject(URI.create(application.getLastProjectUri()));
 
 		if (application.getStyleFile() != null) {
@@ -317,13 +331,20 @@ public class MainController implements Initializable {
 		baseUrlTable.setItems((ObservableList<BaseUrl>) application.getBaseUrls());
 
 		baseUrlNameColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("name"));
-		baseUrlNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		//baseUrlNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		baseUrlNameColumn.setCellFactory(new Callback<TableColumn<BaseUrl, String>, TableCell<BaseUrl, String>>() {
+			@Override
+			public TableCell<BaseUrl, String> call(final TableColumn<BaseUrl, String> param) {
+				return new BaseUrlCellFactory();
+			}
+		});
+		
 
 		baseUrlUrlColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("url"));
 		baseUrlUrlColumn.setCellFactory(new Callback<TableColumn<BaseUrl, String>, TableCell<BaseUrl, String>>() {
 			@Override
 			public TableCell<BaseUrl, String> call(final TableColumn<BaseUrl, String> param) {
-				return new BaseUrlUrlCellFactory();
+				return new BaseUrlCellFactory();
 			}
 		});
 
@@ -372,16 +393,23 @@ public class MainController implements Initializable {
 				// delete
 				delete.setOnAction(e -> {
 					removeBaseUrl(baseUrl);
+					BaseUrl selectedBaseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
+					if (selectedBaseUrl == null || (selectedBaseUrl != null && !selectedBaseUrl.getEnabled())) {
+						baseUrlProperty.get().urlProperty().set("");
+						baseUrlProperty.get().nameProperty().set("");
+					}
 				});
 				baseUrlTable.setContextMenu(contextMenu);
 			}
 		});
 	}
 
-	public TableColumn<BaseUrl, String> getBaseUrlNameColumn() {
-		return baseUrlNameColumn;
+	public static void updateBaseUrlProperty(final BaseUrl baseUrl) {
+		baseUrlProperty.get().enabledProperty().set(baseUrl.getEnabled());
+		baseUrlProperty.get().nameProperty().set(baseUrl.getName());
+		baseUrlProperty.get().urlProperty().set(baseUrl.getUrl());
 	}
-
+	
 	private Node getCenterNode(final String tabId) {
 
 		Node center = centerNodes.get(tabId);

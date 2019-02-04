@@ -199,15 +199,15 @@ public class EndpointController extends AbstractController implements Initializa
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		baseUrl.bind(MainController.baseUrl);
-
+//		baseUrl.bind(MainController.baseUrl);
+		baseUrl.bind(MainController.baseUrlProperty.get().urlProperty());
 		baseUrl.addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
 				buildUri();
 			}
 		});
-
+		
 		path.setTooltip(new Tooltip("Endpoint path value"));
 
 		// request parameters

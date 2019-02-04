@@ -16,20 +16,25 @@ public class RadioButtonCell extends TableCell<BaseUrl, Boolean> {
 		radioButton = new RadioButton();
 
 		radioButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			
+
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
 
 				if (getTableRow().getItem() != null) {
-					final BaseUrl baseUrl = getTableRow().getItem();
-					baseUrl.setEnabled(newValue);
-					
-					// Update the baseUrl used in MainController
-					MainController.baseUrl.set(baseUrl.getUrl());
+					if (newValue) {
+						final BaseUrl baseUrl = getTableRow().getItem();
+						baseUrl.setEnabled(newValue);
+
+						// Update the baseUrl used in MainController
+						MainController.updateBaseUrlProperty(baseUrl);
+					} else {
+						MainController.baseUrlProperty.get().urlProperty().set("");
+						MainController.baseUrlProperty.get().nameProperty().set("");
+					}
 				}
 			}
 		});
-		
+
 		radioButton.setToggleGroup(group);
 	}
 

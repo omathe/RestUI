@@ -62,6 +62,11 @@ public class Application {
 		}
 		return baseUrl;
 	}
+	
+	public Optional<BaseUrl> getEnabledBaseUrl() {
+		
+		return baseUrls.stream().filter(b -> b.getEnabled()).findFirst();
+	}
 
 	@Override
 	public String toString() {
