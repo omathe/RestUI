@@ -88,14 +88,12 @@ public class ResourceHelper {
 			if (!destinationPath.getParent().toFile().exists()) {
 				destinationPath.getParent().toFile().mkdirs();
 			}
-			if (!destinationPath.toFile().exists()) {
-				final InputStream inputStream = Files.newInputStream(sourcePath);
-				try {
-					Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-				} finally {
-					if (inputStream != null) {
-						inputStream.close();
-					}
+			final InputStream inputStream = Files.newInputStream(sourcePath);
+			try {
+				Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+			} finally {
+				if (inputStream != null) {
+					inputStream.close();
 				}
 			}
 		}

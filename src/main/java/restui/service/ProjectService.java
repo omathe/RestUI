@@ -3,6 +3,8 @@ package restui.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -90,6 +92,120 @@ public interface ProjectService {
 		return project;
 	}
 
+	static Project openProject(final Reader reader) {
+
+		Project project = new Project("");
+
+		try {
+			final SAXBuilder sxb = new SAXBuilder();
+
+			final Document document = sxb.build(reader);
+
+			// project
+			final Element elementProject = document.getRootElement();
+			project.setName(elementProject.getAttributeValue("name"));
+
+			// endpoints
+			final Element elementEndpoints = elementProject.getChild("endpoints");
+			if (elementEndpoints != null) {
+				for (final Element elementEndpoint : elementEndpoints.getChildren()) {
+					final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"), elementEndpoint.getAttributeValue("description"));
+
+					// Parameters
+					final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
+					if (elementEndpointParameters != null) {
+
+						for (final Element elementParameter : elementEndpointParameters.getChildren()) {
+							if (elementParameter != null) {
+								final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
+								final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
+								final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
+								final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
+								String attributeName = elementParameter.getAttributeValue("name");
+								final String name = attributeName == null ? null : attributeName;
+								final String value = elementParameter.getAttributeValue("value");
+								final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
+								endpoint.addParameter(parameter);
+							}
+						}
+					}
+					project.addEnpoint(endpoint);
+				}
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// build the hierarchy
+		buildHierarchy(project);
+
+		return project;
+	}
+	
+	static Project openProject(final InputStream inputStream) {
+		
+		Project project = new Project("");
+		
+		try {
+			final SAXBuilder sxb = new SAXBuilder();
+			
+			final Document document = sxb.build(inputStream);
+			
+			// project
+			final Element elementProject = document.getRootElement();
+			project.setName(elementProject.getAttributeValue("name"));
+			
+			// endpoints
+			final Element elementEndpoints = elementProject.getChild("endpoints");
+			if (elementEndpoints != null) {
+				for (final Element elementEndpoint : elementEndpoints.getChildren()) {
+					final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"), elementEndpoint.getAttributeValue("description"));
+					
+					// Parameters
+					final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
+					if (elementEndpointParameters != null) {
+						
+						for (final Element elementParameter : elementEndpointParameters.getChildren()) {
+							if (elementParameter != null) {
+								final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
+								final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
+								final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
+								final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
+								String attributeName = elementParameter.getAttributeValue("name");
+								final String name = attributeName == null ? null : attributeName;
+								final String value = elementParameter.getAttributeValue("value");
+								final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
+								endpoint.addParameter(parameter);
+							}
+						}
+					}
+					project.addEnpoint(endpoint);
+				}
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		// build the hierarchy
+		buildHierarchy(project);
+		
+		return project;
+	}
+
 	/**
 	 * Saves the project to an XML file
 	 */
@@ -158,7 +274,7 @@ public interface ProjectService {
 		}
 	}
 
-	private static void buildHierarchy(final Project project) {
+	public static void buildHierarchy(final Project project) {
 
 		for (Endpoint endpoint : project.getEndpoints()) {
 

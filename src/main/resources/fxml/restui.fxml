@@ -61,6 +61,12 @@
 													</tooltip>
 												</Button>
 												<Separator orientation="VERTICAL" />
+                                    <Button id="importEndpointsButton" fx:id="importEndpointsButton" mnemonicParsing="false" onAction="#importEndpoints" prefHeight="32.0" prefWidth="32.0" text="Import">
+                                       <tooltip>
+                                          <Tooltip text="Import GMS endpoints" />
+                                       </tooltip>
+                                    </Button>
+                                    <Separator orientation="VERTICAL" />
 												<Button id="deleteFileButton" mnemonicParsing="false" onAction="#delete" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Delete">
 													<tooltip>
 														<Tooltip text="Delete the project" />

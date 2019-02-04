@@ -2,6 +2,7 @@ package restui.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
@@ -19,6 +20,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.sun.jersey.api.client.ClientResponse;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -38,6 +41,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -73,12 +77,14 @@ import restui.commons.Strings;
 import restui.controller.cellFactory.BaseUrlCellFactory;
 import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
+import restui.exception.ClientException;
 import restui.exception.NotFoundException;
 import restui.model.App;
 import restui.model.App.DateVersion;
 import restui.model.Application;
 import restui.model.BaseUrl;
 import restui.model.Endpoint;
+import restui.model.Exchange;
 import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
@@ -86,6 +92,7 @@ import restui.model.Parameter.Location;
 import restui.model.Project;
 import restui.service.ApplicationService;
 import restui.service.ProjectService;
+import restui.service.RestClient;
 
 public class MainController implements Initializable {
 
@@ -131,21 +138,24 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TableView<BaseUrl> baseUrlTable;
-	
+
 	@FXML
 	private TableColumn<BaseUrl, String> baseUrlNameColumn;
-	
+
 	@FXML
 	private TableColumn<BaseUrl, String> baseUrlUrlColumn;
-	
+
 	@FXML
 	private TableColumn<BaseUrl, Boolean> baseUrlEnabledColumn;
-	
+
 	@FXML
 	private Label version;
-	
+
 	@FXML
 	private Label baseURL;
+
+	@FXML
+	private Button importEndpointsButton;
 
 	private ProjectController projectController;
 	private EndpointController endPointController;
@@ -163,11 +173,11 @@ public class MainController implements Initializable {
 
 		DateVersion dateVersion = App.getDateVersion();
 		version.setText(dateVersion.version + " " + App.date("UTC", dateVersion.date));
-		
+
 		// initialization of the application
 		ApplicationService.init();
 		application = ApplicationService.openApplication();
-		
+
 		Optional<BaseUrl> optionalBaseUrl = application.getEnabledBaseUrl();
 		if (optionalBaseUrl.isPresent()) {
 			baseUrlProperty.get().enabledProperty().set(optionalBaseUrl.get().getEnabled());
@@ -175,6 +185,7 @@ public class MainController implements Initializable {
 			baseUrlProperty.get().urlProperty().set(optionalBaseUrl.get().getUrl());
 		}
 		baseURL.textProperty().bind(baseUrlProperty.get().nameProperty());
+		importEndpointsButton.disableProperty().bind(baseUrlProperty.get().enabledProperty().not());
 
 		// load las project
 		loadProject(URI.create(application.getLastProjectUri()));
@@ -330,14 +341,12 @@ public class MainController implements Initializable {
 		baseUrlTable.setItems((ObservableList<BaseUrl>) application.getBaseUrls());
 
 		baseUrlNameColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("name"));
-		//baseUrlNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		baseUrlNameColumn.setCellFactory(new Callback<TableColumn<BaseUrl, String>, TableCell<BaseUrl, String>>() {
 			@Override
 			public TableCell<BaseUrl, String> call(final TableColumn<BaseUrl, String> param) {
 				return new BaseUrlCellFactory();
 			}
 		});
-		
 
 		baseUrlUrlColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("url"));
 		baseUrlUrlColumn.setCellFactory(new Callback<TableColumn<BaseUrl, String>, TableCell<BaseUrl, String>>() {
@@ -357,7 +366,7 @@ public class MainController implements Initializable {
 				return new RadioButtonCell(group);
 			}
 		});
-		
+
 		final ContextMenu contextMenu = new ContextMenu();
 		baseUrlTable.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.DELETE)) {
@@ -394,6 +403,7 @@ public class MainController implements Initializable {
 					removeBaseUrl(baseUrl);
 					BaseUrl selectedBaseUrl = baseUrlTable.getSelectionModel().getSelectedItem();
 					if (selectedBaseUrl == null || (selectedBaseUrl != null && !selectedBaseUrl.getEnabled())) {
+						baseUrlProperty.get().enabledProperty().set(false);
 						baseUrlProperty.get().urlProperty().set("");
 						baseUrlProperty.get().nameProperty().set("");
 					}
@@ -408,7 +418,7 @@ public class MainController implements Initializable {
 		baseUrlProperty.get().nameProperty().set(baseUrl.getName());
 		baseUrlProperty.get().urlProperty().set(baseUrl.getUrl());
 	}
-	
+
 	private Node getCenterNode(final String tabId) {
 
 		Node center = centerNodes.get(tabId);
@@ -485,7 +495,7 @@ public class MainController implements Initializable {
 
 				collapseTreeView(projectItem);
 				projectItem.setExpanded(true);
-				
+
 				projectFile = new File(uri);
 				file.setText(projectFile.getAbsolutePath());
 				application.setLastProjectUri(uri.toString());
@@ -738,14 +748,36 @@ public class MainController implements Initializable {
 	}
 
 	@FXML
-    public void importWebServices(final ActionEvent event) {
-		
-		System.err.println("importWebServices");
-		final Project project = (Project) treeView.getRoot().getValue();
-		
-		final Endpoint endpoint = new Endpoint("getAAA", "/application/aaa", "GET", "imported web service");
-		
-		project.addEnpoint(endpoint);
+	void importEndpoints(final ActionEvent event) {
 
-    }
+		ClientResponse response = null;
+		try {
+			Optional<BaseUrl> optionalBaseUrl = application.getEnabledBaseUrl();
+			if (optionalBaseUrl.isPresent()) {
+				String uri = optionalBaseUrl.get().getUrl() + "/application/webServices/restUI?download=false";
+				Exchange exchange = new Exchange("", Instant.now().toEpochMilli());
+				exchange.setUri(uri);
+				response = RestClient.execute("GET", exchange);
+				if (response != null) {
+					final InputStream inputStream = response.getEntityInputStream();
+
+					Project project = ProjectService.openProject(inputStream);
+					final TreeItem<Item> projectItem = new TreeItem<>(project);
+					builTree(projectItem);
+					sort(projectItem);
+
+					treeView.setRoot(projectItem);
+
+					collapseTreeView(projectItem);
+					projectItem.setExpanded(true);
+				}
+			}
+		} catch (ClientException e) {
+			final Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Import endpoints");
+			alert.setHeaderText("An error occured");
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
+		}
+	}
 }

@@ -105,6 +105,16 @@
 	-fx-opacity :1.0
 }
 
+#importEndpointsButton { 
+    -fx-background-image: url('images/importEndpoints.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+#importEndpointsButton:hover {
+	-fx-opacity :1.0
+}
+
 #tabPane1 .tab-header-background {
     -fx-background-color: #f1f1f1;
 }
