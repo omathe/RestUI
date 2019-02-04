@@ -20,11 +20,12 @@ public class RadioButtonCell extends TableCell<BaseUrl, Boolean> {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
 
-				if (getTableRow().getItem() != null) {
+				final BaseUrl baseUrl = getTableRow().getItem();
+				
+				if (baseUrl != null) {
+					
+					baseUrl.setEnabled(newValue);
 					if (newValue) {
-						final BaseUrl baseUrl = getTableRow().getItem();
-						baseUrl.setEnabled(newValue);
-
 						// Update the baseUrl used in MainController
 						MainController.updateBaseUrlProperty(baseUrl);
 					} else {
