@@ -168,13 +168,12 @@ public class MainController implements Initializable {
 		ApplicationService.init();
 		application = ApplicationService.openApplication();
 		
-		Optional<BaseUrl> baseUrl2 = application.getEnabledBaseUrl();
-		if (baseUrl2.isPresent()) {
-			baseUrlProperty.get().enabledProperty().set(baseUrl2.get().getEnabled());
-			baseUrlProperty.get().nameProperty().set(baseUrl2.get().getName());
-			baseUrlProperty.get().urlProperty().set(baseUrl2.get().getUrl());
+		Optional<BaseUrl> optionalBaseUrl = application.getEnabledBaseUrl();
+		if (optionalBaseUrl.isPresent()) {
+			baseUrlProperty.get().enabledProperty().set(optionalBaseUrl.get().getEnabled());
+			baseUrlProperty.get().nameProperty().set(optionalBaseUrl.get().getName());
+			baseUrlProperty.get().urlProperty().set(optionalBaseUrl.get().getUrl());
 		}
-		
 		baseURL.textProperty().bind(baseUrlProperty.get().nameProperty());
 
 		// load las project
@@ -484,7 +483,9 @@ public class MainController implements Initializable {
 
 				sort(projectItem);
 
+				collapseTreeView(projectItem);
 				projectItem.setExpanded(true);
+				
 				projectFile = new File(uri);
 				file.setText(projectFile.getAbsolutePath());
 				application.setLastProjectUri(uri.toString());
@@ -736,4 +737,15 @@ public class MainController implements Initializable {
 		}
 	}
 
+	@FXML
+    public void importWebServices(final ActionEvent event) {
+		
+		System.err.println("importWebServices");
+		final Project project = (Project) treeView.getRoot().getValue();
+		
+		final Endpoint endpoint = new Endpoint("getAAA", "/application/aaa", "GET", "imported web service");
+		
+		project.addEnpoint(endpoint);
+
+    }
 }
