@@ -398,7 +398,17 @@ public class EndpointController extends AbstractController implements Initializa
 
 					if (exchange.isPresent()) {
 						final MenuItem delete = new MenuItem("Delete");
+						final MenuItem duplicate = new MenuItem("Duplicate");
 						exchangesContextMenu.getItems().add(delete);
+						if (!workingExchangeExists()) {
+							exchangesContextMenu.getItems().add(duplicate);
+						}
+						// duplicate exchange
+						duplicate.setOnAction(e -> {
+							currentExchange = getSelectedExchange().get().duplicate("");
+							endpoint.addExchange(currentExchange);
+						});
+						// delete exchange
 						delete.setOnAction(e -> {
 							deleteExchange(exchange.get());
 						});
@@ -554,25 +564,6 @@ public class EndpointController extends AbstractController implements Initializa
 		display();
 
 		saveCurrentExchange();
-	}
-
-	private Set<String> extractTokens(final String data, final String prefix, final String suffix) {
-
-		final Set<String> tokens = new HashSet<>();
-		int start = 0;
-		int end = 0;
-
-		while (start >= 0) {
-			start = data.indexOf(prefix, start);
-			end = data.indexOf(suffix, end);
-			if (start > 0) {
-				final String token = data.substring(start + 1, end);
-				tokens.add(token);
-				start += 1;
-				end += 1;
-			}
-		}
-		return tokens;
 	}
 
 	private void displayStatusCircle(final Exchange exchange) {
