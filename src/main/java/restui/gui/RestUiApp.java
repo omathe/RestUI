@@ -1,7 +1,6 @@
 package restui.gui;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
@@ -16,10 +15,7 @@ public class RestUiApp extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		FXMLLoader fxmlLoader = new FXMLLoader();
-		final BorderPane root = fxmlLoader.load(ControllerManager.class.getResource("/fxml/restui.fxml").openStream());
-		controller = (MainController) fxmlLoader.getController();
-
+		BorderPane root = (BorderPane) ControllerManager.loadMain().getNode();
 		primaryStage.setTitle("RestUI");
 		primaryStage.getIcons().add(new Image(ControllerManager.class.getResource("/style/applicationIcon.png").toString()));
 		primaryStage.setScene(new Scene(root));

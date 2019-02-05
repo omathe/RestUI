@@ -159,6 +159,9 @@ public class MainController implements Initializable {
 	@FXML
 	private Button importEndpointsButton;
 
+	@FXML
+	public Label notification;
+
 	private ProjectController projectController;
 	private EndpointController endPointController;
 	public static Application application;
@@ -172,7 +175,7 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-
+		
 		DateVersion dateVersion = App.getDateVersion();
 		version.setText(dateVersion.version + " " + App.date("UTC", dateVersion.date));
 
@@ -501,7 +504,7 @@ public class MainController implements Initializable {
 				projectFile = new File(uri);
 				file.setText(projectFile.getAbsolutePath());
 				application.setLastProjectUri(uri.toString());
-				
+
 				// load exchanges
 				ExchangesService.loadExchanges(uri, project);
 			}
@@ -551,7 +554,7 @@ public class MainController implements Initializable {
 				}
 				application.setLastProjectUri(projectFile.toURI().toString());
 				file.setText(projectFile.getAbsolutePath());
-				
+
 				// save the exchanges
 				try {
 					ExchangesService.saveExchanges(project, projectFile.toURI());
@@ -784,9 +787,9 @@ public class MainController implements Initializable {
 		try {
 			Optional<BaseUrl> optionalBaseUrl = application.getEnabledBaseUrl();
 			if (optionalBaseUrl.isPresent()) {
-				String uri = optionalBaseUrl.get().getUrl() + "/application/webServices/restUI?download=false";
+				String gmsWebServiceUri = optionalBaseUrl.get().getUrl() + "/application/webServices/restUI?download=false";
 				Exchange exchange = new Exchange("", Instant.now().toEpochMilli());
-				exchange.setUri(uri);
+				exchange.setUri(gmsWebServiceUri);
 				response = RestClient.execute("GET", exchange);
 				if (response != null) {
 					final InputStream inputStream = response.getEntityInputStream();
@@ -800,9 +803,20 @@ public class MainController implements Initializable {
 
 					collapseTreeView(projectItem);
 					projectItem.setExpanded(true);
+
+					// load exchanges
+					if (projectFile != null) {
+						ExchangesService.loadExchanges(projectFile.toURI(), project);
+					}
 				}
 			}
 		} catch (ClientException | TechnicalException e) {
+			final Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Import endpoints");
+			alert.setHeaderText("An error occured");
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
+		} catch (NotFoundException e) {
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Import endpoints");
 			alert.setHeaderText("An error occured");

@@ -115,6 +115,16 @@
 	-fx-opacity :1.0
 }
 
+#minusButton { 
+    -fx-background-image: url('images/minus.png');
+    -fx-background-size: 16px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+#minusButton:hover {
+	-fx-opacity :1.0
+}
+
 #tabPane1 .tab-header-background {
     -fx-background-color: #f1f1f1;
 }

@@ -27,8 +27,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.ClientResponse.Status;
 
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -177,6 +177,7 @@ public class EndpointController extends AbstractController implements Initializa
 	private Circle statusCircle;
 
 	// **************************************************************************************************************************
+	private MainController mainController;
 	private final StringProperty baseUrl;
 	private Endpoint endpoint;
 	private Exchange currentExchange;
@@ -198,8 +199,9 @@ public class EndpointController extends AbstractController implements Initializa
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
+		
+		mainController = (MainController) ControllerManager.loadMain().getController();
 
-//		baseUrl.bind(MainController.baseUrl);
 		baseUrl.bind(MainController.baseUrlProperty.get().urlProperty());
 		baseUrl.addListener(new ChangeListener<String>() {
 			@Override
@@ -448,7 +450,10 @@ public class EndpointController extends AbstractController implements Initializa
 
 	@FXML
 	protected void execute(final ActionEvent event) {
-
+		
+		mainController.notification.setTextFill(Color.BLACK);
+		mainController.notification.setText("");
+		
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
 		} else {
@@ -476,12 +481,8 @@ public class EndpointController extends AbstractController implements Initializa
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
 		} catch (ClientException e) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					responseBody.setText(e.getMessage());
-				}
-			});
+			mainController.notification.setTextFill(Color.RED);
+			mainController.notification.setText(e.getMessage());
 		}
 
 		currentExchange.setDate(Instant.now().toEpochMilli());
@@ -631,10 +632,10 @@ public class EndpointController extends AbstractController implements Initializa
 
 	private void displayStatusTooltip() {
 
-		/*Status st = Status.fromStatusCode(currentExchange.getStatus());
+		Status st = Status.fromStatusCode(currentExchange.getStatus());
 		if (st != null) {
 			responseStatus.setTooltip(new Tooltip(st.getReasonPhrase()));
-		}*/
+		}
 	}
 
 	private Optional<Exchange> getSelectedExchange() {

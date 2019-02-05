@@ -19,11 +19,8 @@ public class ResourceHelper {
 
 	/**
 	 * Copy source to destination
-	 * 
-	 * @param source
-	 *            - The source path
-	 * @param destination
-	 *            - The destination path directory
+	 * @param source - The source path
+	 * @param destination - The destination path directory
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */

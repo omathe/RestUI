@@ -81,7 +81,6 @@ public class RestClient {
 
 			response = builder.get(ClientResponse.class);
 		} catch (final ClientHandlerException e) {
-			e.printStackTrace();
 			throw new ClientException(e.getMessage());
 		}
 		finally {
@@ -141,7 +140,6 @@ public class RestClient {
 			bos.flush();
 			response = builder.post(ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
-			e.printStackTrace();
 			throw new ClientException(e.getMessage());
 		}
 		finally {
@@ -150,7 +148,6 @@ public class RestClient {
 				try {
 					bos.close();
 				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -210,7 +207,6 @@ public class RestClient {
 			bos.flush();
 			response = builder.put(ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
-			e.printStackTrace();
 			throw new ClientException(e.getMessage());
 		} finally {
 			client.destroy();
@@ -218,7 +214,6 @@ public class RestClient {
 				try {
 					bos.close();
 				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -281,7 +276,6 @@ public class RestClient {
 			bos.flush();
 			response = builder.method("PATCH", ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
-			e.printStackTrace();
 			throw new ClientException(e.getMessage());
 		} finally {
 			client.destroy();
@@ -289,7 +283,6 @@ public class RestClient {
 				try {
 					bos.close();
 				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -312,7 +305,6 @@ public class RestClient {
 
 			response = builder.delete(ClientResponse.class);
 		} catch (final Exception e) {
-			e.printStackTrace();
 			throw new ClientException(e.getMessage());
 		} finally {
 			client.destroy();
@@ -339,7 +331,6 @@ public class RestClient {
 					final String encodedValue = URLEncoder.encode(parameter.getValue(), "UTF-8").replaceAll("[+]", "%20");
 					params.add(encodedName, encodedValue);
 				} catch (final UnsupportedEncodingException e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -357,7 +348,6 @@ public class RestClient {
 		try {
 			encodedValue = URLEncoder.encode(value, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
 		}
 		return encodedValue;
 	}
@@ -369,7 +359,6 @@ public class RestClient {
 			final Path path = Paths.get(URI.create(uri));
 			bytes = Files.readAllBytes(path);
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return bytes;
 	}
@@ -382,7 +371,6 @@ public class RestClient {
 			bos.write(new String(LINE_FEED).getBytes());
 			bos.write(new String(parameter.getValue() + LINE_FEED).getBytes());
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -404,7 +392,6 @@ public class RestClient {
 				System.err.println("Error : the file '" + parameter.getValue() + "' does not exist.");
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }
