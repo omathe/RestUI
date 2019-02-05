@@ -10,6 +10,6 @@ public class NotFoundException extends Exception {
 	
 	public NotFoundException(final String object, final String value) {
 		
-		super(object + " '" + value + "' not found");
+		super(object + " '" + value + "' does not exist.");
 	}
 }

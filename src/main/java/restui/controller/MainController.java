@@ -79,6 +79,7 @@ import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.exception.ClientException;
 import restui.exception.NotFoundException;
+import restui.exception.TechnicalException;
 import restui.model.App;
 import restui.model.App.DateVersion;
 import restui.model.Application;
@@ -91,6 +92,7 @@ import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Project;
 import restui.service.ApplicationService;
+import restui.service.ExchangesService;
 import restui.service.ProjectService;
 import restui.service.RestClient;
 
@@ -499,11 +501,20 @@ public class MainController implements Initializable {
 				projectFile = new File(uri);
 				file.setText(projectFile.getAbsolutePath());
 				application.setLastProjectUri(uri.toString());
+				
+				// load exchanges
+				ExchangesService.loadExchanges(uri, project);
 			}
 		} catch (final NotFoundException e) {
 			final Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Initialization error");
+			alert.setTitle("Loading last project");
 			alert.setHeaderText("Project not found");
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
+		} catch (TechnicalException e) {
+			final Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Loading last project");
+			alert.setHeaderText("Technical error");
 			alert.setContentText(e.getMessage());
 			alert.showAndWait();
 		}
@@ -529,9 +540,28 @@ public class MainController implements Initializable {
 				}
 			}
 			if (projectFile != null) {
-				ProjectService.saveProject(project, projectFile.toURI());
+				try {
+					ProjectService.saveProject(project, projectFile.toURI());
+				} catch (TechnicalException e) {
+					final Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Save the project");
+					alert.setHeaderText("An error occured");
+					alert.setContentText(e.getMessage());
+					alert.showAndWait();
+				}
 				application.setLastProjectUri(projectFile.toURI().toString());
 				file.setText(projectFile.getAbsolutePath());
+				
+				// save the exchanges
+				try {
+					ExchangesService.saveExchanges(project, projectFile.toURI());
+				} catch (TechnicalException e) {
+					final Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Save the exchanges");
+					alert.setHeaderText("An error occured");
+					alert.setContentText(e.getMessage());
+					alert.showAndWait();
+				}
 			}
 		}
 	}
@@ -772,7 +802,7 @@ public class MainController implements Initializable {
 					projectItem.setExpanded(true);
 				}
 			}
-		} catch (ClientException e) {
+		} catch (ClientException | TechnicalException e) {
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Import endpoints");
 			alert.setHeaderText("An error occured");

@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.junit.Test;
 
+import restui.exception.TechnicalException;
 import restui.model.Endpoint;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
@@ -15,7 +16,7 @@ import restui.model.Project;
 public class ProjectServiceTest {
 
 	@Test
-	public void saveProject() {
+	public void saveProject() throws TechnicalException {
 
 		Project project = new Project("test");
 		

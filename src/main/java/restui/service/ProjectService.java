@@ -1,10 +1,11 @@
 package restui.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import restui.exception.NotFoundException;
+import restui.exception.TechnicalException;
 import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Parameter;
@@ -30,117 +32,23 @@ import restui.model.Project;
 public interface ProjectService {
 
 	/**
-	 * Opens a project from an XML file
+	 * Opens a project from an URI
+	 * @throws NotFoundException
+	 * @throws TechnicalException
 	 */
-	static Project openProject(final URI uri) throws NotFoundException {
+	static Project openProject(final URI uri) throws NotFoundException, TechnicalException {
 
-		Project project = new Project("");
-
-		try {
-			final File file = new File(uri);
-			if (!file.exists()) {
-				throw new NotFoundException("file", file.getAbsolutePath());
-			}
-			final SAXBuilder sxb = new SAXBuilder();
-
-			final Document document = sxb.build(uri.toString());
-
-			// project
-			final Element elementProject = document.getRootElement();
-			project.setName(elementProject.getAttributeValue("name"));
-
-			// endpoints
-			final Element elementEndpoints = elementProject.getChild("endpoints");
-			if (elementEndpoints != null) {
-				for (final Element elementEndpoint : elementEndpoints.getChildren()) {
-					final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"), elementEndpoint.getAttributeValue("description"));
-
-					// Parameters
-					final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
-					if (elementEndpointParameters != null) {
-
-						for (final Element elementParameter : elementEndpointParameters.getChildren()) {
-							if (elementParameter != null) {
-								final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
-								final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
-								final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
-								final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
-								String attributeName = elementParameter.getAttributeValue("name");
-								final String name = attributeName == null ? null : attributeName;
-								final String value = elementParameter.getAttributeValue("value");
-								final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
-								endpoint.addParameter(parameter);
-							}
-						}
-					}
-					project.addEnpoint(endpoint);
-				}
-			}
-
-		} catch (final NotFoundException e) {
-			throw e;
-		} catch (final Exception e) {
-			e.printStackTrace();
+		final File file = new File(uri);
+		if (!file.exists()) {
+			throw new NotFoundException("The project file", file.getAbsolutePath());
 		}
 
-		// build the hierarchy
-		buildHierarchy(project);
-
-		// load exchanges
-		ExchangesService.loadExchanges(buildExchangesUri(uri), project);
-
-		return project;
-	}
-
-	static Project openProject(final Reader reader) {
-
 		Project project = new Project("");
-
 		try {
-			final SAXBuilder sxb = new SAXBuilder();
-
-			final Document document = sxb.build(reader);
-
-			// project
-			final Element elementProject = document.getRootElement();
-			project.setName(elementProject.getAttributeValue("name"));
-
-			// endpoints
-			final Element elementEndpoints = elementProject.getChild("endpoints");
-			if (elementEndpoints != null) {
-				for (final Element elementEndpoint : elementEndpoints.getChildren()) {
-					final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"), elementEndpoint.getAttributeValue("description"));
-
-					// Parameters
-					final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
-					if (elementEndpointParameters != null) {
-
-						for (final Element elementParameter : elementEndpointParameters.getChildren()) {
-							if (elementParameter != null) {
-								final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
-								final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
-								final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
-								final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
-								String attributeName = elementParameter.getAttributeValue("name");
-								final String name = attributeName == null ? null : attributeName;
-								final String value = elementParameter.getAttributeValue("value");
-								final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
-								endpoint.addParameter(parameter);
-							}
-						}
-					}
-					project.addEnpoint(endpoint);
-				}
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			FileInputStream inputStream = new FileInputStream(file);
+			project = parseXml(inputStream);
+		} catch (FileNotFoundException e) {
+			throw new TechnicalException(e.getMessage());
 		}
 
 		// build the hierarchy
@@ -148,68 +56,81 @@ public interface ProjectService {
 
 		return project;
 	}
-	
-	static Project openProject(final InputStream inputStream) {
-		
+
+	/**
+	 * Opens a project from an imputStream
+	 * @throws NotFoundException
+	 * @throws TechnicalException
+	 */
+	static Project openProject(final InputStream inputStream) throws TechnicalException {
+
 		Project project = new Project("");
-		
-		try {
-			final SAXBuilder sxb = new SAXBuilder();
-			
-			final Document document = sxb.build(inputStream);
-			
-			// project
-			final Element elementProject = document.getRootElement();
-			project.setName(elementProject.getAttributeValue("name"));
-			
-			// endpoints
-			final Element elementEndpoints = elementProject.getChild("endpoints");
-			if (elementEndpoints != null) {
-				for (final Element elementEndpoint : elementEndpoints.getChildren()) {
-					final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"), elementEndpoint.getAttributeValue("description"));
-					
-					// Parameters
-					final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
-					if (elementEndpointParameters != null) {
-						
-						for (final Element elementParameter : elementEndpointParameters.getChildren()) {
-							if (elementParameter != null) {
-								final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
-								final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
-								final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
-								final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
-								String attributeName = elementParameter.getAttributeValue("name");
-								final String name = attributeName == null ? null : attributeName;
-								final String value = elementParameter.getAttributeValue("value");
-								final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
-								endpoint.addParameter(parameter);
-							}
-						}
-					}
-					project.addEnpoint(endpoint);
-				}
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-				inputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
+		project = parseXml(inputStream);
+
 		// build the hierarchy
 		buildHierarchy(project);
-		
+
+		return project;
+	}
+
+	private static Project parseXml(final InputStream inputStream) throws TechnicalException {
+
+		Project project = new Project("");
+
+		if (inputStream != null) {
+			try {
+				final SAXBuilder sxb = new SAXBuilder();
+				final Document document = sxb.build(inputStream);
+
+				// project
+				final Element elementProject = document.getRootElement();
+				project.setName(elementProject.getAttributeValue("name"));
+
+				// endpoints
+				final Element elementEndpoints = elementProject.getChild("endpoints");
+				if (elementEndpoints != null) {
+					for (final Element elementEndpoint : elementEndpoints.getChildren()) {
+						final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"), elementEndpoint.getAttributeValue("description"));
+
+						// Parameters
+						final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
+						if (elementEndpointParameters != null) {
+
+							for (final Element elementParameter : elementEndpointParameters.getChildren()) {
+								if (elementParameter != null) {
+									final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
+									final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
+									final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
+									final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
+									String attributeName = elementParameter.getAttributeValue("name");
+									final String name = attributeName == null ? null : attributeName;
+									final String value = elementParameter.getAttributeValue("value");
+									final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
+									endpoint.addParameter(parameter);
+								}
+							}
+						}
+						project.addEnpoint(endpoint);
+					}
+				}
+			} catch (final Exception e) {
+				throw new TechnicalException(e.getMessage());
+			} finally {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					throw new TechnicalException(e.getMessage());
+				}
+			}
+		}
 		return project;
 	}
 
 	/**
 	 * Saves the project to an XML file
+	 * @throws TechnicalException 
 	 */
-	static void saveProject(final Project project, final URI uri) {
+	static void saveProject(final Project project, final URI uri) throws TechnicalException {
 
 		if (project != null) {
 
@@ -264,17 +185,13 @@ public interface ProjectService {
 
 			try {
 				xmlOutputter.output(document, new FileOutputStream(new File(uri)));
-
-				// save the exchanges
-				ExchangesService.saveExchanges(project, buildExchangesUri(uri));
-
 			} catch (final IOException e) {
-				e.printStackTrace();
+				throw new TechnicalException(e.getMessage());
 			}
 		}
 	}
 
-	public static void buildHierarchy(final Project project) {
+	private static void buildHierarchy(final Project project) {
 
 		for (Endpoint endpoint : project.getEndpoints()) {
 
@@ -300,33 +217,6 @@ public interface ProjectService {
 
 		// clear the list of enddpoints
 		project.getEndpoints().clear();
-	}
-
-	private static URI buildExchangesUri(final URI projectUri) {
-		String exchangesUri = null;
-
-		String uri = projectUri.toString();
-		int index = uri.lastIndexOf("/");
-		if (index != -1) {
-			String path = uri.substring(0, index);
-			String fileName = uri.substring(index + 1, uri.length());
-			if (!fileName.isEmpty()) {
-				String name = null;
-				String extension = null;
-				String[] split = fileName.split("\\.");
-				if (split.length == 1) {
-					name = split[0];
-					extension = "";
-
-				} else {
-					name = split[0];
-					extension = split[1];
-				}
-				String exchangeFileName = name + "-exchanges" + (extension.isEmpty() ? "" : "." + extension);
-				exchangesUri = path + "/" + exchangeFileName;
-			}
-		}
-		return URI.create(exchangesUri);
 	}
 
 }

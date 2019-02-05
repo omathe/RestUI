@@ -13,6 +13,8 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import restui.exception.NotFoundException;
+import restui.exception.TechnicalException;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
@@ -26,15 +28,24 @@ public class ExchangesService {
 
 	/**
 	 * Loads exchanges from the exchanges file
-	 * @param uri - The exchanges file
+	 * @param projectUri - The project URI
 	 * @param project - The project to populate
+	 * @throws NotFoundException 
+	 * @throws TechnicalException
 	 */
-	public static void loadExchanges(URI uri, Project project) {
+	public static void loadExchanges(final URI projectUri, final Project project) throws NotFoundException, TechnicalException {
+
+		URI exchangeUri = buildExchangesUri(projectUri);
+
+		final File file = new File(exchangeUri);
+		if (!file.exists()) {
+			throw new NotFoundException("The exchange file", file.getAbsolutePath());
+		}
 
 		final SAXBuilder sxb = new SAXBuilder();
 		try {
 
-			final Document document = sxb.build(uri.toString());
+			final Document document = sxb.build(exchangeUri.toString());
 
 			// exchanges
 			final Element exchangesElement = document.getRootElement();
@@ -85,11 +96,19 @@ public class ExchangesService {
 				}
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+			throw new TechnicalException(e.getMessage());
 		}
 	}
 
-	public static void saveExchanges(final Project project, final URI uri) {
+	/**
+	 * Saves the exchanges to an XML file
+	 * @param project - The project
+	 * @param projectUri - The project URI
+	 * @throws TechnicalException
+	 */
+	public static void saveExchanges(final Project project, final URI projectUri) throws TechnicalException {
+
+		URI exchangeUri = buildExchangesUri(projectUri);
 
 		if (project != null) {
 			Element root = new Element("exchanges");
@@ -137,11 +156,38 @@ public class ExchangesService {
 			final Document document = new Document(root);
 
 			try {
-				xmlOutputter.output(document, new FileOutputStream(new File(uri)));
+				xmlOutputter.output(document, new FileOutputStream(new File(exchangeUri)));
 			} catch (final IOException e) {
-				e.printStackTrace();
+				throw new TechnicalException(e.getMessage());
 			}
 		}
+	}
+
+	private static URI buildExchangesUri(final URI projectUri) {
+		String exchangesUri = null;
+
+		String uri = projectUri.toString();
+		int index = uri.lastIndexOf("/");
+		if (index != -1) {
+			String path = uri.substring(0, index);
+			String fileName = uri.substring(index + 1, uri.length());
+			if (!fileName.isEmpty()) {
+				String name = null;
+				String extension = null;
+				String[] split = fileName.split("\\.");
+				if (split.length == 1) {
+					name = split[0];
+					extension = "";
+
+				} else {
+					name = split[0];
+					extension = split[1];
+				}
+				String exchangeFileName = name + "-exchanges" + (extension.isEmpty() ? "" : "." + extension);
+				exchangesUri = path + "/" + exchangeFileName;
+			}
+		}
+		return URI.create(exchangesUri);
 	}
 
 }
