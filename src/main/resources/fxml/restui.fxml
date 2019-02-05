@@ -205,7 +205,7 @@
 	<bottom>
 		<HBox alignment="CENTER_RIGHT" maxHeight="25.0" spacing="5.0" BorderPane.alignment="CENTER">
 			<children>
-				<Label fx:id="file" text="File" />
+				<Label fx:id="file" />
             <Label text="|" />
             <Label fx:id="baseURL" />
             <Label text="|" />

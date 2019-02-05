@@ -35,9 +35,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -168,8 +166,6 @@ public class MainController implements Initializable {
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
-	private HBox projectHbox;
-	private HBox endpointHbox;
 
 	int index = 0;
 
@@ -192,8 +188,11 @@ public class MainController implements Initializable {
 		baseURL.textProperty().bind(baseUrlProperty.get().nameProperty());
 		importEndpointsButton.disableProperty().bind(baseUrlProperty.get().enabledProperty().not());
 
-		// load las project
-		loadProject(URI.create(application.getLastProjectUri()));
+		// load last project
+		String lastProjectUri = application.getLastProjectUri();
+		if (lastProjectUri != null && !lastProjectUri.isEmpty() && lastProjectUri.startsWith("file")) {
+			loadProject(URI.create(application.getLastProjectUri()));
+		}
 
 		if (application.getStyleFile() != null) {
 			setStyle(application.getStyleFile());
@@ -221,16 +220,9 @@ public class MainController implements Initializable {
 					if (newValue.getValue() instanceof Project) {
 
 						// Project
-						if (projectHbox == null) {
-							try {
-								final FXMLLoader fxmlLoader = new FXMLLoader();
-								projectHbox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
-								projectHbox.setAlignment(Pos.TOP_LEFT);
-								projectController = (ProjectController) fxmlLoader.getController();
-							} catch (final IOException e) {
-								e.printStackTrace();
-							}
-						}
+						FxmlNode projectFxmlNode = ControllerManager.loadProject();
+						HBox projectHbox = (HBox) projectFxmlNode.getNode();
+						projectController = (ProjectController) projectFxmlNode.getController();
 						projectController.setTreeItem(newValue);
 						VBox.setVgrow(projectHbox, Priority.ALWAYS); // webView fill height
 						vBox.getChildren().clear();
@@ -238,16 +230,11 @@ public class MainController implements Initializable {
 					} else if (newValue.getValue() instanceof Endpoint) {
 
 						// Endpoint
-						try {
-							final FXMLLoader fxmlLoader = new FXMLLoader();
-							endpointHbox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
-							endPointController = (EndpointController) fxmlLoader.getController();
-						} catch (final IOException e) {
-							e.printStackTrace();
-						}
+						FxmlNode endpointFxmlNode = ControllerManager.loadEndpoint();
+						HBox endpointHbox = (HBox) endpointFxmlNode.getNode();
+						endPointController = (EndpointController) endpointFxmlNode.getController();
 						endPointController.setTreeView(treeView);
 						endPointController.setTreeItem(newValue);
-
 						vBox.getChildren().clear();
 						vBox.getChildren().add(endpointHbox);
 					}
@@ -515,6 +502,12 @@ public class MainController implements Initializable {
 			alert.setContentText(e.getMessage());
 			alert.showAndWait();
 		} catch (TechnicalException e) {
+			final Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Loading last project");
+			alert.setHeaderText("Technical error");
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
+		} catch (Exception e) {
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Loading last project");
 			alert.setHeaderText("Technical error");
