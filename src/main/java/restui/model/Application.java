@@ -1,11 +1,13 @@
 package restui.model;
 
+import java.io.File;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
 import javafx.collections.FXCollections;
+import restui.service.ApplicationService;
 
 public class Application {
 
@@ -31,7 +33,14 @@ public class Application {
 	}
 
 	public void setStyleFile(final String styleFile) {
-		this.styleFile = styleFile;
+		
+		URI uri = URI.create(styleFile);
+		if (!new File(uri).exists()) {
+			this.styleFile = ApplicationService.DEFAULT_STYLE_URI;
+		} else {
+			this.styleFile = styleFile;
+		}
+		
 	}
 
 	public String getStyleName() {

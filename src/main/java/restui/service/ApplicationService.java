@@ -19,11 +19,11 @@ public class ApplicationService {
 
 	private static final String APPLICATION_HOME = "restui";
 	private static final String APPLICATION_FILE = getApplicationHome() + "/" + "application.xml";
-	private static final String DEFAULT_STYLE_URI = "file://" + getApplicationHome() + "/style/default/stylesheet.css";
+	public static final String DEFAULT_STYLE_URI = "file:/" + getApplicationHome() + "/style/default/stylesheet.css";
 
 	public static String getApplicationHome() {
 
-		final String userHome = System.getProperty("user.home");
+		final String userHome = System.getProperty("user.home").replace("\\", "/");
 		return userHome + "/" + getPrefix() + APPLICATION_HOME;
 	}
 
