@@ -398,15 +398,17 @@ public class EndpointController extends AbstractController implements Initializa
 					if (exchange.isPresent()) {
 						final MenuItem delete = new MenuItem("Delete");
 						final MenuItem duplicate = new MenuItem("Duplicate");
-						exchangesContextMenu.getItems().add(delete);
-						if (!workingExchangeExists()) {
-							exchangesContextMenu.getItems().add(duplicate);
-						}
+						exchangesContextMenu.getItems().addAll(duplicate, delete);
+						
 						// duplicate exchange
 						duplicate.setOnAction(e -> {
+							if (workingExchangeExists()) {
+								endpoint.removeExchange(getWorkingExchange());
+							}
 							currentExchange = getSelectedExchange().get().duplicate("");
 							endpoint.addExchange(currentExchange);
 						});
+						
 						// delete exchange
 						delete.setOnAction(e -> {
 							deleteExchange(exchange.get());
@@ -724,6 +726,11 @@ public class EndpointController extends AbstractController implements Initializa
 	@FXML
 	protected void modeExecution(final ActionEvent event) {
 
+		// create the current if it does not exist
+		if (!workingExchangeExists()) {
+			currentExchange = createWorkingExchange();
+		}		
+		
 		radioButtonExecutionMode.setSelected(true);
 
 		// enable execute
@@ -1008,4 +1015,5 @@ public class EndpointController extends AbstractController implements Initializa
 
 		return exchange != null && exchange.getStatus() != 0 && !exchange.getName().isEmpty();
 	}
+	
 }

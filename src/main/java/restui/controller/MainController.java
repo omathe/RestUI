@@ -35,7 +35,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -166,12 +168,14 @@ public class MainController implements Initializable {
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
+	private HBox projectHbox;
+	private HBox endpointHbox;
 
 	int index = 0;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		
+
 		DateVersion dateVersion = App.getDateVersion();
 		version.setText(dateVersion.version + " " + App.date("UTC", dateVersion.date));
 
@@ -220,9 +224,16 @@ public class MainController implements Initializable {
 					if (newValue.getValue() instanceof Project) {
 
 						// Project
-						FxmlNode projectFxmlNode = ControllerManager.loadProject();
-						HBox projectHbox = (HBox) projectFxmlNode.getNode();
-						projectController = (ProjectController) projectFxmlNode.getController();
+						if (projectHbox == null) {
+							try {
+								final FXMLLoader fxmlLoader = new FXMLLoader();
+								projectHbox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
+								projectHbox.setAlignment(Pos.TOP_LEFT);
+								projectController = (ProjectController) fxmlLoader.getController();
+							} catch (final IOException e) {
+								e.printStackTrace();
+							}
+						}
 						projectController.setTreeItem(newValue);
 						VBox.setVgrow(projectHbox, Priority.ALWAYS); // webView fill height
 						vBox.getChildren().clear();
@@ -230,11 +241,16 @@ public class MainController implements Initializable {
 					} else if (newValue.getValue() instanceof Endpoint) {
 
 						// Endpoint
-						FxmlNode endpointFxmlNode = ControllerManager.loadEndpoint();
-						HBox endpointHbox = (HBox) endpointFxmlNode.getNode();
-						endPointController = (EndpointController) endpointFxmlNode.getController();
+						try {
+							final FXMLLoader fxmlLoader = new FXMLLoader();
+							endpointHbox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
+							endPointController = (EndpointController) fxmlLoader.getController();
+						} catch (final IOException e) {
+							e.printStackTrace();
+						}
 						endPointController.setTreeView(treeView);
 						endPointController.setTreeItem(newValue);
+
 						vBox.getChildren().clear();
 						vBox.getChildren().add(endpointHbox);
 					}
