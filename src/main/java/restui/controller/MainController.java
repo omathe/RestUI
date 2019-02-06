@@ -58,6 +58,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -191,6 +192,8 @@ public class MainController implements Initializable {
 			baseUrlProperty.get().nameProperty().set(optionalBaseUrl.get().getName());
 			baseUrlProperty.get().urlProperty().set(optionalBaseUrl.get().getUrl());
 		}
+		
+		baseURL.setTooltip(new Tooltip(baseUrlProperty.get().urlProperty().get()));
 		baseURL.textProperty().bind(baseUrlProperty.get().nameProperty());
 		importEndpointsButton.disableProperty().bind(baseUrlProperty.get().enabledProperty().not());
 
