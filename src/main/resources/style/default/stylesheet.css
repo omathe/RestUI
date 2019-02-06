@@ -145,7 +145,7 @@
 }
 
 .tree-cell > .tree-disclosure-node > .arrow  {
-    -fx-background-color: red;
+    -fx-background-color: gray;
 }
 
 .tree-cell:expanded > .tree-disclosure-node > .arrow {
