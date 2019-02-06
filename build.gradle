@@ -41,12 +41,6 @@ task copyLibs(type: Copy) {
 	from configurations.runtime
 }
 
-task writeVersion {
-	File file = new File("src/main/resources/version/version.txt")
-	file.write "version=" +	project.version + "\n";
-	file << "date=" + new Date().getTime() + "\n";
-}
-
 /* useful for java9
 compileJava {
     inputs.property("moduleName", moduleName)
@@ -77,8 +71,9 @@ jar {
 	//inputs.property("moduleName", moduleName)
     manifest {
         attributes(
-                'Main-Class': mainClass
-                //'Automatic-Module-Name': moduleName
+                'Main-Class': mainClass,
+                'RestUI-Version': project.version,
+                'RestUI-Date': new Date().getTime()
         )
     }
 }
@@ -112,7 +107,9 @@ task fatJar(type: Jar) {
 	manifest {
         attributes 'Implementation-Title': 'RestUI',
         	'Implementation-Version': version,
-        	'Main-class': 'restui.gui.RestUiApp'
+        	'Main-class': 'restui.gui.RestUiApp',
+        	'RestUI-Version': project.version,
+            'RestUI-Date': new Date().getTime()
     }
     baseName = project.name + '-all'
     from {

@@ -1,23 +1,24 @@
 package restui.gui;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import restui.controller.ControllerManager;
-import restui.controller.FxmlNode;
 import restui.controller.MainController;
 
 public class RestUiApp extends Application {
 
-	private FxmlNode fxmlNode;
+	private MainController controller;
 
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		fxmlNode = ControllerManager.loadMain();
-		BorderPane root = (BorderPane) fxmlNode.getNode();
+		FXMLLoader fxmlLoader = new FXMLLoader();
+		final BorderPane root = fxmlLoader.load(ControllerManager.class.getResource("/fxml/restui.fxml").openStream());
+		controller = (MainController) fxmlLoader.getController();
 
 		primaryStage.setTitle("RestUI");
 		primaryStage.getIcons().add(new Image(ControllerManager.class.getResource("/style/applicationIcon.png").toString()));
@@ -37,8 +38,7 @@ public class RestUiApp extends Application {
 
 	private void closeApplication() {
 
-		MainController mainController = (MainController) fxmlNode.getController();
-		mainController.exit(null);
+		controller.exit(null);
 	}
 
 }

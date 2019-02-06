@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -176,8 +177,9 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
+		// version
 		DateVersion dateVersion = App.getDateVersion();
-		version.setText(dateVersion.version + " " + App.date("UTC", dateVersion.date));
+		version.setText(dateVersion.version + " " + App.date(ZoneId.systemDefault().getId(), dateVersion.date));
 
 		// initialization of the application
 		ApplicationService.init();
