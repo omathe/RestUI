@@ -155,6 +155,11 @@
 										</HBox>
 									</content>
 								</Tab>
+                        <Tab fx:id="testTab" text="Test">
+                          <content>
+                              <HBox />
+                          </content>
+                        </Tab>
 							</tabs>
 							<HBox.margin>
 								<Insets />

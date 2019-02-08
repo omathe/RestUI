@@ -164,6 +164,10 @@ public class MainController implements Initializable {
 	@FXML
 	public Label notification;
 
+	// Test tab
+	@FXML
+	private TableView<?> exchangesToTest;
+	
 	private ProjectController projectController;
 	private EndpointController endPointController;
 	public static Application application;
@@ -177,7 +181,7 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-
+		
 		// version
 		DateVersion dateVersion = App.getDateVersion();
 		version.setText(dateVersion.version + " " + App.date(ZoneId.systemDefault().getId(), dateVersion.date));
@@ -441,8 +445,24 @@ public class MainController implements Initializable {
 				getWebEngine().load("https://www.qwant.com/?l=fr");
 				center = webView;
 			}
+			else if (tabId.equals("testTab")) {
+				center = getExchangesVBox();
+			}
 		}
 		return center;
+	}
+	
+	private VBox getExchangesVBox() {
+		
+		final FXMLLoader fxmlLoader = new FXMLLoader();
+		VBox vBox = null;
+		try {
+			vBox = fxmlLoader.load(MainController.class.getResource("/fxml/test.fxml").openStream());
+			TestController testController = (TestController) fxmlLoader.getController();
+			testController.setTreeItem(treeView.getRoot());
+		} catch (IOException e) {
+		}
+		return vBox;
 	}
 
 	private WebView getWebView() {
@@ -451,10 +471,12 @@ public class MainController implements Initializable {
 		}
 		return webView;
 	}
-
+	
 	private WebEngine getWebEngine() {
+		
 		if (webEngine == null) {
 			webEngine = getWebView().getEngine();
+			webEngine.setJavaScriptEnabled(true);
 		}
 		return webEngine;
 	}
@@ -838,4 +860,5 @@ public class MainController implements Initializable {
 			alert.showAndWait();
 		}
 	}
+	
 }

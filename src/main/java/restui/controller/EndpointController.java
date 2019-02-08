@@ -555,6 +555,10 @@ public class EndpointController extends AbstractController implements Initializa
 							}
 						}
 					}
+					try {
+						inputStream.close();
+					} catch (IOException e1) {
+					}
 				}
 			}
 			response.close();
