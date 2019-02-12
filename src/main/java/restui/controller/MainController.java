@@ -429,6 +429,10 @@ public class MainController implements Initializable {
 			}
 		});
 	}
+	
+	public File getProjectFile() {
+		return projectFile;
+	}
 
 	public static void updateBaseUrlProperty(final BaseUrl baseUrl) {
 		baseUrlProperty.get().enabledProperty().set(baseUrl.getEnabled());
@@ -445,9 +449,9 @@ public class MainController implements Initializable {
 				getWebEngine().load("https://www.qwant.com/?l=fr");
 				center = webView;
 			}
-			else if (tabId.equals("testTab")) {
-				center = getExchangesVBox();
-			}
+		}
+		if (tabId.equals("testTab")) {
+			center = getExchangesVBox();
 		}
 		return center;
 	}

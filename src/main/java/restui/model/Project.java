@@ -24,19 +24,19 @@ public class Project extends Item {
 		return endpoints;
 	}
 
-//	public List<Exchange> getExchanges() {
-//
-//		List<Exchange> exchanges = new ArrayList<>();
-//
-//		Stream<Item> stream = Stream.concat(Stream.of(this), children.stream().flatMap(Item::getAllChildren));
-//		if (stream != null) {
-//			stream.filter(item -> item instanceof Endpoint).forEach(item -> {
-//				Endpoint endpoint = (Endpoint) item;
-//				exchanges.addAll(endpoint.getExchanges());
-//			});
-//		}
-//		return exchanges;
-//	}
+	//	public List<Exchange> getExchanges() {
+	//
+	//		List<Exchange> exchanges = new ArrayList<>();
+	//
+	//		Stream<Item> stream = Stream.concat(Stream.of(this), children.stream().flatMap(Item::getAllChildren));
+	//		if (stream != null) {
+	//			stream.filter(item -> item instanceof Endpoint).forEach(item -> {
+	//				Endpoint endpoint = (Endpoint) item;
+	//				exchanges.addAll(endpoint.getExchanges());
+	//			});
+	//		}
+	//		return exchanges;
+	//	}
 
 	public Optional<Exchange> findExchangeByNameAndEndpointName(final String name, final String endpointName) {
 
@@ -58,5 +58,14 @@ public class Project extends Item {
 			}
 		}
 		return exchange;
+	}
+
+	public Optional<Endpoint> findEndpoint(final String name) {
+
+		return getAllChildren()
+				.filter(item -> item instanceof Endpoint)
+				.filter(item -> item.getName().equals(name))
+				.map(item -> (Endpoint) item)
+				.findFirst();
 	}
 }

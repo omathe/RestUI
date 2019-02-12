@@ -130,6 +130,7 @@ public class ExchangesService {
 							elementExchange.setAttribute(new Attribute("requestBodyType", exchange.getRequestBodyType().name()));
 							elementExchange.setAttribute(new Attribute("status", exchange.getStatus() == null ? "" : exchange.getStatus().toString()));
 							elementExchange.setAttribute(new Attribute("duration", exchange.getDuration() == null ? "" : exchange.getDuration().toString()));
+							elementExchange.setAttribute(new Attribute("uri", exchange.getUri() == null ? "" : exchange.getUri().toString()));
 
 							elementEndpoint.addContent(elementExchange);
 
