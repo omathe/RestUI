@@ -155,7 +155,7 @@
 										</HBox>
 									</content>
 								</Tab>
-                        <Tab fx:id="testTab" text="Test">
+                        <Tab fx:id="testTab" text="Test (incubated)">
                           <content>
                               <HBox />
                           </content>

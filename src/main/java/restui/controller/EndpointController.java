@@ -1,6 +1,7 @@
 package restui.controller;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -398,7 +399,8 @@ public class EndpointController extends AbstractController implements Initializa
 					if (exchange.isPresent()) {
 						final MenuItem delete = new MenuItem("Delete");
 						final MenuItem duplicate = new MenuItem("Duplicate");
-						exchangesContextMenu.getItems().addAll(duplicate, delete);
+						final MenuItem addToTest = new MenuItem("Add to test");
+						exchangesContextMenu.getItems().addAll(duplicate, delete, addToTest);
 						
 						// duplicate exchange
 						duplicate.setOnAction(e -> {
@@ -412,6 +414,18 @@ public class EndpointController extends AbstractController implements Initializa
 						// delete exchange
 						delete.setOnAction(e -> {
 							deleteExchange(exchange.get());
+						});
+						
+						// add to test
+						addToTest.setOnAction(e -> {
+							File projectFile = mainController.getProjectFile();
+							File testsFile = new File(projectFile.getParentFile() + File.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
+							
+							try (FileWriter fw = new FileWriter(testsFile, true)) {
+								String line = false + "," + endpoint.getName() + "," + exchange.get().getName() + "," + exchange.get().getStatus() + "," + exchange.get().getDuration() + "\n";
+								fw.write(line);
+							} catch (IOException e1) {
+							}
 						});
 					}
 					exchanges.setContextMenu(exchangesContextMenu);

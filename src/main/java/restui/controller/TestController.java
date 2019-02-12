@@ -85,18 +85,13 @@ public class TestController extends AbstractController implements Initializable 
 	public void setTreeItem(final TreeItem<Item> treeItem) {
 		super.setTreeItem(treeItem);
 
-		System.out.println(">>> setTreeItem");
-
 		if (treeItem != null) {
 			project = (Project) treeItem.getValue();
 		}
 
 		File projectFile = mainController.getProjectFile();
-		testsFile = new File(projectFile.getParentFile() + projectFile.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
+		testsFile = new File(projectFile.getParentFile() + File.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
 		List<Test> list = loadTests(testsFile);
-
-		System.out.println(projectFile.getAbsolutePath());
-		System.out.println(projectFile.getName());
 
 		tests.addAll(list);
 	}
@@ -104,29 +99,27 @@ public class TestController extends AbstractController implements Initializable 
 	@FXML
 	void launch(final ActionEvent event) {
 
-		System.out.println("baseUrl = " + MainController.baseUrlProperty.get().urlProperty().get());
-
 		for (Test test : tests) {
 
 			if (test.getEnabled()) {
-				
+
 				InputStream inputStream = null;
-				
+
 				Optional<Exchange> optionalExchange = project.findExchangeByNameAndEndpointName(test.getExchangeName(), test.getWebServiceName());
 				if (optionalExchange.isPresent()) {
 					Exchange exchange = optionalExchange.get().duplicate(test.getExchangeName());
 
 					ClientResponse response = null;
 
-					String uri = MainController.baseUrlProperty.get().urlProperty().get();
+//					String uri = MainController.baseUrlProperty.get().urlProperty().get();
+					String uri = exchange.getUri();
 					Optional<Endpoint> endpoint = project.findEndpoint(test.getWebServiceName());
-					if (endpoint.isPresent()) {
-						uri += endpoint.get().getPath();
-					}
+//					if (endpoint.isPresent()) {
+//						uri += endpoint.get().getPath();
+//					}
 					exchange.setUri(uri);
 
 					final long t0 = Instant.now().toEpochMilli();
-
 					try {
 						response = RestClient.execute("GET", exchange);
 						if (response != null) {
@@ -137,23 +130,19 @@ public class TestController extends AbstractController implements Initializable 
 					} catch (ClientException e) {
 						final Alert alert = new Alert(AlertType.ERROR);
 						alert.setTitle("Test in batch");
-						alert.setHeaderText("An error occured");
+						alert.setHeaderText("An error occured for web service " + test.getWebServiceName() + " and exchange "  + exchange.getName());
 						alert.setContentText(e.getMessage());
 						alert.showAndWait();
-					}
-					finally {
+					} finally {
 						if (inputStream != null) {
 							try {
 								inputStream.close();
 							} catch (IOException e1) {
 							}
-							
 						}
 					}
-
 				}
 			}
-
 		}
 	}
 
@@ -167,14 +156,16 @@ public class TestController extends AbstractController implements Initializable 
 				stream.forEach(line -> {
 					String[] split = line.split(",");
 					list.add(new Test(Boolean.valueOf(split[0]), split[1], split[2], Integer.valueOf(split[3]), Integer.valueOf(split[4])));
-
 				});
 				stream.close();
 			} catch (IOException e) {
+				final Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Loading tests");
+				alert.setHeaderText("An error occured");
+				alert.setContentText(e.getMessage());
+				alert.showAndWait();
 			}
-
 		}
-
 		return list;
 	}
 
@@ -182,30 +173,53 @@ public class TestController extends AbstractController implements Initializable 
 	void save(final ActionEvent event) {
 
 		try (FileWriter fw = new FileWriter(testsFile)) {
-			for (Test test : tests) {
+
+			for (Test test : tableView.getItems()) {
 				String s = test.getEnabled() + "," + test.getWebServiceName() + "," + test.getExchangeName() + "," + test.getStatus().get() + "," + test.getDuration().get() + "\n";
 				fw.write(s);
 			}
 		} catch (IOException e) {
 		}
 	}
-	
-	@FXML
-    void down(final ActionEvent event) {
-
-    }
 
 	@FXML
-    void up(final ActionEvent event) {
+	void down(final ActionEvent event) {
 
-		Test selected = tableView.getSelectionModel().getSelectedItem();
 		int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-		System.out.println("selectedIndex = " + selectedIndex);
-				
-		if (selectedIndex != -1 && selectedIndex != 0) {
+
+		if (selectedIndex != -1 && selectedIndex < tableView.getItems().size() - 1) {
+			int index = tableView.getSelectionModel().getSelectedIndex();
+			tableView.getItems().add(index + 1, tableView.getItems().remove(index));
+			tableView.getSelectionModel().clearAndSelect(index + 1);
+		}
+	}
+
+	@FXML
+	void up(final ActionEvent event) {
+		
+		File projectFile = mainController.getProjectFile();
+		testsFile = new File(projectFile.getParentFile() + File.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
+		
+		try (FileWriter fw = new FileWriter(testsFile, true)) {
+
+			String s = "toto\n";
+			fw.write(s);
 			
+		} catch (IOException e) {
 		}
 		
-    }
+		
+		
+		
+/*
+		int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
+		int index = tableView.getSelectionModel().getSelectedIndex();
 
+		if (selectedIndex != -1 && selectedIndex != 0) {
+			// swap items
+			tableView.getItems().add(index - 1, tableView.getItems().remove(index));
+			tableView.getSelectionModel().clearAndSelect(index - 1);
+		}
+ */
+	}
 }

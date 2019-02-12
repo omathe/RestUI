@@ -70,7 +70,10 @@ public class ExchangesService {
 							String requestBodyType = exchangeElement.getAttributeValue("requestBodyType");
 							String status = exchangeElement.getAttributeValue("status");
 							String duration = exchangeElement.getAttributeValue("duration");
+							String uri = exchangeElement.getAttributeValue("uri");
 							Exchange exchange = new Exchange(endpointName, name, Long.valueOf(date), Integer.valueOf(duration), Integer.valueOf(status), BodyType.valueOf(requestBodyType));
+							exchange.setUri(uri);
+							
 							for (final Element parameterElement : exchangeElement.getChildren()) {
 								String enabled = parameterElement.getAttributeValue("enabled");
 								String direction = parameterElement.getAttributeValue("direction");

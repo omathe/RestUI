@@ -5,25 +5,38 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox spacing="5.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.TestController">
    <children>
-      <TableView fx:id="tableView" editable="true" prefHeight="200.0" prefWidth="200.0">
-        <columns>
-            <TableColumn fx:id="testEnabledColumn" prefWidth="75.0" text="Enabled" />
-          <TableColumn fx:id="testWebServiceNameColumn" prefWidth="150.0" text="Web service" />
-          <TableColumn fx:id="testExchangeNameColumn" prefWidth="136.0" text="Exchange name" />
-            <TableColumn fx:id="testExchangeDurationColumn" prefWidth="75.0" text="Duration" />
-            <TableColumn fx:id="testExchangeStatusColumn" prefWidth="75.0" text="Status" />
-        </columns>
-      </TableView>
+      <HBox>
+         <children>
+            <TableView fx:id="tableView" editable="true" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+              <columns>
+                  <TableColumn fx:id="testEnabledColumn" prefWidth="75.0" text="Enabled" />
+                <TableColumn fx:id="testWebServiceNameColumn" prefWidth="150.0" text="Web service" />
+                <TableColumn fx:id="testExchangeNameColumn" prefWidth="136.0" text="Exchange name" />
+                  <TableColumn fx:id="testExchangeDurationColumn" prefWidth="75.0" text="Duration" />
+                  <TableColumn fx:id="testExchangeStatusColumn" prefWidth="75.0" text="Status" />
+              </columns>
+            </TableView>
+            <VBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#up" text="Up" />
+                  <Button mnemonicParsing="false" onAction="#down" text="Down" />
+               </children>
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+      </HBox>
       <HBox spacing="5.0">
          <children>
             <Button mnemonicParsing="false" onAction="#launch" text="Launch" />
+            <Region />
             <Button mnemonicParsing="false" onAction="#save" text="Save" />
-            <Button mnemonicParsing="false" onAction="#up" text="Up" />
-            <Button mnemonicParsing="false" onAction="#down" text="Down" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
