@@ -11,7 +11,8 @@ Feat(project) : save the duration of an exchange
 
 
 ---------------------------------- IN PROGRESS --------------------------------
-
+/media/DATA/dev/workspaceJ9/RestUI/build/libs/ jdeps --generate-module-info tmp jersey-client-1.9.1.jar
+jdeps --list-deps  tmp jersey-client-1.9.1.jar 
 -------------------------------------------------------------------------------
 
 
