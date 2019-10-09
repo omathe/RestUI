@@ -21,7 +21,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<HBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.EndpointController">
+<HBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.EndpointController">
 	<children>
 		<VBox HBox.hgrow="ALWAYS">
 			<children>
@@ -252,10 +252,11 @@
 																						</HBox>
 										<TableView fx:id="exchanges" editable="true" VBox.vgrow="ALWAYS">
 											<columns>
-												<TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="300.0" text="Name" />
-												<TableColumn fx:id="exchangeDateColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="250.0" text="Date" />
+												<TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="150.0" text="Name" />
+												<TableColumn fx:id="exchangeDateColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="200.0" text="Date" />
                                     <TableColumn fx:id="exchangeDurationColumn" prefWidth="75.0" text="Duration" />
                                     <TableColumn fx:id="exchangeStatusColumn" prefWidth="75.0" text="Status" />
+                                    <TableColumn fx:id="exchangeUriColumn" minWidth="100.0" prefWidth="300.0" text="URI" />
 											</columns>
                                  <VBox.margin>
                                     <Insets />

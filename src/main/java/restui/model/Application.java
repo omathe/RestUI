@@ -3,17 +3,17 @@ package restui.model;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import restui.service.ApplicationService;
 
 public class Application {
 
 	private String lastProjectUri;
 	private String styleFile;
-	private final List<BaseUrl> baseUrls;
+	private final ObservableList<BaseUrl> baseUrls;
 
 	public Application() {
 		super();
@@ -59,7 +59,7 @@ public class Application {
 		baseUrls.remove(baseUrl);
 	}
 
-	public List<BaseUrl> getBaseUrls() {
+	public ObservableList<BaseUrl> getBaseUrls() {
 		return baseUrls;
 	}
 

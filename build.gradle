@@ -25,8 +25,8 @@ buildscript {
     }
 }
 
-sourceCompatibility = 1.9
-targetCompatibility = 1.9
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -120,7 +120,7 @@ task fatJar(type: Jar) {
     with jar
 }
 
-eclipse {
+/*eclipse {
 	classpath {
 		downloadSources=true
 		
@@ -131,7 +131,7 @@ eclipse {
             }
         }
 	}
-}
+}*/
 
 // creates application bundle (executable + runtime)
 task javaPackager(type: Exec, dependsOn: assemble) {

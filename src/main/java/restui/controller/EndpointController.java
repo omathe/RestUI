@@ -108,6 +108,9 @@ public class EndpointController extends AbstractController implements Initializa
 
 	@FXML
 	private TableColumn<Exchange, Integer> exchangeStatusColumn;
+	
+	@FXML
+	private TableColumn<Exchange, String> exchangeUriColumn;
 
 	@FXML
 	private TableView<Parameter> requestParameters;
@@ -379,6 +382,7 @@ public class EndpointController extends AbstractController implements Initializa
 		exchangeDateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 		exchangeDurationColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("duration"));
 		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
+		exchangeUriColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("uri"));
 
 		final ContextMenu exchangesContextMenu = new ContextMenu();
 		exchanges.setOnKeyPressed(event -> {
@@ -1030,7 +1034,7 @@ public class EndpointController extends AbstractController implements Initializa
 	}
 
 	public boolean exchangeFinalized(final Exchange exchange) {
-
+		
 		return exchange != null && exchange.getStatus() != 0 && !exchange.getName().isEmpty();
 	}
 	

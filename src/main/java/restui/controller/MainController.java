@@ -32,7 +32,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -355,7 +354,7 @@ public class MainController implements Initializable {
 		centerNodes.put("settingsTab", borderPane.getCenter());
 
 		// Base URL table
-		baseUrlTable.setItems((ObservableList<BaseUrl>) application.getBaseUrls());
+		baseUrlTable.setItems(application.getBaseUrls());
 
 		baseUrlNameColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("name"));
 		baseUrlNameColumn.setCellFactory(new Callback<TableColumn<BaseUrl, String>, TableCell<BaseUrl, String>>() {

@@ -20,7 +20,7 @@ public class RadioButtonCell extends TableCell<BaseUrl, Boolean> {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
 
-				final BaseUrl baseUrl = getTableRow().getItem();
+				final BaseUrl baseUrl = (BaseUrl) getTableRow().getItem();
 
 				if (baseUrl != null) {
 
