@@ -819,6 +819,7 @@ public class MainController implements Initializable {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	@FXML
 	void importEndpoints(final ActionEvent event) {
 

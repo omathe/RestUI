@@ -110,8 +110,9 @@ public class ApplicationService {
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			Document document = new Document(rootElement);
 			File applicationFile = new File(APPLICATION_FILE);
-			try {
-				xmlOutputter.output(document, new FileOutputStream(applicationFile));
+			//FileOutputStream fileOutputStream = null;
+			try(FileOutputStream fileOutputStream = new FileOutputStream(applicationFile)) {
+				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}

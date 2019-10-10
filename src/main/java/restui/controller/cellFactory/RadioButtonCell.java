@@ -35,7 +35,6 @@ public class RadioButtonCell extends TableCell<BaseUrl, Boolean> {
 				}
 			}
 		});
-
 		radioButton.setToggleGroup(group);
 	}
 

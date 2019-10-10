@@ -62,6 +62,7 @@ public class BaseUrlCellFactory extends TableCell<BaseUrl, String> {
 				if (parent != null) {
 					TableRow<BaseUrl> tableRow = (TableRow<BaseUrl>) parent;
 					BaseUrl baseUrl = tableRow.getItem();
+					baseUrl.setUrl(getString());
 					if (baseUrl != null && baseUrl.getEnabled()) {
 						MainController.updateBaseUrlProperty(baseUrl);
 					}
