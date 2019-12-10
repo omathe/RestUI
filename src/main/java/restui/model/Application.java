@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import restui.service.ApplicationService;
+import restui.conf.App;
 
 public class Application {
 
@@ -36,7 +36,7 @@ public class Application {
 		
 		URI uri = URI.create(styleFile);
 		if (!new File(uri).exists()) {
-			this.styleFile = ApplicationService.DEFAULT_STYLE_URI;
+			this.styleFile = App.DEFAULT_STYLE_URI;
 		} else {
 			this.styleFile = styleFile;
 		}

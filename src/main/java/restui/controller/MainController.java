@@ -75,14 +75,15 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
+import restui.conf.App;
 import restui.controller.cellFactory.BaseUrlCellFactory;
 import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.exception.ClientException;
 import restui.exception.NotFoundException;
 import restui.exception.TechnicalException;
-import restui.model.App;
-import restui.model.App.DateVersion;
+import restui.model.AppVersion;
+import restui.model.AppVersion.DateVersion;
 import restui.model.Application;
 import restui.model.BaseUrl;
 import restui.model.Endpoint;
@@ -182,8 +183,8 @@ public class MainController implements Initializable {
 	public void initialize(final URL location, final ResourceBundle resources) {
 		
 		// version
-		DateVersion dateVersion = App.getDateVersion();
-		version.setText(dateVersion.version + " " + App.date(ZoneId.systemDefault().getId(), dateVersion.date));
+		DateVersion dateVersion = AppVersion.getDateVersion();
+		version.setText(dateVersion.version + " " + AppVersion.date(ZoneId.systemDefault().getId(), dateVersion.date));
 
 		// initialization of the application
 		ApplicationService.init();
@@ -511,7 +512,7 @@ public class MainController implements Initializable {
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open a project");
 
-		final File initialDirectory = projectFile == null ? new File(ApplicationService.getApplicationHome()) : projectFile.getParentFile();
+		final File initialDirectory = projectFile == null ? new File(App.HOME) : projectFile.getParentFile();
 		fileChooser.setInitialDirectory(initialDirectory);
 
 		final File file = fileChooser.showOpenDialog(null);
@@ -572,7 +573,7 @@ public class MainController implements Initializable {
 				final FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save the project " + project.getName());
 
-				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome()) : new File(URI.create(application.getLastProjectUri())).getParentFile();
+				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(App.HOME) : new File(URI.create(application.getLastProjectUri())).getParentFile();
 				fileChooser.setInitialDirectory(initialDirectory);
 				fileChooser.setInitialFileName(project.getName() + ".xml");
 
@@ -615,7 +616,7 @@ public class MainController implements Initializable {
 			final FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Save the project as");
 
-			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome()) : new File(URI.create(application.getLastProjectUri())).getParentFile();
+			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(App.HOME) : new File(URI.create(application.getLastProjectUri())).getParentFile();
 			fileChooser.setInitialDirectory(initialDirectory);
 			fileChooser.setInitialFileName("projectCopy.xml");
 
