@@ -28,7 +28,7 @@ public class ApplicationService {
 
 		// create default style if not exists
 		try {
-			ResourceHelper.copyResource("/style", App.HOME);
+			ResourceHelper.copyResource(App.STYLE_LOCATION, App.HOME);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
