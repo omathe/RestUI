@@ -76,6 +76,7 @@ import javafx.util.Duration;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
 import restui.conf.App;
+import restui.controller.cellFactory.BaseNameCellFactory;
 import restui.controller.cellFactory.BaseUrlCellFactory;
 import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
@@ -181,6 +182,8 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
+		
+		System.err.println("id " + this);
 		
 		// version
 		DateVersion dateVersion = AppVersion.getDateVersion();
@@ -361,7 +364,7 @@ public class MainController implements Initializable {
 		baseUrlNameColumn.setCellFactory(new Callback<TableColumn<BaseUrl, String>, TableCell<BaseUrl, String>>() {
 			@Override
 			public TableCell<BaseUrl, String> call(final TableColumn<BaseUrl, String> param) {
-				return new BaseUrlCellFactory();
+				return new BaseNameCellFactory();
 			}
 		});
 
@@ -438,6 +441,8 @@ public class MainController implements Initializable {
 		baseUrlProperty.get().enabledProperty().set(baseUrl.getEnabled());
 		baseUrlProperty.get().nameProperty().set(baseUrl.getName());
 		baseUrlProperty.get().urlProperty().set(baseUrl.getUrl());
+		
+		System.err.println("main : " + MainController.baseUrlProperty.get().nameProperty().get());
 	}
 
 	private Node getCenterNode(final String tabId) {

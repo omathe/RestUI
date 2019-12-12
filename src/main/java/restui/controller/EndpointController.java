@@ -205,6 +205,8 @@ public class EndpointController extends AbstractController implements Initializa
 		
 		mainController = (MainController) ControllerManager.loadMain().getController();
 
+		System.err.println("debug: " + MainController.baseUrlProperty.get().nameProperty().get());
+		
 		baseUrl.bind(MainController.baseUrlProperty.get().urlProperty());
 		baseUrl.addListener(new ChangeListener<String>() {
 			@Override

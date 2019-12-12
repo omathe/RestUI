@@ -32,6 +32,7 @@ public class RadioButtonCell extends TableCell<BaseUrl, Boolean> {
 						MainController.baseUrlProperty.get().urlProperty().set("");
 						MainController.baseUrlProperty.get().nameProperty().set("");
 					}
+					System.err.println("radio : " + MainController.baseUrlProperty.get().nameProperty().get());
 				}
 			}
 		});
