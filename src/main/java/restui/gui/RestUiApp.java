@@ -10,6 +10,7 @@ import restui.conf.App;
 import restui.controller.ControllerManager;
 import restui.controller.MainController;
 
+
 public class RestUiApp extends Application {
 
 	private MainController controller;

@@ -108,6 +108,9 @@ public class MainController implements Initializable {
 	public static ObjectProperty<BaseUrl> baseUrlProperty = new SimpleObjectProperty<BaseUrl>(new BaseUrl("", "", false)); // selected base url
 
 	@FXML
+	RightController rightController;	
+	
+	@FXML
 	private TreeView<Item> treeView;
 
 	@FXML
@@ -183,7 +186,9 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		
-		System.err.println("id " + this);
+		//System.err.println("text = " + rightController.getText());
+		//rightController.setText("toto");
+		//System.err.println("text = " + rightController.getText());
 		
 		// version
 		DateVersion dateVersion = AppVersion.getDateVersion();
