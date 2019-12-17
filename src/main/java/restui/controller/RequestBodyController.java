@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
@@ -49,7 +50,7 @@ public class RequestBodyController extends AbstractController implements Initial
 	private MenuItem remove;
 
 	@FXML
-	private VBox vBox;
+	private VBox rootNode;
 
 	@FXML
 	private TableView<Parameter> bodyTableView;
@@ -132,7 +133,11 @@ public class RequestBodyController extends AbstractController implements Initial
 		});
 	}
 
-	public void display(final EndpointController endPointController, final FxmlNode fxmlNode, final BodyType type) {
+	public VBox getRootNode() {
+		return rootNode;
+	}
+	
+	public void display(final EndpointController endPointController, final Node node, final BodyType type) {
 
 		this.endPointController = endPointController;
 
@@ -174,12 +179,12 @@ public class RequestBodyController extends AbstractController implements Initial
 
 			endPointController.getBodyVBox().getChildren().clear();
 			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+			if (!endPointController.getBodyVBox().getChildren().contains(node)) {
+				endPointController.getBodyVBox().getChildren().add(node);
 			}
-			vBox.getChildren().clear();
-			vBox.getChildren().addAll(requestBody);
-			VBox.setVgrow(vBox, Priority.ALWAYS);
+			rootNode.getChildren().clear();
+			rootNode.getChildren().addAll(requestBody);
+			VBox.setVgrow(rootNode, Priority.ALWAYS);
 
 		} else if (type.equals(BodyType.FORM_DATA)) {
 			// FORM_DATA
@@ -187,13 +192,13 @@ public class RequestBodyController extends AbstractController implements Initial
 
 			endPointController.getBodyVBox().getChildren().clear();
 			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+			if (!endPointController.getBodyVBox().getChildren().contains(node)) {
+				endPointController.getBodyVBox().getChildren().add(node);
 			}
 			bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-			vBox.getChildren().clear();
-			vBox.getChildren().add(bodyTableView);
-			VBox.setVgrow(vBox, Priority.ALWAYS);
+			rootNode.getChildren().clear();
+			rootNode.getChildren().add(bodyTableView);
+			VBox.setVgrow(rootNode, Priority.ALWAYS);
 			bodyTableView.refresh();
 		} else if (type.equals(BodyType.X_WWW_FORM_URL_ENCODED)) {
 			// X_WWW_FORM_URL_ENCODED
@@ -201,13 +206,13 @@ public class RequestBodyController extends AbstractController implements Initial
 
 			endPointController.getBodyVBox().getChildren().clear();
 			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
-			if (!endPointController.getBodyVBox().getChildren().contains(fxmlNode.getNode())) {
-				endPointController.getBodyVBox().getChildren().add(fxmlNode.getNode());
+			if (!endPointController.getBodyVBox().getChildren().contains(node)) {
+				endPointController.getBodyVBox().getChildren().add(node);
 			}
 			bodyTypeColumn.setVisible(type.equals(BodyType.FORM_DATA));
-			vBox.getChildren().clear();
-			vBox.getChildren().add(bodyTableView);
-			VBox.setVgrow(vBox, Priority.ALWAYS);
+			rootNode.getChildren().clear();
+			rootNode.getChildren().add(bodyTableView);
+			VBox.setVgrow(rootNode, Priority.ALWAYS);
 			bodyTableView.refresh();
 		}
 	}

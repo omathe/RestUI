@@ -92,6 +92,9 @@ import restui.service.Tools;
 public class EndpointController extends AbstractController implements Initializable {
 
 	@FXML
+	private HBox rootNode;
+	
+	@FXML
 	private SplitPane requestResponseSplitPane;
 
 	@FXML
@@ -199,14 +202,12 @@ public class EndpointController extends AbstractController implements Initializa
 		super();
 		baseUrl = new SimpleStringProperty();
 	}
-
+	
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		
-		mainController = (MainController) ControllerManager.loadMain().getController();
+		mainController = ControllerManager.getMainController();
 
-		System.err.println("debug: " + MainController.baseUrlProperty.get().nameProperty().get());
-		
 		baseUrl.bind(MainController.baseUrlProperty.get().urlProperty());
 		baseUrl.addListener(new ChangeListener<String>() {
 			@Override
@@ -451,6 +452,10 @@ public class EndpointController extends AbstractController implements Initializa
 		execute.textProperty().bind(method.valueProperty());
 	}
 
+	public HBox getRootNode() {
+		return rootNode;
+	}
+	
 	@Override
 	public void setTreeItem(final TreeItem<Item> treeItem) {
 		super.setTreeItem(treeItem);
@@ -637,13 +642,12 @@ public class EndpointController extends AbstractController implements Initializa
 	}
 
 	private void requestBody(BodyType bodyType) {
-		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
-		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
 
+		RequestBodyController requestBodyController = ControllerManager.getRequestBodyController();
 		if (isSpecificationMode()) {
 			bodyType = specificationBodyType;
 		}
-		requestBodyController.display(this, fxmlRequestBody, bodyType);
+		requestBodyController.display(this, requestBodyController.getRootNode(), bodyType);
 	}
 
 	private void displayStatusTooltip() {

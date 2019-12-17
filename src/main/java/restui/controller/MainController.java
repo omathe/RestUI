@@ -37,7 +37,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -108,6 +107,9 @@ public class MainController implements Initializable {
 	public static ObjectProperty<BaseUrl> baseUrlProperty = new SimpleObjectProperty<BaseUrl>(new BaseUrl("", "", false)); // selected base url
 
 	@FXML
+	private BorderPane rootNode;
+	
+	@FXML
 	RightController rightController;	
 	
 	@FXML
@@ -131,8 +133,6 @@ public class MainController implements Initializable {
 	@FXML
 	private Label searchCount;
 
-	@FXML
-	private BorderPane borderPane;
 
 	@FXML
 	private TabPane topTabPane;
@@ -172,23 +172,15 @@ public class MainController implements Initializable {
 	@FXML
 	private TableView<?> exchangesToTest;
 	
-	private ProjectController projectController;
-	private EndpointController endPointController;
 	public static Application application;
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
-	private HBox projectHbox;
-	private HBox endpointHbox;
 
 	int index = 0;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		
-		//System.err.println("text = " + rightController.getText());
-		//rightController.setText("toto");
-		//System.err.println("text = " + rightController.getText());
 		
 		// version
 		DateVersion dateVersion = AppVersion.getDateVersion();
@@ -241,35 +233,22 @@ public class MainController implements Initializable {
 					if (newValue.getValue() instanceof Project) {
 
 						// Project
-						if (projectHbox == null) {
-							try {
-								final FXMLLoader fxmlLoader = new FXMLLoader();
-								projectHbox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
-								projectHbox.setAlignment(Pos.TOP_LEFT);
-								projectController = (ProjectController) fxmlLoader.getController();
-							} catch (final IOException e) {
-								e.printStackTrace();
-							}
-						}
+						ProjectController projectController = ControllerManager.getProjectController();
+						HBox rootRootNode = projectController.getRootNode();
 						projectController.setTreeItem(newValue);
-						VBox.setVgrow(projectHbox, Priority.ALWAYS); // webView fill height
+						
+						VBox.setVgrow(rootRootNode, Priority.ALWAYS); // webView fill height
 						vBox.getChildren().clear();
-						vBox.getChildren().add(projectHbox);
+						vBox.getChildren().add(rootRootNode);
 					} else if (newValue.getValue() instanceof Endpoint) {
 
 						// Endpoint
-						try {
-							final FXMLLoader fxmlLoader = new FXMLLoader();
-							endpointHbox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
-							endPointController = (EndpointController) fxmlLoader.getController();
-						} catch (final IOException e) {
-							e.printStackTrace();
-						}
-						endPointController.setTreeView(treeView);
-						endPointController.setTreeItem(newValue);
-
+						EndpointController endpointController = ControllerManager.getEndpointController();
+						HBox rootRootNode = endpointController.getRootNode();
+						endpointController.setTreeView(treeView);
+						endpointController.setTreeItem(newValue);
 						vBox.getChildren().clear();
-						vBox.getChildren().add(endpointHbox);
+						vBox.getChildren().add(rootRootNode);
 					}
 				}
 			}
@@ -350,17 +329,17 @@ public class MainController implements Initializable {
 			@Override
 			public void changed(final ObservableValue<? extends Tab> ov, final Tab oldValue, final Tab newValue) {
 				// store previous center node used by borderPane
-				centerNodes.put(oldValue.getId(), borderPane.getCenter());
+				centerNodes.put(oldValue.getId(), rootNode.getCenter());
 
 				// set borderPane center node
-				borderPane.setCenter(getCenterNode(newValue.getId()));
+				rootNode.setCenter(getCenterNode(newValue.getId()));
 			}
 		});
 
-		centerNodes.put("projectTab", borderPane.getCenter());
-		centerNodes.put("editTab", borderPane.getCenter());
-		centerNodes.put("styleTab", borderPane.getCenter());
-		centerNodes.put("settingsTab", borderPane.getCenter());
+		centerNodes.put("projectTab", rootNode.getCenter());
+		centerNodes.put("editTab", rootNode.getCenter());
+		centerNodes.put("styleTab", rootNode.getCenter());
+		centerNodes.put("settingsTab", rootNode.getCenter());
 
 		// Base URL table
 		baseUrlTable.setItems(application.getBaseUrls());
@@ -438,6 +417,10 @@ public class MainController implements Initializable {
 		});
 	}
 	
+	public BorderPane getRootNode() {
+		return rootNode;
+	}
+	
 	public File getProjectFile() {
 		return projectFile;
 	}
@@ -446,8 +429,6 @@ public class MainController implements Initializable {
 		baseUrlProperty.get().enabledProperty().set(baseUrl.getEnabled());
 		baseUrlProperty.get().nameProperty().set(baseUrl.getName());
 		baseUrlProperty.get().urlProperty().set(baseUrl.getUrl());
-		
-		System.err.println("main : " + MainController.baseUrlProperty.get().nameProperty().get());
 	}
 
 	private Node getCenterNode(final String tabId) {
@@ -587,7 +568,7 @@ public class MainController implements Initializable {
 				fileChooser.setInitialDirectory(initialDirectory);
 				fileChooser.setInitialFileName(project.getName() + ".xml");
 
-				final File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+				final File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
 				if (file != null) {
 					projectFile = file.getName().endsWith(".xml") ? file : new File(file.getAbsolutePath() + ".xml");
 				}
@@ -630,7 +611,7 @@ public class MainController implements Initializable {
 			fileChooser.setInitialDirectory(initialDirectory);
 			fileChooser.setInitialFileName("projectCopy.xml");
 
-			final File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+			final File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
 			if (file != null) {
 				try {
 					Files.copy(projectFile.toPath(), file.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
@@ -702,7 +683,7 @@ public class MainController implements Initializable {
 	public void launchWebPage(final ActionEvent event) {
 
 		getWebEngine().load(webUrl.getValue());
-		borderPane.setCenter(webView);
+		rootNode.setCenter(webView);
 	}
 
 	@FXML
@@ -722,8 +703,8 @@ public class MainController implements Initializable {
 
 	private void setStyle(final String uri) {
 
-		borderPane.getStylesheets().clear();
-		borderPane.getStylesheets().add(uri);
+		rootNode.getStylesheets().clear();
+		rootNode.getStylesheets().add(uri);
 		application.setStyleFile(uri);
 	}
 

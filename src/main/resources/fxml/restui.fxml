@@ -24,7 +24,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController">
+<BorderPane fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController">
 	<top>
 		<VBox BorderPane.alignment="CENTER">
 			<children>

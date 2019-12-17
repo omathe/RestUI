@@ -68,7 +68,7 @@ public class TestController extends AbstractController implements Initializable 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		mainController = (MainController) ControllerManager.loadMain().getController();
+		mainController = ControllerManager.getMainController();
 
 		tableView.setItems(tests);
 

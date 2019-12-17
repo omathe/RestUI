@@ -35,7 +35,6 @@ public class Browser extends Region {
 	protected void layoutChildren() {
 		final double w = getWidth();
 		final double h = getHeight();
-		System.err.println(h);
 		layoutInArea(browser, 0, 0, w, h, 0, HPos.CENTER, VPos.CENTER);
 	}
 
