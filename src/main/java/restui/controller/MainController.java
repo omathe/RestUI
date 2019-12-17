@@ -7,9 +7,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,9 +22,6 @@ import java.util.stream.Stream;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,7 +30,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -56,7 +50,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -71,7 +64,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
-import javafx.util.Duration;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
 import restui.conf.App;
@@ -82,8 +74,6 @@ import restui.controller.cellFactory.TreeCellFactory;
 import restui.exception.ClientException;
 import restui.exception.NotFoundException;
 import restui.exception.TechnicalException;
-import restui.model.AppVersion;
-import restui.model.AppVersion.DateVersion;
 import restui.model.Application;
 import restui.model.BaseUrl;
 import restui.model.Endpoint;
@@ -108,10 +98,13 @@ public class MainController implements Initializable {
 
 	@FXML
 	private BorderPane rootNode;
+
+	@FXML
+	RightController rightController;
 	
 	@FXML
-	RightController rightController;	
-	
+	BottomController bottomController;
+
 	@FXML
 	private TreeView<Item> treeView;
 
@@ -121,18 +114,23 @@ public class MainController implements Initializable {
 	@FXML
 	private VBox vBox;
 
+	// bottom
+	/*@FXML
+	private Label file;
 	@FXML
-	private Label memory;
-
+	private Label baseURL;
+	@FXML
+	public Label notification;
+	@FXML
+	private Label version;
 	@FXML
 	private Label time;
-
 	@FXML
-	private Label file;
+	private Label memory;*/
 
+	// 
 	@FXML
 	private Label searchCount;
-
 
 	@FXML
 	private TabPane topTabPane;
@@ -157,21 +155,12 @@ public class MainController implements Initializable {
 	private TableColumn<BaseUrl, Boolean> baseUrlEnabledColumn;
 
 	@FXML
-	private Label version;
-
-	@FXML
-	private Label baseURL;
-
-	@FXML
 	private Button importEndpointsButton;
-
-	@FXML
-	public Label notification;
 
 	// Test tab
 	@FXML
 	private TableView<?> exchangesToTest;
-	
+
 	public static Application application;
 	private File projectFile;
 	private Set<String> bookmarks;
@@ -181,10 +170,6 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		
-		// version
-		DateVersion dateVersion = AppVersion.getDateVersion();
-		version.setText(dateVersion.version + " " + AppVersion.date(ZoneId.systemDefault().getId(), dateVersion.date));
 
 		// initialization of the application
 		ApplicationService.init();
@@ -196,9 +181,7 @@ public class MainController implements Initializable {
 			baseUrlProperty.get().nameProperty().set(optionalBaseUrl.get().getName());
 			baseUrlProperty.get().urlProperty().set(optionalBaseUrl.get().getUrl());
 		}
-		
-		baseURL.setTooltip(new Tooltip(baseUrlProperty.get().urlProperty().get()));
-		baseURL.textProperty().bind(baseUrlProperty.get().nameProperty());
+
 		importEndpointsButton.disableProperty().bind(baseUrlProperty.get().enabledProperty().not());
 
 		// load last project
@@ -231,44 +214,24 @@ public class MainController implements Initializable {
 
 				if (newValue != null) {
 					if (newValue.getValue() instanceof Project) {
-
 						// Project
 						ProjectController projectController = ControllerManager.getProjectController();
 						HBox rootRootNode = projectController.getRootNode();
-						projectController.setTreeItem(newValue);
-						
+						projectController.setProject((Project) newValue.getValue());
 						VBox.setVgrow(rootRootNode, Priority.ALWAYS); // webView fill height
 						vBox.getChildren().clear();
 						vBox.getChildren().add(rootRootNode);
 					} else if (newValue.getValue() instanceof Endpoint) {
-
 						// Endpoint
 						EndpointController endpointController = ControllerManager.getEndpointController();
 						HBox rootRootNode = endpointController.getRootNode();
-						endpointController.setTreeView(treeView);
-						endpointController.setTreeItem(newValue);
+						endpointController.setEndpoint((Endpoint) newValue.getValue());
 						vBox.getChildren().clear();
 						vBox.getChildren().add(rootRootNode);
 					}
 				}
 			}
 		});
-
-		// time
-		final Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {
-			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-			time.setText(simpleDateFormat.format(Instant.now().toEpochMilli()));
-		}));
-		timeline.setCycleCount(Animation.INDEFINITE);
-		timeline.play();
-
-		// memory usage
-		final Timeline timelineMemory = new Timeline(new KeyFrame(Duration.millis(2000), event -> {
-			final Double mem = (double) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_000_000);
-			memory.setText(mem.toString() + " Mo");
-		}));
-		timelineMemory.setCycleCount(Animation.INDEFINITE);
-		timelineMemory.play();
 
 		// searching for endpoints
 		searchItem.getEditor().textProperty().addListener((observable, oldItem, newItem) -> {
@@ -416,11 +379,20 @@ public class MainController implements Initializable {
 			}
 		});
 	}
-	
+
+	Optional<TreeItem<Item>> getSelectedItem() {
+
+		Optional<TreeItem<Item>> optionalItem = Optional.empty();
+		if (treeView.getSelectionModel().getSelectedItem() != null) {
+			optionalItem = Optional.of(treeView.getSelectionModel().getSelectedItem());
+		}
+		return optionalItem;
+	}
+
 	public BorderPane getRootNode() {
 		return rootNode;
 	}
-	
+
 	public File getProjectFile() {
 		return projectFile;
 	}
@@ -446,18 +418,12 @@ public class MainController implements Initializable {
 		}
 		return center;
 	}
-	
+
 	private VBox getExchangesVBox() {
-		
-		final FXMLLoader fxmlLoader = new FXMLLoader();
-		VBox vBox = null;
-		try {
-			vBox = fxmlLoader.load(MainController.class.getResource("/fxml/test.fxml").openStream());
-			TestController testController = (TestController) fxmlLoader.getController();
-			testController.setTreeItem(treeView.getRoot());
-		} catch (IOException e) {
-		}
-		return vBox;
+
+		TestController testController = ControllerManager.getTestController();
+		testController.setProject((Project) treeView.getRoot().getValue());
+		return testController.getRootNode();
 	}
 
 	private WebView getWebView() {
@@ -466,9 +432,9 @@ public class MainController implements Initializable {
 		}
 		return webView;
 	}
-	
+
 	private WebEngine getWebEngine() {
-		
+
 		if (webEngine == null) {
 			webEngine = getWebView().getEngine();
 			webEngine.setJavaScriptEnabled(true);
@@ -489,7 +455,7 @@ public class MainController implements Initializable {
 		treeView.setRoot(projectItem);
 
 		projectFile = null;
-		file.setText("");
+		ControllerManager.getBottomController().setFileName("");
 	}
 
 	@FXML
@@ -527,7 +493,7 @@ public class MainController implements Initializable {
 				projectItem.setExpanded(true);
 
 				projectFile = new File(uri);
-				file.setText(projectFile.getAbsolutePath());
+				ControllerManager.getBottomController().setFileName(projectFile.getAbsolutePath());
 				application.setLastProjectUri(uri.toString());
 
 				// load exchanges
@@ -584,7 +550,7 @@ public class MainController implements Initializable {
 					alert.showAndWait();
 				}
 				application.setLastProjectUri(projectFile.toURI().toString());
-				file.setText(projectFile.getAbsolutePath());
+				ControllerManager.getBottomController().setFileName(projectFile.getAbsolutePath());
 
 				// save the exchanges
 				try {
@@ -856,5 +822,5 @@ public class MainController implements Initializable {
 			alert.showAndWait();
 		}
 	}
-	
+
 }

@@ -20,7 +20,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -34,13 +33,12 @@ import restui.controller.cellFactory.BodyParameterValueCellFactory;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
-import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
 import restui.model.Parameter.Type;
 
-public class RequestBodyController extends AbstractController implements Initializable {
+public class RequestBodyController implements Initializable {
 
 	private EndpointController endPointController;
 	private Exchange exchange;
@@ -215,11 +213,6 @@ public class RequestBodyController extends AbstractController implements Initial
 			VBox.setVgrow(rootNode, Priority.ALWAYS);
 			bodyTableView.refresh();
 		}
-	}
-
-	@Override
-	public void setTreeItem(final TreeItem<Item> treeItem) {
-		super.setTreeItem(treeItem);
 	}
 
 	private void deleteRequestParameters(final List<Parameter> parameters) {

@@ -207,6 +207,7 @@
 			</opaqueInsets>
 		</SplitPane>
 	</center>
+<!-- 
 	<bottom>
 		<HBox alignment="CENTER_RIGHT" maxHeight="25.0" spacing="5.0" BorderPane.alignment="CENTER">
 			<children>
@@ -231,6 +232,11 @@
 			</padding>
 		</HBox>
 	</bottom>
+-->
+	<bottom>
+		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
+	</bottom>
+
    <right>
 <!--       <fx:include fx:id="right" source="/fxml/right.fxml" />  -->
    </right>

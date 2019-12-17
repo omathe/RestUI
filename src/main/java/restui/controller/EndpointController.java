@@ -58,7 +58,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -80,7 +79,6 @@ import restui.exception.ClientException;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
-import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
@@ -89,7 +87,7 @@ import restui.model.Path;
 import restui.service.RestClient;
 import restui.service.Tools;
 
-public class EndpointController extends AbstractController implements Initializable {
+public class EndpointController implements Initializable {
 
 	@FXML
 	private HBox rootNode;
@@ -456,11 +454,9 @@ public class EndpointController extends AbstractController implements Initializa
 		return rootNode;
 	}
 	
-	@Override
-	public void setTreeItem(final TreeItem<Item> treeItem) {
-		super.setTreeItem(treeItem);
-
-		endpoint = (Endpoint) this.treeItem.getValue();
+	public void setEndpoint(final Endpoint endpoint) {
+		this.endpoint = endpoint;
+		
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
@@ -477,9 +473,7 @@ public class EndpointController extends AbstractController implements Initializa
 
 		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
 		if (response.equals(ButtonType.OK)) {
-			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
-
 			display();
 		}
 	}
@@ -487,8 +481,8 @@ public class EndpointController extends AbstractController implements Initializa
 	@FXML
 	protected void execute(final ActionEvent event) {
 		
-		mainController.notification.setTextFill(Color.BLACK);
-		mainController.notification.setText("");
+//bottom		mainController.notification.setTextFill(Color.BLACK);
+//bottom		mainController.notification.setText("");
 		
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
@@ -517,8 +511,8 @@ public class EndpointController extends AbstractController implements Initializa
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
 		} catch (ClientException e) {
-			mainController.notification.setTextFill(Color.RED);
-			mainController.notification.setText(e.getMessage());
+//bottom			mainController.notification.setTextFill(Color.RED);
+//bottom			mainController.notification.setText(e.getMessage());
 		}
 
 		currentExchange.setDate(Instant.now().toEpochMilli());

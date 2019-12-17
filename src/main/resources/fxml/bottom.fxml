@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.geometry.Insets?>
+
+<HBox BorderPane.alignment="CENTER" alignment="CENTER_RIGHT"
+	fx:id="rootNode" spacing="5.0" maxHeight="25.0"
+	xmlns="http://javafx.com/javafx/11.0.1"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="restui.controller.BottomController">
+	<children>
+		<Label fx:id="file" />
+		<Label text="|" />
+		<Label fx:id="baseURL" />
+		<Label text="|" />
+		<Region HBox.hgrow="ALWAYS" />
+		<Label fx:id="notification" />
+		<Region prefHeight="200.0" prefWidth="200.0" />
+		<Label fx:id="version" text="Version" />
+		<Label text="|" />
+		<Label fx:id="time" text="Label" />
+		<Label text="|" />
+		<Label fx:id="memory" text="0" />
+	</children>
+	<BorderPane.margin>
+		<Insets />
+	</BorderPane.margin>
+	<padding>
+		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+	</padding>
+</HBox>

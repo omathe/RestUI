@@ -25,22 +25,23 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import restui.exception.ClientException;
 import restui.model.Endpoint;
 import restui.model.Exchange;
-import restui.model.Item;
 import restui.model.Project;
 import restui.model.Test;
 import restui.service.RestClient;
 
-public class TestController extends AbstractController implements Initializable {
+public class TestController implements Initializable {
+	
+	@FXML
+	private VBox rootNode;
 
 	private Project project;
 	private final ObservableList<Test> tests = FXCollections.observableArrayList();
-	private MainController mainController;
 	private File testsFile;
 
 	@FXML
@@ -68,7 +69,7 @@ public class TestController extends AbstractController implements Initializable 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		mainController = ControllerManager.getMainController();
+		//mainController = ControllerManager.getMainController();
 
 		tableView.setItems(tests);
 
@@ -81,15 +82,13 @@ public class TestController extends AbstractController implements Initializable 
 		testExchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Test, Integer>("status"));
 	}
 
-	@Override
-	public void setTreeItem(final TreeItem<Item> treeItem) {
-		super.setTreeItem(treeItem);
-
-		if (treeItem != null) {
-			project = (Project) treeItem.getValue();
-		}
-
-		File projectFile = mainController.getProjectFile();
+	public VBox getRootNode() {
+		return rootNode;
+	}
+	
+	public void setProject(final Project project) {
+		
+		File projectFile = ControllerManager.getMainController().getProjectFile();
 		testsFile = new File(projectFile.getParentFile() + File.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
 		List<Test> list = loadTests(testsFile);
 
@@ -197,7 +196,7 @@ public class TestController extends AbstractController implements Initializable 
 	@FXML
 	void up(final ActionEvent event) {
 		
-		File projectFile = mainController.getProjectFile();
+		File projectFile = ControllerManager.getMainController().getProjectFile();
 		testsFile = new File(projectFile.getParentFile() + File.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
 		
 		try (FileWriter fw = new FileWriter(testsFile, true)) {

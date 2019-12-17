@@ -7,6 +7,8 @@ public interface App {
 	String PROJECT_FXML = "/fxml/project.fxml";
 	String ENDPOINT_FXML = "/fxml/endpoint.fxml";
 	String REQUEST_BODY_FXML = "/fxml/requestBody.fxml";
+	String TEST_FXML = "/fxml/test.fxml";
+	String BOTTOM_FXML = "/fxml/bottom.fxml";
 	String ICON = "/style/applicationIcon.png";
 	String HOME = "restui";
 	String FILE = getApplicationHome() + "/" + "application.xml";

@@ -1,6 +1,7 @@
 package restui.controller;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -12,7 +13,7 @@ import restui.model.Endpoint;
 import restui.model.Item;
 import restui.model.Project;
 
-public class ProjectController extends AbstractController implements Initializable {
+public class ProjectController implements Initializable {
 
 	@FXML
 	private HBox rootNode;
@@ -20,13 +21,14 @@ public class ProjectController extends AbstractController implements Initializab
 	@FXML
 	private Label nbEndpoints;
 
-	@Override
-	public void setTreeItem(final TreeItem<Item> treeItem) {
-		super.setTreeItem(treeItem);
+	public void setProject(final Project project) {
 
-		Project project = (Project) treeItem.getValue();
-		final Long endpointsCount = project.getAllChildren().filter(item -> item instanceof Endpoint).count();
-		nbEndpoints.setText(endpointsCount.toString());
+		MainController mainController = ControllerManager.getMainController();
+		Optional<TreeItem<Item>> optionalItem = mainController.getSelectedItem();
+		if (optionalItem.isPresent()) {
+			final Long endpointsCount = project.getAllChildren().filter(item -> item instanceof Endpoint).count();
+			nbEndpoints.setText(endpointsCount.toString());
+		}
 	}
 
 	@Override
