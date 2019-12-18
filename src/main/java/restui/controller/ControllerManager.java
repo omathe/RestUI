@@ -12,7 +12,6 @@ public class ControllerManager {
 	private static MainController mainController;
 	private static RequestBodyController requestBodyController;
 	private static TestController testController;
-	private static BottomController bottomController;
 
 	public static MainController getMainController() {
 
@@ -82,20 +81,6 @@ public class ControllerManager {
 			}
 		}
 		return testController;
-	}
-	
-	public static BottomController getBottomController() {
-		
-		if (bottomController == null) {
-			try {
-				FXMLLoader fxmlLoader = new FXMLLoader();
-				fxmlLoader.load(ControllerManager.class.getResource(App.BOTTOM_FXML).openStream());
-				bottomController = (BottomController) fxmlLoader.getController();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return bottomController;
 	}
 
 }

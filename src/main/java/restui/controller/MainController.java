@@ -113,22 +113,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	private VBox vBox;
-
-	// bottom
-	/*@FXML
-	private Label file;
-	@FXML
-	private Label baseURL;
-	@FXML
-	public Label notification;
-	@FXML
-	private Label version;
-	@FXML
-	private Label time;
-	@FXML
-	private Label memory;*/
-
-	// 
+	 
 	@FXML
 	private Label searchCount;
 
@@ -163,6 +148,7 @@ public class MainController implements Initializable {
 
 	public static Application application;
 	private File projectFile;
+	//private final StringProperty projectFileName = new SimpleStringProperty();
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
 
@@ -378,6 +364,9 @@ public class MainController implements Initializable {
 				baseUrlTable.setContextMenu(contextMenu);
 			}
 		});
+		
+		// TODO oma
+		//bottomController.getFile().textProperty().bind(projectFileName);
 	}
 
 	Optional<TreeItem<Item>> getSelectedItem() {
@@ -455,7 +444,7 @@ public class MainController implements Initializable {
 		treeView.setRoot(projectItem);
 
 		projectFile = null;
-		ControllerManager.getBottomController().setFileName("");
+		bottomController.setFileName("");
 	}
 
 	@FXML
@@ -493,7 +482,8 @@ public class MainController implements Initializable {
 				projectItem.setExpanded(true);
 
 				projectFile = new File(uri);
-				ControllerManager.getBottomController().setFileName(projectFile.getAbsolutePath());
+				bottomController.setFileName(projectFile.getAbsolutePath());
+				
 				application.setLastProjectUri(uri.toString());
 
 				// load exchanges
@@ -550,7 +540,7 @@ public class MainController implements Initializable {
 					alert.showAndWait();
 				}
 				application.setLastProjectUri(projectFile.toURI().toString());
-				ControllerManager.getBottomController().setFileName(projectFile.getAbsolutePath());
+				bottomController.setFileName(projectFile.getAbsolutePath());
 
 				// save the exchanges
 				try {
