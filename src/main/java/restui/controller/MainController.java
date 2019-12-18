@@ -90,6 +90,9 @@ import restui.service.RestClient;
 
 public class MainController implements Initializable {
 
+	@FXML
+	BottomController bottomController; // bottom controller
+
 	private final Map<String, Node> centerNodes = new HashMap<String, Node>();
 	private WebView webView;
 	private WebEngine webEngine;
@@ -100,12 +103,6 @@ public class MainController implements Initializable {
 	private BorderPane rootNode;
 
 	@FXML
-	RightController rightController;
-	
-	@FXML
-	BottomController bottomController;
-
-	@FXML
 	private TreeView<Item> treeView;
 
 	@FXML
@@ -113,7 +110,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	private VBox vBox;
-	 
+
 	@FXML
 	private Label searchCount;
 
@@ -148,7 +145,6 @@ public class MainController implements Initializable {
 
 	public static Application application;
 	private File projectFile;
-	//private final StringProperty projectFileName = new SimpleStringProperty();
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
 
@@ -364,9 +360,6 @@ public class MainController implements Initializable {
 				baseUrlTable.setContextMenu(contextMenu);
 			}
 		});
-		
-		// TODO oma
-		//bottomController.getFile().textProperty().bind(projectFileName);
 	}
 
 	Optional<TreeItem<Item>> getSelectedItem() {
@@ -483,7 +476,7 @@ public class MainController implements Initializable {
 
 				projectFile = new File(uri);
 				bottomController.setFileName(projectFile.getAbsolutePath());
-				
+
 				application.setLastProjectUri(uri.toString());
 
 				// load exchanges

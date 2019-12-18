@@ -59,7 +59,7 @@ public class BottomController implements Initializable {
 		timelineMemory.setCycleCount(Animation.INDEFINITE);
 		timelineMemory.play();
 	}
-	
+
 	public void setFileName(final String name) {
 		file.setText(name);
 	}

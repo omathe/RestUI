@@ -3,11 +3,14 @@ package restui.conf;
 public interface App {
 
 	String TITLE = "RestUI";
+	
+	// FXML
 	String MAIN_FXML = "/fxml/restui.fxml";
 	String PROJECT_FXML = "/fxml/project.fxml";
 	String ENDPOINT_FXML = "/fxml/endpoint.fxml";
 	String REQUEST_BODY_FXML = "/fxml/requestBody.fxml";
 	String TEST_FXML = "/fxml/test.fxml";
+	
 	String ICON = "/style/applicationIcon.png";
 	String HOME = "restui";
 	String FILE = getApplicationHome() + "/" + "application.xml";
