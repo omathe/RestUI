@@ -91,7 +91,7 @@ import restui.service.RestClient;
 public class MainController implements Initializable {
 
 	@FXML
-	BottomController bottomController; // bottom controller
+	private BottomController bottomController; // bottom controller
 
 	private final Map<String, Node> centerNodes = new HashMap<String, Node>();
 	private WebView webView;
@@ -377,6 +377,10 @@ public class MainController implements Initializable {
 
 	public File getProjectFile() {
 		return projectFile;
+	}
+
+	public BottomController getBottomController() {
+		return bottomController;
 	}
 
 	public static void updateBaseUrlProperty(final BaseUrl baseUrl) {

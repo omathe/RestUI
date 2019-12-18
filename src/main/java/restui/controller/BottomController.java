@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import restui.model.AppVersion;
 import restui.model.AppVersion.DateVersion;
@@ -24,7 +25,7 @@ public class BottomController implements Initializable {
 	@FXML
 	private Label baseURL;
 	@FXML
-	public Label notification;
+	private Label notification;
 	@FXML
 	private Label version;
 	@FXML
@@ -62,6 +63,12 @@ public class BottomController implements Initializable {
 
 	public void setFileName(final String name) {
 		file.setText(name);
+	}
+	
+	public void setNotification(final String message, final Color color) {
+		
+		notification.setText(message);
+		notification.setTextFill(color);
 	}
 
 }

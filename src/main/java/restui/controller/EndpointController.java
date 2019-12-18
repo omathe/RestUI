@@ -460,7 +460,7 @@ public class EndpointController implements Initializable {
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
-		method.valueProperty().bindBidirectional(endpoint.methodProperty());
+		method.valueProperty().bind(endpoint.methodProperty());
 		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
 		modeExecution(null);
 	}
@@ -480,10 +480,8 @@ public class EndpointController implements Initializable {
 
 	@FXML
 	protected void execute(final ActionEvent event) {
-		
-//bottom		mainController.notification.setTextFill(Color.BLACK);
-//bottom		mainController.notification.setText("");
-		
+
+		mainController.getBottomController().setNotification("", Color.BLACK);
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
 		} else {
@@ -511,8 +509,7 @@ public class EndpointController implements Initializable {
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
 		} catch (ClientException e) {
-//bottom			mainController.notification.setTextFill(Color.RED);
-//bottom			mainController.notification.setText(e.getMessage());
+			mainController.getBottomController().setNotification(e.getMessage(), Color.RED);
 		}
 
 		currentExchange.setDate(Instant.now().toEpochMilli());
