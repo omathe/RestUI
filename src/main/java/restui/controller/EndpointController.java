@@ -91,28 +91,19 @@ public class EndpointController implements Initializable {
 
 	@FXML
 	private HBox rootNode;
-	
-	@FXML
-	private SplitPane requestResponseSplitPane;
+
+	// endpoint
 
 	@FXML
-	private TableView<Exchange> exchanges;
+	private Label endpointName;
 
 	@FXML
-	private TableColumn<Exchange, String> exchangeNameColumn;
+	private ComboBox<String> method;
 
 	@FXML
-	private TableColumn<Exchange, Long> exchangeDateColumn;
+	private TextField path;
 
-	@FXML
-	private TableColumn<Exchange, Integer> exchangeDurationColumn;
-
-	@FXML
-	private TableColumn<Exchange, Integer> exchangeStatusColumn;
-	
-	@FXML
-	private TableColumn<Exchange, String> exchangeUriColumn;
-
+	// request
 	@FXML
 	private TableView<Parameter> requestParameters;
 
@@ -129,18 +120,12 @@ public class EndpointController implements Initializable {
 	private TableColumn<Parameter, String> parameterValueColumn;
 
 	@FXML
-	private ComboBox<String> method;
-
-	@FXML
-	private Label endpointName;
-
-	@FXML
-	private TextField path;
+	private SplitPane requestResponseSplitPane;
 
 	@FXML
 	private TextField uri;
 
-	// Response
+	// response
 	@FXML
 	private TableView<Parameter> responseParameters;
 
@@ -158,6 +143,26 @@ public class EndpointController implements Initializable {
 
 	@FXML
 	private Label responseDuration;
+
+	// exchanges
+
+	@FXML
+	private TableView<Exchange> exchanges;
+
+	@FXML
+	private TableColumn<Exchange, String> exchangeNameColumn;
+
+	@FXML
+	private TableColumn<Exchange, Long> exchangeDateColumn;
+
+	@FXML
+	private TableColumn<Exchange, Integer> exchangeDurationColumn;
+
+	@FXML
+	private TableColumn<Exchange, Integer> exchangeStatusColumn;
+
+	@FXML
+	private TableColumn<Exchange, String> exchangeUriColumn;
 
 	@FXML
 	private Button execute;
@@ -180,12 +185,6 @@ public class EndpointController implements Initializable {
 	@FXML
 	private Circle statusCircle;
 
-	// **************************************************************************************************************************
-	private MainController mainController;
-	private final StringProperty baseUrl;
-	private Endpoint endpoint;
-	private Exchange currentExchange;
-	private BodyType specificationBodyType;
 
 	@FXML
 	private HBox endpointSpecificationHBox;
@@ -195,16 +194,20 @@ public class EndpointController implements Initializable {
 
 	@FXML
 	private AnchorPane anchorPaneExecute;
+	
+	private final StringProperty baseUrl;
+	private Endpoint endpoint;
+	private Exchange currentExchange;
+	private BodyType specificationBodyType;
 
 	public EndpointController() {
 		super();
 		baseUrl = new SimpleStringProperty();
 	}
-	
+
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		
-		mainController = ControllerManager.getMainController();
+
 
 		baseUrl.bind(MainController.baseUrlProperty.get().urlProperty());
 		baseUrl.addListener(new ChangeListener<String>() {
@@ -213,7 +216,7 @@ public class EndpointController implements Initializable {
 				buildUri();
 			}
 		});
-		
+
 		path.setTooltip(new Tooltip("Endpoint path value"));
 
 		// request parameters
@@ -359,6 +362,7 @@ public class EndpointController implements Initializable {
 				} else {
 					exchange.setName(event.getNewValue());
 				}
+				displayExecutionMode();
 			}
 		});
 
@@ -390,6 +394,7 @@ public class EndpointController implements Initializable {
 			if (event.getCode().equals(KeyCode.DELETE)) {
 				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 				deleteExchange(exchange);
+				displayExecutionMode();
 			}
 		});
 
@@ -406,7 +411,7 @@ public class EndpointController implements Initializable {
 						final MenuItem duplicate = new MenuItem("Duplicate");
 						final MenuItem addToTest = new MenuItem("Add to test");
 						exchangesContextMenu.getItems().addAll(duplicate, delete, addToTest);
-						
+
 						// duplicate exchange
 						duplicate.setOnAction(e -> {
 							if (workingExchangeExists()) {
@@ -415,17 +420,17 @@ public class EndpointController implements Initializable {
 							currentExchange = getSelectedExchange().get().duplicate("");
 							endpoint.addExchange(currentExchange);
 						});
-						
+
 						// delete exchange
 						delete.setOnAction(e -> {
 							deleteExchange(exchange.get());
 						});
-						
+
 						// add to test
 						addToTest.setOnAction(e -> {
-							File projectFile = mainController.getProjectFile();
+							File projectFile = ControllerManager.getMainController().getProjectFile();
 							File testsFile = new File(projectFile.getParentFile() + File.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
-							
+
 							try (FileWriter fw = new FileWriter(testsFile, true)) {
 								String line = false + "," + endpoint.getName() + "," + exchange.get().getName() + "," + exchange.get().getStatus() + "," + exchange.get().getDuration() + "\n";
 								fw.write(line);
@@ -453,10 +458,11 @@ public class EndpointController implements Initializable {
 	public HBox getRootNode() {
 		return rootNode;
 	}
-	
+
 	public void setEndpoint(final Endpoint endpoint) {
 		this.endpoint = endpoint;
-		
+
+		exchanges.getItems().clear();
 		endpointName.setText(endpoint.getName());
 		endpoint.buildPath();
 		path.setText(endpoint.getPath());
@@ -481,7 +487,7 @@ public class EndpointController implements Initializable {
 	@FXML
 	protected void execute(final ActionEvent event) {
 
-		mainController.getBottomController().setNotification("", Color.BLACK);
+		ControllerManager.getMainController().getBottomController().setNotification("", Color.BLACK);
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
 		} else {
@@ -509,7 +515,7 @@ public class EndpointController implements Initializable {
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
 		} catch (ClientException e) {
-			mainController.getBottomController().setNotification(e.getMessage(), Color.RED);
+			ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 		}
 
 		currentExchange.setDate(Instant.now().toEpochMilli());
@@ -748,8 +754,8 @@ public class EndpointController implements Initializable {
 		// create the current if it does not exist
 		if (!workingExchangeExists()) {
 			currentExchange = createWorkingExchange();
-		}		
-		
+		}
+
 		radioButtonExecutionMode.setSelected(true);
 
 		// enable execute
@@ -1031,8 +1037,8 @@ public class EndpointController implements Initializable {
 	}
 
 	public boolean exchangeFinalized(final Exchange exchange) {
-		
+
 		return exchange != null && exchange.getStatus() != 0 && !exchange.getName().isEmpty();
 	}
-	
+
 }
