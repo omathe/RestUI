@@ -477,7 +477,8 @@ public class EndpointController implements Initializable {
 
 	private void deleteExchange(final Exchange exchange) {
 
-		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
+		String exchangeName = exchange.getName().isEmpty() ? "the current exchange" : "the exchange '" + exchange.getName() + "'";
+		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete " + exchangeName);
 		if (response.equals(ButtonType.OK)) {
 			endpoint.removeExchange(exchange);
 			display();
