@@ -15,6 +15,7 @@ public interface App {
 	String HOME = "restui";
 	String FILE = getApplicationHome() + "/" + "application.xml";
 	String DEFAULT_STYLE_URI = "file:/" + getApplicationHome() + "/style/default/stylesheet.css";
+	String DARK_STYLE_URI = "file:/" + getApplicationHome() + "/style/dark/stylesheet.css";
 	String STYLE_LOCATION = "/style";
 
 	static String getApplicationHome() {

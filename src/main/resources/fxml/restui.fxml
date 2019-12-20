@@ -125,6 +125,14 @@
 														</MenuItem>
 													</items>
 												</MenuButton>
+												<ComboBox fx:id="style">
+													<items>
+														<FXCollections fx:factory="observableArrayList">
+															<String fx:value="DEFAULT" />
+															<String fx:value="DARK" />
+														</FXCollections>
+													</items>
+												</ComboBox>
 											</children>
 											<padding>
 												<Insets bottom="5.0" right="5.0" top="5.0" />
@@ -210,7 +218,11 @@
 	</center>
 
 	<bottom>
- 		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
+<!--  		IDE version  -->
+  		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
+
+<!--  		scene builder version  -->
+<!--  		<fx:include fx:id="bottom" source="bottom.fxml" />  -->
 	</bottom>
 
 </BorderPane>

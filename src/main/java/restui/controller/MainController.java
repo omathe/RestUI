@@ -551,6 +551,9 @@ public class MainController implements Initializable {
 				}
 			}
 		}
+		
+		// TODO remove the folowwing lines (test)
+		setStyle(App.DARK_STYLE_URI);
 	}
 
 	@FXML
