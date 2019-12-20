@@ -31,8 +31,6 @@ import com.sun.jersey.api.client.ClientResponse.Status;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -93,32 +91,24 @@ public class EndpointController implements Initializable {
 	private HBox rootNode;
 
 	// endpoint
-
 	@FXML
 	private Label endpointName;
-
 	@FXML
 	private ComboBox<String> method;
-
 	@FXML
 	private TextField path;
 
 	// request
 	@FXML
 	private TableView<Parameter> requestParameters;
-
 	@FXML
 	private TableColumn<Parameter, Boolean> parameterEnabledColumn;
-
 	@FXML
 	private TableColumn<Parameter, String> parameterLocationColumn;
-
 	@FXML
 	private TableColumn<Parameter, String> parameterNameColumn;
-
 	@FXML
 	private TableColumn<Parameter, String> parameterValueColumn;
-
 	@FXML
 	private SplitPane requestResponseSplitPane;
 
@@ -128,39 +118,28 @@ public class EndpointController implements Initializable {
 	// response
 	@FXML
 	private TableView<Parameter> responseParameters;
-
 	@FXML
 	private TableColumn<Parameter, String> headerNameColumn;
-
 	@FXML
 	private TableColumn<Parameter, String> headerValueColumn;
-
 	@FXML
 	private TextArea responseBody;
-
 	@FXML
 	private Label responseStatus;
-
 	@FXML
 	private Label responseDuration;
 
 	// exchanges
-
 	@FXML
 	private TableView<Exchange> exchanges;
-
 	@FXML
 	private TableColumn<Exchange, String> exchangeNameColumn;
-
 	@FXML
 	private TableColumn<Exchange, Long> exchangeDateColumn;
-
 	@FXML
 	private TableColumn<Exchange, Integer> exchangeDurationColumn;
-
 	@FXML
 	private TableColumn<Exchange, Integer> exchangeStatusColumn;
-
 	@FXML
 	private TableColumn<Exchange, String> exchangeUriColumn;
 
@@ -208,14 +187,13 @@ public class EndpointController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-
+		// listen to method control to set endpoint
+		method.valueProperty().addListener((observable, oldValue, newValue) -> endpoint.setMethod(newValue)); 
+		
+		// bind base URL property to baseUrlProperty of MainController
 		baseUrl.bind(MainController.baseUrlProperty.get().urlProperty());
-		baseUrl.addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				buildUri();
-			}
-		});
+		// listen to baseUrl control to build the URI
+		baseUrl.addListener((observable, oldValue, newValue) -> buildUri());
 
 		path.setTooltip(new Tooltip("Endpoint path value"));
 
@@ -463,11 +441,20 @@ public class EndpointController implements Initializable {
 		this.endpoint = endpoint;
 
 		exchanges.getItems().clear();
-		endpointName.setText(endpoint.getName());
+		
 		endpoint.buildPath();
-		path.setText(endpoint.getPath());
-		method.valueProperty().bind(endpoint.methodProperty());
+		
+		// method
+		method.setValue(endpoint.getMethod());
+
+		// endpoint name
+		endpointName.setText(endpoint.getName());
 		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
+		
+		// path
+		path.setText(endpoint.getPath());
+		
+		// set execution mode
 		modeExecution(null);
 	}
 

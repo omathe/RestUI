@@ -79,7 +79,7 @@
 																				<String fx:value="GET" />
 																			</value>
 																		</ComboBox>
-																		<TextField fx:id="path" editable="false" HBox.hgrow="ALWAYS">
+																		<TextField fx:id="path" HBox.hgrow="ALWAYS">
                                        <HBox.margin>
                                           <Insets />
                                        </HBox.margin></TextField>
