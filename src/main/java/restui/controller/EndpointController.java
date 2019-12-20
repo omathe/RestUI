@@ -164,7 +164,6 @@ public class EndpointController implements Initializable {
 	@FXML
 	private Circle statusCircle;
 
-
 	@FXML
 	private HBox endpointSpecificationHBox;
 
@@ -173,7 +172,7 @@ public class EndpointController implements Initializable {
 
 	@FXML
 	private AnchorPane anchorPaneExecute;
-	
+
 	private final StringProperty baseUrl;
 	private Endpoint endpoint;
 	private Exchange currentExchange;
@@ -188,8 +187,8 @@ public class EndpointController implements Initializable {
 	public void initialize(final URL location, final ResourceBundle resources) {
 
 		// listen to method control to set endpoint
-		method.valueProperty().addListener((observable, oldValue, newValue) -> endpoint.setMethod(newValue)); 
-		
+		method.valueProperty().addListener((observable, oldValue, newValue) -> endpoint.setMethod(newValue));
+
 		// bind base URL property to baseUrlProperty of MainController
 		baseUrl.bind(MainController.baseUrlProperty.get().urlProperty());
 		// listen to baseUrl control to build the URI
@@ -441,19 +440,19 @@ public class EndpointController implements Initializable {
 		this.endpoint = endpoint;
 
 		exchanges.getItems().clear();
-		
+
 		endpoint.buildPath();
-		
+
 		// method
 		method.setValue(endpoint.getMethod());
 
 		// endpoint name
 		endpointName.setText(endpoint.getName());
 		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
-		
+
 		// path
 		path.setText(endpoint.getPath());
-		
+
 		// set execution mode
 		modeExecution(null);
 	}

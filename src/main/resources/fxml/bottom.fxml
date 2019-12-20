@@ -1,29 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 
-<HBox BorderPane.alignment="CENTER" alignment="CENTER_RIGHT"
-	fx:id="rootNode" spacing="5.0" maxHeight="25.0"
-	xmlns="http://javafx.com/javafx/11.0.1"
-	xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="restui.controller.BottomController">
+<HBox fx:id="rootNode" alignment="CENTER_RIGHT" maxHeight="25.0" spacing="5.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.BottomController">
 	<children>
-		<Label fx:id="file" />
-		<Label text="|" />
-		<Label fx:id="baseURL" />
-		<Label text="|" />
+		<Label fx:id="file" text="&lt;file&gt;">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets></Label>
+		<Label fx:id="baseURL" text="&lt;base URL&gt;" />
 		<Region HBox.hgrow="ALWAYS" />
 		<Label fx:id="notification" />
 		<Region prefHeight="200.0" prefWidth="200.0" />
-		<Label fx:id="version" text="Version" />
-		<Label text="|" />
-		<Label fx:id="time" text="Label" />
-		<Label text="|" />
-		<Label fx:id="memory" text="0" />
+		<Label fx:id="version" text="&lt;version&gt;" />
+		<Label fx:id="time" text="&lt;time&gt;" />
+		<Label fx:id="memory" text="&lt;memory&gt;" />
 	</children>
 	<BorderPane.margin>
 		<Insets />

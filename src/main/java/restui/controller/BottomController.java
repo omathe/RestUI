@@ -41,7 +41,8 @@ public class BottomController implements Initializable {
 		version.setText(dateVersion.version + " " + AppVersion.date(ZoneId.systemDefault().getId(), dateVersion.date));
 
 		// base URL
-		baseURL.setTooltip(new Tooltip(MainController.baseUrlProperty.get().urlProperty().get()));
+		baseURL.setTooltip(new Tooltip());
+		baseURL.tooltipProperty().get().textProperty().bind(MainController.baseUrlProperty.get().urlProperty());
 		baseURL.textProperty().bind(MainController.baseUrlProperty.get().nameProperty());
 
 		// time
@@ -56,6 +57,10 @@ public class BottomController implements Initializable {
 		final Timeline timelineMemory = new Timeline(new KeyFrame(Duration.millis(2000), event -> {
 			final Double mem = (double) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_000_000);
 			memory.setText(mem.toString() + " Mo");
+			memory.setStyle("-fx-background-color: lightgray ;");
+			if (mem > 100) {
+				memory.setStyle("-fx-background-color: orange ;");
+			}
 		}));
 		timelineMemory.setCycleCount(Animation.INDEFINITE);
 		timelineMemory.play();
@@ -64,9 +69,9 @@ public class BottomController implements Initializable {
 	public void setFileName(final String name) {
 		file.setText(name);
 	}
-	
+
 	public void setNotification(final String message, final Color color) {
-		
+
 		notification.setText(message);
 		notification.setTextFill(color);
 	}
