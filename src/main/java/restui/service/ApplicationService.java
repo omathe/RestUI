@@ -34,7 +34,7 @@ public class ApplicationService {
 		}
 
 		// create application.xml if not exists
-		File applicationFile = new File(App.FILE);
+		File applicationFile = new File(App.APLICATION_FILE);
 		if (!applicationFile.exists()) {
 			createDefaultApplicationFile();
 		}
@@ -47,7 +47,7 @@ public class ApplicationService {
 		SAXBuilder saxBuilder = new SAXBuilder();
 
 		try {
-			Document document = saxBuilder.build(App.FILE);
+			Document document = saxBuilder.build(App.APLICATION_FILE);
 			Element applicationElement = document.getRootElement();
 			Element lastProjectUriElement = applicationElement.getChild("lastProjectUri");
 			application.setLastProjectUri(lastProjectUriElement.getValue());
@@ -100,7 +100,7 @@ public class ApplicationService {
 
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			Document document = new Document(rootElement);
-			File applicationFile = new File(App.FILE);
+			File applicationFile = new File(App.APLICATION_FILE);
 			//FileOutputStream fileOutputStream = null;
 			try (FileOutputStream fileOutputStream = new FileOutputStream(applicationFile)) {
 				xmlOutputter.output(document, fileOutputStream);
@@ -121,7 +121,7 @@ public class ApplicationService {
 
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 		Document document = new Document(rootElement);
-		File applicationFile = new File(App.FILE);
+		File applicationFile = new File(App.APLICATION_FILE);
 		try {
 			xmlOutputter.output(document, new FileOutputStream(applicationFile));
 		} catch (final IOException e) {
