@@ -120,7 +120,7 @@ task fatJar(type: Jar) {
     with jar
 }
 
-eclipse {
+/*eclipse {
 	classpath {
 		downloadSources=true
 		
@@ -131,7 +131,7 @@ eclipse {
             }
         }
 	}
-}
+}*/
 
 // creates application bundle (executable + runtime)
 task javaPackager(type: Exec, dependsOn: assemble) {

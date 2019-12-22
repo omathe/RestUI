@@ -30,8 +30,8 @@ public class ApplicationService {
 	public static void init() {
 
 		// create application home directory if not exists
-		File applicationDirectory = new File(getApplicationHome());
 		if (!applicationDirectory.exists()) {
+			File applicationDirectory = new File(getApplicationHome());
 			applicationDirectory.mkdir();
 		}
 
