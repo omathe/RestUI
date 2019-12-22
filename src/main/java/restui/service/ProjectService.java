@@ -73,7 +73,7 @@ public interface ProjectService {
 		return project;
 	}
 
-	private static Project parseXml(final InputStream inputStream) throws TechnicalException {
+	static Project parseXml(final InputStream inputStream) throws TechnicalException {
 
 		Project project = new Project("");
 
@@ -191,7 +191,7 @@ public interface ProjectService {
 		}
 	}
 
-	private static void buildHierarchy(final Project project) {
+	static void buildHierarchy(final Project project) {
 
 		for (Endpoint endpoint : project.getEndpoints()) {
 

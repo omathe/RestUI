@@ -7,9 +7,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,21 +22,15 @@ import java.util.stream.Stream;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -58,7 +50,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -73,17 +64,16 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
-import javafx.util.Duration;
 import restui.commons.AlertBuilder;
 import restui.commons.Strings;
+import restui.conf.App;
+import restui.controller.cellFactory.BaseNameCellFactory;
 import restui.controller.cellFactory.BaseUrlCellFactory;
 import restui.controller.cellFactory.RadioButtonCell;
 import restui.controller.cellFactory.TreeCellFactory;
 import restui.exception.ClientException;
 import restui.exception.NotFoundException;
 import restui.exception.TechnicalException;
-import restui.model.App;
-import restui.model.App.DateVersion;
 import restui.model.Application;
 import restui.model.BaseUrl;
 import restui.model.Endpoint;
@@ -100,11 +90,17 @@ import restui.service.RestClient;
 
 public class MainController implements Initializable {
 
+	@FXML
+	private BottomController bottomController; // bottom controller
+
 	private final Map<String, Node> centerNodes = new HashMap<String, Node>();
 	private WebView webView;
 	private WebEngine webEngine;
 
 	public static ObjectProperty<BaseUrl> baseUrlProperty = new SimpleObjectProperty<BaseUrl>(new BaseUrl("", "", false)); // selected base url
+
+	@FXML
+	private BorderPane rootNode;
 
 	@FXML
 	private TreeView<Item> treeView;
@@ -116,19 +112,7 @@ public class MainController implements Initializable {
 	private VBox vBox;
 
 	@FXML
-	private Label memory;
-
-	@FXML
-	private Label time;
-
-	@FXML
-	private Label file;
-
-	@FXML
 	private Label searchCount;
-
-	@FXML
-	private BorderPane borderPane;
 
 	@FXML
 	private TabPane topTabPane;
@@ -153,38 +137,21 @@ public class MainController implements Initializable {
 	private TableColumn<BaseUrl, Boolean> baseUrlEnabledColumn;
 
 	@FXML
-	private Label version;
-
-	@FXML
-	private Label baseURL;
-
-	@FXML
 	private Button importEndpointsButton;
-
-	@FXML
-	public Label notification;
 
 	// Test tab
 	@FXML
 	private TableView<?> exchangesToTest;
-	
-	private ProjectController projectController;
-	private EndpointController endPointController;
+
 	public static Application application;
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
-	private HBox projectHbox;
-	private HBox endpointHbox;
 
 	int index = 0;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		
-		// version
-		DateVersion dateVersion = App.getDateVersion();
-		version.setText(dateVersion.version + " " + App.date(ZoneId.systemDefault().getId(), dateVersion.date));
 
 		// initialization of the application
 		ApplicationService.init();
@@ -196,9 +163,7 @@ public class MainController implements Initializable {
 			baseUrlProperty.get().nameProperty().set(optionalBaseUrl.get().getName());
 			baseUrlProperty.get().urlProperty().set(optionalBaseUrl.get().getUrl());
 		}
-		
-		baseURL.setTooltip(new Tooltip(baseUrlProperty.get().urlProperty().get()));
-		baseURL.textProperty().bind(baseUrlProperty.get().nameProperty());
+
 		importEndpointsButton.disableProperty().bind(baseUrlProperty.get().enabledProperty().not());
 
 		// load last project
@@ -231,57 +196,24 @@ public class MainController implements Initializable {
 
 				if (newValue != null) {
 					if (newValue.getValue() instanceof Project) {
-
 						// Project
-						if (projectHbox == null) {
-							try {
-								final FXMLLoader fxmlLoader = new FXMLLoader();
-								projectHbox = fxmlLoader.load(MainController.class.getResource("/fxml/project.fxml").openStream());
-								projectHbox.setAlignment(Pos.TOP_LEFT);
-								projectController = (ProjectController) fxmlLoader.getController();
-							} catch (final IOException e) {
-								e.printStackTrace();
-							}
-						}
-						projectController.setTreeItem(newValue);
-						VBox.setVgrow(projectHbox, Priority.ALWAYS); // webView fill height
+						ProjectController projectController = ControllerManager.getProjectController();
+						HBox rootRootNode = projectController.getRootNode();
+						projectController.setProject((Project) newValue.getValue());
+						VBox.setVgrow(rootRootNode, Priority.ALWAYS); // webView fill height
 						vBox.getChildren().clear();
-						vBox.getChildren().add(projectHbox);
+						vBox.getChildren().add(rootRootNode);
 					} else if (newValue.getValue() instanceof Endpoint) {
-
 						// Endpoint
-						try {
-							final FXMLLoader fxmlLoader = new FXMLLoader();
-							endpointHbox = fxmlLoader.load(MainController.class.getResource("/fxml/endpoint.fxml").openStream());
-							endPointController = (EndpointController) fxmlLoader.getController();
-						} catch (final IOException e) {
-							e.printStackTrace();
-						}
-						endPointController.setTreeView(treeView);
-						endPointController.setTreeItem(newValue);
-
+						EndpointController endpointController = ControllerManager.getEndpointController();
+						HBox rootRootNode = endpointController.getRootNode();
+						endpointController.setEndpoint((Endpoint) newValue.getValue());
 						vBox.getChildren().clear();
-						vBox.getChildren().add(endpointHbox);
+						vBox.getChildren().add(rootRootNode);
 					}
 				}
 			}
 		});
-
-		// time
-		final Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {
-			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-			time.setText(simpleDateFormat.format(Instant.now().toEpochMilli()));
-		}));
-		timeline.setCycleCount(Animation.INDEFINITE);
-		timeline.play();
-
-		// memory usage
-		final Timeline timelineMemory = new Timeline(new KeyFrame(Duration.millis(2000), event -> {
-			final Double mem = (double) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_000_000);
-			memory.setText(mem.toString() + " Mo");
-		}));
-		timelineMemory.setCycleCount(Animation.INDEFINITE);
-		timelineMemory.play();
 
 		// searching for endpoints
 		searchItem.getEditor().textProperty().addListener((observable, oldItem, newItem) -> {
@@ -342,26 +274,26 @@ public class MainController implements Initializable {
 			@Override
 			public void changed(final ObservableValue<? extends Tab> ov, final Tab oldValue, final Tab newValue) {
 				// store previous center node used by borderPane
-				centerNodes.put(oldValue.getId(), borderPane.getCenter());
+				centerNodes.put(oldValue.getId(), rootNode.getCenter());
 
 				// set borderPane center node
-				borderPane.setCenter(getCenterNode(newValue.getId()));
+				rootNode.setCenter(getCenterNode(newValue.getId()));
 			}
 		});
 
-		centerNodes.put("projectTab", borderPane.getCenter());
-		centerNodes.put("editTab", borderPane.getCenter());
-		centerNodes.put("styleTab", borderPane.getCenter());
-		centerNodes.put("settingsTab", borderPane.getCenter());
+		centerNodes.put("projectTab", rootNode.getCenter());
+		centerNodes.put("editTab", rootNode.getCenter());
+		centerNodes.put("styleTab", rootNode.getCenter());
+		centerNodes.put("settingsTab", rootNode.getCenter());
 
 		// Base URL table
-		baseUrlTable.setItems((ObservableList<BaseUrl>) application.getBaseUrls());
+		baseUrlTable.setItems(application.getBaseUrls());
 
 		baseUrlNameColumn.setCellValueFactory(new PropertyValueFactory<BaseUrl, String>("name"));
 		baseUrlNameColumn.setCellFactory(new Callback<TableColumn<BaseUrl, String>, TableCell<BaseUrl, String>>() {
 			@Override
 			public TableCell<BaseUrl, String> call(final TableColumn<BaseUrl, String> param) {
-				return new BaseUrlCellFactory();
+				return new BaseNameCellFactory();
 			}
 		});
 
@@ -429,9 +361,26 @@ public class MainController implements Initializable {
 			}
 		});
 	}
-	
+
+	Optional<TreeItem<Item>> getSelectedItem() {
+
+		Optional<TreeItem<Item>> optionalItem = Optional.empty();
+		if (treeView.getSelectionModel().getSelectedItem() != null) {
+			optionalItem = Optional.of(treeView.getSelectionModel().getSelectedItem());
+		}
+		return optionalItem;
+	}
+
+	public BorderPane getRootNode() {
+		return rootNode;
+	}
+
 	public File getProjectFile() {
 		return projectFile;
+	}
+
+	public BottomController getBottomController() {
+		return bottomController;
 	}
 
 	public static void updateBaseUrlProperty(final BaseUrl baseUrl) {
@@ -455,18 +404,12 @@ public class MainController implements Initializable {
 		}
 		return center;
 	}
-	
+
 	private VBox getExchangesVBox() {
-		
-		final FXMLLoader fxmlLoader = new FXMLLoader();
-		VBox vBox = null;
-		try {
-			vBox = fxmlLoader.load(MainController.class.getResource("/fxml/test.fxml").openStream());
-			TestController testController = (TestController) fxmlLoader.getController();
-			testController.setTreeItem(treeView.getRoot());
-		} catch (IOException e) {
-		}
-		return vBox;
+
+		TestController testController = ControllerManager.getTestController();
+		testController.setProject((Project) treeView.getRoot().getValue());
+		return testController.getRootNode();
 	}
 
 	private WebView getWebView() {
@@ -475,9 +418,9 @@ public class MainController implements Initializable {
 		}
 		return webView;
 	}
-	
+
 	private WebEngine getWebEngine() {
-		
+
 		if (webEngine == null) {
 			webEngine = getWebView().getEngine();
 			webEngine.setJavaScriptEnabled(true);
@@ -498,7 +441,7 @@ public class MainController implements Initializable {
 		treeView.setRoot(projectItem);
 
 		projectFile = null;
-		file.setText("");
+		bottomController.setFileName("");
 	}
 
 	@FXML
@@ -512,7 +455,7 @@ public class MainController implements Initializable {
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open a project");
 
-		final File initialDirectory = projectFile == null ? new File(ApplicationService.getApplicationHome()) : projectFile.getParentFile();
+		final File initialDirectory = projectFile == null ? new File(App.HOME) : projectFile.getParentFile();
 		fileChooser.setInitialDirectory(initialDirectory);
 
 		final File file = fileChooser.showOpenDialog(null);
@@ -536,7 +479,8 @@ public class MainController implements Initializable {
 				projectItem.setExpanded(true);
 
 				projectFile = new File(uri);
-				file.setText(projectFile.getAbsolutePath());
+				bottomController.setFileName(projectFile.getAbsolutePath());
+
 				application.setLastProjectUri(uri.toString());
 
 				// load exchanges
@@ -573,11 +517,11 @@ public class MainController implements Initializable {
 				final FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save the project " + project.getName());
 
-				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome()) : new File(URI.create(application.getLastProjectUri())).getParentFile();
+				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(App.HOME) : new File(URI.create(application.getLastProjectUri())).getParentFile();
 				fileChooser.setInitialDirectory(initialDirectory);
 				fileChooser.setInitialFileName(project.getName() + ".xml");
 
-				final File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+				final File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
 				if (file != null) {
 					projectFile = file.getName().endsWith(".xml") ? file : new File(file.getAbsolutePath() + ".xml");
 				}
@@ -593,7 +537,7 @@ public class MainController implements Initializable {
 					alert.showAndWait();
 				}
 				application.setLastProjectUri(projectFile.toURI().toString());
-				file.setText(projectFile.getAbsolutePath());
+				bottomController.setFileName(projectFile.getAbsolutePath());
 
 				// save the exchanges
 				try {
@@ -607,6 +551,9 @@ public class MainController implements Initializable {
 				}
 			}
 		}
+		
+		// TODO remove the folowwing lines (test)
+		setStyle(App.DARK_STYLE_URI);
 	}
 
 	@FXML
@@ -616,11 +563,11 @@ public class MainController implements Initializable {
 			final FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Save the project as");
 
-			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(ApplicationService.getApplicationHome()) : new File(URI.create(application.getLastProjectUri())).getParentFile();
+			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(App.HOME) : new File(URI.create(application.getLastProjectUri())).getParentFile();
 			fileChooser.setInitialDirectory(initialDirectory);
 			fileChooser.setInitialFileName("projectCopy.xml");
 
-			final File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+			final File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
 			if (file != null) {
 				try {
 					Files.copy(projectFile.toPath(), file.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
@@ -692,7 +639,7 @@ public class MainController implements Initializable {
 	public void launchWebPage(final ActionEvent event) {
 
 		getWebEngine().load(webUrl.getValue());
-		borderPane.setCenter(webView);
+		rootNode.setCenter(webView);
 	}
 
 	@FXML
@@ -712,8 +659,8 @@ public class MainController implements Initializable {
 
 	private void setStyle(final String uri) {
 
-		borderPane.getStylesheets().clear();
-		borderPane.getStylesheets().add(uri);
+		rootNode.getStylesheets().clear();
+		rootNode.getStylesheets().add(uri);
 		application.setStyleFile(uri);
 	}
 
@@ -820,6 +767,7 @@ public class MainController implements Initializable {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	@FXML
 	void importEndpoints(final ActionEvent event) {
 
@@ -864,5 +812,5 @@ public class MainController implements Initializable {
 			alert.showAndWait();
 		}
 	}
-	
+
 }

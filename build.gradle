@@ -4,10 +4,11 @@ apply plugin: 'java-library'
 // apply plugin: 'application'
 
 group 'fr.omathe'
-project.version '1.3.0'
+project.version '1.3.2'
 
-def jdk = System.getProperty("java.home")
-//def jdk = '/opt/java/jdk-11.0.1'
+//def jdk = System.getProperty("java.home")
+
+def jdk = 'C:/oma/soft/java/jdk1.8.0_91'
 def moduleName = 'restui.gui'
 def mainClass = 'restui.gui.RestUiApp'
 
@@ -25,8 +26,8 @@ buildscript {
     }
 }
 
-sourceCompatibility = 1.9
-targetCompatibility = 1.9
+//sourceCompatibility = 1.8
+//targetCompatibility = 1.8
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -80,6 +81,12 @@ jar {
 
 dependencies {
     
+    //compile group: 'org.openjfx', name: 'javafx-base', version: '13.0.1', classifier: 'win'
+    //compile group: 'org.openjfx', name: 'javafx-graphics', version: '13.0.1', classifier: 'win'
+    //compile group: 'org.openjfx', name: 'javafx-controls', version: '13.0.1', classifier: 'win'
+    //compile group: 'org.openjfx', name: 'javafx-fxml', version: '13.0.1', classifier: 'win'
+    //compile group: 'org.openjfx', name: 'javafx-web', version: '13.0.1', classifier: 'win'
+    
     compile 'com.sun.jersey:jersey-client:1.9.1'
     compile 'org.jdom:jdom:2.0.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.3'
@@ -127,11 +134,27 @@ task fatJar(type: Jar) {
 		// move libraries to modulepath
 		file {
             whenMerged {
+// <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_91"/>            
+            	entries.removeAll { it.kind == 'con' && it.path == 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10/' }
                 entries.findAll { it.kind == 'lib' }.each { it.entryAttributes['module'] = 'true' }
             }
         }
 	}
 }*/
+
+eclipse {
+	classpath {
+		downloadSources=true
+		containers 'org.eclipse.jdt.launching.JRE_CONTAINER'
+		file {
+			whenMerged {
+				entries.removeAll { it.kind == 'con' && it.path == 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10/' }
+				entries.findAll { it.kind == 'lib' }.each { it.entryAttributes['module'] = 'true' }
+			}
+		}
+	}
+}
+
 
 // creates application bundle (executable + runtime)
 task javaPackager(type: Exec, dependsOn: assemble) {

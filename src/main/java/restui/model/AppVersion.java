@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.TimeZone;
 
-public interface App {
+public interface AppVersion {
 
 	public class DateVersion {
 
@@ -36,13 +36,13 @@ public interface App {
 
 		DateVersion dateVersion = new DateVersion("X.X.X", Instant.now().toEpochMilli());
 
-		URL url = App.class.getResource("App.class");
+		URL url = AppVersion.class.getResource("App2.class");
 		if (url != null && url.toString().startsWith("jar")) {
 
 			// retrieve version from the MANIFEST
 			InputStream inputStream = null;
 			try {
-				inputStream = App.class.getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF");
+				inputStream = AppVersion.class.getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF");
 				Properties prop = new Properties();
 				prop.load(inputStream);
 				dateVersion.version = prop.getProperty("RestUI-Version");

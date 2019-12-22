@@ -24,7 +24,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController">
+<BorderPane fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.MainController">
 	<top>
 		<VBox BorderPane.alignment="CENTER">
 			<children>
@@ -61,12 +61,12 @@
 													</tooltip>
 												</Button>
 												<Separator orientation="VERTICAL" />
-                                    <Button id="importEndpointsButton" fx:id="importEndpointsButton" mnemonicParsing="false" onAction="#importEndpoints" prefHeight="32.0" prefWidth="32.0" text="Import">
-                                       <tooltip>
-                                          <Tooltip text="Import GMS endpoints" />
-                                       </tooltip>
-                                    </Button>
-                                    <Separator orientation="VERTICAL" />
+												<Button id="importEndpointsButton" fx:id="importEndpointsButton" mnemonicParsing="false" onAction="#importEndpoints" prefHeight="32.0" prefWidth="32.0" text="Import">
+													<tooltip>
+														<Tooltip text="Import GMS endpoints" />
+													</tooltip>
+												</Button>
+												<Separator orientation="VERTICAL" />
 												<Button id="deleteFileButton" mnemonicParsing="false" onAction="#delete" opacity="0.7" prefHeight="32.0" prefWidth="32.0" text="Delete">
 													<tooltip>
 														<Tooltip text="Delete the project" />
@@ -109,22 +109,30 @@
 													</opaqueInsets>
 												</TextField>
 												<Button minWidth="-Infinity" mnemonicParsing="false" onAction="#setAuthorizationHeader" text="set" />
-                                    <Accordion />
-                                    <MenuButton focusTraversable="false" mnemonicParsing="false" text="Base URL">
-                                      <items>
-                                        <MenuItem mnemonicParsing="false">
-                                             <graphic>
-                                                <TableView fx:id="baseUrlTable" editable="true" prefHeight="200.0">
-                                                  <columns>
-                                                    <TableColumn fx:id="baseUrlEnabledColumn" prefWidth="75.0" text="Enabled" />
-                                                    <TableColumn fx:id="baseUrlNameColumn" prefWidth="145.0" text="Name" />
-                                                      <TableColumn fx:id="baseUrlUrlColumn" prefWidth="220.0" text="URL" />
-                                                  </columns>
-                                                </TableView>
-                                             </graphic>
-                                          </MenuItem>
-                                      </items>
-                                    </MenuButton>
+												<Accordion />
+												<MenuButton focusTraversable="false" mnemonicParsing="false" text="Base URL">
+													<items>
+														<MenuItem mnemonicParsing="false">
+															<graphic>
+																<TableView fx:id="baseUrlTable" editable="true" prefHeight="200.0">
+																	<columns>
+																		<TableColumn fx:id="baseUrlEnabledColumn" prefWidth="75.0" text="Enabled" />
+																		<TableColumn fx:id="baseUrlNameColumn" prefWidth="145.0" text="Name" />
+																		<TableColumn fx:id="baseUrlUrlColumn" prefWidth="220.0" text="URL" />
+																	</columns>
+																</TableView>
+															</graphic>
+														</MenuItem>
+													</items>
+												</MenuButton>
+												<ComboBox fx:id="style">
+													<items>
+														<FXCollections fx:factory="observableArrayList">
+															<String fx:value="DEFAULT" />
+															<String fx:value="DARK" />
+														</FXCollections>
+													</items>
+												</ComboBox>
 											</children>
 											<padding>
 												<Insets bottom="5.0" right="5.0" top="5.0" />
@@ -155,11 +163,11 @@
 										</HBox>
 									</content>
 								</Tab>
-                        <Tab fx:id="testTab" text="Test (incubated)">
-                          <content>
-                              <HBox />
-                          </content>
-                        </Tab>
+								<Tab fx:id="testTab" text="Test (incubated)">
+									<content>
+										<HBox />
+									</content>
+								</Tab>
 							</tabs>
 							<HBox.margin>
 								<Insets />
@@ -183,9 +191,10 @@
 								<HBox alignment="TOP_RIGHT" spacing="3.0">
 									<children>
 										<Button id="minusButton" maxHeight="16.0" minHeight="16.0" mnemonicParsing="false" onAction="#collapse" prefHeight="16.0" textOverrun="CLIP">
-                                 <tooltip>
-                                    <Tooltip text="Collapse all" />
-                                 </tooltip></Button>
+											<tooltip>
+												<Tooltip text="Collapse all" />
+											</tooltip>
+										</Button>
 									</children>
 									<VBox.margin>
 										<Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
@@ -207,28 +216,13 @@
 			</opaqueInsets>
 		</SplitPane>
 	</center>
+
 	<bottom>
-		<HBox alignment="CENTER_RIGHT" maxHeight="25.0" spacing="5.0" BorderPane.alignment="CENTER">
-			<children>
-				<Label fx:id="file" />
-            <Label text="|" />
-            <Label fx:id="baseURL" />
-            <Label text="|" />
-				<Region HBox.hgrow="ALWAYS" />
-            <Label fx:id="notification" />
-            <Region prefHeight="200.0" prefWidth="200.0" />
-            <Label fx:id="version" text="Version" />
-            <Label text="|" />
-				<Label fx:id="time" text="Label" />
-				<Label text="|" />
-				<Label fx:id="memory" text="0" />
-			</children>
-			<BorderPane.margin>
-				<Insets />
-			</BorderPane.margin>
-			<padding>
-				<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-			</padding>
-		</HBox>
+<!--  		IDE version  -->
+  		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
+
+<!--  		scene builder version  -->
+<!--  		<fx:include fx:id="bottom" source="bottom.fxml" />  -->
 	</bottom>
+
 </BorderPane>

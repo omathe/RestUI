@@ -31,8 +31,6 @@ import com.sun.jersey.api.client.ClientResponse.Status;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -58,7 +56,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -80,7 +77,6 @@ import restui.exception.ClientException;
 import restui.model.Endpoint;
 import restui.model.Exchange;
 import restui.model.Exchange.BodyType;
-import restui.model.Item;
 import restui.model.Parameter;
 import restui.model.Parameter.Direction;
 import restui.model.Parameter.Location;
@@ -89,71 +85,63 @@ import restui.model.Path;
 import restui.service.RestClient;
 import restui.service.Tools;
 
-public class EndpointController extends AbstractController implements Initializable {
+public class EndpointController implements Initializable {
 
+	@FXML
+	private HBox rootNode;
+
+	// endpoint
+	@FXML
+	private Label endpointName;
+	@FXML
+	private ComboBox<String> method;
+	@FXML
+	private TextField path;
+
+	// request
+	@FXML
+	private TableView<Parameter> requestParameters;
+	@FXML
+	private TableColumn<Parameter, Boolean> parameterEnabledColumn;
+	@FXML
+	private TableColumn<Parameter, String> parameterLocationColumn;
+	@FXML
+	private TableColumn<Parameter, String> parameterNameColumn;
+	@FXML
+	private TableColumn<Parameter, String> parameterValueColumn;
 	@FXML
 	private SplitPane requestResponseSplitPane;
 
 	@FXML
-	private TableView<Exchange> exchanges;
-
-	@FXML
-	private TableColumn<Exchange, String> exchangeNameColumn;
-
-	@FXML
-	private TableColumn<Exchange, Long> exchangeDateColumn;
-
-	@FXML
-	private TableColumn<Exchange, Integer> exchangeDurationColumn;
-
-	@FXML
-	private TableColumn<Exchange, Integer> exchangeStatusColumn;
-
-	@FXML
-	private TableView<Parameter> requestParameters;
-
-	@FXML
-	private TableColumn<Parameter, Boolean> parameterEnabledColumn;
-
-	@FXML
-	private TableColumn<Parameter, String> parameterLocationColumn;
-
-	@FXML
-	private TableColumn<Parameter, String> parameterNameColumn;
-
-	@FXML
-	private TableColumn<Parameter, String> parameterValueColumn;
-
-	@FXML
-	private ComboBox<String> method;
-
-	@FXML
-	private Label endpointName;
-
-	@FXML
-	private TextField path;
-
-	@FXML
 	private TextField uri;
 
-	// Response
+	// response
 	@FXML
 	private TableView<Parameter> responseParameters;
-
 	@FXML
 	private TableColumn<Parameter, String> headerNameColumn;
-
 	@FXML
 	private TableColumn<Parameter, String> headerValueColumn;
-
 	@FXML
 	private TextArea responseBody;
-
 	@FXML
 	private Label responseStatus;
-
 	@FXML
 	private Label responseDuration;
+
+	// exchanges
+	@FXML
+	private TableView<Exchange> exchanges;
+	@FXML
+	private TableColumn<Exchange, String> exchangeNameColumn;
+	@FXML
+	private TableColumn<Exchange, Long> exchangeDateColumn;
+	@FXML
+	private TableColumn<Exchange, Integer> exchangeDurationColumn;
+	@FXML
+	private TableColumn<Exchange, Integer> exchangeStatusColumn;
+	@FXML
+	private TableColumn<Exchange, String> exchangeUriColumn;
 
 	@FXML
 	private Button execute;
@@ -176,13 +164,6 @@ public class EndpointController extends AbstractController implements Initializa
 	@FXML
 	private Circle statusCircle;
 
-	// **************************************************************************************************************************
-	private MainController mainController;
-	private final StringProperty baseUrl;
-	private Endpoint endpoint;
-	private Exchange currentExchange;
-	private BodyType specificationBodyType;
-
 	@FXML
 	private HBox endpointSpecificationHBox;
 
@@ -192,6 +173,11 @@ public class EndpointController extends AbstractController implements Initializa
 	@FXML
 	private AnchorPane anchorPaneExecute;
 
+	private final StringProperty baseUrl;
+	private Endpoint endpoint;
+	private Exchange currentExchange;
+	private BodyType specificationBodyType;
+
 	public EndpointController() {
 		super();
 		baseUrl = new SimpleStringProperty();
@@ -199,17 +185,15 @@ public class EndpointController extends AbstractController implements Initializa
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-		
-		mainController = (MainController) ControllerManager.loadMain().getController();
 
+		// listen to method control to set endpoint
+		method.valueProperty().addListener((observable, oldValue, newValue) -> endpoint.setMethod(newValue));
+
+		// bind base URL property to baseUrlProperty of MainController
 		baseUrl.bind(MainController.baseUrlProperty.get().urlProperty());
-		baseUrl.addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				buildUri();
-			}
-		});
-		
+		// listen to baseUrl control to build the URI
+		baseUrl.addListener((observable, oldValue, newValue) -> buildUri());
+
 		path.setTooltip(new Tooltip("Endpoint path value"));
 
 		// request parameters
@@ -355,6 +339,7 @@ public class EndpointController extends AbstractController implements Initializa
 				} else {
 					exchange.setName(event.getNewValue());
 				}
+				displayExecutionMode();
 			}
 		});
 
@@ -379,12 +364,14 @@ public class EndpointController extends AbstractController implements Initializa
 		exchangeDateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 		exchangeDurationColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("duration"));
 		exchangeStatusColumn.setCellValueFactory(new PropertyValueFactory<Exchange, Integer>("status"));
+		exchangeUriColumn.setCellValueFactory(new PropertyValueFactory<Exchange, String>("uri"));
 
 		final ContextMenu exchangesContextMenu = new ContextMenu();
 		exchanges.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.DELETE)) {
 				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 				deleteExchange(exchange);
+				displayExecutionMode();
 			}
 		});
 
@@ -401,7 +388,7 @@ public class EndpointController extends AbstractController implements Initializa
 						final MenuItem duplicate = new MenuItem("Duplicate");
 						final MenuItem addToTest = new MenuItem("Add to test");
 						exchangesContextMenu.getItems().addAll(duplicate, delete, addToTest);
-						
+
 						// duplicate exchange
 						duplicate.setOnAction(e -> {
 							if (workingExchangeExists()) {
@@ -410,17 +397,17 @@ public class EndpointController extends AbstractController implements Initializa
 							currentExchange = getSelectedExchange().get().duplicate("");
 							endpoint.addExchange(currentExchange);
 						});
-						
+
 						// delete exchange
 						delete.setOnAction(e -> {
 							deleteExchange(exchange.get());
 						});
-						
+
 						// add to test
 						addToTest.setOnAction(e -> {
-							File projectFile = mainController.getProjectFile();
+							File projectFile = ControllerManager.getMainController().getProjectFile();
 							File testsFile = new File(projectFile.getParentFile() + File.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
-							
+
 							try (FileWriter fw = new FileWriter(testsFile, true)) {
 								String line = false + "," + endpoint.getName() + "," + exchange.get().getName() + "," + exchange.get().getStatus() + "," + exchange.get().getDuration() + "\n";
 								fw.write(line);
@@ -445,16 +432,28 @@ public class EndpointController extends AbstractController implements Initializa
 		execute.textProperty().bind(method.valueProperty());
 	}
 
-	@Override
-	public void setTreeItem(final TreeItem<Item> treeItem) {
-		super.setTreeItem(treeItem);
+	public HBox getRootNode() {
+		return rootNode;
+	}
 
-		endpoint = (Endpoint) this.treeItem.getValue();
-		endpointName.setText(endpoint.getName());
+	public void setEndpoint(final Endpoint endpoint) {
+		this.endpoint = endpoint;
+
+		exchanges.getItems().clear();
+
 		endpoint.buildPath();
-		path.setText(endpoint.getPath());
-		method.valueProperty().bindBidirectional(endpoint.methodProperty());
+
+		// method
+		method.setValue(endpoint.getMethod());
+
+		// endpoint name
+		endpointName.setText(endpoint.getName());
 		endpointName.setTooltip(new Tooltip(endpoint.getDescription()));
+
+		// path
+		path.setText(endpoint.getPath());
+
+		// set execution mode
 		modeExecution(null);
 	}
 
@@ -464,21 +463,18 @@ public class EndpointController extends AbstractController implements Initializa
 
 	private void deleteExchange(final Exchange exchange) {
 
-		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete\n" + exchange.getName());
+		String exchangeName = exchange.getName().isEmpty() ? "the current exchange" : "the exchange '" + exchange.getName() + "'";
+		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete " + exchangeName);
 		if (response.equals(ButtonType.OK)) {
-			final Endpoint endpoint = (Endpoint) this.treeItem.getValue();
 			endpoint.removeExchange(exchange);
-
 			display();
 		}
 	}
 
 	@FXML
 	protected void execute(final ActionEvent event) {
-		
-		mainController.notification.setTextFill(Color.BLACK);
-		mainController.notification.setText("");
-		
+
+		ControllerManager.getMainController().getBottomController().setNotification("", Color.BLACK);
 		if (workingExchangeExists()) {
 			currentExchange = getWorkingExchange();
 		} else {
@@ -506,8 +502,7 @@ public class EndpointController extends AbstractController implements Initializa
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
 		} catch (ClientException e) {
-			mainController.notification.setTextFill(Color.RED);
-			mainController.notification.setText(e.getMessage());
+			ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 		}
 
 		currentExchange.setDate(Instant.now().toEpochMilli());
@@ -631,13 +626,12 @@ public class EndpointController extends AbstractController implements Initializa
 	}
 
 	private void requestBody(BodyType bodyType) {
-		FxmlNode fxmlRequestBody = ControllerManager.loadRequestBody();
-		RequestBodyController requestBodyController = (RequestBodyController) fxmlRequestBody.getController();
 
+		RequestBodyController requestBodyController = ControllerManager.getRequestBodyController();
 		if (isSpecificationMode()) {
 			bodyType = specificationBodyType;
 		}
-		requestBodyController.display(this, fxmlRequestBody, bodyType);
+		requestBodyController.display(this, requestBodyController.getRootNode(), bodyType);
 	}
 
 	private void displayStatusTooltip() {
@@ -747,8 +741,8 @@ public class EndpointController extends AbstractController implements Initializa
 		// create the current if it does not exist
 		if (!workingExchangeExists()) {
 			currentExchange = createWorkingExchange();
-		}		
-		
+		}
+
 		radioButtonExecutionMode.setSelected(true);
 
 		// enable execute
@@ -1033,5 +1027,5 @@ public class EndpointController extends AbstractController implements Initializa
 
 		return exchange != null && exchange.getStatus() != 0 && !exchange.getName().isEmpty();
 	}
-	
+
 }

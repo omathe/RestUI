@@ -21,7 +21,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<HBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.EndpointController">
+<HBox fx:id="rootNode" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restui.controller.EndpointController">
 	<children>
 		<VBox HBox.hgrow="ALWAYS">
 			<children>
@@ -34,12 +34,22 @@
                               <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
                                  <children>
                                     <Label text="Mode" />
-                                    <RadioButton mnemonicParsing="false" onAction="#modeSpecification" selected="true" text="Specification">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="endpointMode" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="radioButtonExecutionMode" mnemonicParsing="false" onAction="#modeExecution" text="Execution" toggleGroup="$endpointMode" />
+                                    <HBox spacing="3.0" style="-fx-background-color: lightgray; -fx-background-radius: 5;">
+                                       <children>
+                                          <RadioButton mnemonicParsing="false" onAction="#modeSpecification" selected="true" text="Specification">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="endpointMode" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <RadioButton fx:id="radioButtonExecutionMode" mnemonicParsing="false" onAction="#modeExecution" text="Execution" toggleGroup="$endpointMode" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
                                  </children>
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -69,7 +79,10 @@
 																				<String fx:value="GET" />
 																			</value>
 																		</ComboBox>
-																		<TextField fx:id="path" editable="false" HBox.hgrow="ALWAYS" />
+																		<TextField fx:id="path" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin></TextField>
                                  </children>
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -121,16 +134,26 @@
 																					<children>
 																						<VBox fx:id="bodyVBox" VBox.vgrow="ALWAYS">
 																							<children>
-																								<HBox fx:id="bodyHBox" spacing="5.0">
+																								<HBox fx:id="bodyHBox" alignment="CENTER_LEFT" spacing="5.0">
 																									<children>
 																										<Label minWidth="-Infinity" text="Body" HBox.hgrow="ALWAYS" />
-																										<RadioButton fx:id="rawBody" mnemonicParsing="false" onMouseClicked="#rawBodySelected" selected="true" text="raw">
-																											<toggleGroup>
-																												<ToggleGroup fx:id="bodyGroup" />
-																											</toggleGroup>
-																										</RadioButton>
-																										<RadioButton fx:id="formDataBody" mnemonicParsing="false" onMouseClicked="#formDataBodySelected" text="form data" toggleGroup="$bodyGroup" />
-																										<RadioButton fx:id="formEncodedBody" mnemonicParsing="false" onMouseClicked="#formEncodedBodySelected" text="x-www-form-urlencoded" toggleGroup="$bodyGroup" />
+                                                                              <HBox spacing="3.0" style="-fx-background-color: lightgrey; -fx-background-radius: 5;">
+                                                                                 <children>
+      																										<RadioButton fx:id="rawBody" mnemonicParsing="false" onMouseClicked="#rawBodySelected" selected="true" text="raw">
+      																											<toggleGroup>
+      																												<ToggleGroup fx:id="bodyGroup" />
+      																											</toggleGroup>
+      																										</RadioButton>
+      																										<RadioButton fx:id="formDataBody" mnemonicParsing="false" onMouseClicked="#formDataBodySelected" text="form data" toggleGroup="$bodyGroup" />
+      																										<RadioButton fx:id="formEncodedBody" mnemonicParsing="false" onMouseClicked="#formEncodedBodySelected" text="x-www-form-urlencoded" toggleGroup="$bodyGroup" />
+                                                                                 </children>
+                                                                                 <HBox.margin>
+                                                                                    <Insets />
+                                                                                 </HBox.margin>
+                                                                                 <padding>
+                                                                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                                                 </padding>
+                                                                              </HBox>
 																									</children>
 																									<padding>
 																										<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -252,10 +275,11 @@
 																						</HBox>
 										<TableView fx:id="exchanges" editable="true" VBox.vgrow="ALWAYS">
 											<columns>
-												<TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="300.0" text="Name" />
-												<TableColumn fx:id="exchangeDateColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="250.0" text="Date" />
+												<TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="150.0" text="Name" />
+												<TableColumn fx:id="exchangeDateColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="200.0" text="Date" />
                                     <TableColumn fx:id="exchangeDurationColumn" prefWidth="75.0" text="Duration" />
                                     <TableColumn fx:id="exchangeStatusColumn" prefWidth="75.0" text="Status" />
+                                    <TableColumn fx:id="exchangeUriColumn" minWidth="100.0" prefWidth="300.0" text="URI" />
 											</columns>
                                  <VBox.margin>
                                     <Insets />

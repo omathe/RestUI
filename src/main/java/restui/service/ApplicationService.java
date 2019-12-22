@@ -12,38 +12,29 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import restui.commons.ResourceHelper;
+import restui.conf.App;
 import restui.model.Application;
 import restui.model.BaseUrl;
 
 public class ApplicationService {
 
-	private static final String APPLICATION_HOME = "restui";
-	private static final String APPLICATION_FILE = getApplicationHome() + "/" + "application.xml";
-	public static final String DEFAULT_STYLE_URI = "file:/" + getApplicationHome() + "/style/default/stylesheet.css";
-
-	public static String getApplicationHome() {
-
-		final String userHome = System.getProperty("user.home").replace("\\", "/");
-		return userHome + "/" + getPrefix() + APPLICATION_HOME;
-	}
-
 	public static void init() {
 
 		// create application home directory if not exists
+		File applicationDirectory = new File(App.HOME);
 		if (!applicationDirectory.exists()) {
-			File applicationDirectory = new File(getApplicationHome());
 			applicationDirectory.mkdir();
 		}
 
 		// create default style if not exists
 		try {
-			ResourceHelper.copyResource("/style", getApplicationHome());
+			ResourceHelper.copyResource(App.STYLE_LOCATION, App.HOME);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		// create application.xml if not exists
-		File applicationFile = new File(APPLICATION_FILE);
+		File applicationFile = new File(App.FILE);
 		if (!applicationFile.exists()) {
 			createDefaultApplicationFile();
 		}
@@ -56,13 +47,13 @@ public class ApplicationService {
 		SAXBuilder saxBuilder = new SAXBuilder();
 
 		try {
-			Document document = saxBuilder.build(APPLICATION_FILE);
+			Document document = saxBuilder.build(App.FILE);
 			Element applicationElement = document.getRootElement();
 			Element lastProjectUriElement = applicationElement.getChild("lastProjectUri");
 			application.setLastProjectUri(lastProjectUriElement.getValue());
 			Element styleFileElement = applicationElement.getChild("styleFile");
 			if (styleFileElement == null || styleFileElement.getValue().isEmpty()) {
-				application.setStyleFile(DEFAULT_STYLE_URI);
+				application.setStyleFile(App.DEFAULT_STYLE_URI);
 			} else {
 				application.setStyleFile(styleFileElement.getValue());
 			}
@@ -109,25 +100,14 @@ public class ApplicationService {
 
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			Document document = new Document(rootElement);
-			File applicationFile = new File(APPLICATION_FILE);
-			try {
-				xmlOutputter.output(document, new FileOutputStream(applicationFile));
+			File applicationFile = new File(App.FILE);
+			//FileOutputStream fileOutputStream = null;
+			try (FileOutputStream fileOutputStream = new FileOutputStream(applicationFile)) {
+				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	private static String getPrefix() {
-
-		String prefix = "";
-		final String os = System.getProperty("os.name").toLowerCase();
-
-		if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") > 0) {
-			// unix / linux os
-			prefix = ".";
-		}
-		return prefix;
 	}
 
 	private static void createDefaultApplicationFile() {
@@ -136,12 +116,12 @@ public class ApplicationService {
 		Element lastProjectUriElement = new Element("lastProjectUri");
 		rootElement.addContent(lastProjectUriElement);
 		Element styleFileElement = new Element("styleFile");
-		styleFileElement.addContent(DEFAULT_STYLE_URI);
+		styleFileElement.addContent(App.DEFAULT_STYLE_URI);
 		rootElement.addContent(styleFileElement);
 
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 		Document document = new Document(rootElement);
-		File applicationFile = new File(APPLICATION_FILE);
+		File applicationFile = new File(App.FILE);
 		try {
 			xmlOutputter.output(document, new FileOutputStream(applicationFile));
 		} catch (final IOException e) {
