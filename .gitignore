@@ -16,3 +16,4 @@ Lns.xml
 /**/*.vpp.vbak*
 /**/*.vux.vbak*
 hs_err*
+*.jar
