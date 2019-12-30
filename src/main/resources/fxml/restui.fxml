@@ -219,7 +219,7 @@
 
 	<bottom>
 <!--  		IDE version  -->
-  		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
+<!--  		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" /> -->
 
 <!--  		scene builder version  -->
 <!--  		<fx:include fx:id="bottom" source="bottom.fxml" />  -->
