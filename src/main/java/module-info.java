@@ -8,6 +8,8 @@ module fr.omathe.restui {
 	// automatic modules
 	requires jdom;
 	requires jackson.databind;
+	requires jersey.client;
+	requires jersey.core;
 
 	// opens package 'controller' to the module 'javafx.fxml' 
 	opens fr.omathe.restui.controller to javafx.fxml;
