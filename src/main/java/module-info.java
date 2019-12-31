@@ -1,18 +1,20 @@
 module fr.omathe.restui {
 
-	requires transitive javafx.controls;
-	requires transitive javafx.fxml;
-	requires transitive javafx.web;
-	requires transitive javafx.graphics;
+	requires javafx.controls;
+	requires javafx.fxml;
+	requires javafx.web;
+	requires javafx.graphics;
 
-	// automatic module
+	// automatic modules
 	requires jdom;
 	requires jackson.databind;
 
-	opens fr.omathe.restui.gui to javafx.graphics;
-	opens fr.omathe.restui.controller;
-	opens fr.omathe.restui.model;
-	
+	// opens package 'controller' to the module 'javafx.fxml' 
+	opens fr.omathe.restui.controller to javafx.fxml;
+
+	// opens package 'model' to the module javafx.base 
+	opens fr.omathe.restui.model to javafx.base;
+
 	// opens fxml location (otherwise javafx.fxml.LoadException: Cannot resolve path: /fxml/bottom.fxml) 
 	opens fxml;
 
