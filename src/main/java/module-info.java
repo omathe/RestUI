@@ -13,7 +13,8 @@ module fr.omathe.restui {
 	opens fr.omathe.restui.controller;
 	opens fr.omathe.restui.model;
 	
-	//opens fxml to javafx.graphics;
+	// opens fxml location (otherwise javafx.fxml.LoadException: Cannot resolve path: /fxml/bottom.fxml) 
+	opens fxml;
 
 	// exported package
 	exports fr.omathe.restui.gui;
