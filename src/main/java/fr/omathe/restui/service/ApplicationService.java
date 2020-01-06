@@ -11,21 +11,20 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import fr.omathe.restui.commons.ResourceHelper;
 import fr.omathe.restui.conf.App;
 import fr.omathe.restui.model.Application;
 import fr.omathe.restui.model.BaseUrl;
 
 public class ApplicationService {
 
-	public static void init() {
+	/*public static void init() {
 
 		// create application home directory if not exists
-		File applicationDirectory = new File(App.HOME);
-		if (!applicationDirectory.exists()) {
-			applicationDirectory.mkdir();
-		}
-
+//		File applicationDirectory = new File(App.HOME);
+//		if (!applicationDirectory.exists()) {
+//			applicationDirectory.mkdir();
+//		}
+		
 		// create default style if not exists
 		try {
 			ResourceHelper.copyResource(App.STYLE_LOCATION, App.HOME);
@@ -38,7 +37,7 @@ public class ApplicationService {
 		if (!applicationFile.exists()) {
 			createDefaultApplicationFile();
 		}
-	}
+	}*/
 
 	public static Application openApplication() {
 
@@ -110,7 +109,7 @@ public class ApplicationService {
 		}
 	}
 
-	private static void createDefaultApplicationFile() {
+	static void createDefaultApplicationFile() {
 
 		Element rootElement = new Element("application");
 		Element lastProjectUriElement = new Element("lastProjectUri");
@@ -122,8 +121,13 @@ public class ApplicationService {
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 		Document document = new Document(rootElement);
 		File applicationFile = new File(App.APLICATION_FILE);
-		try {
-			xmlOutputter.output(document, new FileOutputStream(applicationFile));
+		
+		if (!applicationFile.getParentFile().exists()) {
+			applicationFile.getParentFile().mkdir();
+		}
+		
+		try(FileOutputStream fos = new FileOutputStream(applicationFile)) {
+			xmlOutputter.output(document, fos);
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}

@@ -1,8 +1,15 @@
 package fr.omathe.restui.conf;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 public interface App {
 
+	// application
 	String TITLE = "RestUI";
+	String HOME = ".restui";
+	String APLICATION_FILE = getApplicationHome() + "/" + "application.xml";
 
 	// FXML
 	String FXML_LOCATION = "/fxml";
@@ -12,20 +19,41 @@ public interface App {
 	String REQUEST_BODY_FXML = FXML_LOCATION + "/requestBody.fxml";
 	String TEST_FXML = FXML_LOCATION + "/test.fxml";
 
-	String HOME = "restui";
-	String APLICATION_FILE = getApplicationHome() + "/" + "application.xml";
+	// style
 	String STYLE_LOCATION = "/style";
-	String ICON = STYLE_LOCATION + "/applicationIcon.png";
+	String APPLICATION_ICON = STYLE_LOCATION + "/applicationIcon.png";
+//	String STYLE_DEFAULT = "DEFAULT";
+//	String STYLE_DARK = "DARK";
 	String DEFAULT_STYLE_URI = "file:///" + getApplicationHome() + STYLE_LOCATION + "/default/stylesheet.css";
 	String DARK_STYLE_URI = "file:///" + getApplicationHome() + STYLE_LOCATION + "/dark/stylesheet.css";
 
 	static String getApplicationHome() {
 
 		final String userHome = System.getProperty("user.home").replace("\\", "/");
-		return userHome + "/" + getPrefix() + App.HOME;
+		return userHome + "/" + App.HOME;
 	}
 
-	static String getPrefix() {
+	static String getStyleUri(final String style) {
+		String styleDir = style == null || style.isEmpty() ? "/default" : "/" + style;
+		return "file:///" + getApplicationHome() + STYLE_LOCATION + styleDir + "/stylesheet.css";
+	}
+	
+	static List<String> getStyles() {
+		List<String> styles = new ArrayList<>();
+		
+		File styleDirectory = new File(getApplicationHome() + STYLE_LOCATION);
+		if (styleDirectory.exists()) {
+			File[] files = styleDirectory.listFiles();
+			for (File file : files) {
+				if (file.isDirectory()) {
+					styles.add(file.getName());
+				}
+			}
+		}
+		return styles;
+	}
+	
+	/*static String getPrefix() {
 
 		String prefix = "";
 		final String os = System.getProperty("os.name").toLowerCase();
@@ -35,5 +63,5 @@ public interface App {
 			prefix = ".";
 		}
 		return prefix;
-	}
+	}*/
 }

@@ -3,6 +3,7 @@ package fr.omathe.restui.gui;
 import fr.omathe.restui.conf.App;
 import fr.omathe.restui.controller.ControllerManager;
 import fr.omathe.restui.controller.MainController;
+import fr.omathe.restui.service.Initializer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -20,7 +21,7 @@ public class RestUiApp extends Application {
 
 		MainController mainController = ControllerManager.getMainController();
 		primaryStage.setTitle(App.TITLE);
-		primaryStage.getIcons().add(new Image(ControllerManager.class.getResource(App.ICON).toString()));
+		primaryStage.getIcons().add(new Image(ControllerManager.class.getResource(App.APPLICATION_ICON).toString()));
 		primaryStage.setScene(new Scene(mainController.getRootNode()));
 
 		primaryStage.setOnCloseRequest(e -> {
@@ -32,6 +33,9 @@ public class RestUiApp extends Application {
 	}
 
 	public static void main(final String[] args) {
+		
+		Initializer.build();
+
 		launch(args);
 	}
 

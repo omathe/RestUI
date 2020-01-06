@@ -17,7 +17,7 @@ module fr.omathe.restui {
 	// opens package 'model' to the module javafx.base 
 	opens fr.omathe.restui.model to javafx.base;
 
-	// opens fxml location (otherwise javafx.fxml.LoadException: Cannot resolve path: /fxml/bottom.fxml) 
+	// opens fxml location (otherwise javafx.fxml.LoadException: Cannot resolve path: /fxml/bottom.fxml)
 	opens fxml;
 
 	// exported package

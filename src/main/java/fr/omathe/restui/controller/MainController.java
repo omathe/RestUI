@@ -107,6 +107,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private ComboBox<String> searchItem;
+	
+	@FXML
+	private ComboBox<String> style;
 
 	@FXML
 	private VBox vBox;
@@ -150,11 +153,10 @@ public class MainController implements Initializable {
 
 	int index = 0;
 
+	@SuppressWarnings("preview")
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		// initialization of the application
-		ApplicationService.init();
 		application = ApplicationService.openApplication();
 
 		Optional<BaseUrl> optionalBaseUrl = application.getEnabledBaseUrl();
@@ -360,6 +362,11 @@ public class MainController implements Initializable {
 				baseUrlTable.setContextMenu(contextMenu);
 			}
 		});
+
+		// style
+		style.valueProperty().addListener((observable, oldValue, newValue) -> {
+			setStyle(App.getStyleUri(newValue));
+		});
 	}
 
 	Optional<TreeItem<Item>> getSelectedItem() {
@@ -551,9 +558,6 @@ public class MainController implements Initializable {
 				}
 			}
 		}
-
-		// TODO remove the folowwing lines (test)
-		setStyle(App.DARK_STYLE_URI);
 	}
 
 	@FXML
