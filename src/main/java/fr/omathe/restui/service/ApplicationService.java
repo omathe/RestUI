@@ -17,28 +17,6 @@ import fr.omathe.restui.model.BaseUrl;
 
 public class ApplicationService {
 
-	/*public static void init() {
-
-		// create application home directory if not exists
-//		File applicationDirectory = new File(App.HOME);
-//		if (!applicationDirectory.exists()) {
-//			applicationDirectory.mkdir();
-//		}
-		
-		// create default style if not exists
-		try {
-			ResourceHelper.copyResource(App.STYLE_LOCATION, App.HOME);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		// create application.xml if not exists
-		File applicationFile = new File(App.APLICATION_FILE);
-		if (!applicationFile.exists()) {
-			createDefaultApplicationFile();
-		}
-	}*/
-
 	public static Application openApplication() {
 
 		Application application = new Application();
@@ -52,7 +30,7 @@ public class ApplicationService {
 			application.setLastProjectUri(lastProjectUriElement.getValue());
 			Element styleFileElement = applicationElement.getChild("styleFile");
 			if (styleFileElement == null || styleFileElement.getValue().isEmpty()) {
-				application.setStyleFile(App.DEFAULT_STYLE_URI);
+				App.getStyleUri(App.DEFAULT_STYLE).ifPresent(style -> application.setStyleFile(style));
 			} else {
 				application.setStyleFile(styleFileElement.getValue());
 			}
@@ -109,13 +87,13 @@ public class ApplicationService {
 		}
 	}
 
-	static void createDefaultApplicationFile() {
+	public static void createDefaultApplicationFile() {
 
 		Element rootElement = new Element("application");
 		Element lastProjectUriElement = new Element("lastProjectUri");
 		rootElement.addContent(lastProjectUriElement);
 		Element styleFileElement = new Element("styleFile");
-		styleFileElement.addContent(App.DEFAULT_STYLE_URI);
+		App.getStyleUri(App.DEFAULT_STYLE).ifPresent(styleUri -> styleFileElement.addContent(styleUri));
 		rootElement.addContent(styleFileElement);
 
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());

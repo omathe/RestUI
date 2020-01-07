@@ -15,7 +15,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ResourceHelper {
+public interface ResourceHelper {
 
 	/**
 	 * Copy source to destination
@@ -24,26 +24,24 @@ public class ResourceHelper {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	public static void copyResource(final String source, final String destination) throws IOException, URISyntaxException {
+	static void copyResource(final String source, final String destination) throws IOException, URISyntaxException {
 
 		final File file = new File(ResourceHelper.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 
 		if (file.isFile()) {
 			// this is a jar file : we copy all the files starting with source
-			copyResourceFromJar(new JarFile(file), source, destination);
+			copyResourceFromJar(file, source, destination);
 		} else {
 			// application is lauching from an ide
 			copyResourceFromIde(source, destination);
 		}
 	}
 
-	private static void copyResourceFromJar(final JarFile jar, final String source, final String destination) throws IOException {
+	private static void copyResourceFromJar(final File file, final String source, final String destination) throws IOException {
 
-		final Enumeration<JarEntry> entries = jar.entries();
-		final String jarPath = source.startsWith("/") ? source.substring(1) : source; // remove '/' at the beginning
-
-		InputStream inputStream = null;
-		try {
+		try (JarFile jar = new JarFile(file)) {
+			final Enumeration<JarEntry> entries = jar.entries();
+			final String jarPath = source.startsWith("/") ? source.substring(1) : source; // remove '/' at the beginning
 			while (entries.hasMoreElements()) {
 				final JarEntry entry = entries.nextElement();
 				final String entryName = entry.getName();
@@ -54,22 +52,14 @@ public class ResourceHelper {
 					if (entry.isDirectory()) {
 						path.toFile().mkdirs();
 					} else {
-						try {
-							inputStream = jar.getInputStream(entry);
+						try (InputStream inputStream = jar.getInputStream(entry)) {
 							if (!path.toFile().exists()) {
 								Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
-							}
-						} finally {
-							if (inputStream != null) {
-								inputStream.close();
 							}
 						}
 					}
 				}
 			}
-		} finally {
-			jar.close();
-			System.out.println("jar closed");
 		}
 	}
 
@@ -85,13 +75,8 @@ public class ResourceHelper {
 			if (!destinationPath.getParent().toFile().exists()) {
 				destinationPath.getParent().toFile().mkdirs();
 			}
-			final InputStream inputStream = Files.newInputStream(sourcePath);
-			try {
+			try (InputStream inputStream = Files.newInputStream(sourcePath)) {
 				Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-			} finally {
-				if (inputStream != null) {
-					inputStream.close();
-				}
 			}
 		}
 	}

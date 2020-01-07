@@ -35,12 +35,11 @@ public class Application {
 	public void setStyleFile(final String styleFile) {
 
 		URI uri = URI.create(styleFile);
-		if (!new File(uri).exists()) {
-			this.styleFile = App.DEFAULT_STYLE_URI;
-		} else {
+		if (new File(uri).exists()) {
 			this.styleFile = styleFile;
+		} else {
+			App.getStyleUri(App.DEFAULT_STYLE).ifPresent(style -> this.styleFile = style);
 		}
-
 	}
 
 	public String getStyleName() {

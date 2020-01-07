@@ -107,7 +107,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	private ComboBox<String> searchItem;
-	
+
 	@FXML
 	private ComboBox<String> style;
 
@@ -364,8 +364,9 @@ public class MainController implements Initializable {
 		});
 
 		// style
+		style.setItems(App.getStyles());
 		style.valueProperty().addListener((observable, oldValue, newValue) -> {
-			setStyle(App.getStyleUri(newValue));
+			App.getStyleUri(newValue).ifPresent(uri -> setStyle(uri));
 		});
 	}
 

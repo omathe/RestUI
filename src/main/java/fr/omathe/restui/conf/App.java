@@ -1,8 +1,10 @@
 package fr.omathe.restui.conf;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public interface App {
 
@@ -22,10 +24,8 @@ public interface App {
 	// style
 	String STYLE_LOCATION = "/style";
 	String APPLICATION_ICON = STYLE_LOCATION + "/applicationIcon.png";
-//	String STYLE_DEFAULT = "DEFAULT";
-//	String STYLE_DARK = "DARK";
-	String DEFAULT_STYLE_URI = "file:///" + getApplicationHome() + STYLE_LOCATION + "/default/stylesheet.css";
-	String DARK_STYLE_URI = "file:///" + getApplicationHome() + STYLE_LOCATION + "/dark/stylesheet.css";
+	String DEFAULT_STYLE = "default";
+	String STYLE_SHEET_NAME = "stylesheet.css";
 
 	static String getApplicationHome() {
 
@@ -33,14 +33,21 @@ public interface App {
 		return userHome + "/" + App.HOME;
 	}
 
-	static String getStyleUri(final String style) {
-		String styleDir = style == null || style.isEmpty() ? "/default" : "/" + style;
-		return "file:///" + getApplicationHome() + STYLE_LOCATION + styleDir + "/stylesheet.css";
+	static Optional<String> getStyleUri(final String style) {
+
+		Optional<String> opt = Optional.empty();
+		String styleDir = style == null || style.isEmpty() ? "/" + DEFAULT_STYLE : "/" + style;
+
+		File file = new File(getApplicationHome() + STYLE_LOCATION + styleDir + "/" + STYLE_SHEET_NAME);
+		if (file.exists()) {
+			opt = Optional.of("file:///" + getApplicationHome() + STYLE_LOCATION + styleDir + "/" + STYLE_SHEET_NAME);
+		}
+		return opt;
 	}
-	
-	static List<String> getStyles() {
-		List<String> styles = new ArrayList<>();
-		
+
+	static ObservableList<String> getStyles() {
+		ObservableList<String> styles = FXCollections.observableArrayList();
+
 		File styleDirectory = new File(getApplicationHome() + STYLE_LOCATION);
 		if (styleDirectory.exists()) {
 			File[] files = styleDirectory.listFiles();
@@ -52,16 +59,5 @@ public interface App {
 		}
 		return styles;
 	}
-	
-	/*static String getPrefix() {
 
-		String prefix = "";
-		final String os = System.getProperty("os.name").toLowerCase();
-
-		if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") > 0) {
-			// unix / linux os
-			prefix = ".";
-		}
-		return prefix;
-	}*/
 }
