@@ -1,47 +1,51 @@
+/*
+all labels
+.label, .text {
+	-fx-font-weight: bold;
+	-fx-font-size: 20pt;
+}*/
+
+
+/*.root {
+    -fx-font-size: 14px;
+    -fx-font-family: sans-serif;
+    -fx-background-color: green;
+}
+
+.tab {
+	-fx-background-color: green;
+}
+
+.vbox {
+    -fx-background-color: #2f4f4f;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}*/
+
+.tab-pane:top *.tab-header-area {
+    -fx-background-color: red;
+}
+
+
+/*.split-pane {
+	-fx-background-color: green;
+}*/
+
+/*.tree-view {
+	-fx-background-color: green;
+	-fx-opacity: 0.5;
+}*/
+
+/*.pane {
+	-fx-background-color: black;
+}*/
+
+/*#borderPane { 
+    -fx-background-color: #8fbc8f;
+}*/
+
 .button:hover {
     -fx-background-color: gray;
-}
-
-#checkBoxProfile {
-    -fx-text-fill: black;
-}
-
-#checkBoxArchiver {
-    -fx-text-fill: black;
-}
-
-#checkBoxCondition {
-    -fx-text-fill: black;
-}
-
-#checkBoxResourceExist {
-    -fx-text-fill: blue;
-}
-
-#checkBoxResourceDoesNotExist {
-    -fx-text-fill: red;
-}
-
-#resourceSame {
-    -fx-text-fill: black;
-}
-
-#resourceIdle {
-    -fx-text-fill: blue;
-}
-
-#resourceMoreRecent {
-    -fx-text-fill: black;
-    -fx-font-weight: bold
-}
-
-#resourceOlder {
-    -fx-text-fill: red;
-    -fx-font-weight: bold
-}
-
-#checkBoxAnalysedSourceError {
-    -fx-text-fill: red;
 }
 
 #newFileButton { 
@@ -50,6 +54,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #newFileButton:hover {
 	-fx-opacity :1.0
 }
@@ -60,6 +65,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #openFileButton:hover {
 	-fx-opacity :1.0
 }
@@ -70,6 +76,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #saveFileButton:hover {
 	-fx-opacity :1.0
 }
@@ -80,6 +87,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #saveFileAsButton:hover {
 	-fx-opacity :1.0
 }
@@ -90,6 +98,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #deleteFileButton:hover {
 	-fx-opacity :1.0
 }
@@ -111,6 +120,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #importEndpointsButton:hover {
 	-fx-opacity :1.0
 }
@@ -121,19 +131,13 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #minusButton:hover {
 	-fx-opacity :1.0
 }
 
 #tabPane1 .tab-header-background {
     -fx-background-color: #f1f1f1;
-}
-
-#sourceGrid {
-    -fx-grid-lines-visible: true;
-}
-#destinationGrid {
-    -fx-grid-lines-visible: true;
 }
 
 #imageViewPath {

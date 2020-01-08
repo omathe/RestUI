@@ -2,54 +2,13 @@
     -fx-background-color: gray;
 }
 
-#checkBoxProfile {
-    -fx-text-fill: black;
-}
-
-#checkBoxArchiver {
-    -fx-text-fill: black;
-}
-
-#checkBoxCondition {
-    -fx-text-fill: black;
-}
-
-#checkBoxResourceExist {
-    -fx-text-fill: blue;
-}
-
-#checkBoxResourceDoesNotExist {
-    -fx-text-fill: red;
-}
-
-#resourceSame {
-    -fx-text-fill: black;
-}
-
-#resourceIdle {
-    -fx-text-fill: blue;
-}
-
-#resourceMoreRecent {
-    -fx-text-fill: black;
-    -fx-font-weight: bold
-}
-
-#resourceOlder {
-    -fx-text-fill: red;
-    -fx-font-weight: bold
-}
-
-#checkBoxAnalysedSourceError {
-    -fx-text-fill: red;
-}
-
 #newFileButton { 
     -fx-background-image: url('images/newFile.png');
     -fx-background-size: 32px;
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #newFileButton:hover {
 	-fx-opacity :1.0
 }
@@ -60,6 +19,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #openFileButton:hover {
 	-fx-opacity :1.0
 }
@@ -70,6 +30,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #saveFileButton:hover {
 	-fx-opacity :1.0
 }
@@ -80,6 +41,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #saveFileAsButton:hover {
 	-fx-opacity :1.0
 }
@@ -90,6 +52,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #deleteFileButton:hover {
 	-fx-opacity :1.0
 }
@@ -111,6 +74,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #importEndpointsButton:hover {
 	-fx-opacity :1.0
 }
@@ -121,19 +85,13 @@
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
 }
+
 #minusButton:hover {
 	-fx-opacity :1.0
 }
 
 #tabPane1 .tab-header-background {
     -fx-background-color: #f1f1f1;
-}
-
-#sourceGrid {
-    -fx-grid-lines-visible: true;
-}
-#destinationGrid {
-    -fx-grid-lines-visible: true;
 }
 
 #imageViewPath {
@@ -153,8 +111,8 @@
 }
 
 .tooltip {
-   -fx-background: black;
-    -fx-text-fill: red;
+   -fx-background: gray;
+    -fx-text-fill: white;
     -fx-background-color: rgba(30,30,30,0.8);
     -fx-background-radius: 6px;
     -fx-background-insets: 0;
