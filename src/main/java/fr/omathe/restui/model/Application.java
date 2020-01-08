@@ -1,8 +1,5 @@
 package fr.omathe.restui.model;
 
-import java.io.File;
-import java.net.URI;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import fr.omathe.restui.conf.App;
@@ -12,7 +9,7 @@ import javafx.collections.ObservableList;
 public class Application {
 
 	private String lastProjectUri;
-	private String styleFile;
+	private String style;
 	private final ObservableList<BaseUrl> baseUrls;
 
 	public Application() {
@@ -28,24 +25,15 @@ public class Application {
 		this.lastProjectUri = lastProjectUri;
 	}
 
-	public String getStyleFile() {
-		return styleFile;
+	public String getStyle() {
+		return style;
 	}
 
-	public void setStyleFile(final String styleFile) {
+	public void setStyle(final String style) {
 
-		URI uri = URI.create(styleFile);
-		if (new File(uri).exists()) {
-			this.styleFile = styleFile;
-		} else {
-			App.getStyleUri(App.DEFAULT_STYLE).ifPresent(style -> this.styleFile = style);
+		if (App.getStyleUri(App.DEFAULT_STYLE).isPresent()) {
+			this.style = style;
 		}
-	}
-
-	public String getStyleName() {
-		final URI uri = URI.create(styleFile);
-		final java.nio.file.Path path = Paths.get(uri);
-		return path.getParent().getFileName().toString();
 	}
 
 	public void addBaseUrl(final BaseUrl baseUrl) {
@@ -78,7 +66,7 @@ public class Application {
 
 	@Override
 	public String toString() {
-		return "Application [lastProjectUri=" + lastProjectUri + ", styleFile=" + styleFile + "]";
+		return "Application [lastProjectUri=" + lastProjectUri + ", style=" + style + "]";
 	}
 
 }

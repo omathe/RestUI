@@ -174,10 +174,6 @@ public class MainController implements Initializable {
 			loadProject(URI.create(application.getLastProjectUri()));
 		}
 
-		if (application.getStyleFile() != null) {
-			setStyle(application.getStyleFile());
-		}
-
 		bookmarks = new HashSet<>();
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -365,8 +361,15 @@ public class MainController implements Initializable {
 
 		// style
 		style.setItems(App.getStyles());
+		App.getStyleUri(application.getStyle()).ifPresent(uri -> {
+			setStyle(uri);
+			style.getSelectionModel().select(application.getStyle());
+		});
 		style.valueProperty().addListener((observable, oldValue, newValue) -> {
-			App.getStyleUri(newValue).ifPresent(uri -> setStyle(uri));
+			App.getStyleUri(newValue).ifPresent(uri -> {
+				application.setStyle(newValue);
+				setStyle(uri);
+			});
 		});
 	}
 
@@ -588,20 +591,6 @@ public class MainController implements Initializable {
 		}
 	}
 
-	// @FXML
-	// protected void openStyle(final ActionEvent event) {
-	//
-	// final FileChooser fileChooser = new FileChooser();
-	// fileChooser.setTitle("Select the style sheet file");
-	// fileChooser.setInitialDirectory(new
-	// File(ApplicationService.getApplicationHome()));
-	// final File file = fileChooser.showOpenDialog(null);
-	// if (file != null) {
-	// setStyle(file.toURI().toString());
-	// application.setStyleFile(file.toURI().toString());
-	// }
-	// }
-
 	@FXML
 	protected void delete(final ActionEvent event) {
 
@@ -666,7 +655,6 @@ public class MainController implements Initializable {
 
 		rootNode.getStylesheets().clear();
 		rootNode.getStylesheets().add(uri);
-		application.setStyleFile(uri);
 	}
 
 	private void builTree(final TreeItem<Item> parent) {

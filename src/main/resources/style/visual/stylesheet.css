@@ -1,6 +1,46 @@
-.root {
-	-fx-background-color: dimgray;
+.label, .text {
+	//-fx-font-weight: bold;
+	-fx-font-size: 10pt;
 }
+
+
+/*.root {
+    -fx-font-size: 14px;
+    -fx-font-family: sans-serif;
+    -fx-background-color: green;
+}
+
+.tab {
+	-fx-background-color: green;
+}
+
+.vbox {
+    -fx-background-color: #2f4f4f;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}*/
+
+.tab-pane:top *.tab-header-area {
+    -fx-background-color: red;
+}
+
+
+/*.split-pane {
+	-fx-background-color: green;
+}*/
+
+/*.tree-view {
+	-fx-background-color: green;
+	-fx-opacity: 0.5;
+}*/
+
+/*.pane {
+	-fx-background-color: black;
+}*/
+
+/*#borderPane { 
+    -fx-background-color: #8fbc8f;
+}*/
 
 .button:hover {
     -fx-background-color: gray;

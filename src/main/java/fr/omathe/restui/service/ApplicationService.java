@@ -28,11 +28,11 @@ public class ApplicationService {
 			Element applicationElement = document.getRootElement();
 			Element lastProjectUriElement = applicationElement.getChild("lastProjectUri");
 			application.setLastProjectUri(lastProjectUriElement.getValue());
-			Element styleFileElement = applicationElement.getChild("styleFile");
-			if (styleFileElement == null || styleFileElement.getValue().isEmpty()) {
-				App.getStyleUri(App.DEFAULT_STYLE).ifPresent(style -> application.setStyleFile(style));
+			Element styleElement = applicationElement.getChild("style");
+			if (styleElement == null || styleElement.getValue().isEmpty()) {
+				App.getStyleUri(App.DEFAULT_STYLE).ifPresent(style -> application.setStyle(style));
 			} else {
-				application.setStyleFile(styleFileElement.getValue());
+				application.setStyle(styleElement.getValue());
 			}
 			// baseUrls
 			final Element elementBaseUrls = applicationElement.getChild("baseUrls");
@@ -58,9 +58,9 @@ public class ApplicationService {
 			lastProjectUriElement.addContent(application.getLastProjectUri());
 			rootElement.addContent(lastProjectUriElement);
 
-			Element styleFileElement = new Element("styleFile");
-			styleFileElement.addContent(application.getStyleFile());
-			rootElement.addContent(styleFileElement);
+			Element styleElement = new Element("style");
+			styleElement.addContent(application.getStyle());
+			rootElement.addContent(styleElement);
 
 			// base URLs
 			if (!application.getBaseUrls().isEmpty()) {
@@ -78,7 +78,6 @@ public class ApplicationService {
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			Document document = new Document(rootElement);
 			File applicationFile = new File(App.APLICATION_FILE);
-			//FileOutputStream fileOutputStream = null;
 			try (FileOutputStream fileOutputStream = new FileOutputStream(applicationFile)) {
 				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
@@ -92,9 +91,9 @@ public class ApplicationService {
 		Element rootElement = new Element("application");
 		Element lastProjectUriElement = new Element("lastProjectUri");
 		rootElement.addContent(lastProjectUriElement);
-		Element styleFileElement = new Element("styleFile");
-		App.getStyleUri(App.DEFAULT_STYLE).ifPresent(styleUri -> styleFileElement.addContent(styleUri));
-		rootElement.addContent(styleFileElement);
+		Element styleElement = new Element("style");
+		App.getStyleUri(App.DEFAULT_STYLE).ifPresent(styleUri -> styleElement.addContent(styleUri));
+		rootElement.addContent(styleElement);
 
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 		Document document = new Document(rootElement);
