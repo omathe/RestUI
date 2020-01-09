@@ -66,17 +66,20 @@ public interface ResourceHelper {
 	private static void copyResourceFromIde(final String source, final String destination) throws URISyntaxException, IOException {
 
 		final URL url = ResourceHelper.class.getResource(source);
-		final Path root = Paths.get(url.toURI());
 
-		final Stream<Path> paths = Files.walk(root).filter(Files::isRegularFile);
-
-		for (final Path sourcePath : paths.collect(Collectors.toList())) {
-			final Path destinationPath = Paths.get(destination, "/", source, "/", root.relativize(sourcePath).toString());
-			if (!destinationPath.getParent().toFile().exists()) {
-				destinationPath.getParent().toFile().mkdirs();
-			}
-			try (InputStream inputStream = Files.newInputStream(sourcePath)) {
-				Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+		if (url != null) {
+			final Path root = Paths.get(url.toURI());
+			final Stream<Path> paths = Files.walk(root).filter(Files::isRegularFile);
+			for (final Path sourcePath : paths.collect(Collectors.toList())) {
+				final Path destinationPath = Paths.get(destination, "/", source, "/", root.relativize(sourcePath).toString());
+				if (!destinationPath.getParent().toFile().exists()) {
+					destinationPath.getParent().toFile().mkdirs();
+				}
+				try (InputStream inputStream = Files.newInputStream(sourcePath)) {
+					Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

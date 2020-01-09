@@ -24,7 +24,10 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.omathe.restui.controller.MainController">
+<!-- version scene builder -->
+<!-- <BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.omathe.restui.controller.MainController"> -->
+
+<BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.omathe.restui.controller.MainController">
 	<top>
 		<VBox styleClass="vbox" BorderPane.alignment="CENTER">
 			<children>
