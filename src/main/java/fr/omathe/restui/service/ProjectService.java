@@ -3,24 +3,21 @@ package fr.omathe.restui.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 import fr.omathe.restui.exception.NotFoundException;
 import fr.omathe.restui.exception.TechnicalException;
 import fr.omathe.restui.model.Endpoint;
+import fr.omathe.restui.model.Exchange;
+import fr.omathe.restui.model.Exchange.BodyType;
 import fr.omathe.restui.model.Item;
 import fr.omathe.restui.model.Parameter;
 import fr.omathe.restui.model.Parameter.Direction;
@@ -92,24 +89,62 @@ public interface ProjectService {
 					for (final Element elementEndpoint : elementEndpoints.getChildren()) {
 						final Endpoint endpoint = new Endpoint(elementEndpoint.getAttributeValue("name"), elementEndpoint.getAttributeValue("path"), elementEndpoint.getAttributeValue("method"), elementEndpoint.getAttributeValue("description"));
 
-						// Parameters
-						final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
-						if (elementEndpointParameters != null) {
+						// exchanges
+						final Element exchangesElement = elementEndpoint.getChild("exchanges");
+						if (exchangesElement != null) {
+							for (final Element exchangeElement : exchangesElement.getChildren()) {
+								if (exchangeElement != null) {
+									String name = exchangeElement.getAttributeValue("name");
+									String date = exchangeElement.getAttributeValue("date");
+									String requestBodyType = exchangeElement.getAttributeValue("requestBodyType");
+									String status = exchangeElement.getAttributeValue("status");
+									String duration = exchangeElement.getAttributeValue("duration");
+									String uri = exchangeElement.getAttributeValue("uri");
+									Exchange exchange = new Exchange(endpoint.getName(), name, Long.valueOf(date), Integer.valueOf(duration), Integer.valueOf(status), BodyType.valueOf(requestBodyType));
+									exchange.setUri(uri);
+									endpoint.addExchange(exchange);
+									
+									// parameters
+									final Element parametersElement = exchangeElement.getChild("parameters");
+									if (parametersElement != null) {
 
-							for (final Element elementParameter : elementEndpointParameters.getChildren()) {
-								if (elementParameter != null) {
-									final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
-									final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
-									final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
-									final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
-									String attributeName = elementParameter.getAttributeValue("name");
-									final String name = attributeName == null ? null : attributeName;
-									final String value = elementParameter.getAttributeValue("value");
-									final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
-									endpoint.addParameter(parameter);
+										for (final Element parameterElement : parametersElement.getChildren()) {
+											if (parameterElement != null) {
+												final Boolean enabled = Boolean.valueOf(parameterElement.getAttributeValue("enabled"));
+												final Direction direction = Direction.valueOf(parameterElement.getAttributeValue("direction"));
+												final Location location = Location.valueOf(parameterElement.getAttributeValue("location"));
+												final Type type = Type.valueOf(parameterElement.getAttributeValue("type"));
+												String attributeName = parameterElement.getAttributeValue("name");
+												name = attributeName == null ? null : attributeName;
+												final String value = parameterElement.getAttributeValue("value");
+												final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
+												exchange.addParameter(parameter);
+											}
+										}
+									}
 								}
 							}
 						}
+						
+						
+//						// Parameters
+//						final Element elementEndpointParameters = elementEndpoint.getChild("parameters");
+//						if (elementEndpointParameters != null) {
+//
+//							for (final Element elementParameter : elementEndpointParameters.getChildren()) {
+//								if (elementParameter != null) {
+//									final Boolean enabled = Boolean.valueOf(elementParameter.getAttributeValue("enabled"));
+//									final Direction direction = Direction.valueOf(elementParameter.getAttributeValue("direction"));
+//									final Location location = Location.valueOf(elementParameter.getAttributeValue("location"));
+//									final Type type = Type.valueOf(elementParameter.getAttributeValue("type"));
+//									String attributeName = elementParameter.getAttributeValue("name");
+//									final String name = attributeName == null ? null : attributeName;
+//									final String value = elementParameter.getAttributeValue("value");
+//									final Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
+//									endpoint.addParameter(parameter);
+//								}
+//							}
+//						}
 						project.addEnpoint(endpoint);
 					}
 				}
@@ -132,7 +167,7 @@ public interface ProjectService {
 	 */
 	static void saveProject(final Project project, final URI uri) throws TechnicalException {
 
-		if (project != null) {
+		/*if (project != null) {
 
 			// project
 			final Element elementProject = new Element("project");
@@ -188,7 +223,7 @@ public interface ProjectService {
 			} catch (final IOException e) {
 				throw new TechnicalException(e.getMessage());
 			}
-		}
+		}*/
 	}
 
 	static void buildHierarchy(final Project project) {
