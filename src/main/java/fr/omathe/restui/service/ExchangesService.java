@@ -63,7 +63,7 @@ public class ExchangesService {
 					if (optionalEndpoint.isPresent()) {
 						Endpoint endpoint = optionalEndpoint.get();
 
-						// exchanges of the enpoint
+						// exchanges of the endpoint
 						for (final Element exchangeElement : endpointElement.getChildren()) {
 							String name = exchangeElement.getAttributeValue("name");
 							String date = exchangeElement.getAttributeValue("date");
@@ -87,10 +87,14 @@ public class ExchangesService {
 								exchange.addParameter(parameter);
 							}
 							// retrieve the endpoint parameters that are not in the exchange
-							endpoint.getParameters().stream()
+/*							endpoint.getParameters().stream()
 									.filter(p -> !exchange.containsParameter(p))
 									.forEach(p -> exchange.addParameter(p.duplicate()));
-
+*/
+							if (endpointName.equals("createCustomer")) {
+								exchange.getParameters().stream().forEach(p -> System.out.println("1 " + p));
+							}
+							
 							if (!exchange.isEmpty()) {
 								endpoint.addExchange(exchange);
 							}

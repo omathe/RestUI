@@ -466,7 +466,7 @@ public class MainController implements Initializable {
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open a project");
 
-		final File initialDirectory = projectFile == null ? new File(App.HOME) : projectFile.getParentFile();
+		final File initialDirectory = projectFile == null ? new File(App.getApplicationHome()) : projectFile.getParentFile();
 		fileChooser.setInitialDirectory(initialDirectory);
 
 		final File file = fileChooser.showOpenDialog(null);
@@ -528,7 +528,7 @@ public class MainController implements Initializable {
 				final FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save the project " + project.getName());
 
-				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(App.HOME) : new File(URI.create(application.getLastProjectUri())).getParentFile();
+				final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(App.getApplicationHome()) : new File(URI.create(application.getLastProjectUri())).getParentFile();
 				fileChooser.setInitialDirectory(initialDirectory);
 				fileChooser.setInitialFileName(project.getName() + ".xml");
 
@@ -571,7 +571,7 @@ public class MainController implements Initializable {
 			final FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Save the project as");
 
-			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(App.HOME) : new File(URI.create(application.getLastProjectUri())).getParentFile();
+			final File initialDirectory = Strings.isNullOrEmpty(application.getLastProjectUri()) ? new File(App.getApplicationHome()) : new File(URI.create(application.getLastProjectUri())).getParentFile();
 			fileChooser.setInitialDirectory(initialDirectory);
 			fileChooser.setInitialFileName("projectCopy.xml");
 

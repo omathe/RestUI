@@ -116,50 +116,6 @@ public class Exchange {
 		}
 	}
 
-	// public void clearRequestParameters() {
-	// request.parameters.clear();
-	// }
-	//
-	// public List<Parameter> findParameters(final String location, final String
-	// name) {
-	// return request.parameters.stream().filter(parameter ->
-	// parameter.getLocation().equals(location) &&
-	// parameter.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
-	// }
-
-	// public Response getResponse() {
-	// return response;
-	// }
-	//
-	// public void setResponse(final Response response) {
-	// this.response = response;
-	// }
-	//
-	// public List<Parameter> getResponseParameters() {
-	// return response.parameters;
-	// }
-	//
-	// public void addResponseParameter(final Parameter parameter) {
-	// response.parameters.add(parameter);
-	// }
-	//
-	// public void clearResponseParameters() {
-	// response.parameters.clear();
-	// }
-
-	// public String getRequestBody() {
-	// return request.getRawBody();
-	// }
-
-	// public void setRequestBody(final String body) {
-	// request.setRawBody(body);
-	// }
-
-	// public String getResponseBody() {
-	// return response.getRawBody();
-	// }
-	//
-
 	public void setRequestRawBody(final String body) {
 
 		final Optional<Parameter> rawBody = parameters.stream()
@@ -183,26 +139,11 @@ public class Exchange {
 	public String getRequestRawBody() {
 
 		final Optional<String> body = parameters.stream()
-				.filter(p -> p.isRequestParameter() && p.isRawBodyParameter() && p.getName() == null)
+				.filter(p -> p.isRequestParameter() && p.isRawBodyParameter())
 				.map(p -> p.getValue())
 				.findFirst();
 
 		return body.orElse(null);
-	}
-
-	@Deprecated // TODO à vérifier
-	public void setResponseBody(final String body) {
-
-		final Optional<Parameter> rawBody = parameters.stream()
-				.filter(p -> p.getLocation().equals(Location.BODY.name()))
-				.filter(p -> p.getType().equals(Type.TEXT.name()))
-				.filter(p -> p.getName() == null).findFirst();
-		if (rawBody.isPresent()) {
-			rawBody.get().setValue(body);
-		} else {
-			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.BODY, Type.TEXT, null, body);
-			addParameter(parameter);
-		}
 	}
 
 	public String getResponseBody() {
@@ -230,19 +171,6 @@ public class Exchange {
 				.filter(p -> p.getDirection().equals(direction.name()) && p.getLocation().equals(location.name()) && p.getName().equalsIgnoreCase(name))
 				.findFirst();
 	}
-
-	//
-	// public Optional<Parameter> findResponseHeader(final String name) {
-	// return response.findParameter(Location.HEADER, name);
-	// }
-	//
-	// public void setResponseStatus(Integer status) {
-	// response.setStatus(status);
-	// }
-	//
-	// public void setResponseDuration(Integer duration) {
-	// response.setDuration(duration);
-	// }
 
 	public BodyType getRequestBodyType() {
 		return requestBodyType;

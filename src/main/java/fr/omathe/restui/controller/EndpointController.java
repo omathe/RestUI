@@ -421,11 +421,10 @@ public class EndpointController implements Initializable {
 		});
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-
 			Optional<Exchange> optionalExchange = getSelectedExchange();
 			if (optionalExchange.isPresent()) {
 				currentExchange = getSelectedExchange().get();
-				display();
+				//display();
 			}
 		});
 
@@ -438,8 +437,6 @@ public class EndpointController implements Initializable {
 
 	public void setEndpoint(final Endpoint endpoint) {
 		this.endpoint = endpoint;
-
-		exchanges.getItems().clear();
 
 		endpoint.buildPath();
 
@@ -742,7 +739,7 @@ public class EndpointController implements Initializable {
 		if (!workingExchangeExists()) {
 			currentExchange = createWorkingExchange();
 		}
-
+		
 		radioButtonExecutionMode.setSelected(true);
 
 		// enable execute
@@ -757,6 +754,7 @@ public class EndpointController implements Initializable {
 		if (currentExchange == null) {
 			currentExchange = createWorkingExchange();
 		}
+		currentExchange.getParameters().stream().forEach(p -> System.out.println("2 " + p));
 
 		// select the current exchange
 		exchanges.getSelectionModel().select(currentExchange);
@@ -796,19 +794,22 @@ public class EndpointController implements Initializable {
 	}
 
 	private void displayExecutionMode() {
+		
+		System.out.println("displayExecutionMode");
 
 		if (currentExchange != null) {
 			// request parameters
 			// add endpoint new parameters if any
-			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
+/*			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
 					.filter(p -> p.isRequestParameter())
 					.map(p -> p.duplicate())
 					.collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
-
+*/
 			requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
 					.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
 			requestParameters.refresh();
+			currentExchange.getParameters().stream().forEach(p -> System.out.println("3 " + p));
 
 			// response parameters
 			responseParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
@@ -817,13 +818,16 @@ public class EndpointController implements Initializable {
 
 			// request body
 			displayRequestBody();
+//			currentExchange.getParameters().stream().forEach(p -> System.out.println("42 " + p));
 
 			// request parameters are not editable for a finalized exchange
 			requestParameters.setEditable(!exchangeFinalized(currentExchange));
 
+			currentExchange.getParameters().stream().forEach(p -> System.out.println("4 " + p));
 			buildUri();
 
 			// response body
+			currentExchange.getParameters().stream().forEach(p -> System.out.println("5 " + p));
 			displayResponseBody();
 
 			// response status
@@ -835,6 +839,7 @@ public class EndpointController implements Initializable {
 
 			// status circle
 			displayStatusCircle(currentExchange);
+			
 		}
 	}
 

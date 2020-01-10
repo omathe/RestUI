@@ -10,7 +10,6 @@ public interface App {
 
 	// application
 	String TITLE = "RestUI";
-	String HOME = ".restui";
 	String APLICATION_FILE = getApplicationHome() + "/" + "application.xml";
 
 	// FXML
@@ -30,7 +29,7 @@ public interface App {
 	static String getApplicationHome() {
 
 		final String userHome = System.getProperty("user.home").replace("\\", "/");
-		return userHome + "/" + App.HOME;
+		return userHome + "/.restui";
 	}
 
 	static Optional<String> getStyleUri(final String style) {

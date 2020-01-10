@@ -31,11 +31,11 @@ public class Parameter {
 	private final BooleanProperty enabled;
 	private final StringProperty type;
 	private final StringProperty location;
-	private StringProperty direction;
+	private final StringProperty direction;
 	private final StringProperty name;
 	private StringProperty value;
 
-	public Parameter(final Boolean enabled, final Direction direction, final Location location, final Type type, final String name, String value) {
+	public Parameter(final Boolean enabled, final Direction direction, final Location location, final Type type, final String name, final String value) {
 		super();
 		this.enabled = new SimpleBooleanProperty(enabled);
 		this.direction = new SimpleStringProperty(direction.name());
@@ -162,7 +162,7 @@ public class Parameter {
 	}
 
 	public boolean isRawBodyParameter() {
-		return location != null && location.get().equals(Location.BODY.name()) && getName() == null;
+		return location != null && location.get().equals(Location.BODY.name());
 	}
 
 	public boolean isHeaderParameter() {
@@ -201,7 +201,7 @@ public class Parameter {
 		return valid;
 	}
 
-	public boolean nameIs(String name) {
+	public boolean nameIs(final String name) {
 
 		return getName() != null && getName().equalsIgnoreCase(name);
 	}
@@ -218,36 +218,47 @@ public class Parameter {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(final Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 
 		Parameter other = (Parameter) obj;
 
 		if (direction.get() == null) {
-			if (other.direction.get() != null)
+			if (other.direction.get() != null) {
 				return false;
-		} else if (!direction.get().equals(other.direction.get()))
+			}
+		} else if (!direction.get().equals(other.direction.get())) {
 			return false;
+		}
 		if (location.get() == null) {
-			if (other.location.get() != null)
+			if (other.location.get() != null) {
 				return false;
-		} else if (!location.get().equals(other.location.get()))
+			}
+		} else if (!location.get().equals(other.location.get())) {
 			return false;
+		}
 		if (name.get() == null) {
-			if (other.name.get() != null)
+			if (other.name.get() != null) {
 				return false;
-		} else if (!name.get().equals(other.name.get()))
+			}
+		} else if (!name.get().equals(other.name.get())) {
 			return false;
+		}
 		if (type.get() == null) {
-			if (other.type.get() != null)
+			if (other.type.get() != null) {
 				return false;
-		} else if (!type.get().equals(other.type.get()))
+			}
+		} else if (!type.get().equals(other.type.get())) {
 			return false;
+		}
 		return true;
 	}
 

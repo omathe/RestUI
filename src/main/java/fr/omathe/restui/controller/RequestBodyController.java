@@ -1,12 +1,9 @@
 package fr.omathe.restui.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.omathe.restui.commons.Strings;
 import fr.omathe.restui.controller.cellFactory.BodyParameterValueCellFactory;
@@ -126,7 +123,10 @@ public class RequestBodyController implements Initializable {
 			if (endPointController.isSpecificationMode()) {
 				endpoint.setRequestRawBody(newValue);
 			} else {
+//				System.out.println("endpoint name = " + endpoint.getName());
+//				System.out.println("exchange duration = " + exchange.getDuration());
 				exchange.setRequestRawBody(newValue);
+//				exchange.getParameters().stream().forEach(p -> System.out.println(p));
 			}
 		});
 	}
@@ -166,15 +166,8 @@ public class RequestBodyController implements Initializable {
 			String body = endPointController.isSpecificationMode() ? endpoint.getRequestRawBody() : exchange.getRequestRawBody();
 			requestBody.setText(body);
 			if (body != null) {
-				final ObjectMapper mapper = new ObjectMapper();
-				try {
-					Object json = mapper.readValue(body, Object.class);
-					requestBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				requestBody.setText(body);
 			}
-
 			endPointController.getBodyVBox().getChildren().clear();
 			endPointController.getBodyVBox().getChildren().add(endPointController.getBodyHBox());
 			if (!endPointController.getBodyVBox().getChildren().contains(node)) {
