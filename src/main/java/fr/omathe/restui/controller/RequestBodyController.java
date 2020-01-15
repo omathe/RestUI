@@ -120,14 +120,14 @@ public class RequestBodyController implements Initializable {
 		});
 
 		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-//			if (endPointController.isSpecificationMode()) {
-//				endpoint.setRequestRawBody(newValue);
-//			} else {
+			if (endPointController.isSpecificationMode()) {
+				endpoint.setRequestRawBody(newValue);
+			} else {
 //				System.out.println("endpoint name = " + endpoint.getName());
 //				System.out.println("exchange duration = " + exchange.getDuration());
 				exchange.setRequestRawBody(newValue);
 //				exchange.getParameters().stream().forEach(p -> System.out.println(p));
-//			}
+			}
 		});
 	}
 
@@ -142,12 +142,12 @@ public class RequestBodyController implements Initializable {
 		ObservableList<Parameter> parameterData = null;
 		endpoint = endPointController.getEndpoint();
 
-//		if (endPointController.isSpecificationMode()) {
-//			parameterData = FXCollections.observableArrayList(endpoint.getParameters()).filtered(p -> p.isRequestParameter());
-//			requestBody.setEditable(true);
-//			bodyTableView.setEditable(true);
-//		}
-//		if (endPointController.isExecutionMode()) {
+		if (endPointController.isSpecificationMode()) {
+			parameterData = FXCollections.observableArrayList(endpoint.getParameters()).filtered(p -> p.isRequestParameter());
+			requestBody.setEditable(true);
+			bodyTableView.setEditable(true);
+		}
+		if (endPointController.isExecutionMode()) {
 			exchange = endPointController.getCurrentExchange();
 			parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
 
@@ -159,11 +159,11 @@ public class RequestBodyController implements Initializable {
 			if (!endPointController.exchangeFinalized(exchange)) {
 				contextMenu.getItems().addAll(add, remove);
 			}
-//		}
+		}
 
 		if (type.equals(BodyType.RAW)) {
 			// RAW
-			String body = exchange.getRequestRawBody();
+			String body = endPointController.isSpecificationMode() ? endpoint.getRequestRawBody() : exchange.getRequestRawBody();
 			requestBody.setText(body);
 			if (body != null) {
 				requestBody.setText(body);

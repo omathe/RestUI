@@ -163,7 +163,13 @@ public class EndpointController implements Initializable {
 
 	@FXML
 	private Circle statusCircle;
-	
+
+	@FXML
+	private HBox endpointSpecificationHBox;
+
+	@FXML
+	private RadioButton radioButtonExecutionMode;
+
 	@FXML
 	private AnchorPane anchorPaneExecute;
 
@@ -418,7 +424,7 @@ public class EndpointController implements Initializable {
 			Optional<Exchange> optionalExchange = getSelectedExchange();
 			if (optionalExchange.isPresent()) {
 				currentExchange = getSelectedExchange().get();
-				display();
+				//display();
 			}
 		});
 
@@ -445,7 +451,7 @@ public class EndpointController implements Initializable {
 		path.setText(endpoint.getPath());
 
 		// set execution mode
-//		modeExecution(null);
+		modeExecution(null);
 	}
 
 	public Exchange getCurrentExchange() {
@@ -588,40 +594,40 @@ public class EndpointController implements Initializable {
 
 	@FXML
 	protected void rawBodySelected(final MouseEvent event) {
-//		if (isSpecificationMode()) {
-//			specificationBodyType = Exchange.BodyType.RAW;
-//		} else {
-//			currentExchange.setRequestBodyType(Exchange.BodyType.RAW);
-//		}
+		if (isSpecificationMode()) {
+			specificationBodyType = Exchange.BodyType.RAW;
+		} else {
+			currentExchange.setRequestBodyType(Exchange.BodyType.RAW);
+		}
 		requestBody(BodyType.RAW);
 	}
 
 	@FXML
 	protected void formEncodedBodySelected(final MouseEvent event) {
-//		if (isSpecificationMode()) {
-//			specificationBodyType = Exchange.BodyType.X_WWW_FORM_URL_ENCODED;
-//		} else {
-//			currentExchange.setRequestBodyType(Exchange.BodyType.X_WWW_FORM_URL_ENCODED);
-//		}
+		if (isSpecificationMode()) {
+			specificationBodyType = Exchange.BodyType.X_WWW_FORM_URL_ENCODED;
+		} else {
+			currentExchange.setRequestBodyType(Exchange.BodyType.X_WWW_FORM_URL_ENCODED);
+		}
 		requestBody(BodyType.X_WWW_FORM_URL_ENCODED);
 	}
 
 	@FXML
 	protected void formDataBodySelected(final MouseEvent event) {
-//		if (isSpecificationMode()) {
-//			specificationBodyType = Exchange.BodyType.FORM_DATA;
-//		} else {
-//			currentExchange.setRequestBodyType(Exchange.BodyType.FORM_DATA);
-//		}
+		if (isSpecificationMode()) {
+			specificationBodyType = Exchange.BodyType.FORM_DATA;
+		} else {
+			currentExchange.setRequestBodyType(Exchange.BodyType.FORM_DATA);
+		}
 		requestBody(BodyType.FORM_DATA);
 	}
 
-	private void requestBody(final BodyType bodyType) {
+	private void requestBody(BodyType bodyType) {
 
 		RequestBodyController requestBodyController = ControllerManager.getRequestBodyController();
-//		if (isSpecificationMode()) {
-//			bodyType = specificationBodyType;
-//		}
+		if (isSpecificationMode()) {
+			bodyType = specificationBodyType;
+		}
 		requestBodyController.display(this, requestBodyController.getRootNode(), bodyType);
 	}
 
@@ -682,17 +688,17 @@ public class EndpointController implements Initializable {
 
 	public void addParameter(final Parameter parameter) {
 
-//		if (isSpecificationMode()) {
-//			// add the parameter to the endpoint
-//			endpoint.addParameter(parameter);
-//		} else {
+		if (isSpecificationMode()) {
+			// add the parameter to the endpoint
+			endpoint.addParameter(parameter);
+		} else {
 			if (currentExchange == null) {
 				currentExchange = createWorkingExchange();
 			}
 			// add the parameter to the current exchange
 			currentExchange.addParameter(parameter.duplicateValue());
-			display();
-//		}
+		}
+		display();
 	}
 
 	public void deleteParameters(final List<Parameter> parameters) {
@@ -702,10 +708,10 @@ public class EndpointController implements Initializable {
 			final ButtonType response = AlertBuilder.confirm("Delete request parameters", message);
 
 			if (response.equals(ButtonType.OK)) {
-//				if (isSpecificationMode()) {
-//					// remove the parameters from the endpoint
-//					endpoint.removeParameters(parameters);
-//				}
+				if (isSpecificationMode()) {
+					// remove the parameters from the endpoint
+					endpoint.removeParameters(parameters);
+				}
 				// remove the parameters from the exchange
 				if (currentExchange != null) {
 					currentExchange.removeParameters(parameters);
@@ -715,124 +721,77 @@ public class EndpointController implements Initializable {
 		}
 	}
 
-//	@FXML
-//	protected void modeSpecification(final ActionEvent event) {
-//
-//		// enable specification
-//		endpointSpecificationHBox.setDisable(false);
-//		// disable execute
-//		anchorPaneExecute.setDisable(true);
-//
-//		display();
-//	}
+	@FXML
+	protected void modeSpecification(final ActionEvent event) {
 
-//	@FXML
-//	protected void modeExecution(final ActionEvent event) {
-//
-//		// create the current if it does not exist
-//		if (!workingExchangeExists()) {
-//			currentExchange = createWorkingExchange();
-//		}
-//		
-//		radioButtonExecutionMode.setSelected(true);
-//
-//		// enable execute
-//		anchorPaneExecute.setDisable(false);
-//		// disable specification
-//		endpointSpecificationHBox.setDisable(true);
-//
-//		// exchanges
-//		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
-//
-//		currentExchange = getWorkingExchangeOrSelectFirstExchange();
-//		if (currentExchange == null) {
-//			currentExchange = createWorkingExchange();
-//		}
-//		currentExchange.getParameters().stream().forEach(p -> System.out.println("2 " + p));
-//
-//		// select the current exchange
-//		exchanges.getSelectionModel().select(currentExchange);
-//
-//		display();
-//	}
+		// enable specification
+		endpointSpecificationHBox.setDisable(false);
+		// disable execute
+		anchorPaneExecute.setDisable(true);
 
-	private void display() {
-		
-		System.out.println("displayExecutionMode");
-
-		if (currentExchange != null) {
-			// request parameters
-			// add endpoint new parameters if any
-/*			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
-					.filter(p -> p.isRequestParameter())
-					.map(p -> p.duplicate())
-					.collect(Collectors.toList());
-			currentExchange.addParameters(endpointRequestParameters);
-*/
-			requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-					.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
-			requestParameters.refresh();
-			currentExchange.getParameters().stream().forEach(p -> System.out.println("3 " + p));
-
-			// response parameters
-			responseParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
-					.filtered(p -> p.isResponseParameter() && p.isHeaderParameter()));
-			responseParameters.refresh();
-
-			// request body
-			displayRequestBody();
-//			currentExchange.getParameters().stream().forEach(p -> System.out.println("42 " + p));
-
-			// request parameters are not editable for a finalized exchange
-			requestParameters.setEditable(!exchangeFinalized(currentExchange));
-
-			currentExchange.getParameters().stream().forEach(p -> System.out.println("4 " + p));
-			buildUri();
-
-			// response body
-			currentExchange.getParameters().stream().forEach(p -> System.out.println("5 " + p));
-			displayResponseBody();
-
-			// response status
-			responseStatus.setText(currentExchange.getStatus().toString());
-			displayStatusTooltip();
-
-			// response duration
-			responseDuration.setText(currentExchange.getDuration().toString());
-
-			// status circle
-			displayStatusCircle(currentExchange);
-			
-		}
-
-//		if (radioButtonExecutionMode.isSelected()) {
-//			displayExecutionMode();
-//		} else {
-//			displaySpecificationMode();
-//		}
+		display();
 	}
 
-//	private void displaySpecificationMode() {
-//
-//		// request parameters
-//		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters())
-//				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
-//		requestParameters.refresh();
-//
-//		// response parameters
-//		responseParameters.setItems(null);
-//
-//		// request body
-//		displayRequestBody();
-//
-//		// response body
-//		responseBody.clear();
-//
-//		responseStatus.setText("0");
-//		responseDuration.setText("0");
-//
-//		buildUri();
-//	}
+	@FXML
+	protected void modeExecution(final ActionEvent event) {
+
+		// create the current if it does not exist
+		if (!workingExchangeExists()) {
+			currentExchange = createWorkingExchange();
+		}
+		
+		radioButtonExecutionMode.setSelected(true);
+
+		// enable execute
+		anchorPaneExecute.setDisable(false);
+		// disable specification
+		endpointSpecificationHBox.setDisable(true);
+
+		// exchanges
+		exchanges.setItems((ObservableList<Exchange>) endpoint.getExchanges());
+
+		currentExchange = getWorkingExchangeOrSelectFirstExchange();
+		if (currentExchange == null) {
+			currentExchange = createWorkingExchange();
+		}
+		currentExchange.getParameters().stream().forEach(p -> System.out.println("2 " + p));
+
+		// select the current exchange
+		exchanges.getSelectionModel().select(currentExchange);
+
+		display();
+	}
+
+	private void display() {
+
+		if (radioButtonExecutionMode.isSelected()) {
+			displayExecutionMode();
+		} else {
+			displaySpecificationMode();
+		}
+	}
+
+	private void displaySpecificationMode() {
+
+		// request parameters
+		requestParameters.setItems(FXCollections.observableArrayList(endpoint.getParameters())
+				.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
+		requestParameters.refresh();
+
+		// response parameters
+		responseParameters.setItems(null);
+
+		// request body
+		displayRequestBody();
+
+		// response body
+		responseBody.clear();
+
+		responseStatus.setText("0");
+		responseDuration.setText("0");
+
+		buildUri();
+	}
 
 	private void displayExecutionMode() {
 		
@@ -886,21 +845,21 @@ public class EndpointController implements Initializable {
 
 	private void displayRequestBody() {
 
-//		if (isSpecificationMode()) {
-//			if (specificationBodyType == null) {
-//				specificationBodyType = Exchange.BodyType.RAW;
-//			}
-//			if (specificationBodyType.equals(Exchange.BodyType.RAW)) {
-//				rawBody.setSelected(true);
-//				rawBodySelected(null);
-//			} else if (specificationBodyType.equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
-//				formEncodedBody.setSelected(true);
-//				formEncodedBodySelected(null);
-//			} else if (specificationBodyType.equals(Exchange.BodyType.FORM_DATA)) {
-//				formDataBody.setSelected(true);
-//				formDataBodySelected(null);
-//			}
-//		} else {
+		if (isSpecificationMode()) {
+			if (specificationBodyType == null) {
+				specificationBodyType = Exchange.BodyType.RAW;
+			}
+			if (specificationBodyType.equals(Exchange.BodyType.RAW)) {
+				rawBody.setSelected(true);
+				rawBodySelected(null);
+			} else if (specificationBodyType.equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
+				formEncodedBody.setSelected(true);
+				formEncodedBodySelected(null);
+			} else if (specificationBodyType.equals(Exchange.BodyType.FORM_DATA)) {
+				formDataBody.setSelected(true);
+				formDataBodySelected(null);
+			}
+		} else {
 			if (currentExchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
 				rawBody.setSelected(true);
 				rawBodySelected(null);
@@ -911,7 +870,7 @@ public class EndpointController implements Initializable {
 				formDataBody.setSelected(true);
 				formDataBodySelected(null);
 			}
-//		}
+		}
 	}
 
 	private void displayResponseBody() {
@@ -1047,7 +1006,7 @@ public class EndpointController implements Initializable {
 	private Exchange createWorkingExchange() {
 
 		Exchange workingExchange = new Exchange("", Instant.now().toEpochMilli());
-		List<Parameter> endpointRequestParameters = workingExchange.getParameters().stream()
+		List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
 				.filter(p -> p.isRequestParameter())
 				.map(p -> p.duplicate())
 				.collect(Collectors.toList());
@@ -1057,13 +1016,13 @@ public class EndpointController implements Initializable {
 		return workingExchange;
 	}
 
-//	public boolean isExecutionMode() {
-//		return radioButtonExecutionMode.isSelected();
-//	}
-//
-//	public boolean isSpecificationMode() {
-//		return !radioButtonExecutionMode.isSelected();
-//	}
+	public boolean isExecutionMode() {
+		return radioButtonExecutionMode.isSelected();
+	}
+
+	public boolean isSpecificationMode() {
+		return !radioButtonExecutionMode.isSelected();
+	}
 
 	public Endpoint getEndpoint() {
 		return endpoint;

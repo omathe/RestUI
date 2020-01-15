@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import fr.omathe.restui.model.Parameter.Direction;
+import fr.omathe.restui.model.Parameter.Location;
+import fr.omathe.restui.model.Parameter.Type;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -22,7 +25,7 @@ public class Endpoint extends Item {
 	private final StringProperty method;
 	private final StringProperty path;
 	private List<Exchange> exchanges;
-	//private final List<Parameter> parameters;
+	private final List<Parameter> parameters;
 	private String description;
 
 	public Endpoint(final Item parent, final String name, final String method) {
@@ -31,7 +34,7 @@ public class Endpoint extends Item {
 		this.path = new SimpleStringProperty();
 		buildPath();
 		this.exchanges = FXCollections.observableArrayList();
-		//this.parameters = FXCollections.observableArrayList();
+		this.parameters = FXCollections.observableArrayList();
 		this.description = "";
 	}
 
@@ -40,7 +43,7 @@ public class Endpoint extends Item {
 		this.path = new SimpleStringProperty(path);
 		this.method = new SimpleStringProperty(method);
 		this.exchanges = FXCollections.observableArrayList();
-		//this.parameters = FXCollections.observableArrayList();
+		this.parameters = FXCollections.observableArrayList();
 		this.description = "";
 	}
 
@@ -95,9 +98,9 @@ public class Endpoint extends Item {
 		return exchanges != null && !exchanges.isEmpty();
 	}
 
-//	public boolean hasParameters() {
-//		return parameters != null && !parameters.isEmpty();
-//	}
+	public boolean hasParameters() {
+		return parameters != null && !parameters.isEmpty();
+	}
 
 	public void buildPath() {
 
@@ -115,65 +118,65 @@ public class Endpoint extends Item {
 		path.set(builtPath);
 	}
 
-//	public String getRequestRawBody() {
-//
-//		final Optional<String> body = parameters.stream()
-//				.filter(p -> p.isRequestParameter())
-//				.filter(p -> p.isRawBodyParameter())
-//				.filter(p -> p.getName() == null)
-//				.map(p -> p.getValue()).findFirst();
-//
-//		return body.orElse(null);
-//	}
+	public String getRequestRawBody() {
 
-//	public void setRequestRawBody(final String value) {
-//
-//		final Optional<Parameter> rawBody = parameters.stream()
-//				.filter(p -> p.isRequestParameter())
-//				.filter(p -> p.isRawBodyParameter())
-//				.filter(p -> p.isTypeText())
-//				.filter(p -> p.getName() == null)
-//				.findFirst();
-//		if (rawBody.isPresent()) {
-//			if (value == null || value.isEmpty()) {
-//				parameters.remove(rawBody.get());
-//			} else {
-//				rawBody.get().setValue(value);
-//			}
-//		} else if (value != null && !value.isEmpty()) {
-//			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, null, value);
-//			addParameter(parameter);
-//		}
-//	}
+		final Optional<String> body = parameters.stream()
+				.filter(p -> p.isRequestParameter())
+				.filter(p -> p.isRawBodyParameter())
+				.filter(p -> p.getName() == null)
+				.map(p -> p.getValue()).findFirst();
 
-//	public List<Parameter> getParameters() {
-//		return parameters;
-//	}
+		return body.orElse(null);
+	}
 
-//	public void addParameter(final Parameter parameter) {
-//
-//		if (parameters.contains(parameter)) {
-//			parameters.remove(parameter);
-//		}
-//		parameters.add(parameter);
-//	}
+	public void setRequestRawBody(final String value) {
 
-//	public void removeParameters(final List<Parameter> parameters) {
-//
-//		if (parameters != null) {
-//			this.parameters.removeAll(parameters);
-//		}
-//	}
+		final Optional<Parameter> rawBody = parameters.stream()
+				.filter(p -> p.isRequestParameter())
+				.filter(p -> p.isRawBodyParameter())
+				.filter(p -> p.isTypeText())
+				.filter(p -> p.getName() == null)
+				.findFirst();
+		if (rawBody.isPresent()) {
+			if (value == null || value.isEmpty()) {
+				parameters.remove(rawBody.get());
+			} else {
+				rawBody.get().setValue(value);
+			}
+		} else if (value != null && !value.isEmpty()) {
+			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, null, value);
+			addParameter(parameter);
+		}
+	}
 
-//	public Optional<Parameter> findParameter(final Parameter parameter) {
-//
-//		return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
-//	}
+	public List<Parameter> getParameters() {
+		return parameters;
+	}
 
-//	public boolean containsParameter(final Parameter parameter) {
-//
-//		return parameters.contains(parameter);
-//	}
+	public void addParameter(final Parameter parameter) {
+
+		if (parameters.contains(parameter)) {
+			parameters.remove(parameter);
+		}
+		parameters.add(parameter);
+	}
+
+	public void removeParameters(final List<Parameter> parameters) {
+
+		if (parameters != null) {
+			this.parameters.removeAll(parameters);
+		}
+	}
+
+	public Optional<Parameter> findParameter(final Parameter parameter) {
+
+		return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
+	}
+
+	public boolean containsParameter(final Parameter parameter) {
+
+		return parameters.contains(parameter);
+	}
 
 	public Optional<Exchange> findExchangeByName(final String name) {
 		return exchanges.stream().filter(e -> e.getName().equalsIgnoreCase(name)).findFirst();

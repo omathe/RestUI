@@ -31,6 +31,33 @@
 							<children>
 								<VBox prefHeight="315.0" prefWidth="812.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 									<children>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+                                 <children>
+                                    <Label text="Mode" />
+                                    <HBox spacing="3.0" style="-fx-background-color: lightgray; -fx-background-radius: 5;">
+                                       <children>
+                                          <RadioButton mnemonicParsing="false" onAction="#modeSpecification" selected="true" text="Specification">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="endpointMode" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <RadioButton fx:id="radioButtonExecutionMode" mnemonicParsing="false" onAction="#modeExecution" text="Execution" toggleGroup="$endpointMode" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </HBox>
                               <HBox fx:id="endpointSpecificationHBox" alignment="CENTER_LEFT" minHeight="30.0" spacing="5.0" VBox.vgrow="NEVER">
                                  <children>
                                     <Label fx:id="endpointName" text="Endpoint name" HBox.hgrow="NEVER">
