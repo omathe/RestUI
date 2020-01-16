@@ -229,7 +229,7 @@ public class EndpointController implements Initializable {
 					delete.setDisable(!parameter.isPresent());
 
 					requestParametersContextMenu.getItems().clear();
-					if (exchangeFinalized(currentExchange)) {
+					if (currentExchange.isFinalized()) {
 						requestParametersContextMenu.getItems().addAll(copy);
 					} else {
 						requestParametersContextMenu.getItems().addAll(add, copy, paste, new SeparatorMenuItem(), delete);
@@ -333,8 +333,8 @@ public class EndpointController implements Initializable {
 					} else {
 						exchange.setName(event.getOldValue());
 						// workaround to refresh the table
-						exchanges.getColumns().get(0).setVisible(false);
-						exchanges.getColumns().get(0).setVisible(true);
+//						exchanges.getColumns().get(0).setVisible(false);
+//						exchanges.getColumns().get(0).setVisible(true);
 					}
 				} else {
 					exchange.setName(event.getNewValue());
@@ -391,11 +391,7 @@ public class EndpointController implements Initializable {
 
 						// duplicate exchange
 						duplicate.setOnAction(e -> {
-							if (workingExchangeExists()) {
-								endpoint.removeExchange(getWorkingExchange());
-							}
-							currentExchange = getSelectedExchange().get().duplicate("");
-							endpoint.addExchange(currentExchange);
+							endpoint.addExchange(getSelectedExchange().get().duplicate(""), true);
 						});
 
 						// delete exchange
@@ -424,7 +420,7 @@ public class EndpointController implements Initializable {
 			Optional<Exchange> optionalExchange = getSelectedExchange();
 			if (optionalExchange.isPresent()) {
 				currentExchange = getSelectedExchange().get();
-				//display();
+				display();
 			}
 		});
 
@@ -472,21 +468,21 @@ public class EndpointController implements Initializable {
 	protected void execute(final ActionEvent event) {
 
 		ControllerManager.getMainController().getBottomController().setNotification("", Color.BLACK);
-		if (workingExchangeExists()) {
-			currentExchange = getWorkingExchange();
-		} else {
-			// working exchange does not exist
-			if (endpoint.hasExchanges()) {
-				//currentExchange = createWorkingExchange();
-				Optional<Exchange> selectedExchange = getSelectedExchange();
-				if (!selectedExchange.isPresent()) {
-					exchanges.getSelectionModel().select(0); // select first exchange
+		
+		if (endpoint.hasExchanges()) {
+			Optional<Exchange> selectedExchange = getSelectedExchange();
+			if (selectedExchange.isPresent()) {
+				if (selectedExchange.get().isWorking()) {
+					// if the selected exchange is the working exchange it becomes the currentExchange
+					currentExchange = selectedExchange.get();
+				} else {
+					// if the selected exchange is not the working exchange, we update the working exchange
+					currentExchange = endpoint.updateWorkingExchange(selectedExchange.get());
 				}
-				currentExchange = getSelectedExchange().get().duplicate("");
-			} else {
-				// no exchanges
-				currentExchange = createWorkingExchange();
-			}
+			}	
+		} else {
+			// no exchanges, we build the working exchange
+			currentExchange = endpoint.buildWorkingExchange();
 		}
 
 		// clear response parameter
@@ -571,10 +567,11 @@ public class EndpointController implements Initializable {
 		}
 		currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
 		currentExchange.setDate(Instant.now().toEpochMilli());
+		
+		// select the working exchange if it exist
+		exchanges.getSelectionModel().select(currentExchange);
 
 		display();
-
-		saveCurrentExchange();
 	}
 
 	private void displayStatusCircle(final Exchange exchange) {
@@ -666,25 +663,10 @@ public class EndpointController implements Initializable {
 		return bodyVBox;
 	}
 
-	private void saveCurrentExchange() {
-
-		Optional<Exchange> optionalExchange = endpoint.findExchangeByName("");
-		if (optionalExchange.isPresent()) {
-			optionalExchange.get().updateValues(currentExchange);
-		} else {
-			endpoint.addExchange(currentExchange);
-		}
-
-		// select the saved exchanged
-		exchanges.getSelectionModel().select(currentExchange);
-	}
-
 	List<String> getEndpointExchangeNames() {
 		return endpoint.getExchanges().stream().map(e -> e.getName()).collect(Collectors.toList());
 
 	}
-
-	// **************************************************************************************************************************
 
 	public void addParameter(final Parameter parameter) {
 
@@ -693,7 +675,7 @@ public class EndpointController implements Initializable {
 			endpoint.addParameter(parameter);
 		} else {
 			if (currentExchange == null) {
-				currentExchange = createWorkingExchange();
+				currentExchange = endpoint.buildWorkingExchange();
 			}
 			// add the parameter to the current exchange
 			currentExchange.addParameter(parameter.duplicateValue());
@@ -737,7 +719,7 @@ public class EndpointController implements Initializable {
 
 		// create the current if it does not exist
 		if (!workingExchangeExists()) {
-			currentExchange = createWorkingExchange();
+			currentExchange = endpoint.buildWorkingExchange();
 		}
 		
 		radioButtonExecutionMode.setSelected(true);
@@ -752,10 +734,8 @@ public class EndpointController implements Initializable {
 
 		currentExchange = getWorkingExchangeOrSelectFirstExchange();
 		if (currentExchange == null) {
-			currentExchange = createWorkingExchange();
+			currentExchange = endpoint.buildWorkingExchange();
 		}
-		currentExchange.getParameters().stream().forEach(p -> System.out.println("2 " + p));
-
 		// select the current exchange
 		exchanges.getSelectionModel().select(currentExchange);
 
@@ -795,21 +775,19 @@ public class EndpointController implements Initializable {
 
 	private void displayExecutionMode() {
 		
-		System.out.println("displayExecutionMode");
-
 		if (currentExchange != null) {
+			
 			// request parameters
 			// add endpoint new parameters if any
-/*			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
+			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
 					.filter(p -> p.isRequestParameter())
 					.map(p -> p.duplicate())
 					.collect(Collectors.toList());
 			currentExchange.addParameters(endpointRequestParameters);
-*/
+
 			requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
 					.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
 			requestParameters.refresh();
-			currentExchange.getParameters().stream().forEach(p -> System.out.println("3 " + p));
 
 			// response parameters
 			responseParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
@@ -818,16 +796,12 @@ public class EndpointController implements Initializable {
 
 			// request body
 			displayRequestBody();
-//			currentExchange.getParameters().stream().forEach(p -> System.out.println("42 " + p));
-
 			// request parameters are not editable for a finalized exchange
-			requestParameters.setEditable(!exchangeFinalized(currentExchange));
+			requestParameters.setEditable(!currentExchange.isFinalized());
 
-			currentExchange.getParameters().stream().forEach(p -> System.out.println("4 " + p));
 			buildUri();
 
 			// response body
-			currentExchange.getParameters().stream().forEach(p -> System.out.println("5 " + p));
 			displayResponseBody();
 
 			// response status
@@ -840,6 +814,9 @@ public class EndpointController implements Initializable {
 			// status circle
 			displayStatusCircle(currentExchange);
 			
+			// workaround to refresh the table
+			exchanges.getColumns().get(0).setVisible(false);
+			exchanges.getColumns().get(0).setVisible(true);
 		}
 	}
 
@@ -959,63 +936,25 @@ public class EndpointController implements Initializable {
 	private Exchange getWorkingExchangeOrSelectFirstExchange() {
 
 		Exchange exchange = null;
-
-		if (endpoint.hasExchanges()) {
-			Optional<Exchange> workingExchange = workingExchangePresent();
-			if (workingExchange.isPresent()) {
-				exchange = workingExchange.get();
-			} else {
-				Optional<Exchange> selectedExchange = getSelectedExchange();
-				if (!selectedExchange.isPresent()) {
-					exchanges.getSelectionModel().select(0); // select first exchange
-					exchange = exchanges.getSelectionModel().getSelectedItem();
-				}
+		
+		Optional<Exchange> optionalWorkingExchange = endpoint.findWorkingExchange();
+		if (optionalWorkingExchange.isPresent()) {
+			exchange = optionalWorkingExchange.get();
+		} else {
+			Optional<Exchange> selectedExchange = getSelectedExchange();
+			if (!selectedExchange.isPresent()) {
+				exchanges.getSelectionModel().select(0); // select first exchange
+				exchange = exchanges.getSelectionModel().getSelectedItem();
 			}
 		}
 		return exchange;
 	}
-
-	private Exchange getWorkingExchange() {
-
-		Exchange workingExchange = null;
-
-		if (endpoint.hasExchanges()) {
-			Optional<Exchange> optionalWorkingExchange = workingExchangePresent();
-			if (optionalWorkingExchange.isPresent()) {
-				workingExchange = optionalWorkingExchange.get();
-			} else {
-				Optional<Exchange> selectedExchange = getSelectedExchange();
-				if (!selectedExchange.isPresent()) {
-					exchanges.getSelectionModel().select(0); // select first exchange
-				}
-			}
-		}
-		return workingExchange;
-	}
-
-	private Optional<Exchange> workingExchangePresent() {
-
-		return endpoint.findExchangeByName("");
-	}
-
+	
 	private Boolean workingExchangeExists() {
 
 		return endpoint.findExchangeByName("").isPresent();
 	}
-
-	private Exchange createWorkingExchange() {
-
-		Exchange workingExchange = new Exchange("", Instant.now().toEpochMilli());
-		List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
-				.filter(p -> p.isRequestParameter())
-				.map(p -> p.duplicate())
-				.collect(Collectors.toList());
-		workingExchange.addParameters(endpointRequestParameters);
-		endpoint.addExchange(workingExchange);
-
-		return workingExchange;
-	}
-
+	
 	public boolean isExecutionMode() {
 		return radioButtonExecutionMode.isSelected();
 	}
@@ -1026,11 +965,6 @@ public class EndpointController implements Initializable {
 
 	public Endpoint getEndpoint() {
 		return endpoint;
-	}
-
-	public boolean exchangeFinalized(final Exchange exchange) {
-
-		return exchange != null && exchange.getStatus() != 0 && !exchange.getName().isEmpty();
 	}
 
 }

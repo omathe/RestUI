@@ -16,7 +16,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
-public class Exchange {
+public class Exchange implements Parameterisable {
 
 	public enum BodyType {
 		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
@@ -63,6 +63,11 @@ public class Exchange {
 		return duplicate;
 	}
 
+	public static Exchange buildWorkingExchange() {
+
+		return new Exchange("", Instant.now().toEpochMilli());
+	}
+
 	public void updateValues(final Exchange source) {
 		setDate(source.getDate());
 		setStatus(source.getStatus());
@@ -96,54 +101,13 @@ public class Exchange {
 		return date;
 	}
 
+	@Override
 	public List<Parameter> getParameters() {
 		return parameters;
 	}
 
 	public void setParameters(final List<Parameter> parameters) {
 		this.parameters = parameters;
-	}
-
-	public Optional<Parameter> findParameter(final Parameter parameter) {
-
-		return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
-	}
-
-	public void removeParameters(final List<Parameter> parameters) {
-
-		if (parameters != null) {
-			this.parameters.removeAll(parameters);
-		}
-	}
-
-	public void setRequestRawBody(final String body) {
-
-		final Optional<Parameter> rawBody = parameters.stream()
-				.filter(p -> p.isRequestParameter())
-				.filter(p -> p.isRawBodyParameter())
-				.filter(p -> p.isTypeText())
-				.filter(p -> p.getName() == null)
-				.findFirst();
-		if (rawBody.isPresent()) {
-			if (body == null || body.isEmpty()) {
-				parameters.remove(rawBody.get());
-			} else {
-				rawBody.get().setValue(body);
-			}
-		} else if (body != null && !body.isEmpty()) {
-			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, null, body);
-			addParameter(parameter);
-		}
-	}
-
-	public String getRequestRawBody() {
-
-		final Optional<String> body = parameters.stream()
-				.filter(p -> p.isRequestParameter() && p.isRawBodyParameter())
-				.map(p -> p.getValue())
-				.findFirst();
-
-		return body.orElse(null);
 	}
 
 	public String getResponseBody() {
@@ -153,7 +117,6 @@ public class Exchange {
 				.filter(p -> p.getDirection().equals(Direction.RESPONSE.name()))
 				.filter(p -> p.getLocation().equals(Location.BODY.name()))
 				.filter(p -> p.getType().equals(Type.TEXT.name()))
-				.filter(p -> p.getName() == null)
 				.findFirst();
 		if (rawBody.isPresent()) {
 			responseBody = rawBody.get().getValue();
@@ -216,32 +179,19 @@ public class Exchange {
 		this.duration.set(duration);
 	}
 
-	public void addParameter(final Parameter parameter) {
-
-		if (parameters.contains(parameter)) {
-			parameters.remove(parameter);
-		}
-		parameters.add(parameter);
-	}
-
-	public void addParameters(final List<Parameter> parameterList) {
-
-		parameterList.stream().forEach(p -> {
-			if (!parameters.contains(p)) {
-				parameters.add(p);
-			}
-		});
-	}
-
 	public boolean isEmpty() {
 		return parameters == null || parameters.isEmpty();
 	}
 
-	public boolean containsParameter(final Parameter parameter) {
-
-		return parameters.contains(parameter);
+	public boolean isWorking() {
+		return name.get().isEmpty();
 	}
 
+	public boolean isFinalized() {
+
+		return status.get() != 0 && !name.get().isEmpty();
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -271,12 +221,5 @@ public class Exchange {
 		}
 		return true;
 	}
-
-	// @Override
-	// public String toString() {
-	// return "Exchange [name=" + name + ", date=" + date + ", response=" + response
-	// + ", status=" + status + ", duration=" + duration + ", requestBodyType=" +
-	// requestBodyType + ", uri=" + uri + "]";
-	// }
 
 }

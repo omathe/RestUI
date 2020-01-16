@@ -86,15 +86,13 @@ public class ExchangesService {
 								// add parameter to the exchange
 								exchange.addParameter(parameter);
 							}
-							// retrieve the endpoint parameters that are not in the exchange
-/*							endpoint.getParameters().stream()
-									.filter(p -> !exchange.containsParameter(p))
-									.forEach(p -> exchange.addParameter(p.duplicate()));
-*/
-							if (endpointName.equals("createCustomer")) {
-								exchange.getParameters().stream().forEach(p -> System.out.println("1 " + p));
+							// retrieve the endpoint parameters that are not in the exchange (only for working exchange)
+							if (exchange.isWorking()) {
+								endpoint.getParameters().stream()
+								.filter(p -> !exchange.containsParameter(p))
+								.forEach(p -> exchange.addParameter(p.duplicate()));
 							}
-							
+
 							if (!exchange.isEmpty()) {
 								endpoint.addExchange(exchange);
 							}

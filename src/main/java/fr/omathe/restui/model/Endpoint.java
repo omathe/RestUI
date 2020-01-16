@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import fr.omathe.restui.model.Parameter.Direction;
-import fr.omathe.restui.model.Parameter.Location;
-import fr.omathe.restui.model.Parameter.Type;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -18,7 +15,7 @@ import javafx.collections.FXCollections;
  * A web service endpoint
  * @author Olivier MATHE
  */
-public class Endpoint extends Item {
+public class Endpoint extends Item implements Parameterisable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,6 +49,11 @@ public class Endpoint extends Item {
 		this.description = description == null ? "" : description;
 	}
 
+	@Override
+	public List<Parameter> getParameters() {
+		return parameters;
+	}
+
 	public String getMethod() {
 		return method.get();
 	}
@@ -81,6 +83,16 @@ public class Endpoint extends Item {
 		exchanges.add(exchange);
 	}
 
+	public void addExchange(final Exchange exchange, final boolean replace) {
+
+		if (exchange != null) {
+			if (replace) {
+				exchanges.remove(exchange);
+			}
+			exchanges.add(exchange);
+		}
+	}
+
 	public void removeExchange(final Exchange exchange) {
 
 		exchanges.remove(exchange);
@@ -98,10 +110,6 @@ public class Endpoint extends Item {
 		return exchanges != null && !exchanges.isEmpty();
 	}
 
-	public boolean hasParameters() {
-		return parameters != null && !parameters.isEmpty();
-	}
-
 	public void buildPath() {
 
 		final List<String> names = new ArrayList<>();
@@ -116,66 +124,6 @@ public class Endpoint extends Item {
 		Collections.reverse(names);
 		final String builtPath = "/" + names.stream().collect(Collectors.joining("/")).toString();
 		path.set(builtPath);
-	}
-
-	public String getRequestRawBody() {
-
-		final Optional<String> body = parameters.stream()
-				.filter(p -> p.isRequestParameter())
-				.filter(p -> p.isRawBodyParameter())
-				.filter(p -> p.getName() == null)
-				.map(p -> p.getValue()).findFirst();
-
-		return body.orElse(null);
-	}
-
-	public void setRequestRawBody(final String value) {
-
-		final Optional<Parameter> rawBody = parameters.stream()
-				.filter(p -> p.isRequestParameter())
-				.filter(p -> p.isRawBodyParameter())
-				.filter(p -> p.isTypeText())
-				.filter(p -> p.getName() == null)
-				.findFirst();
-		if (rawBody.isPresent()) {
-			if (value == null || value.isEmpty()) {
-				parameters.remove(rawBody.get());
-			} else {
-				rawBody.get().setValue(value);
-			}
-		} else if (value != null && !value.isEmpty()) {
-			final Parameter parameter = new Parameter(Boolean.TRUE, Direction.REQUEST, Location.BODY, Type.TEXT, null, value);
-			addParameter(parameter);
-		}
-	}
-
-	public List<Parameter> getParameters() {
-		return parameters;
-	}
-
-	public void addParameter(final Parameter parameter) {
-
-		if (parameters.contains(parameter)) {
-			parameters.remove(parameter);
-		}
-		parameters.add(parameter);
-	}
-
-	public void removeParameters(final List<Parameter> parameters) {
-
-		if (parameters != null) {
-			this.parameters.removeAll(parameters);
-		}
-	}
-
-	public Optional<Parameter> findParameter(final Parameter parameter) {
-
-		return parameters.stream().filter(p -> p.equals(parameter)).findFirst();
-	}
-
-	public boolean containsParameter(final Parameter parameter) {
-
-		return parameters.contains(parameter);
 	}
 
 	public Optional<Exchange> findExchangeByName(final String name) {
@@ -198,6 +146,36 @@ public class Endpoint extends Item {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public Exchange buildWorkingExchange() {
+
+		Exchange workingExchange = Exchange.buildWorkingExchange();
+		List<Parameter> endpointRequestParameters = parameters.stream()
+				.filter(p -> p.isRequestParameter())
+				.map(p -> p.duplicate())
+				.collect(Collectors.toList());
+		workingExchange.addParameters(endpointRequestParameters);
+		addExchange(workingExchange);
+
+		return workingExchange;
+	}
+
+	public Optional<Exchange> findWorkingExchange() {
+		return exchanges.stream().filter(e -> e.getName().isEmpty()).findFirst();
+	}
+
+	public Exchange updateWorkingExchange(final Exchange exchange) {
+
+		Exchange duplicated = null;
+
+		if (exchange == null) {
+			duplicated = buildWorkingExchange();
+		} else {
+			duplicated = exchange.duplicate("");
+			addExchange(duplicated, true);
+		}
+		return duplicated;
 	}
 
 }

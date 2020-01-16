@@ -123,10 +123,7 @@ public class RequestBodyController implements Initializable {
 			if (endPointController.isSpecificationMode()) {
 				endpoint.setRequestRawBody(newValue);
 			} else {
-//				System.out.println("endpoint name = " + endpoint.getName());
-//				System.out.println("exchange duration = " + exchange.getDuration());
 				exchange.setRequestRawBody(newValue);
-//				exchange.getParameters().stream().forEach(p -> System.out.println(p));
 			}
 		});
 	}
@@ -152,11 +149,11 @@ public class RequestBodyController implements Initializable {
 			parameterData = FXCollections.observableArrayList(exchange.getParameters()).filtered(p -> p.isRequestParameter());
 
 			// a finalized exchange is not editable
-			requestBody.setEditable(!endPointController.exchangeFinalized(exchange));
-			bodyTableView.setEditable(!endPointController.exchangeFinalized(exchange));
+			requestBody.setEditable(!exchange.isFinalized());
+			bodyTableView.setEditable(!exchange.isFinalized());
 
 			contextMenu.getItems().clear();
-			if (!endPointController.exchangeFinalized(exchange)) {
+			if (!exchange.isFinalized()) {
 				contextMenu.getItems().addAll(add, remove);
 			}
 		}

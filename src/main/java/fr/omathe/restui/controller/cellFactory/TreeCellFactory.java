@@ -210,8 +210,6 @@ public class TreeCellFactory extends TextFieldTreeCell<Item> {
 			}
 		});
 
-		//treeView.setOnMouseClicked(e -> System.out.println("left clic ..."));
-
 		// contextual menu
 		treeView.setContextMenu(addMenu);
 		addMenu.getItems().add(menuRemoveBookmarkItem);
