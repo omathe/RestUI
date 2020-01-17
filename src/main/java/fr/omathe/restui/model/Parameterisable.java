@@ -13,18 +13,15 @@ public interface Parameterisable {
 
 	default void addParameter(final Parameter parameter) {
 
-		if (getParameters().contains(parameter)) {
-			getParameters().remove(parameter);
+		if (!getParameters().contains(parameter)) {
+			getParameters().add(parameter);
 		}
-		getParameters().add(parameter);
 	}
 
 	default void addParameters(final List<Parameter> parameterList) {
 
 		parameterList.stream().forEach(p -> {
-			if (!getParameters().contains(p)) {
-				getParameters().add(p);
-			}
+			addParameter(p);
 		});
 	}
 

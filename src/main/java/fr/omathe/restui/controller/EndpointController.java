@@ -332,9 +332,6 @@ public class EndpointController implements Initializable {
 						exchange.setName(event.getNewValue());
 					} else {
 						exchange.setName(event.getOldValue());
-						// workaround to refresh the table
-//						exchanges.getColumns().get(0).setVisible(false);
-//						exchanges.getColumns().get(0).setVisible(true);
 					}
 				} else {
 					exchange.setName(event.getNewValue());
@@ -385,14 +382,8 @@ public class EndpointController implements Initializable {
 
 					if (exchange.isPresent()) {
 						final MenuItem delete = new MenuItem("Delete");
-						final MenuItem duplicate = new MenuItem("Duplicate");
 						final MenuItem addToTest = new MenuItem("Add to test");
-						exchangesContextMenu.getItems().addAll(duplicate, delete, addToTest);
-
-						// duplicate exchange
-						duplicate.setOnAction(e -> {
-							endpoint.addExchange(getSelectedExchange().get().duplicate(""), true);
-						});
+						exchangesContextMenu.getItems().addAll(delete, addToTest);
 
 						// delete exchange
 						delete.setOnAction(e -> {
@@ -417,9 +408,9 @@ public class EndpointController implements Initializable {
 		});
 
 		exchanges.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-			Optional<Exchange> optionalExchange = getSelectedExchange();
-			if (optionalExchange.isPresent()) {
-				currentExchange = getSelectedExchange().get();
+			Optional<Exchange> selectedExchange = getSelectedExchange();
+			if (selectedExchange.isPresent()) {
+				currentExchange = selectedExchange.get();
 				display();
 			}
 		});
@@ -450,6 +441,26 @@ public class EndpointController implements Initializable {
 		modeExecution(null);
 	}
 
+	public HBox getBodyHBox() {
+		return bodyHBox;
+	}
+
+	public VBox getBodyVBox() {
+		return bodyVBox;
+	}
+
+	public boolean isExecutionMode() {
+		return radioButtonExecutionMode.isSelected();
+	}
+
+	public boolean isSpecificationMode() {
+		return !radioButtonExecutionMode.isSelected();
+	}
+
+	public Endpoint getEndpoint() {
+		return endpoint;
+	}
+
 	public Exchange getCurrentExchange() {
 		return currentExchange;
 	}
@@ -468,7 +479,7 @@ public class EndpointController implements Initializable {
 	protected void execute(final ActionEvent event) {
 
 		ControllerManager.getMainController().getBottomController().setNotification("", Color.BLACK);
-		
+
 		if (endpoint.hasExchanges()) {
 			Optional<Exchange> selectedExchange = getSelectedExchange();
 			if (selectedExchange.isPresent()) {
@@ -479,7 +490,7 @@ public class EndpointController implements Initializable {
 					// if the selected exchange is not the working exchange, we update the working exchange
 					currentExchange = endpoint.updateWorkingExchange(selectedExchange.get());
 				}
-			}	
+			}
 		} else {
 			// no exchanges, we build the working exchange
 			currentExchange = endpoint.buildWorkingExchange();
@@ -494,6 +505,7 @@ public class EndpointController implements Initializable {
 		ClientResponse response = null;
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
+			currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
 		} catch (ClientException e) {
 			ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 		}
@@ -502,7 +514,6 @@ public class EndpointController implements Initializable {
 
 		if (response == null) {
 			currentExchange.setStatus(0);
-
 			responseStatus.setText("0");
 			responseBody.setText("");
 			responseDuration.setText("");
@@ -524,69 +535,14 @@ public class EndpointController implements Initializable {
 			// status circle
 			displayStatusCircle(currentExchange);
 
-			if (response.getStatus() != 204) {
-
-				final InputStream inputStream = response.getEntityInputStream();
-				if (inputStream != null) {
-					byte[] bytes = Tools.getBytes(inputStream);
-
-					if (bytes != null && bytes.length > 0) {
-						final String output = new String(bytes, StandardCharsets.UTF_8);
-
-						if (output != null && !output.isEmpty()) {
-
-							Optional<Parameter> contentDisposition = currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Disposition");
-
-							if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
-								// the response contains the Content-Disposition header and attachment key word
-
-								final FileChooser fileChooser = new FileChooser();
-								fileChooser.setTitle("Save the file");
-
-								final File initialDirectory = new File(System.getProperty("user.home"));
-								fileChooser.setInitialDirectory(initialDirectory);
-
-								String fileName = Tools.findFileName(contentDisposition.get().getValue());
-								fileChooser.setInitialFileName(fileName);
-								final File file = fileChooser.showSaveDialog(null);
-								Tools.writeBytesToFile(file, bytes);
-							} else {
-								// response body
-								final Parameter responseBody = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.BODY, Type.TEXT, null, output);
-								currentExchange.addParameter(responseBody);
-							}
-						}
-					}
-					try {
-						inputStream.close();
-					} catch (IOException e1) {
-					}
-				}
-			}
-			response.close();
+			buildResponseBody(response);
 		}
-		currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
 		currentExchange.setDate(Instant.now().toEpochMilli());
-		
+
 		// select the working exchange if it exist
 		exchanges.getSelectionModel().select(currentExchange);
 
 		display();
-	}
-
-	private void displayStatusCircle(final Exchange exchange) {
-
-		if (exchange.getStatus().toString().startsWith("0") || exchange.getStatus().toString().isEmpty()) {
-			statusCircle.setFill(Color.GRAY);
-		} else if (exchange.getStatus().toString().startsWith("2")) {
-			statusCircle.setFill(Color.LIGHTGREEN);
-		} else if (exchange.getStatus().toString().startsWith("3")) {
-			statusCircle.setFill(Color.BLUE);
-		} else if (exchange.getStatus().toString().startsWith("4")) {
-			statusCircle.setFill(Color.ORANGE);
-		} else if (exchange.getStatus().toString().startsWith("5")) {
-			statusCircle.setFill(Color.RED);
-		}
 	}
 
 	@FXML
@@ -617,6 +573,68 @@ public class EndpointController implements Initializable {
 			currentExchange.setRequestBodyType(Exchange.BodyType.FORM_DATA);
 		}
 		requestBody(BodyType.FORM_DATA);
+	}
+
+	private void buildResponseBody(final ClientResponse response) {
+
+		if (response != null && response.getStatus() != 204) {
+
+			try (InputStream inputStream = response.getEntityInputStream()) {
+
+				if (inputStream != null) {
+					byte[] bytes = Tools.getBytes(inputStream);
+
+					if (bytes != null && bytes.length > 0) {
+						final String output = new String(bytes, StandardCharsets.UTF_8);
+
+						if (output != null && !output.isEmpty()) {
+
+							Optional<Parameter> contentDisposition = currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Disposition");
+
+							if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
+								// the response contains the Content-Disposition header and attachment key word
+
+								final FileChooser fileChooser = new FileChooser();
+								fileChooser.setTitle("Save the file");
+
+								final File initialDirectory = new File(System.getProperty("user.home"));
+								fileChooser.setInitialDirectory(initialDirectory);
+
+								String fileName = Tools.findFileName(contentDisposition.get().getValue());
+								fileChooser.setInitialFileName(fileName);
+								final File file = fileChooser.showSaveDialog(null);
+								Tools.writeBytesToFile(file, bytes);
+							} else {
+								// response body
+								final Parameter responseBody = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.BODY, Type.TEXT, null, output);
+								currentExchange.addParameter(responseBody);
+							}
+						}
+					}
+				}
+			} catch (IOException e) {
+				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
+			} finally {
+				if (response != null) {
+					response.close();
+				}
+			}
+		}
+	}
+
+	private void displayStatusCircle(final Exchange exchange) {
+
+		if (exchange.getStatus().toString().startsWith("0") || exchange.getStatus().toString().isEmpty()) {
+			statusCircle.setFill(Color.GRAY);
+		} else if (exchange.getStatus().toString().startsWith("2")) {
+			statusCircle.setFill(Color.LIGHTGREEN);
+		} else if (exchange.getStatus().toString().startsWith("3")) {
+			statusCircle.setFill(Color.BLUE);
+		} else if (exchange.getStatus().toString().startsWith("4")) {
+			statusCircle.setFill(Color.ORANGE);
+		} else if (exchange.getStatus().toString().startsWith("5")) {
+			statusCircle.setFill(Color.RED);
+		}
 	}
 
 	private void requestBody(BodyType bodyType) {
@@ -653,14 +671,6 @@ public class EndpointController implements Initializable {
 			optional = Optional.of(requestParameters.getSelectionModel().getSelectedItem());
 		}
 		return optional;
-	}
-
-	public HBox getBodyHBox() {
-		return bodyHBox;
-	}
-
-	public VBox getBodyVBox() {
-		return bodyVBox;
 	}
 
 	List<String> getEndpointExchangeNames() {
@@ -717,11 +727,11 @@ public class EndpointController implements Initializable {
 	@FXML
 	protected void modeExecution(final ActionEvent event) {
 
-		// create the current if it does not exist
-		if (!workingExchangeExists()) {
+		// create the current exchange if it does not exist
+		if (!endpoint.findWorkingExchange().isPresent()) {
 			currentExchange = endpoint.buildWorkingExchange();
 		}
-		
+
 		radioButtonExecutionMode.setSelected(true);
 
 		// enable execute
@@ -774,16 +784,18 @@ public class EndpointController implements Initializable {
 	}
 
 	private void displayExecutionMode() {
-		
+
 		if (currentExchange != null) {
-			
+
 			// request parameters
-			// add endpoint new parameters if any
-			List<Parameter> endpointRequestParameters = endpoint.getParameters().stream()
-					.filter(p -> p.isRequestParameter())
-					.map(p -> p.duplicate())
-					.collect(Collectors.toList());
-			currentExchange.addParameters(endpointRequestParameters);
+
+			// add endpoint parameters if they are not in the working exchange parameter
+			if (currentExchange.isWorking()) {
+				endpoint.getParameters().stream()
+						.filter(p -> p.isRequestParameter())
+						.map(p -> p.duplicate())
+						.forEach(p -> currentExchange.addParameter(p));
+			}
 
 			requestParameters.setItems(FXCollections.observableArrayList(currentExchange.getParameters())
 					.filtered(p -> p.isRequestParameter() && (p.isPathParameter() || p.isQueryParameter() || p.isHeaderParameter())));
@@ -813,7 +825,7 @@ public class EndpointController implements Initializable {
 
 			// status circle
 			displayStatusCircle(currentExchange);
-			
+
 			// workaround to refresh the table
 			exchanges.getColumns().get(0).setVisible(false);
 			exchanges.getColumns().get(0).setVisible(true);
@@ -876,8 +888,7 @@ public class EndpointController implements Initializable {
 					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 					final Transformer transformer = transformerFactory.newTransformer();
 					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-					// transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT,
-					// "6");
+					// transformer.setOutputProperty(OutputPropertiesFactory.S_KEY_INDENT_AMOUNT, "6");
 					transformer.transform(xmlInput, xmlOutput);
 					responseBody.setText(xmlOutput.getWriter().toString());
 				} catch (final Exception e) {
@@ -936,9 +947,10 @@ public class EndpointController implements Initializable {
 	private Exchange getWorkingExchangeOrSelectFirstExchange() {
 
 		Exchange exchange = null;
-		
+
 		Optional<Exchange> optionalWorkingExchange = endpoint.findWorkingExchange();
 		if (optionalWorkingExchange.isPresent()) {
+			// working exchange exists
 			exchange = optionalWorkingExchange.get();
 		} else {
 			Optional<Exchange> selectedExchange = getSelectedExchange();
@@ -948,23 +960,6 @@ public class EndpointController implements Initializable {
 			}
 		}
 		return exchange;
-	}
-	
-	private Boolean workingExchangeExists() {
-
-		return endpoint.findExchangeByName("").isPresent();
-	}
-	
-	public boolean isExecutionMode() {
-		return radioButtonExecutionMode.isSelected();
-	}
-
-	public boolean isSpecificationMode() {
-		return !radioButtonExecutionMode.isSelected();
-	}
-
-	public Endpoint getEndpoint() {
-		return endpoint;
 	}
 
 }
