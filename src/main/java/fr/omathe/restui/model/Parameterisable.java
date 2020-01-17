@@ -2,6 +2,7 @@ package fr.omathe.restui.model;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import fr.omathe.restui.model.Parameter.Direction;
 import fr.omathe.restui.model.Parameter.Location;
@@ -64,9 +65,14 @@ public interface Parameterisable {
 	default boolean hasParameters() {
 		return getParameters() != null && !getParameters().isEmpty();
 	}
-	
+
 	default boolean containsParameter(final Parameter parameter) {
 
 		return getParameters().contains(parameter);
+	}
+
+	default Optional<Parameter> findParameter(final Predicate<Parameter> predicate) {
+
+		return predicate == null ? Optional.empty() : getParameters().stream().filter(predicate).findFirst();
 	}
 }

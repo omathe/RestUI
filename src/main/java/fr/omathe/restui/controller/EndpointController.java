@@ -25,7 +25,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
 
@@ -42,6 +41,7 @@ import fr.omathe.restui.model.Parameter.Type;
 import fr.omathe.restui.model.Path;
 import fr.omathe.restui.service.RestClient;
 import fr.omathe.restui.service.Tools;
+import fr.omathe.restui.service.tools.JsonHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -870,15 +870,13 @@ public class EndpointController implements Initializable {
 
 			String body = currentExchange.getResponseBody();
 			if (p.getValue().toLowerCase().contains("json")) {
-				final ObjectMapper mapper = new ObjectMapper();
 				try {
 					body = currentExchange.getResponseBody();
 					if (body != null && !body.isEmpty()) {
-						final Object json = mapper.readValue(body, Object.class);
-						responseBody.setText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json));
+						responseBody.setText(JsonHelper.pretty(body));
 					}
-				} catch (final IOException e1) {
-					e1.printStackTrace();
+				} catch (final IOException e) {
+					ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 				}
 			} else if (p.getValue().toLowerCase().contains("xml")) {
 				final StringWriter stringWriter = new StringWriter();
