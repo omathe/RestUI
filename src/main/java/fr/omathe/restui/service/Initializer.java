@@ -4,6 +4,8 @@ import java.io.File;
 
 import fr.omathe.restui.commons.ResourceHelper;
 import fr.omathe.restui.conf.App;
+import fr.omathe.restui.controller.ControllerManager;
+import javafx.scene.paint.Color;
 
 /**
  * Initialize the application
@@ -29,7 +31,7 @@ public interface Initializer {
 		try {
 			ResourceHelper.copyResource(App.STYLE_LOCATION, App.getApplicationHome());
 		} catch (Exception e) {
-			e.printStackTrace();
+			ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 		}
 	}
 

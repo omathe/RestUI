@@ -879,8 +879,7 @@ public class EndpointController implements Initializable {
 					ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 				}
 			} else if (p.getValue().toLowerCase().contains("xml")) {
-				final StringWriter stringWriter = new StringWriter();
-				try {
+				try(StringWriter stringWriter = new StringWriter()) {
 					final Source xmlInput = new StreamSource(new StringReader(body));
 					final StreamResult xmlOutput = new StreamResult(stringWriter);
 					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -891,15 +890,8 @@ public class EndpointController implements Initializable {
 					responseBody.setText(xmlOutput.getWriter().toString());
 				} catch (final Exception e) {
 					e.printStackTrace();
-				} finally {
-					try {
-						stringWriter.close();
-					} catch (final IOException e) {
-						e.printStackTrace();
-					}
 				}
 			} else if (p.getValue().toLowerCase().contains("html")) {
-				// TODO afficher le contenu HTML
 				responseBody.setText(body);
 			} else {
 				responseBody.setText(body);

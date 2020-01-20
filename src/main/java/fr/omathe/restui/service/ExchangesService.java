@@ -161,8 +161,8 @@ public class ExchangesService {
 			final XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			final Document document = new Document(root);
 
-			try {
-				xmlOutputter.output(document, new FileOutputStream(new File(exchangeUri)));
+			try(FileOutputStream fileOutputStream =  new FileOutputStream(new File(exchangeUri))) {
+				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
 				throw new TechnicalException(e.getMessage());
 			}

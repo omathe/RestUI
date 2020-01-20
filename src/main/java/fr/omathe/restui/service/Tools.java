@@ -6,12 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import fr.omathe.restui.controller.ControllerManager;
+import javafx.scene.paint.Color;
+
 public interface Tools {
 
 	/**
 	 * Get byte[] from an InputStream
 	 */
-	static byte[] getBytes(InputStream inputStream) {
+	static byte[] getBytes(final InputStream inputStream) {
 
 		byte[] bytes = null;
 
@@ -34,34 +37,24 @@ public interface Tools {
 					inputStream.close();
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 			}
 		}
 		return bytes;
 	}
 
-	static void writeBytesToFile(File file, byte[] bytes) {
+	static void writeBytesToFile(final File file, final byte[] bytes) {
 
 		if (file != null && bytes.length > 0) {
-			FileOutputStream fos = null;
-			try {
-				fos = new FileOutputStream(file);
+			try (FileOutputStream fos = new FileOutputStream(file)) {
 				fos.write(bytes);
 			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (fos != null) {
-					try {
-						fos.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 			}
 		}
 	}
 
-	static String findFileName(String contentDisposition) {
+	static String findFileName(final String contentDisposition) {
 
 		String fileName = null;
 
