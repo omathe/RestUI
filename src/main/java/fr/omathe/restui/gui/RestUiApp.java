@@ -18,7 +18,7 @@ public class RestUiApp extends Application {
 
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
-
+		
 		MainController mainController = ControllerManager.getMainController();
 		primaryStage.setTitle(App.TITLE);
 		primaryStage.getIcons().add(new Image(ControllerManager.class.getResource(App.APPLICATION_ICON).toString()));

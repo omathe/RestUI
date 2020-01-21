@@ -6,8 +6,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ResourceBundle;
 
-import fr.omathe.restui.model.AppVersion;
-import fr.omathe.restui.model.AppVersion.DateVersion;
+import fr.omathe.restui.model.Version;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -37,8 +36,8 @@ public class BottomController implements Initializable {
 	public void initialize(final URL location, final ResourceBundle resources) {
 
 		// version
-		DateVersion dateVersion = AppVersion.getDateVersion();
-		version.setText(dateVersion.version + " " + AppVersion.date(ZoneId.systemDefault().getId(), dateVersion.date));
+		Version.load();
+		version.setText(Version.getName() + " " + Version.getDate(ZoneId.systemDefault().getId()));
 
 		// base URL
 		baseURL.setTooltip(new Tooltip());
