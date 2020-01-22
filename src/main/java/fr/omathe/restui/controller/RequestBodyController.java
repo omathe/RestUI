@@ -137,7 +137,9 @@ public class RequestBodyController implements Initializable {
 					try {
 						requestBody.setText(JsonHelper.pretty(newValue));
 					} catch (IOException e) {
+						ControllerManager.getLogsController().logError(e);
 						ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
+						ControllerManager.getMainController().getBottomController().notifyError(e.getMessage());
 					}
 				}
 			}

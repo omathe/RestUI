@@ -412,6 +412,8 @@ public class MainController implements Initializable {
 		}
 		if (tabId.equals("testTab")) {
 			center = getExchangesVBox();
+		} else if (tabId.equals("logsTab")) {
+			center = getLogsVBox();
 		}
 		return center;
 	}
@@ -421,6 +423,12 @@ public class MainController implements Initializable {
 		TestController testController = ControllerManager.getTestController();
 		testController.setProject((Project) treeView.getRoot().getValue());
 		return testController.getRootNode();
+	}
+
+	private VBox getLogsVBox() {
+
+		LogsController logsController = ControllerManager.getLogsController();
+		return logsController.getRootNode();
 	}
 
 	private WebView getWebView() {

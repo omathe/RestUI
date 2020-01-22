@@ -31,6 +31,7 @@ public interface Initializer {
 		try {
 			ResourceHelper.copyResource(App.STYLE_LOCATION, App.getApplicationHome());
 		} catch (Exception e) {
+			e.printStackTrace();
 			ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 		}
 	}

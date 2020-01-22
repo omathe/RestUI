@@ -74,5 +74,11 @@ public class BottomController implements Initializable {
 		notification.setText(message);
 		notification.setTextFill(color);
 	}
+	
+	public void notifyError(final String message) {
+		
+		notification.setText(message);
+		notification.setTextFill(Color.RED);
+	}
 
 }

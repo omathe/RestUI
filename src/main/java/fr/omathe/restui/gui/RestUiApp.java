@@ -30,6 +30,8 @@ public class RestUiApp extends Application {
 		});
 
 		primaryStage.show();
+		
+		ControllerManager.getLogsController().logInfo("Application started");
 	}
 
 	public static void main(final String[] args) {

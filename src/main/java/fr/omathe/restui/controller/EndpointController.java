@@ -876,6 +876,7 @@ public class EndpointController implements Initializable {
 						responseBody.setText(JsonHelper.pretty(body));
 					}
 				} catch (final IOException e) {
+					e.printStackTrace();
 					ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 				}
 			} else if (p.getValue().toLowerCase().contains("xml")) {

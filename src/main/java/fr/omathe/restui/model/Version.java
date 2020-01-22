@@ -3,12 +3,11 @@ package fr.omathe.restui.model;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.TimeZone;
 
 import fr.omathe.restui.controller.ControllerManager;
+import fr.omathe.restui.service.tools.DateFormater;
 import javafx.scene.paint.Color;
 
 public class Version {
@@ -22,9 +21,7 @@ public class Version {
 
 	public static String getDate(final String timeZone) {
 
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-		simpleDateFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
-		return simpleDateFormat.format(date);
+		return DateFormater.iso(date, timeZone);
 	}
 
 	public static void load() {

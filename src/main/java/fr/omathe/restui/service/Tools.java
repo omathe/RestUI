@@ -37,6 +37,7 @@ public interface Tools {
 					inputStream.close();
 				}
 			} catch (IOException e) {
+				e.printStackTrace();
 				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 			}
 		}
@@ -49,6 +50,7 @@ public interface Tools {
 			try (FileOutputStream fos = new FileOutputStream(file)) {
 				fos.write(bytes);
 			} catch (IOException e) {
+				e.printStackTrace();
 				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
 			}
 		}

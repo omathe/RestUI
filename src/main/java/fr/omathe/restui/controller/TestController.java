@@ -69,8 +69,6 @@ public class TestController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		//mainController = ControllerManager.getMainController();
-
 		tableView.setItems(tests);
 
 		testEnabledColumn.setCellFactory(object -> new CheckBoxTableCell<>());

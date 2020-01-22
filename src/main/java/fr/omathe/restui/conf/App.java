@@ -19,6 +19,7 @@ public interface App {
 	String ENDPOINT_FXML = FXML_LOCATION + "/endpoint.fxml";
 	String REQUEST_BODY_FXML = FXML_LOCATION + "/requestBody.fxml";
 	String TEST_FXML = FXML_LOCATION + "/test.fxml";
+	String LOGS_FXML = FXML_LOCATION + "/logs.fxml";
 
 	// style
 	String STYLE_LOCATION = "/style";
