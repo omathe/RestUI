@@ -101,6 +101,8 @@ public class ExchangesService {
 				}
 			}
 		} catch (final Exception e) {
+			Logger.error(e);
+			Notifier.notifyError(e.getMessage());
 			throw new TechnicalException(e.getMessage());
 		}
 	}
@@ -164,6 +166,8 @@ public class ExchangesService {
 			try(FileOutputStream fileOutputStream =  new FileOutputStream(new File(exchangeUri))) {
 				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 				throw new TechnicalException(e.getMessage());
 			}
 		}

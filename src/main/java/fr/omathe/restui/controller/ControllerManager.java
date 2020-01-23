@@ -3,6 +3,8 @@ package fr.omathe.restui.controller;
 import java.io.IOException;
 
 import fr.omathe.restui.conf.App;
+import fr.omathe.restui.service.Logger;
+import fr.omathe.restui.service.Notifier;
 import javafx.fxml.FXMLLoader;
 
 public class ControllerManager {
@@ -22,7 +24,8 @@ public class ControllerManager {
 				fxmlLoader.load(ControllerManager.class.getResource(App.MAIN_FXML).openStream());
 				mainController = (MainController) fxmlLoader.getController();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 		return mainController;
@@ -36,7 +39,8 @@ public class ControllerManager {
 				fxmlLoader.load(ControllerManager.class.getResource(App.PROJECT_FXML).openStream());
 				projectController = (ProjectController) fxmlLoader.getController();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 		return projectController;
@@ -50,7 +54,8 @@ public class ControllerManager {
 				fxmlLoader.load(ControllerManager.class.getResource(App.ENDPOINT_FXML).openStream());
 				endpointController = (EndpointController) fxmlLoader.getController();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 		return endpointController;
@@ -64,7 +69,8 @@ public class ControllerManager {
 				fxmlLoader.load(ControllerManager.class.getResource(App.REQUEST_BODY_FXML).openStream());
 				requestBodyController = (RequestBodyController) fxmlLoader.getController();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 		return requestBodyController;
@@ -78,7 +84,8 @@ public class ControllerManager {
 				fxmlLoader.load(ControllerManager.class.getResource(App.TEST_FXML).openStream());
 				testController = (TestController) fxmlLoader.getController();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 		return testController;
@@ -92,7 +99,8 @@ public class ControllerManager {
 				fxmlLoader.load(ControllerManager.class.getResource(App.LOGS_FXML).openStream());
 				logsController = (LogsController) fxmlLoader.getController();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 		return logsController;

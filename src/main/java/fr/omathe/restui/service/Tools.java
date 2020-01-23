@@ -6,9 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import fr.omathe.restui.controller.ControllerManager;
-import javafx.scene.paint.Color;
-
 public interface Tools {
 
 	/**
@@ -30,15 +27,16 @@ public interface Tools {
 			buffer.flush();
 			bytes = buffer.toByteArray();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logger.error(e);
+			Notifier.notifyError(e.getMessage());
 		} finally {
 			try {
 				if (inputStream != null) {
 					inputStream.close();
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
-				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 		return bytes;
@@ -50,8 +48,8 @@ public interface Tools {
 			try (FileOutputStream fos = new FileOutputStream(file)) {
 				fos.write(bytes);
 			} catch (IOException e) {
-				e.printStackTrace();
-				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 	}

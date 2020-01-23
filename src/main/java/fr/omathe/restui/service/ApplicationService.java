@@ -44,7 +44,8 @@ public class ApplicationService {
 				}
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+			Logger.error(e);
+			Notifier.notifyError(e.getMessage());
 		}
 		return application;
 	}
@@ -81,7 +82,8 @@ public class ApplicationService {
 			try (FileOutputStream fileOutputStream = new FileOutputStream(applicationFile)) {
 				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
-				e.printStackTrace();
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 		}
 	}
@@ -106,7 +108,8 @@ public class ApplicationService {
 		try(FileOutputStream fos = new FileOutputStream(applicationFile)) {
 			xmlOutputter.output(document, fos);
 		} catch (final IOException e) {
-			e.printStackTrace();
+			Logger.error(e);
+			Notifier.notifyError(e.getMessage());
 		}
 	}
 

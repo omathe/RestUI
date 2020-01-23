@@ -15,6 +15,9 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fr.omathe.restui.service.Logger;
+import fr.omathe.restui.service.Notifier;
+
 public interface ResourceHelper {
 
 	/**
@@ -78,7 +81,8 @@ public interface ResourceHelper {
 				try (InputStream inputStream = Files.newInputStream(sourcePath)) {
 					Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
 				} catch (Exception e) {
-					e.printStackTrace();
+					Logger.error(e);
+					Notifier.notifyError(e.getMessage());
 				}
 			}
 		}

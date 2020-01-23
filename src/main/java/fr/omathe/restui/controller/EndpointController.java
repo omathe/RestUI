@@ -39,6 +39,8 @@ import fr.omathe.restui.model.Parameter.Direction;
 import fr.omathe.restui.model.Parameter.Location;
 import fr.omathe.restui.model.Parameter.Type;
 import fr.omathe.restui.model.Path;
+import fr.omathe.restui.service.Logger;
+import fr.omathe.restui.service.Notifier;
 import fr.omathe.restui.service.RestClient;
 import fr.omathe.restui.service.Tools;
 import fr.omathe.restui.service.tools.JsonHelper;
@@ -399,6 +401,8 @@ public class EndpointController implements Initializable {
 								String line = false + "," + endpoint.getName() + "," + exchange.get().getName() + "," + exchange.get().getStatus() + "," + exchange.get().getDuration() + "\n";
 								fw.write(line);
 							} catch (IOException e1) {
+								Logger.error(e1);
+								Notifier.notifyError(e1.getMessage());
 							}
 						});
 					}
@@ -478,7 +482,7 @@ public class EndpointController implements Initializable {
 	@FXML
 	protected void execute(final ActionEvent event) {
 
-		ControllerManager.getMainController().getBottomController().setNotification("", Color.BLACK);
+		Notifier.clear();
 
 		if (endpoint.hasExchanges()) {
 			Optional<Exchange> selectedExchange = getSelectedExchange();
@@ -507,7 +511,8 @@ public class EndpointController implements Initializable {
 			response = RestClient.execute(method.getValue(), currentExchange);
 			currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
 		} catch (ClientException e) {
-			ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
+			Logger.error(e);
+			Notifier.notifyError(e.getMessage());
 		}
 
 		currentExchange.setDate(Instant.now().toEpochMilli());
@@ -613,7 +618,8 @@ public class EndpointController implements Initializable {
 					}
 				}
 			} catch (IOException e) {
-				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			} finally {
 				if (response != null) {
 					response.close();
@@ -876,8 +882,8 @@ public class EndpointController implements Initializable {
 						responseBody.setText(JsonHelper.pretty(body));
 					}
 				} catch (final IOException e) {
-					e.printStackTrace();
-					ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
+					Logger.error(e);
+					Notifier.notifyError(e.getMessage());
 				}
 			} else if (p.getValue().toLowerCase().contains("xml")) {
 				try(StringWriter stringWriter = new StringWriter()) {
@@ -890,7 +896,8 @@ public class EndpointController implements Initializable {
 					transformer.transform(xmlInput, xmlOutput);
 					responseBody.setText(xmlOutput.getWriter().toString());
 				} catch (final Exception e) {
-					e.printStackTrace();
+					Logger.error(e);
+					Notifier.notifyError(e.getMessage());
 				}
 			} else if (p.getValue().toLowerCase().contains("html")) {
 				responseBody.setText(body);

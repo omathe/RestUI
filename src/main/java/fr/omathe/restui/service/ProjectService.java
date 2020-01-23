@@ -44,6 +44,8 @@ public interface ProjectService {
 		try(FileInputStream inputStream = new FileInputStream(file)) {
 			project = parseXml(inputStream);
 		} catch (IOException e) {
+			Logger.error(e);
+			Notifier.notifyError(e.getMessage());
 			throw new TechnicalException(e.getMessage());
 		}
 
@@ -108,11 +110,15 @@ public interface ProjectService {
 					}
 				}
 			} catch (final Exception e) {
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 				throw new TechnicalException(e.getMessage());
 			} finally {
 				try {
 					inputStream.close();
 				} catch (IOException e) {
+					Logger.error(e);
+					Notifier.notifyError(e.getMessage());
 					throw new TechnicalException(e.getMessage());
 				}
 			}
@@ -179,6 +185,8 @@ public interface ProjectService {
 			try(FileOutputStream fileOutputStream = new FileOutputStream(new File(uri))) {
 				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 				throw new TechnicalException(e.getMessage());
 			}
 		}

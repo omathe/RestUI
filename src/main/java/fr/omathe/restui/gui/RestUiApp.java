@@ -4,6 +4,7 @@ import fr.omathe.restui.conf.App;
 import fr.omathe.restui.controller.ControllerManager;
 import fr.omathe.restui.controller.MainController;
 import fr.omathe.restui.service.Initializer;
+import fr.omathe.restui.service.Logger;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -31,7 +32,7 @@ public class RestUiApp extends Application {
 
 		primaryStage.show();
 		
-		ControllerManager.getLogsController().logInfo("Application started");
+		Logger.info("Application started");
 	}
 
 	public static void main(final String[] args) {

@@ -102,7 +102,7 @@ all labels
 #deleteFileButton:hover {
 	-fx-opacity :1.0
 }
-
+ 
 #exitButton { 
     -fx-background-image: url('images/exit.png');
     -fx-background-size: 32px;
@@ -165,4 +165,14 @@ all labels
     -fx-padding: 0.667em 0.75em 0.667em 0.75em; /* 10px */
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 10, 0.0 , 0 , 3 );
     -fx-font-size: 1.0em;
+}
+
+#logsArea {
+	-fx-control-inner-background:#000000;
+	-fx-font-family: Consolas;
+	-fx-highlight-fill: #00ff00;
+	-fx-highlight-text-fill: #000000;
+	-fx-text-fill: #00ff00;
+	-fx-background-color:#000000;
+	-fx-font-size: 1.2em;
 }

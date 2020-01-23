@@ -43,6 +43,7 @@ import fr.omathe.restui.model.Parameter.Location;
 import fr.omathe.restui.model.Project;
 import fr.omathe.restui.service.ApplicationService;
 import fr.omathe.restui.service.ExchangesService;
+import fr.omathe.restui.service.Logger;
 import fr.omathe.restui.service.ProjectService;
 import fr.omathe.restui.service.RestClient;
 import javafx.application.Platform;
@@ -506,18 +507,21 @@ public class MainController implements Initializable {
 				ExchangesService.loadExchanges(uri, project);
 			}
 		} catch (final NotFoundException e) {
+			Logger.info("Project not found " + e.getMessage());
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Loading last project");
 			alert.setHeaderText("Project not found");
 			alert.setContentText(e.getMessage());
 			alert.showAndWait();
 		} catch (TechnicalException e) {
+			Logger.error(e);
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Loading last project");
 			alert.setHeaderText("Technical error");
 			alert.setContentText(e.getMessage());
 			alert.showAndWait();
 		} catch (Exception e) {
+			Logger.error(e);
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Loading last project");
 			alert.setHeaderText("Technical error");
@@ -549,6 +553,7 @@ public class MainController implements Initializable {
 				try {
 					ProjectService.saveProject(project, projectFile.toURI());
 				} catch (TechnicalException e) {
+					Logger.error(e);
 					final Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Save the project");
 					alert.setHeaderText("An error occured");
@@ -562,6 +567,7 @@ public class MainController implements Initializable {
 				try {
 					ExchangesService.saveExchanges(project, projectFile.toURI());
 				} catch (TechnicalException e) {
+					Logger.error(e);
 					final Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Save the exchanges");
 					alert.setHeaderText("An error occured");
@@ -589,6 +595,7 @@ public class MainController implements Initializable {
 					Files.copy(projectFile.toPath(), file.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
 					loadProject(file.toURI());
 				} catch (final IOException e) {
+					Logger.error(e);
 					final Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Save as project");
 					alert.setHeaderText("Copy error");
@@ -800,12 +807,14 @@ public class MainController implements Initializable {
 				}
 			}
 		} catch (ClientException | TechnicalException e) {
+			Logger.error(e);
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Import endpoints");
 			alert.setHeaderText("An error occured");
 			alert.setContentText(e.getMessage());
 			alert.showAndWait();
 		} catch (NotFoundException e) {
+			Logger.error(e);
 			final Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Import endpoints");
 			alert.setHeaderText("An error occured");

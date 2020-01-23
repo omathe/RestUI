@@ -15,6 +15,8 @@ import fr.omathe.restui.model.Parameter;
 import fr.omathe.restui.model.Parameter.Direction;
 import fr.omathe.restui.model.Parameter.Location;
 import fr.omathe.restui.model.Parameter.Type;
+import fr.omathe.restui.service.Logger;
+import fr.omathe.restui.service.Notifier;
 import fr.omathe.restui.service.tools.JsonHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,7 +36,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
 
@@ -123,7 +124,7 @@ public class RequestBodyController implements Initializable {
 		});
 
 		requestBody.textProperty().addListener((observable, oldValue, newValue) -> {
-			ControllerManager.getMainController().getBottomController().setNotification("", Color.BLACK);
+			Notifier.clear();
 			if (endPointController.isSpecificationMode()) {
 				endpoint.setRequestRawBody(newValue);
 			} else {
@@ -137,9 +138,8 @@ public class RequestBodyController implements Initializable {
 					try {
 						requestBody.setText(JsonHelper.pretty(newValue));
 					} catch (IOException e) {
-						ControllerManager.getLogsController().logError(e);
-						ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
-						ControllerManager.getMainController().getBottomController().notifyError(e.getMessage());
+						Logger.error(e);
+						Notifier.notifyError(e.getMessage());
 					}
 				}
 			}

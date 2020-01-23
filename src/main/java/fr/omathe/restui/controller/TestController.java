@@ -21,6 +21,8 @@ import fr.omathe.restui.model.Endpoint;
 import fr.omathe.restui.model.Exchange;
 import fr.omathe.restui.model.Project;
 import fr.omathe.restui.model.Test;
+import fr.omathe.restui.service.Logger;
+import fr.omathe.restui.service.Notifier;
 import fr.omathe.restui.service.RestClient;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -125,6 +127,7 @@ public class TestController implements Initializable {
 							test.setDuration((int) (Instant.now().toEpochMilli() - t0));
 						}
 					} catch (ClientException e) {
+						Logger.error(e);
 						final Alert alert = new Alert(AlertType.ERROR);
 						alert.setTitle("Test in batch");
 						alert.setHeaderText("An error occured for web service " + test.getWebServiceName() + " and exchange "  + exchange.getName());
@@ -135,6 +138,7 @@ public class TestController implements Initializable {
 							try {
 								inputStream.close();
 							} catch (IOException e1) {
+								Logger.error(e1);
 							}
 						}
 					}
@@ -148,14 +152,14 @@ public class TestController implements Initializable {
 
 		if (file.exists()) {
 
-			try {
-				Stream<String> stream = Files.lines(file.toPath(), Charset.defaultCharset());
+			try (Stream<String> stream = Files.lines(file.toPath(), Charset.defaultCharset())) {
 				stream.forEach(line -> {
 					String[] split = line.split(",");
 					list.add(new Test(Boolean.valueOf(split[0]), split[1], split[2], Integer.valueOf(split[3]), Integer.valueOf(split[4])));
 				});
 				stream.close();
 			} catch (IOException e) {
+				Logger.error(e);
 				final Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Loading tests");
 				alert.setHeaderText("An error occured");
@@ -176,6 +180,8 @@ public class TestController implements Initializable {
 				fw.write(s);
 			}
 		} catch (IOException e) {
+			Logger.error(e);
+			Notifier.notifyError(e.getMessage());
 		}
 	}
 
@@ -203,20 +209,9 @@ public class TestController implements Initializable {
 			fw.write(s);
 
 		} catch (IOException e) {
+			Logger.error(e);
+			Notifier.notifyError(e.getMessage());
 		}
 
-
-
-
-/*
-		int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
-		int index = tableView.getSelectionModel().getSelectedIndex();
-
-		if (selectedIndex != -1 && selectedIndex != 0) {
-			// swap items
-			tableView.getItems().add(index - 1, tableView.getItems().remove(index));
-			tableView.getSelectionModel().clearAndSelect(index - 1);
-		}
- */
 	}
 }

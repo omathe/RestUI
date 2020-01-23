@@ -14,7 +14,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 public class BottomController implements Initializable {
@@ -65,20 +64,12 @@ public class BottomController implements Initializable {
 		timelineMemory.play();
 	}
 
+	public Label getNotification() {
+		return notification;
+	}
+
 	public void setFileName(final String name) {
 		file.setText(name);
-	}
-
-	public void setNotification(final String message, final Color color) {
-
-		notification.setText(message);
-		notification.setTextFill(color);
-	}
-	
-	public void notifyError(final String message) {
-		
-		notification.setText(message);
-		notification.setTextFill(Color.RED);
 	}
 
 }

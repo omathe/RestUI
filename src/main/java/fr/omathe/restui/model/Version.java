@@ -6,9 +6,9 @@ import java.nio.file.Files;
 import java.time.Instant;
 import java.util.Optional;
 
-import fr.omathe.restui.controller.ControllerManager;
+import fr.omathe.restui.service.Logger;
+import fr.omathe.restui.service.Notifier;
 import fr.omathe.restui.service.tools.DateFormater;
-import javafx.scene.paint.Color;
 
 public class Version {
 
@@ -39,8 +39,8 @@ public class Version {
 					name = name.replaceAll("\"", "");
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
-				ControllerManager.getMainController().getBottomController().setNotification(e.getMessage(), Color.RED);
+				Logger.error(e);
+				Notifier.notifyError(e.getMessage());
 			}
 			date = Instant.now().toEpochMilli();
 		}
