@@ -1,9 +1,9 @@
 module fr.omathe.restui {
 
-	requires javafx.controls;
+	//requires javafx.controls;
 	requires javafx.fxml;
 	requires javafx.web;
-	requires javafx.graphics;
+	//requires javafx.graphics;
 	requires java.logging;
 
 	// automatic modules
@@ -12,7 +12,7 @@ module fr.omathe.restui {
 	requires jersey.client;
 	requires jersey.core;
 
-	// opens package 'controller' to the module 'javafx.fxml' 
+	// opens package 'controller' to the module 'javafx.fxml'
 	opens fr.omathe.restui.controller to javafx.fxml;
 
 	// opens package 'model' to the module javafx.base 
@@ -23,5 +23,4 @@ module fr.omathe.restui {
 	
 	// exported package
 	exports fr.omathe.restui.gui;
-
 }

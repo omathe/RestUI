@@ -13,7 +13,7 @@ import fr.omathe.restui.service.tools.DateFormater;
 public class Version {
 
 	private static String name = "1.3.2";
-	private static Long date = 1579796137935L;
+	private static Long date = 1579881467905L;
 
 	public static String getName() {
 		return name;
