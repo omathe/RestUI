@@ -4,6 +4,7 @@ module fr.omathe.restui {
 	requires javafx.fxml;
 	requires javafx.web;
 	requires javafx.graphics;
+	requires java.logging;
 
 	// automatic modules
 	requires jdom;
@@ -16,10 +17,10 @@ module fr.omathe.restui {
 
 	// opens package 'model' to the module javafx.base 
 	opens fr.omathe.restui.model to javafx.base;
-
+	
 	// opens fxml location (otherwise javafx.fxml.LoadException: Cannot resolve path: /fxml/bottom.fxml)
 	opens fxml;
-
+	
 	// exported package
 	exports fr.omathe.restui.gui;
 

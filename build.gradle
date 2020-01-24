@@ -131,6 +131,7 @@ jlink {
     
     mergedModule {
     	requires 'java.xml';
+    	requires 'java.logging';
 	}
     
     launcher {

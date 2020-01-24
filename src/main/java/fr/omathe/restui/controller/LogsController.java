@@ -28,7 +28,6 @@ public class LogsController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
-		//logsArea.setStyle("-fx-control-inner-background:#000000; -fx-font-family: Consolas; -fx-highlight-fill: #00ff00; -fx-highlight-text-fill: #000000; -fx-text-fill: #00ff00; ");
 	}
 
 	public VBox getRootNode() {
