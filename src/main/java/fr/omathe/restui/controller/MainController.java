@@ -1,11 +1,8 @@
 package fr.omathe.restui.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
@@ -410,15 +407,7 @@ public class MainController implements Initializable {
 
 		if (center == null) {
 			if (tabId.equals("webTab")) {
-				//getWebEngine().load("https://www.qwant.com/?l=fr");
-
-				try {
-					getWebEngine().loadContent(getData("https://www.qwant.com/?l=fr"));
-				} catch (Exception e) {
-					Logger.error(e);
-					e.printStackTrace();
-				}
-
+				getWebEngine().load("https://www.qwant.com/?l=fr");
 				center = webView;
 			}
 		}
@@ -455,9 +444,6 @@ public class MainController implements Initializable {
 		if (webEngine == null) {
 			webEngine = getWebView().getEngine();
 			webEngine.setJavaScriptEnabled(true);
-			// fix webView problem in packaged image
-//			System.setProperty("jdk.tls.client.protocols", "TLSv1,TLSv1.1");
-//			System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 		}
 		return webEngine;
 	}
@@ -834,25 +820,6 @@ public class MainController implements Initializable {
 			alert.setHeaderText("An error occured");
 			alert.setContentText(e.getMessage());
 			alert.showAndWait();
-		}
-	}
-
-	private static String getData(final String address) throws Exception {
-		URL page = new URL(address);
-		StringBuffer text = new StringBuffer();
-		HttpURLConnection conn = (HttpURLConnection) page.openConnection();
-		conn.connect();
-		try (InputStreamReader in = new InputStreamReader(
-				(InputStream) conn.getContent())) {
-			BufferedReader buff = new BufferedReader(in);
-			String line;
-			do {
-				line = buff.readLine();
-				text.append(line + "\n");
-			} while (line != null);
-			return text.toString();
-		} finally {
-			conn.disconnect();
 		}
 	}
 
