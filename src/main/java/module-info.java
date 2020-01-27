@@ -1,11 +1,10 @@
 module fr.omathe.restui {
 
-	//requires javafx.controls;
 	requires javafx.fxml;
 	requires javafx.web;
-	//requires javafx.graphics;
 	requires java.logging;
-
+	requires jdk.crypto.ec; // security (SSL handshake failed)
+	
 	// automatic modules
 	requires jdom;
 	requires jackson.databind;
