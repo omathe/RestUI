@@ -12,7 +12,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
 
@@ -62,6 +64,21 @@ public class BottomController implements Initializable {
 		}));
 		timelineMemory.setCycleCount(Animation.INDEFINITE);
 		timelineMemory.play();
+
+		// notification
+		notification.setOnMousePressed(event -> {
+			if (event.isSecondaryButtonDown()) { // right clic
+				final ContextMenu contextMenu = new ContextMenu();
+				final MenuItem clear = new MenuItem("clear");
+				contextMenu.getItems().clear();
+				contextMenu.getItems().addAll(clear);
+
+				notification.setContextMenu(contextMenu);
+				clear.setOnAction(e -> {
+					notification.setText("");
+				});
+			}
+		});
 	}
 
 	public Label getNotification() {
