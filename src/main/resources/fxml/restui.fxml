@@ -33,7 +33,7 @@
 			<children>
 				<HBox alignment="TOP_RIGHT" spacing="5.0">
 					<children>
-						<TabPane id="tabPane1" fx:id="topTabPane" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="ALWAYS">
+						<TabPane id="tabPane1" fx:id="topTabPane" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="SOMETIMES">
 							<tabs>
 								<Tab fx:id="projectTab" text="Project">
 									<content>
@@ -161,11 +161,6 @@
 										</HBox>
 									</content>
 								</Tab>
-								<Tab fx:id="testTab" text="Test (incubated)">
-									<content>
-										<HBox fillHeight="false" />
-									</content>
-								</Tab>
                         <Tab fx:id="logsTab" text="Logs" />
 							</tabs>
 							<HBox.margin>
@@ -218,10 +213,10 @@
 
 	<bottom>
 <!--  		IDE version  -->
-        		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
+           		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
 
 <!--  		scene builder version  -->
-<!--        		<fx:include fx:id="bottom" source="bottom.fxml" /> --> 
+<!--           		<fx:include fx:id="bottom" source="bottom.fxml" /> -->
 
 	</bottom>
 

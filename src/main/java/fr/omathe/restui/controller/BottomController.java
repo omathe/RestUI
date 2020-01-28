@@ -72,7 +72,6 @@ public class BottomController implements Initializable {
 				final MenuItem clear = new MenuItem("clear");
 				contextMenu.getItems().clear();
 				contextMenu.getItems().addAll(clear);
-
 				notification.setContextMenu(contextMenu);
 				clear.setOnAction(e -> {
 					notification.setText("");

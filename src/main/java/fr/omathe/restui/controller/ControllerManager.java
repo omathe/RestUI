@@ -13,7 +13,6 @@ public class ControllerManager {
 	private static EndpointController endpointController;
 	private static MainController mainController;
 	private static RequestBodyController requestBodyController;
-	private static TestController testController;
 	private static LogsController logsController;
 
 	public static MainController getMainController() {
@@ -76,23 +75,8 @@ public class ControllerManager {
 		return requestBodyController;
 	}
 
-	public static TestController getTestController() {
-
-		if (testController == null) {
-			try {
-				FXMLLoader fxmlLoader = new FXMLLoader();
-				fxmlLoader.load(ControllerManager.class.getResource(App.TEST_FXML).openStream());
-				testController = (TestController) fxmlLoader.getController();
-			} catch (IOException e) {
-				Logger.error(e);
-				Notifier.notifyError(e.getMessage());
-			}
-		}
-		return testController;
-	}
-	
 	public static LogsController getLogsController() {
-		
+
 		if (logsController == null) {
 			try {
 				FXMLLoader fxmlLoader = new FXMLLoader();

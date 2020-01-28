@@ -1,7 +1,6 @@
 package fr.omathe.restui.controller;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -384,26 +383,11 @@ public class EndpointController implements Initializable {
 
 					if (exchange.isPresent()) {
 						final MenuItem delete = new MenuItem("Delete");
-						final MenuItem addToTest = new MenuItem("Add to test");
-						exchangesContextMenu.getItems().addAll(delete, addToTest);
+						exchangesContextMenu.getItems().addAll(delete);
 
 						// delete exchange
 						delete.setOnAction(e -> {
 							deleteExchange(exchange.get());
-						});
-
-						// add to test
-						addToTest.setOnAction(e -> {
-							File projectFile = ControllerManager.getMainController().getProjectFile();
-							File testsFile = new File(projectFile.getParentFile() + File.separator + projectFile.getName().split("[.]")[0] + "-test.txt");
-
-							try (FileWriter fw = new FileWriter(testsFile, true)) {
-								String line = false + "," + endpoint.getName() + "," + exchange.get().getName() + "," + exchange.get().getStatus() + "," + exchange.get().getDuration() + "\n";
-								fw.write(line);
-							} catch (IOException e1) {
-								Logger.error(e1);
-								Notifier.notifyError(e1.getMessage());
-							}
 						});
 					}
 					exchanges.setContextMenu(exchangesContextMenu);

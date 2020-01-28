@@ -14,9 +14,9 @@
 			</opaqueInsets>
 		</Label>
 		<Label fx:id="baseURL" text="&lt;base URL&gt;" />
-		<Region HBox.hgrow="ALWAYS" />
-		<Label fx:id="notification" />
-		<Region prefHeight="200.0" prefWidth="200.0" />
+		<Region />
+		<Label fx:id="notification" style="fx-font-weight: bold;" />
+		<Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
 		<Label fx:id="version" text="&lt;version&gt;" />
 		<Label fx:id="time" text="&lt;time&gt;" />
 		<Label fx:id="memory" text="&lt;memory&gt;" />

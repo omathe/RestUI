@@ -143,11 +143,7 @@ public class MainController implements Initializable {
 	@FXML
 	private Button importEndpointsButton;
 
-	// Test tab
-	@FXML
-	private TableView<?> exchangesToTest;
-
-	public static Application application;
+		public static Application application;
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
@@ -411,19 +407,10 @@ public class MainController implements Initializable {
 				center = webView;
 			}
 		}
-		if (tabId.equals("testTab")) {
-			center = getExchangesVBox();
-		} else if (tabId.equals("logsTab")) {
+		if (tabId.equals("logsTab")) {
 			center = getLogsVBox();
 		}
 		return center;
-	}
-
-	private VBox getExchangesVBox() {
-
-		TestController testController = ControllerManager.getTestController();
-		testController.setProject((Project) treeView.getRoot().getValue());
-		return testController.getRootNode();
 	}
 
 	private VBox getLogsVBox() {
