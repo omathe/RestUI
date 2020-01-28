@@ -94,6 +94,17 @@
 	-fx-opacity :1.0
 }
 
+#aboutButton { 
+    -fx-background-image: url('images/about.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#aboutButton:hover {
+	-fx-opacity :1.0
+}
+
 #tabPane1 .tab-header-background {
     -fx-background-color: #f1f1f1;
 }
