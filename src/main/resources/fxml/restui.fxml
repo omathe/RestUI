@@ -161,7 +161,17 @@
 										</HBox>
 									</content>
 								</Tab>
-                        <Tab fx:id="logsTab" text="Logs" />
+                        <Tab fx:id="logsTab" text="Logs">
+                           <content>
+                              <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#clearLogs" text="clear" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </HBox>
+                           </content></Tab>
 							</tabs>
 							<HBox.margin>
 								<Insets />
@@ -213,10 +223,10 @@
 
 	<bottom>
 <!--  		IDE version  -->
-           		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
+            		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
 
 <!--  		scene builder version  -->
-<!--           		<fx:include fx:id="bottom" source="bottom.fxml" /> -->
+<!--            		<fx:include fx:id="bottom" source="bottom.fxml" /> -->
 
 	</bottom>
 

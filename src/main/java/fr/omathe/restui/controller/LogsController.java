@@ -3,7 +3,6 @@ package fr.omathe.restui.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -37,10 +36,11 @@ public class LogsController implements Initializable {
 	public TextArea getLogsArea() {
 		return logsArea;
 	}
-
-	@FXML
-	protected void clear(final ActionEvent event) {
-		logsArea.clear();
+	
+	public void clearLogs() {
+		if (logsArea != null) {
+			logsArea.clear();
+		}
 	}
 
 }

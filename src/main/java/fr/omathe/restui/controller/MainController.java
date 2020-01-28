@@ -810,4 +810,9 @@ public class MainController implements Initializable {
 		}
 	}
 
+	@FXML
+	protected void clearLogs(final ActionEvent event) {
+		ControllerManager.getLogsController().clearLogs();
+	}
+	
 }
