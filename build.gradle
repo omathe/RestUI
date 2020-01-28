@@ -35,12 +35,6 @@ repositories {
 	jcenter()
 }
 
-task copyLibs(type: Copy) {
-
-	into "lib"
-	from configurations.runtime
-}
-
 javafx {
 	version = '13'
     modules = [ 'javafx.fxml', 'javafx.web']
@@ -65,48 +59,10 @@ compileJava {
 }
 compileJava.dependsOn setVersion
 
-jar {
-    manifest {
-        attributes(
-                'Main-Class': mainClass,
-                'RestUI-Version': project.version,
-                'RestUI-Date': new Date().getTime()
-        )
-    }
-}
-
 dependencies {
     compile 'com.sun.jersey:jersey-client:1.9.1'
     compile 'org.jdom:jdom:2.0.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.3'
-}
-
-task copyToLib(type: Copy) {
-
-	doFirst {
-		println 'copy to libs'
-    	into "$buildDir/libs"
-    	from "/media/DATA/dev/workspaceJ9/RestUI/sav_libs"
-	}
-}
-jar.dependsOn(copyToLib)
-
-//create a single Jar with all dependencies
-task fatJar(type: Jar) {
-	manifest {
-        attributes 'Implementation-Title': 'RestUI',
-        	'Implementation-Version': version,
-        	'Main-class': mainClass,
-        	'RestUI-Version': project.version,
-            'RestUI-Date': new Date().getTime()
-    }
-    baseName = project.name + '-all'
-    from {
-    	configurations.compile.collect {
-    		it.isDirectory() ? it : zipTree(it)
-    	}
-    }
-    with jar
 }
 
 eclipse {
@@ -134,7 +90,7 @@ jlink {
 	}
     
     launcher {
-        name = 'RestUI'
+        name = project.name
     }
 }
 
@@ -142,60 +98,7 @@ jpackageImage {
 
 }
 
-
-// creates application bundle (executable + runtime)
-task javaPackager(type: Exec, dependsOn: assemble) {
-
-    workingDir project.projectDir
-    commandLine = [
-            'javapackager',
-            '-deploy',
-            '-nosign',
-            '-native', 'image',
-            '-outdir', "${buildDir}/distribution",
-            '-outfile', project.name,
-            '-name', project.name,
-            '-appclass', mainClass,
-            '-p', "${jdk}/jmods${File.pathSeparator}${buildDir}/libs",
-            '--add-modules', moduleName,
-            '-m', "$moduleName/$mainClass"
-    ]
-    //System.out.println("commandLine : " + commandLine)
-}
-
-// removes bloated runtime created by javapackager
-task cleanPackagerRuntime(dependsOn: javaPackager) {
-    doLast() {
-        File runtimeFile = new File("${buildDir}/distribution/${project.name}/runtime")
-        runtimeFile.deleteDir()
-        System.out.println("deleting bloated runtime in " + runtimeFile)
-    }
-}
-
-// creates a replacement runtime via jlink command (much smaller than jpackager)
-task createFinalAppBundle(type: Exec, dependsOn: [cleanPackagerRuntime]) {
-
-    workingDir project.projectDir
-    commandLine = [
-            'jlink',
-            '-p', "${jdk}/jmods${File.pathSeparator}${buildDir}/libs",
-            '--add-modules', moduleName,
-            '--strip-debug',
-            '--no-header-files',
-            '--no-man-pages',
-            '--strip-native-commands',
-            "--vm=server",
-            "--compress=2",
-            '--output', "${buildDir}/distribution/${project.name}/runtime"
-    ]
-
-    doLast{
-        System.out.println("Application '${project.name}' packaged.")
-        System.out.println(" -> location: ${buildDir}/distribution/${project.name}/")
-    }
-}
-
-task disp {
+task info {
 	Integer i = 20;
 	Integer j = i++;
 	doLast{
