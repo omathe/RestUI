@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ import fr.omathe.restui.model.Parameter;
 import fr.omathe.restui.model.Parameter.Direction;
 import fr.omathe.restui.model.Parameter.Location;
 import fr.omathe.restui.model.Project;
+import fr.omathe.restui.model.Version;
 import fr.omathe.restui.service.ApplicationService;
 import fr.omathe.restui.service.ExchangesService;
 import fr.omathe.restui.service.Logger;
@@ -813,6 +815,16 @@ public class MainController implements Initializable {
 	@FXML
 	protected void clearLogs(final ActionEvent event) {
 		ControllerManager.getLogsController().clearLogs();
+	}
+	
+	@FXML
+	protected void about(final ActionEvent event) {
+		
+		final Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("About RestUI");
+		alert.setHeaderText("Version : " + Version.getName() + "\nBuild date : " + Version.getDate(ZoneId.systemDefault().getId()));
+		alert.setContentText("(C) Olivier MATHE");
+		alert.showAndWait();
 	}
 	
 }

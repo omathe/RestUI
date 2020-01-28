@@ -3,10 +3,8 @@ package fr.omathe.restui.controller;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ResourceBundle;
 
-import fr.omathe.restui.model.Version;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -22,23 +20,21 @@ public class BottomController implements Initializable {
 
 	@FXML
 	private Label file;
+
 	@FXML
 	private Label baseURL;
+
 	@FXML
 	private Label notification;
-	@FXML
-	private Label version;
+
 	@FXML
 	private Label time;
+
 	@FXML
 	private Label memory;
 
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
-
-		// version
-		Version.load();
-		version.setText(Version.getName() + " " + Version.getDate(ZoneId.systemDefault().getId()));
 
 		// base URL
 		baseURL.setTooltip(new Tooltip());

@@ -13,36 +13,43 @@ import fr.omathe.restui.service.tools.DateFormater;
 public class Version {
 
 	private static String name = "1.3.2";
-	private static Long date = 1580207073436L;
+	private static Long date = 1580221502357L;
+	private static boolean loaded = false;
 
 	public static String getName() {
+		
+		load();
 		return name;
 	}
 
 	public static String getDate(final String timeZone) {
 
+		load();
 		return DateFormater.iso(date, timeZone);
 	}
 
-	public static void load() {
+	private static void load() {
 
-		File file = new File("build.gradle");
-		if (file.exists()) {
-			try {
-				Optional<String> line = Files.lines(file.toPath())
-						.filter(l -> l != null && l.contains("project.version"))
-						.findFirst();
-				if (line.isPresent()) {
-					name = line.get().replaceAll("project.version", "");
-					name = name.replaceAll(" ", "");
-					name = name.replaceAll("'", "");
-					name = name.replaceAll("\"", "");
+		if (!loaded) {
+			File file = new File("build.gradle");
+			if (file.exists()) {
+				try {
+					Optional<String> line = Files.lines(file.toPath())
+							.filter(l -> l != null && l.contains("project.version"))
+							.findFirst();
+					if (line.isPresent()) {
+						name = line.get().replaceAll("project.version", "");
+						name = name.replaceAll(" ", "");
+						name = name.replaceAll("'", "");
+						name = name.replaceAll("\"", "");
+					}
+				} catch (IOException e) {
+					Logger.error(e);
+					Notifier.notifyError(e.getMessage());
 				}
-			} catch (IOException e) {
-				Logger.error(e);
-				Notifier.notifyError(e.getMessage());
+				date = Instant.now().toEpochMilli();
 			}
-			date = Instant.now().toEpochMilli();
+			loaded = true;
 		}
 	}
 

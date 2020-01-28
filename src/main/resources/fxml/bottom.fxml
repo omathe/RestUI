@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -17,9 +18,11 @@
 		<Region />
 		<Label fx:id="notification" style="fx-font-weight: bold;" />
 		<Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-		<Label fx:id="version" text="&lt;version&gt;" />
 		<Label fx:id="time" text="&lt;time&gt;" />
-		<Label fx:id="memory" text="&lt;memory&gt;" />
+		<Label fx:id="memory" text="&lt;memory&gt;">
+         <tooltip>
+            <Tooltip text="Memory usage" />
+         </tooltip></Label>
 	</children>
 	<BorderPane.margin>
 		<Insets />
