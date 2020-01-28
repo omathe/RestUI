@@ -37,6 +37,8 @@ public class RestClient {
 	private static final String BOUNDARY = "oma";
 	private static final String END_BOUNDARY = "--" + BOUNDARY;
 	private static final String CLOSE_BOUNDARY = "--" + BOUNDARY + "--";
+	
+	private static final Integer DEFAULT_READ_TIMEOUT = 5000;
 
 	private static final Client client = Client.create();
 
@@ -65,9 +67,13 @@ public class RestClient {
 		}
 		return response;
 	}
+	
+	public void setReadTimeout(final Integer duration) {
+		client.setReadTimeout(duration == null ? DEFAULT_READ_TIMEOUT : duration);
+	}
 
 	private static ClientResponse get(final Exchange exchange) throws ClientException {
-
+		
 		ClientResponse response = null;
 
 		try {
