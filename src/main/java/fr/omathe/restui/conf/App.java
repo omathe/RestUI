@@ -27,6 +27,9 @@ public interface App {
 	String DEFAULT_STYLE = "default";
 	String STYLE_SHEET_NAME = "stylesheet.css";
 
+	// http client
+	Integer DEFAULT_READ_TIMEOUT = 5000; // read timeout in ms
+	
 	static String getApplicationHome() {
 
 		final String userHome = System.getProperty("user.home").replace("\\", "/");

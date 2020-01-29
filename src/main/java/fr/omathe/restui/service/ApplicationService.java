@@ -43,6 +43,13 @@ public class ApplicationService {
 					application.addBaseUrl(baseUrl);
 				}
 			}
+			// readTimeout
+			Element readTimeoutElement = applicationElement.getChild("readTimeout");
+			if (readTimeoutElement == null || readTimeoutElement.getValue().isEmpty()) {
+				application.setReadTimeout(App.DEFAULT_READ_TIMEOUT);
+			} else {
+				application.setReadTimeout(Integer.valueOf(readTimeoutElement.getValue()));
+			}
 		} catch (final Exception e) {
 			Logger.error(e);
 			Notifier.notifyError(e.getMessage());
@@ -76,6 +83,11 @@ public class ApplicationService {
 				rootElement.addContent(elementBaseUrls);
 			}
 
+			// readTimeout
+			Element readTimeoutElement = new Element("readTimeout");
+			readTimeoutElement.addContent(String.valueOf(application.getReadTimeout()));
+			rootElement.addContent(readTimeoutElement);
+			
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			Document document = new Document(rootElement);
 			File applicationFile = new File(App.APLICATION_FILE);
@@ -94,8 +106,12 @@ public class ApplicationService {
 		Element lastProjectUriElement = new Element("lastProjectUri");
 		rootElement.addContent(lastProjectUriElement);
 		Element styleElement = new Element("style");
-		App.getStyleUri(App.DEFAULT_STYLE).ifPresent(styleUri -> styleElement.addContent(styleUri));
+		App.getStyleUri(App.DEFAULT_STYLE).ifPresent(styleUri -> styleElement.addContent(App.DEFAULT_STYLE));
 		rootElement.addContent(styleElement);
+		// readTimeout
+		Element readTimeoutElement = new Element("readTimeout");
+		readTimeoutElement.addContent(App.DEFAULT_READ_TIMEOUT.toString());
+		rootElement.addContent(readTimeoutElement);
 
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 		Document document = new Document(rootElement);

@@ -11,6 +11,7 @@ public class Application {
 	private String lastProjectUri;
 	private String style;
 	private final ObservableList<BaseUrl> baseUrls;
+	private Integer readTimeout;
 
 	public Application() {
 		super();
@@ -64,9 +65,17 @@ public class Application {
 		return baseUrls.stream().filter(b -> b.getEnabled()).findFirst();
 	}
 
+	public Integer getReadTimeout() {
+		return readTimeout;
+	}
+
+	public void setReadTimeout(final Integer readTimeout) {
+		this.readTimeout = readTimeout;
+	}
+
 	@Override
 	public String toString() {
-		return "Application [lastProjectUri=" + lastProjectUri + ", style=" + style + "]";
+		return "Application [lastProjectUri=" + lastProjectUri + ", style=" + style + ", readTimeout=" + readTimeout + "]";
 	}
 
 }

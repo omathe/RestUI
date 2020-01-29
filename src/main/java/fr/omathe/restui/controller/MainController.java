@@ -112,9 +112,6 @@ public class MainController implements Initializable {
 	private ComboBox<String> searchItem;
 
 	@FXML
-	private ComboBox<String> style;
-
-	@FXML
 	private VBox vBox;
 
 	@FXML
@@ -123,12 +120,19 @@ public class MainController implements Initializable {
 	@FXML
 	private TabPane topTabPane;
 
+	// settings tab
+	@FXML
+	private TextField authorizationHeader;
+
+	@FXML
+	private TextField readTimeout;
+
+	@FXML
+	private ComboBox<String> style;
+
 	// Web tab
 	@FXML
 	private ComboBox<String> webUrl;
-
-	@FXML
-	private TextField authorizationHeader;
 
 	@FXML
 	private TableView<BaseUrl> baseUrlTable;
@@ -145,7 +149,7 @@ public class MainController implements Initializable {
 	@FXML
 	private Button importEndpointsButton;
 
-		public static Application application;
+	public static Application application;
 	private File projectFile;
 	private Set<String> bookmarks;
 	TreeCellFactory treeCellFactory;
@@ -369,6 +373,29 @@ public class MainController implements Initializable {
 				application.setStyle(newValue);
 				setStyle(uri);
 			});
+		});
+
+		// read timeout
+		readTimeout.setText(application.getReadTimeout().toString());
+		
+		readTimeout.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.matches("\\d+")) { // new value is an integer
+				Integer timeout = Integer.valueOf(newValue);
+				if (timeout.equals(0)) { // 0 : reset to default value
+					timeout = App.DEFAULT_READ_TIMEOUT;
+				}
+				readTimeout.setText(timeout.toString());
+				application.setReadTimeout(timeout);
+				RestClient.setReadTimeout(timeout);
+			} else { // new value is not an integer
+				if (newValue.isEmpty()) {// empty value : reset to default value
+					readTimeout.setText(App.DEFAULT_READ_TIMEOUT.toString());
+					application.setReadTimeout(App.DEFAULT_READ_TIMEOUT);
+					RestClient.setReadTimeout(App.DEFAULT_READ_TIMEOUT);
+				} else {
+					readTimeout.setText(oldValue);
+				}
+			}
 		});
 	}
 
@@ -816,15 +843,15 @@ public class MainController implements Initializable {
 	protected void clearLogs(final ActionEvent event) {
 		ControllerManager.getLogsController().clearLogs();
 	}
-	
+
 	@FXML
 	protected void about(final ActionEvent event) {
-		
+
 		final Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About RestUI");
 		alert.setHeaderText("Version : " + Version.getName() + "\nBuild date : " + Version.getDate(ZoneId.systemDefault().getId()));
 		alert.setContentText("(C) Olivier MATHE");
 		alert.showAndWait();
 	}
-	
+
 }

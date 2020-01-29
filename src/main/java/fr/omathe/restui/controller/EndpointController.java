@@ -488,45 +488,33 @@ public class EndpointController implements Initializable {
 		currentExchange.clearResponseParameters();
 
 		currentExchange.setUri(uri.getText());
+		currentExchange.setStatus(0);
 		final long t0 = System.currentTimeMillis();
 
 		ClientResponse response = null;
+		Integer duration = 0;
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
-			currentExchange.setDuration((int) (System.currentTimeMillis() - t0));
+			duration = (int) (System.currentTimeMillis() - t0);
+			if (response != null) {
+				currentExchange.setStatus(response.getStatus());
+				// build response headers
+				response.getHeaders().entrySet().stream().forEach(e -> {
+					for (final String value : e.getValue()) {
+						final Parameter header = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.HEADER, Type.TEXT, e.getKey(), value);
+						currentExchange.addParameter(header);
+					}
+				});
+				buildResponseBody(response);
+			}
 		} catch (ClientException e) {
+			duration = (int) (System.currentTimeMillis() - t0);
 			Logger.error(e);
 			Notifier.notifyError(e.getMessage());
+		} finally {
+			currentExchange.setDuration(duration);
+			currentExchange.setDate(Instant.now().toEpochMilli());
 		}
-
-		currentExchange.setDate(Instant.now().toEpochMilli());
-
-		if (response == null) {
-			currentExchange.setStatus(0);
-			responseStatus.setText("0");
-			responseBody.setText("");
-			responseDuration.setText("");
-		} else {
-			currentExchange.setStatus(response.getStatus());
-
-			// build response headers
-			response.getHeaders().entrySet().stream().forEach(e -> {
-				for (final String value : e.getValue()) {
-					final Parameter header = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.HEADER, Type.TEXT, e.getKey(), value);
-					currentExchange.addParameter(header);
-				}
-			});
-			// response status
-			responseStatus.setText(String.valueOf(response.getStatus()));
-			responseDuration.setText(currentExchange.getDuration().toString());
-
-			displayStatusTooltip();
-			// status circle
-			displayStatusCircle(currentExchange);
-
-			buildResponseBody(response);
-		}
-		currentExchange.setDate(Instant.now().toEpochMilli());
 
 		// select the working exchange if it exist
 		exchanges.getSelectionModel().select(currentExchange);
@@ -566,6 +554,7 @@ public class EndpointController implements Initializable {
 
 	private void buildResponseBody(final ClientResponse response) {
 
+		responseBody.setText("");
 		if (response != null && response.getStatus() != 204) {
 
 			try (InputStream inputStream = response.getEntityInputStream()) {
@@ -615,7 +604,7 @@ public class EndpointController implements Initializable {
 	private void displayStatusCircle(final Exchange exchange) {
 
 		if (exchange.getStatus().toString().startsWith("0") || exchange.getStatus().toString().isEmpty()) {
-			statusCircle.setFill(Color.GRAY);
+			statusCircle.setFill(Color.MAGENTA);
 		} else if (exchange.getStatus().toString().startsWith("2")) {
 			statusCircle.setFill(Color.LIGHTGREEN);
 		} else if (exchange.getStatus().toString().startsWith("3")) {
@@ -870,7 +859,7 @@ public class EndpointController implements Initializable {
 					Notifier.notifyError(e.getMessage());
 				}
 			} else if (p.getValue().toLowerCase().contains("xml")) {
-				try(StringWriter stringWriter = new StringWriter()) {
+				try (StringWriter stringWriter = new StringWriter()) {
 					final Source xmlInput = new StreamSource(new StringReader(body));
 					final StreamResult xmlOutput = new StreamResult(stringWriter);
 					final TransformerFactory transformerFactory = TransformerFactory.newInstance();
