@@ -66,13 +66,17 @@ public class RestClient {
 		}
 		return response;
 	}
-	
+
+	public static void setConnectionTimeout(final Integer duration) {
+		client.setConnectTimeout(duration == null ? App.DEFAULT_CONNECTION_TIMEOUT : duration);
+	}
+
 	public static void setReadTimeout(final Integer duration) {
 		client.setReadTimeout(duration == null ? App.DEFAULT_READ_TIMEOUT : duration);
 	}
 
 	private static ClientResponse get(final Exchange exchange) throws ClientException {
-		
+
 		ClientResponse response = null;
 
 		try {
@@ -89,8 +93,7 @@ public class RestClient {
 			Logger.error(e);
 			Notifier.notifyError(e.getMessage());
 			throw new ClientException(e.getMessage());
-		}
-		finally {
+		} finally {
 			client.destroy();
 		}
 		return response;
@@ -150,8 +153,7 @@ public class RestClient {
 			Logger.error(e);
 			Notifier.notifyError(e.getMessage());
 			throw new ClientException(e.getMessage());
-		}
-		finally {
+		} finally {
 			client.destroy();
 			if (bos != null) {
 				try {

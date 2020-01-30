@@ -43,6 +43,13 @@ public class ApplicationService {
 					application.addBaseUrl(baseUrl);
 				}
 			}
+			// connectionTimeout
+			Element connectionTimeout = applicationElement.getChild("connectionTimeout");
+			if (connectionTimeout == null || connectionTimeout.getValue().isEmpty()) {
+				application.setConnectionTimeout(App.DEFAULT_CONNECTION_TIMEOUT);
+			} else {
+				application.setConnectionTimeout(Integer.valueOf(connectionTimeout.getValue()));
+			}
 			// readTimeout
 			Element readTimeoutElement = applicationElement.getChild("readTimeout");
 			if (readTimeoutElement == null || readTimeoutElement.getValue().isEmpty()) {
@@ -83,6 +90,11 @@ public class ApplicationService {
 				rootElement.addContent(elementBaseUrls);
 			}
 
+			// connectionTimeout
+			Element connectionTimeout = new Element("connectionTimeout");
+			connectionTimeout.addContent(String.valueOf(application.getConnectionTimeout()));
+			rootElement.addContent(connectionTimeout);
+			
 			// readTimeout
 			Element readTimeoutElement = new Element("readTimeout");
 			readTimeoutElement.addContent(String.valueOf(application.getReadTimeout()));
@@ -108,6 +120,10 @@ public class ApplicationService {
 		Element styleElement = new Element("style");
 		App.getStyleUri(App.DEFAULT_STYLE).ifPresent(styleUri -> styleElement.addContent(App.DEFAULT_STYLE));
 		rootElement.addContent(styleElement);
+		// connectionTimeout
+		Element connectionTimeout = new Element("connectionTimeout");
+		connectionTimeout.addContent(App.DEFAULT_CONNECTION_TIMEOUT.toString());
+		rootElement.addContent(connectionTimeout);
 		// readTimeout
 		Element readTimeoutElement = new Element("readTimeout");
 		readTimeoutElement.addContent(App.DEFAULT_READ_TIMEOUT.toString());

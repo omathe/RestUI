@@ -369,7 +369,6 @@ public class EndpointController implements Initializable {
 			if (event.getCode().equals(KeyCode.DELETE)) {
 				final Exchange exchange = exchanges.getSelectionModel().getSelectedItem();
 				deleteExchange(exchange);
-				displayExecutionMode();
 			}
 		});
 
@@ -404,6 +403,24 @@ public class EndpointController implements Initializable {
 		});
 
 		execute.textProperty().bind(method.valueProperty());
+
+		// status tooltip
+		responseStatus.setOnMouseEntered(event -> {
+			Tooltip tooltip = null;
+			if (currentExchange != null) {
+				if (currentExchange.getStatus().equals(0)) {
+					if (currentExchange.getDuration().equals(0)) {
+						tooltip = new Tooltip("Never executed");
+					} else {
+						tooltip = new Tooltip("Timeout");
+					}
+				} else {
+					Status status = Status.fromStatusCode(currentExchange.getStatus());
+					tooltip = new Tooltip(status.getReasonPhrase());
+				}
+			}
+			responseStatus.setTooltip(tooltip);
+		});
 	}
 
 	public HBox getRootNode() {
@@ -459,6 +476,9 @@ public class EndpointController implements Initializable {
 		final ButtonType response = AlertBuilder.confirm("Delete the exchange", "Do you want to delete " + exchangeName);
 		if (response.equals(ButtonType.OK)) {
 			endpoint.removeExchange(exchange);
+			if (!endpoint.hasExchanges()) {
+				currentExchange = null;
+			}
 			display();
 		}
 	}
@@ -510,13 +530,12 @@ public class EndpointController implements Initializable {
 		} catch (ClientException e) {
 			duration = (int) (System.currentTimeMillis() - t0);
 			Logger.error(e);
-			Notifier.notifyError(e.getMessage());
 		} finally {
 			currentExchange.setDuration(duration);
 			currentExchange.setDate(Instant.now().toEpochMilli());
 		}
 
-		// select the working exchange if it exist
+		// select the working exchange if it exists
 		exchanges.getSelectionModel().select(currentExchange);
 
 		display();
@@ -603,16 +622,24 @@ public class EndpointController implements Initializable {
 
 	private void displayStatusCircle(final Exchange exchange) {
 
-		if (exchange.getStatus().toString().startsWith("0") || exchange.getStatus().toString().isEmpty()) {
-			statusCircle.setFill(Color.MAGENTA);
-		} else if (exchange.getStatus().toString().startsWith("2")) {
-			statusCircle.setFill(Color.LIGHTGREEN);
-		} else if (exchange.getStatus().toString().startsWith("3")) {
-			statusCircle.setFill(Color.BLUE);
-		} else if (exchange.getStatus().toString().startsWith("4")) {
-			statusCircle.setFill(Color.ORANGE);
-		} else if (exchange.getStatus().toString().startsWith("5")) {
-			statusCircle.setFill(Color.RED);
+		if (exchange == null) {
+			statusCircle.setFill(Color.GRAY);
+		} else {
+			if (exchange.getStatus().toString().startsWith("0") || exchange.getStatus().toString().isEmpty()) {
+				if (exchange.getDuration() == 0) {
+					statusCircle.setFill(Color.GRAY);
+				} else {
+					statusCircle.setFill(Color.MAGENTA);
+				}
+			} else if (exchange.getStatus().toString().startsWith("2")) {
+				statusCircle.setFill(Color.LIGHTGREEN);
+			} else if (exchange.getStatus().toString().startsWith("3")) {
+				statusCircle.setFill(Color.BLUE);
+			} else if (exchange.getStatus().toString().startsWith("4")) {
+				statusCircle.setFill(Color.ORANGE);
+			} else if (exchange.getStatus().toString().startsWith("5")) {
+				statusCircle.setFill(Color.RED);
+			}
 		}
 	}
 
@@ -623,14 +650,6 @@ public class EndpointController implements Initializable {
 			bodyType = specificationBodyType;
 		}
 		requestBodyController.display(this, requestBodyController.getRootNode(), bodyType);
-	}
-
-	private void displayStatusTooltip() {
-
-		Status st = Status.fromStatusCode(currentExchange.getStatus());
-		if (st != null) {
-			responseStatus.setTooltip(new Tooltip(st.getReasonPhrase()));
-		}
 	}
 
 	private Optional<Exchange> getSelectedExchange() {
@@ -764,7 +783,11 @@ public class EndpointController implements Initializable {
 
 	private void displayExecutionMode() {
 
-		if (currentExchange != null) {
+		if (currentExchange == null) {
+			responseDuration.setText("0");
+			responseStatus.setText("0");
+			displayStatusCircle(null);
+		} else {
 
 			// request parameters
 
@@ -797,7 +820,6 @@ public class EndpointController implements Initializable {
 
 			// response status
 			responseStatus.setText(currentExchange.getStatus().toString());
-			displayStatusTooltip();
 
 			// response duration
 			responseDuration.setText(currentExchange.getDuration().toString());

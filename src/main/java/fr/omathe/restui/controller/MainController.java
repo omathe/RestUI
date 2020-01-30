@@ -126,6 +126,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TextField readTimeout;
+	
+	@FXML
+	private TextField connectionTimeout;
 
 	@FXML
 	private ComboBox<String> style;
@@ -375,15 +378,31 @@ public class MainController implements Initializable {
 			});
 		});
 
+		// connection timeout
+		connectionTimeout.setText(application.getConnectionTimeout().toString());
+		RestClient.setConnectionTimeout(application.getConnectionTimeout());
+		connectionTimeout.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.matches("\\d+")) { // new value is an integer
+				Integer timeout = Integer.valueOf(newValue);
+				connectionTimeout.setText(timeout.toString());
+				application.setConnectionTimeout(timeout);
+				RestClient.setConnectionTimeout(timeout);
+			} else { // new value is not an integer
+				if (newValue.isEmpty()) {// empty value : reset to default value
+					connectionTimeout.setText(App.DEFAULT_CONNECTION_TIMEOUT.toString());
+					application.setConnectionTimeout(App.DEFAULT_CONNECTION_TIMEOUT);
+					RestClient.setConnectionTimeout(App.DEFAULT_CONNECTION_TIMEOUT);
+				} else {
+					connectionTimeout.setText(oldValue);
+				}
+			}
+		});
 		// read timeout
 		readTimeout.setText(application.getReadTimeout().toString());
-		
+		RestClient.setReadTimeout(application.getReadTimeout());
 		readTimeout.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue.matches("\\d+")) { // new value is an integer
 				Integer timeout = Integer.valueOf(newValue);
-				if (timeout.equals(0)) { // 0 : reset to default value
-					timeout = App.DEFAULT_READ_TIMEOUT;
-				}
 				readTimeout.setText(timeout.toString());
 				application.setReadTimeout(timeout);
 				RestClient.setReadTimeout(timeout);

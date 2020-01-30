@@ -28,7 +28,8 @@
 <!-- <BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
 	fx:controller="fr.omathe.restui.controller.MainController"> -->
 
-<BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.omathe.restui.controller.MainController">
+<BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="fr.omathe.restui.controller.MainController">
 	<top>
 		<VBox styleClass="vbox" BorderPane.alignment="CENTER">
 			<children>
@@ -134,13 +135,36 @@
 														</MenuItem>
 													</items>
 												</MenuButton>
-                                    <Label text="Read timeout (ms)" />
-                                    <TextField fx:id="readTimeout" minWidth="-Infinity" prefHeight="25.0" prefWidth="60.0" >
-                                       <tooltip>
-                                          <Tooltip text="Read timeout in ms" />
-                                       </tooltip>
-                                    </TextField>
-												<Label text="Style" />
+												<MenuButton mnemonicParsing="false" text="Timeout">
+													<items>
+														<MenuItem mnemonicParsing="false" text="Connection (ms)">
+															<graphic>
+																<TextField fx:id="connectionTimeout">
+																	<tooltip>
+																		<Tooltip text="0 means no limit" />
+																	</tooltip>
+																</TextField>
+															</graphic>
+														</MenuItem>
+														<MenuItem mnemonicParsing="false" text="Read (ms)">
+															<graphic>
+																<TextField fx:id="readTimeout">
+																	<tooltip>
+																		<Tooltip text="0 means no limit" />
+																	</tooltip>
+																</TextField>
+															</graphic>
+														</MenuItem>
+													</items>
+													<HBox.margin>
+														<Insets left="5.0" />
+													</HBox.margin>
+												</MenuButton>
+												<Label text="Style">
+													<HBox.margin>
+														<Insets left="5.0" />
+													</HBox.margin>
+												</Label>
 												<ComboBox fx:id="style">
 												</ComboBox>
 											</children>
@@ -224,7 +248,8 @@
 				</AnchorPane>
 				<AnchorPane>
 					<children>
-						<VBox fx:id="vBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="556.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+						<VBox fx:id="vBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="556.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+							AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
 					</children>
 				</AnchorPane>
 			</items>
@@ -236,10 +261,10 @@
 
 	<bottom>
 		<!-- IDE version -->
-  		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
+		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
 
 		<!-- scene builder version -->
-<!--  		<fx:include fx:id="bottom" source="bottom.fxml" /> -->
+		<!-- <fx:include fx:id="bottom" source="bottom.fxml" /> -->
 
 	</bottom>
 

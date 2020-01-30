@@ -11,6 +11,7 @@ public class Application {
 	private String lastProjectUri;
 	private String style;
 	private final ObservableList<BaseUrl> baseUrls;
+	private Integer connectionTimeout;
 	private Integer readTimeout;
 
 	public Application() {
@@ -65,6 +66,14 @@ public class Application {
 		return baseUrls.stream().filter(b -> b.getEnabled()).findFirst();
 	}
 
+	public Integer getConnectionTimeout() {
+		return connectionTimeout;
+	}
+
+	public void setConnectionTimeout(final Integer connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+
 	public Integer getReadTimeout() {
 		return readTimeout;
 	}
@@ -75,7 +84,7 @@ public class Application {
 
 	@Override
 	public String toString() {
-		return "Application [lastProjectUri=" + lastProjectUri + ", style=" + style + ", readTimeout=" + readTimeout + "]";
+		return "Application [lastProjectUri=" + lastProjectUri + ", style=" + style + ", baseUrls=" + baseUrls + ", connectionTimeout=" + connectionTimeout + ", readTimeout=" + readTimeout + "]";
 	}
 
 }
