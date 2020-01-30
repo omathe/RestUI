@@ -122,16 +122,19 @@ public class MainController implements Initializable {
 
 	// settings tab
 	@FXML
-	private TextField authorizationHeader;
-
-	@FXML
 	private TextField readTimeout;
-	
+
 	@FXML
 	private TextField connectionTimeout;
 
 	@FXML
 	private ComboBox<String> style;
+
+	@FXML
+	private TextField headerName;
+
+	@FXML
+	private TextField headerValue;
 
 	// Web tab
 	@FXML
@@ -775,33 +778,6 @@ public class MainController implements Initializable {
 		webEngine = null;
 	}
 
-	@FXML
-	protected void setAuthorizationHeader(final ActionEvent event) {
-
-		final Item item = treeView.getRoot().getValue();
-		if (item != null && !authorizationHeader.getText().isEmpty()) {
-			setItemsAuthorizationHeader(item, authorizationHeader.getText());
-		}
-	}
-
-	private void setItemsAuthorizationHeader(final Item parent, final String value) {
-
-		for (final Item child : parent.getChildren()) {
-			if (child instanceof Endpoint) {
-				final Endpoint endpoint = (Endpoint) child;
-
-				endpoint.getExchanges().stream().forEach(exchange -> {
-					Optional<Parameter> authorizationParameter = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Authorization");
-					if (authorizationParameter.isPresent()) {
-						authorizationParameter.get().setValue(value);
-					}
-				});
-			} else {
-				setItemsAuthorizationHeader(child, value);
-			}
-		}
-	}
-
 	private void removeBaseUrl(final BaseUrl baseUrl) {
 
 		final ButtonType response = AlertBuilder.confirm("Delete the base url", "Do you want to delete\n" + baseUrl.getName());
@@ -871,6 +847,33 @@ public class MainController implements Initializable {
 		alert.setHeaderText("Version : " + Version.getName() + "\nBuild date : " + Version.getDate(ZoneId.systemDefault().getId()));
 		alert.setContentText("(C) Olivier MATHE");
 		alert.showAndWait();
+	}
+
+	@FXML
+	protected void setHeader(final ActionEvent event) {
+
+		final Item item = treeView.getRoot().getValue();
+		if (item != null && !headerName.getText().isEmpty() && !headerValue.getText().isEmpty()) {
+			setItemsAuthorizationHeader(item, headerName.getText(), headerValue.getText());
+		}
+	}
+
+	private void setItemsAuthorizationHeader(final Item parent, final String name, final String value) {
+
+		for (final Item child : parent.getChildren()) {
+			if (child instanceof Endpoint) {
+				final Endpoint endpoint = (Endpoint) child;
+
+				endpoint.getExchanges().stream().forEach(exchange -> {
+					Optional<Parameter> authorizationParameter = exchange.findParameter(Direction.REQUEST, Location.HEADER, name);
+					if (authorizationParameter.isPresent()) {
+						authorizationParameter.get().setValue(value);
+					}
+				});
+			} else {
+				setItemsAuthorizationHeader(child, name, value);
+			}
+		}
 	}
 
 }
