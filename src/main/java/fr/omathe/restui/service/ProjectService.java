@@ -41,7 +41,7 @@ public interface ProjectService {
 		}
 
 		Project project = new Project("");
-		try(FileInputStream inputStream = new FileInputStream(file)) {
+		try (FileInputStream inputStream = new FileInputStream(file)) {
 			project = parseXml(inputStream);
 		} catch (IOException e) {
 			Logger.error(e);
@@ -182,7 +182,7 @@ public interface ProjectService {
 			final XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			final Document document = new Document(elementProject);
 
-			try(FileOutputStream fileOutputStream = new FileOutputStream(new File(uri))) {
+			try (FileOutputStream fileOutputStream = new FileOutputStream(new File(uri))) {
 				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
 				Logger.error(e);

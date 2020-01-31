@@ -583,8 +583,17 @@ public class MainController implements Initializable {
 				fileChooser.setInitialFileName(project.getName() + ".xml");
 
 				final File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
+
 				if (file != null) {
-					projectFile = file.getName().endsWith(".xml") ? file : new File(file.getAbsolutePath() + ".xml");
+					if (file.equals(new File(App.APLICATION_FILE))) {
+						final Alert alert = new Alert(AlertType.ERROR);
+						alert.setTitle("Save the project");
+						alert.setHeaderText("The application file cannot be overriden.");
+						alert.showAndWait();
+						projectFile = null;
+					} else {
+						projectFile = file.getName().endsWith(".xml") ? file : new File(file.getAbsolutePath() + ".xml");
+					}
 				}
 			}
 			if (projectFile != null) {
@@ -629,16 +638,24 @@ public class MainController implements Initializable {
 
 			final File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
 			if (file != null) {
-				try {
-					Files.copy(projectFile.toPath(), file.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
-					loadProject(file.toURI());
-				} catch (final IOException e) {
-					Logger.error(e);
+				if (file.equals(new File(App.APLICATION_FILE))) {
 					final Alert alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Save as project");
-					alert.setHeaderText("Copy error");
-					alert.setContentText(e.getMessage());
+					alert.setTitle("Save the project as");
+					alert.setHeaderText("The application file cannot be overriden.");
 					alert.showAndWait();
+					projectFile = null;
+				} else {
+					try {
+						Files.copy(projectFile.toPath(), file.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+						loadProject(file.toURI());
+					} catch (final IOException e) {
+						Logger.error(e);
+						final Alert alert = new Alert(AlertType.ERROR);
+						alert.setTitle("Save as project");
+						alert.setHeaderText("Copy error");
+						alert.setContentText(e.getMessage());
+						alert.showAndWait();
+					}
 				}
 			}
 		}
