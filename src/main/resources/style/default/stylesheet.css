@@ -5,12 +5,13 @@ all labels
 	-fx-font-size: 20pt;
 }*/
 
-
-/*.root {
+/*
+.root {
     -fx-font-size: 14px;
     -fx-font-family: sans-serif;
     -fx-background-color: green;
 }
+
 
 .tab {
 	-fx-background-color: green;
@@ -22,10 +23,9 @@ all labels
     -fx-spacing: 10;
 }*/
 
-.tab-pane:top *.tab-header-area {
+/*.tab-pane:top *.tab-header-area {
     -fx-background-color: red;
-}
-
+}*/
 
 /*.split-pane {
 	-fx-background-color: green;

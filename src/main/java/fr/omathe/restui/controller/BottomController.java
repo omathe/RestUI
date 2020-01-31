@@ -53,9 +53,11 @@ public class BottomController implements Initializable {
 		final Timeline timelineMemory = new Timeline(new KeyFrame(Duration.millis(2000), event -> {
 			final Double mem = (double) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_000_000);
 			memory.setText(mem.toString() + " Mo");
-			memory.setStyle("-fx-background-color: lightgray ;");
-			if (mem > 100) {
-				memory.setStyle("-fx-background-color: orange ;");
+			//memory.setStyle("-fx-background-color: lightgray ;");
+			if (mem > 50) {
+				memory.setStyle("-fx-text-fill: orange;");
+			} else if (mem > 100) {
+				memory.setStyle("-fx-text-fill: red;");
 			}
 		}));
 		timelineMemory.setCycleCount(Animation.INDEFINITE);

@@ -34,7 +34,7 @@
                               <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
                                  <children>
                                     <Label text="Mode" />
-                                    <HBox spacing="3.0" style="-fx-background-color: lightgray; -fx-background-radius: 5;">
+                                    <HBox spacing="3.0">
                                        <children>
                                           <RadioButton mnemonicParsing="false" onAction="#modeSpecification" selected="true" text="Specification">
                                              <toggleGroup>
@@ -137,7 +137,7 @@
 																								<HBox fx:id="bodyHBox" alignment="CENTER_LEFT" spacing="5.0">
 																									<children>
 																										<Label minWidth="-Infinity" text="Body" HBox.hgrow="ALWAYS" />
-                                                                              <HBox spacing="3.0" style="-fx-background-color: lightgrey; -fx-background-radius: 5;">
+                                                                              <HBox spacing="3.0">
                                                                                  <children>
       																										<RadioButton fx:id="rawBody" mnemonicParsing="false" onMouseClicked="#rawBodySelected" selected="true" text="raw">
       																											<toggleGroup>
