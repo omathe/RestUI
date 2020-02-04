@@ -177,5 +177,8 @@ public class Endpoint extends Item implements Parameterisable {
 		}
 		return duplicated;
 	}
-
+	
+	public String display() {
+		return "Endpoint [name=" + name + ", method=" + method.get() + ", path=" + path.get() + ", description=" + description + "]";	
+	}
 }

@@ -63,6 +63,7 @@ dependencies {
     compile 'com.sun.jersey:jersey-client:1.9.1'
     compile 'org.jdom:jdom:2.0.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.3'
+    compile 'com.jsoniter:jsoniter:0.9.23'
 }
 
 eclipse {
@@ -92,6 +93,10 @@ jlink {
     launcher {
         name = project.name
     }
+    
+	jpackage {
+		installerOptions = ['--win-console', '--win-menu', '--win-shortcut']
+	}
 }
 
 jpackageImage {

@@ -4,12 +4,14 @@ module fr.omathe.restui {
 	requires javafx.web;
 	requires java.logging;
 	requires jdk.crypto.ec; // security (SSL handshake failed)
+	requires java.net.http; // useful for http client (TODO replace jersey by jdk)
 	
 	// automatic modules
 	requires jdom;
 	requires jackson.databind;
 	requires jersey.client;
 	requires jersey.core;
+	requires jsoniter;
 
 	// opens package 'controller' to the module 'javafx.fxml'
 	opens fr.omathe.restui.controller to javafx.fxml;
