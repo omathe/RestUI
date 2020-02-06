@@ -145,6 +145,17 @@
 	-fx-opacity :1.0
 }
 
+#importOpenApiButton { 
+    -fx-background-image: url('images/openApi.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#importOpenApiButton:hover {
+	-fx-opacity :1.0
+}
+
 #minusButton { 
     -fx-background-image: url('images/minus.png');
     -fx-background-size: 16px;

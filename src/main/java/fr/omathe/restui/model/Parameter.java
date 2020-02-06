@@ -1,6 +1,7 @@
 package fr.omathe.restui.model;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,6 +19,12 @@ public class Parameter {
 
 	public enum Location {
 		BODY, HEADER, PATH, QUERY;
+
+		public static Optional<Location> getByValue(final String value) {
+			return Arrays.stream(Location.values())
+					.filter(e -> e.name().equalsIgnoreCase(value))
+					.findFirst();
+		}
 	}
 
 	public enum Direction {

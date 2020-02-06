@@ -46,6 +46,7 @@ import fr.omathe.restui.model.Version;
 import fr.omathe.restui.service.ApplicationService;
 import fr.omathe.restui.service.ExchangesService;
 import fr.omathe.restui.service.Logger;
+import fr.omathe.restui.service.OpenApiManager;
 import fr.omathe.restui.service.ProjectService;
 import fr.omathe.restui.service.RestClient;
 import javafx.application.Platform;
@@ -801,6 +802,43 @@ public class MainController implements Initializable {
 		if (response.equals(ButtonType.OK)) {
 			application.removeBaseUrl(baseUrl);
 		}
+	}
+
+	@FXML
+	void importOpenApi(final ActionEvent event) {
+
+		final FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Import OpenAPI file");
+
+		final File initialDirectory = projectFile == null ? new File(App.getApplicationHome()) : projectFile.getParentFile();
+		fileChooser.setInitialDirectory(initialDirectory);
+
+		final File file = fileChooser.showOpenDialog(null);
+		if (file != null) {
+			Project project = null;
+
+			if (treeView.getRoot() == null) {
+				project = new Project("New project");
+			} else {
+				if (treeView.getRoot() != null) {
+					project = (Project) treeView.getRoot().getValue();
+					project.getChildren().clear();
+				}
+			}
+			String json = OpenApiManager.openFile(file);
+			List<Endpoint> endpoints = OpenApiManager.extract(json);
+			project.addEndpoints(endpoints);
+			ProjectService.buildHierarchy(project);
+
+			final TreeItem<Item> projectItem = new TreeItem<>(project);
+			builTree(projectItem);
+			treeView.setRoot(projectItem);
+			sort(projectItem);
+
+			collapseTreeView(projectItem);
+			projectItem.setExpanded(true);
+		}
+
 	}
 
 	@SuppressWarnings("resource")

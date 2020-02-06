@@ -23,20 +23,10 @@ public class Project extends Item {
 	public List<Endpoint> getEndpoints() {
 		return endpoints;
 	}
-
-	//	public List<Exchange> getExchanges() {
-	//
-	//		List<Exchange> exchanges = new ArrayList<>();
-	//
-	//		Stream<Item> stream = Stream.concat(Stream.of(this), children.stream().flatMap(Item::getAllChildren));
-	//		if (stream != null) {
-	//			stream.filter(item -> item instanceof Endpoint).forEach(item -> {
-	//				Endpoint endpoint = (Endpoint) item;
-	//				exchanges.addAll(endpoint.getExchanges());
-	//			});
-	//		}
-	//		return exchanges;
-	//	}
+	
+	public void addEndpoints(final List<Endpoint> endpoints) {
+		this.endpoints.addAll(endpoints);
+	}
 
 	public Optional<Exchange> findExchangeByNameAndEndpointName(final String name, final String endpointName) {
 
@@ -68,4 +58,5 @@ public class Project extends Item {
 				.map(item -> (Endpoint) item)
 				.findFirst();
 	}
+	
 }
