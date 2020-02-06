@@ -491,16 +491,16 @@ public class MainController implements Initializable {
 	protected void newProject(final ActionEvent event) {
 
 		final ButtonData choice = confirmSaveProject();
-		if (choice.equals(ButtonData.YES)) {
-			save(null);
+		if (!choice.equals(ButtonData.CANCEL_CLOSE)) {
+			if (choice.equals(ButtonData.YES)) {
+				save(null);
+			}
+			final Project project = new Project("New project");
+			final TreeItem<Item> projectItem = new TreeItem<>(project);
+			treeView.setRoot(projectItem);
+			projectFile = null;
+			bottomController.setFileName("");
 		}
-
-		final Project project = new Project("New project");
-		final TreeItem<Item> projectItem = new TreeItem<>(project);
-		treeView.setRoot(projectItem);
-
-		projectFile = null;
-		bottomController.setFileName("");
 	}
 
 	@FXML
