@@ -23,7 +23,7 @@ plugins {
 apply plugin: 'com.sandec.jpro'
 
 group 'fr.omathe.restui'
-project.version '1.3.3'
+project.version '1.3.4'
 
 def jdk = System.getProperty('java.home')
 def moduleName = 'fr.omathe.restui'
